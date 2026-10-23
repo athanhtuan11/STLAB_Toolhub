@@ -66,6 +66,15 @@ Sau mỗi lần `apply`/`rollback`, cập nhật cột "Ghim" và "Kiểm tra".
   `freecad/cross` → FreeCAD in `Error in InitApplications … freecad
 obotcad` khi khởi động. Workbench vẫn nạp
   (`import freecad.cross` OK) và RobotCAD là Mod nạp cuối nên không chặn Mod khác. Không sửa bản ghim; xem lại khi lên bản mới.
+- **manifold3d 3.5.4** (Tuan duyệt 2026-10-23) – thư viện boolean mesh [elalish/manifold](https://github.com/elalish/manifold),
+  **Apache-2.0**, cũng là solver boolean "Manifold" của OpenSCAD/Blender. Dùng trong `maker/robotics-cad/scripts/kiem-tra.py`
+  cho va chạm (giao khối `^` + `volume()`, khe hở `min_gap()`) thay boolean B-rep (1 cặp bánh răng mất ~700 s → < 1 s).
+  - Wheel `manifold3d-3.5.4-cp311-cp311-win_amd64.whl`, SHA-256 `34ef0b1b70b6d153eb12a72706e128e9b629c562cd4ab103083afd17ca071fbd`
+    (PyPI). Chỉ phụ thuộc numpy (dùng numpy 1.26.4 của FreeCAD).
+  - Cài **riêng cho dự án**, không đụng bản cài FreeCAD: `"C:/Program Files/FreeCAD 1.1/bin/python.exe" -m pip install
+    --no-deps --target maker/robotics-cad/.pylib manifold3d==3.5.4` (thư mục `.pylib/` không lên git). Script tự thêm vào `sys.path`;
+    thiếu thư viện thì lùi về B-rep (chậm).
+  - Là mã biên dịch (`.pyd` + `msvcp140` kèm theo), chỉ tính hình học: không mạng, không subprocess, không ghi file.
 
 ### Model board vi điều khiển (tìm 2026-10-22)
 - **Đã có** trong FreeCAD-library: Arduino UNO/Mega/Nano, ESP32 DOIT DevKit v1, Pi 4B, Pico.

@@ -13,6 +13,8 @@
 # Moi truong Python (uv tao lai tu uv.lock)
 .venv/
 __pycache__/
+# Thu vien cai rieng cho freecadcmd (pip --target), cai lai theo docs/COMMUNITY.md (manifold3d)
+/maker/robotics-cad/.pylib/
 
 # Bi mat va cau hinh ca nhan
 .env

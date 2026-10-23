@@ -29,11 +29,32 @@ Thiết kế cơ khí robot (khung, gá động cơ/cảm biến, hộp số) đ
 1. Chọn linh kiện trong `library/components.yaml`; chèn STEP từ thư viện (không tự vẽ lại linh kiện chuẩn).
 2. Dựng khung quanh linh kiện; tham số hóa kích thước chính bằng Spreadsheet.
 3. Kiểm tra va chạm và tầm quay khớp trong Assembly.
-4. Kiểm tra trước khi in theo checklist `kiem-tra-model.md` (hình học + BOP, lưới, giao thoa theo góc khớp,
-   FEM nếu chịu lực, khối lượng). In thử chi tiết lắp ghép nhỏ trước (xem `maker/in-3d`).
+4. **Một lệnh chuẩn bị in** (2026-10-23, pushrod_arm ~1 phút; trước đó >1 giờ):
+   `"C:/Program Files/FreeCAD 1.1/bin/python.exe" scripts/chuan-bi-in.py <du-an>/in_3d/ban-in.yaml`
+   = tầng 1 song song [xuất STL theo hướng in (`xuat-stl.py`) → tầng 2 cắt lớp]. Hướng in, tham số kiểm, bàn in
+   đều khai trong `ban-in.yaml` (mẫu `scripts/ban-in-mau.yaml`; bản đầy đủ: `D:\06_FreeCAD\pushrod_arm\in_3d\ban-in.yaml`).
+   Chỉ đọc file đã **Lưu**; có `tu_the_goc` thì tự về tư thế gốc trước khi xuất.
+   Bàn in lơ lửng: tự cho Bambu **xoay hướng in trước**, vẫn lơ lửng mới **bật support** (tách bàn `__xoay`/`__support`);
+   nhưng ưu tiên sửa thiết kế (vát 45°, gân đỡ) để bỏ support.
+   Chi tiết từng tầng:
+   - **Tầng 1 – mỗi lần sửa** (file LẮP RÁP, ~10–30 s, có cache):
+     `freecadcmd scripts/kiem-tra.py --pass <file.FCStd> linh-kien=... bo-cap=... an-khop=...`
+     → hình học, lưới, **va chạm** (manifold3d), quét khớp. Ngưỡng: `nguong-kiem-tra.yaml`.
+   - **Tầng 2 – trước khi in** (STL đã xuất theo HƯỚNG IN, ~10 s cho cả dự án):
+     `"C:/Program Files/FreeCAD 1.1/bin/python.exe" scripts/cat-lop.py <du-an>/in_3d/ban-in.yaml`
+     → Bambu Studio CLI cắt lớp thật theo profile A1 chính hãng: vùng lơ lửng, support, thời gian, số gam,
+     ảnh từng bàn (`tong-quan-in.png`). Mẫu cấu hình: `scripts/ban-in-mau.yaml`.
+   - `kiem-tra.py che-do=day-du` (BOP, độ dày thành, overhang theo hướng trong file, ~2 phút) chỉ khi cần soi kỹ;
+     độ dày/overhang **đúng hướng in** thì tin kết quả slicer ở tầng 2.
+   - FEM nếu chịu lực: theo `kiem-tra-model.md` mục 4. In thử chi tiết lắp ghép nhỏ trước (xem `maker/in-3d`).
 5. Robot di động/tay máy cần mô phỏng → RobotCAD: gán link/joint, vật liệu → xuất URDF.
 
 ## Quy ước
+- **Một phiên Claude giữ FreeCAD** (2026-10-23, Tuan): 2 phiên cùng sửa/chạy FreeCAD thì lệch nhau và chậm.
+  Phiên khác chỉ chạy `freecadcmd` riêng trên file đã lưu (kiểm, xuất) – không gửi lệnh vào FreeCAD đang mở.
+  Trước khi sửa model qua RPC/MCP: kiểm `doc.isTouched()` = False (có thay đổi chưa lưu – vd. đang mô phỏng – thì
+  DỪNG, hỏi Tuan), lưu bản sao vào `_backup/`, giữ nguyên `Placement` (macro mô phỏng dùng tư thế gốc).
+- Khe hở lắp ghép: **0,2 mm** (Tuan 2026-10-23, đã tính co ngót nhựa). Bánh răng ăn khớp khai `an-khop`, không ép 0,2.
 - mm; dung sai lắp ghép in FDM: ghi giá trị đã thử, chưa thử thì `TODO` (không đoán).
 - Thông số linh kiện chỉ lấy từ `components.yaml` hoặc datasheet có nguồn; thêm linh kiện mới phải kèm nguồn.
 - Model trong `models/<du-an>/` (FCStd + STEP xuất). Ghi công tác giả khi dùng model CC-BY trong tài liệu.
