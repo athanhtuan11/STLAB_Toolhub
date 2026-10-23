@@ -32,8 +32,9 @@ Thiết kế cơ khí robot (khung, gá động cơ/cảm biến, hộp số) đ
 4. **Một lệnh chuẩn bị in** (2026-10-23, pushrod_arm ~1 phút; trước đó >1 giờ):
    `"C:/Program Files/FreeCAD 1.1/bin/python.exe" scripts/chuan-bi-in.py <du-an>/in_3d/ban-in.yaml`
    = tầng 1 song song [xuất STL theo hướng in (`xuat-stl.py`) → tầng 2 cắt lớp]. Hướng in, tham số kiểm, bàn in
-   đều khai trong `ban-in.yaml` (mẫu `scripts/ban-in-mau.yaml`; bản đầy đủ: `D:\06_FreeCAD\pushrod_arm\in_3d\ban-in.yaml`).
+   đều khai trong `ban-in.yaml` (mẫu `mau-du-an/in_3d/ban-in.yaml`; bản đầy đủ: `maker/pushrod-arm/in_3d/ban-in.yaml`).
    Chỉ đọc file đã **Lưu**; có `tu_the_goc` thì tự về tư thế gốc trước khi xuất.
+   Toolhub → Dự án → nút **Chuẩn bị in** / **Tự chạy khi Lưu** (`scripts/theo-doi.py`); in xong `/ket-qua-in`.
    Bàn in lơ lửng: tự cho Bambu **xoay hướng in trước**, vẫn lơ lửng mới **bật support** (tách bàn `__xoay`/`__support`);
    nhưng ưu tiên sửa thiết kế (vát 45°, gân đỡ) để bỏ support.
    Chi tiết từng tầng:
@@ -43,17 +44,26 @@ Thiết kế cơ khí robot (khung, gá động cơ/cảm biến, hộp số) đ
    - **Tầng 2 – trước khi in** (STL đã xuất theo HƯỚNG IN, ~10 s cho cả dự án):
      `"C:/Program Files/FreeCAD 1.1/bin/python.exe" scripts/cat-lop.py <du-an>/in_3d/ban-in.yaml`
      → Bambu Studio CLI cắt lớp thật theo profile A1 chính hãng: vùng lơ lửng, support, thời gian, số gam,
-     ảnh từng bàn (`tong-quan-in.png`). Mẫu cấu hình: `scripts/ban-in-mau.yaml`.
+     ảnh từng bàn (`tong-quan-in.png`).
    - `kiem-tra.py che-do=day-du` (BOP, độ dày thành, overhang theo hướng trong file, ~2 phút) chỉ khi cần soi kỹ;
      độ dày/overhang **đúng hướng in** thì tin kết quả slicer ở tầng 2.
    - FEM nếu chịu lực: theo `kiem-tra-model.md` mục 4. In thử chi tiết lắp ghép nhỏ trước (xem `maker/in-3d`).
 5. Robot di động/tay máy cần mô phỏng → RobotCAD: gán link/joint, vật liệu → xuất URDF.
 
+## Dự án mới (mẫu chuẩn, 2026-10-23)
+- Tạo bằng lệnh `/du-an-moi <ten>`: chép `mau-du-an/` → `maker/<ten>/` (nguồn, lên git) và tạo
+  `D:\06_FreeCAD\<ten_du_an>\` (FCStd, `_backup/`, `_work/`, `in_3d/` – dữ liệu nặng, không lên git).
+- Tên Label trong FreeCAD: linh kiện mua bắt đầu `CB_` (CyberBrick) hoặc `LK_` (khác), vít `M2_5x6`, `M3x8`…;
+  nhựa dẻo hậu tố `_TPU`; chi tiết đối xứng `_L`/`_R`; bánh răng `Gear_*`/`Pinion_*`
+  → glob trong `ban-in.yaml` dùng chung, khỏi khai từng dự án.
+
 ## Quy ước
 - **Một phiên Claude giữ FreeCAD** (2026-10-23, Tuan): 2 phiên cùng sửa/chạy FreeCAD thì lệch nhau và chậm.
   Phiên khác chỉ chạy `freecadcmd` riêng trên file đã lưu (kiểm, xuất) – không gửi lệnh vào FreeCAD đang mở.
-  Trước khi sửa model qua RPC/MCP: kiểm `doc.isTouched()` = False (có thay đổi chưa lưu – vd. đang mô phỏng – thì
-  DỪNG, hỏi Tuan), lưu bản sao vào `_backup/`, giữ nguyên `Placement` (macro mô phỏng dùng tư thế gốc).
+  Trước khi sửa model qua RPC/MCP: kiểm `doc.UndoCount == 0` (có thao tác chưa lưu – vd. đang mô phỏng – thì
+  DỪNG, hỏi Tuan; **không dùng `isTouched()`**: FreeCAD bật nó ngay khi nạp file), so tư thế với `rest.json`
+  (file từng bị Lưu lúc mô phỏng), lưu bản sao vào `_backup/`, giữ nguyên `Placement`, sửa xong kiểm lại rồi **tự Lưu**.
+  STEP linh kiện lỗi BOP (servo/N20 CyberBrick) làm boolean thất bại âm thầm → dùng khối đơn giản làm dao cắt.
 - Khe hở lắp ghép: **0,2 mm** (Tuan 2026-10-23, đã tính co ngót nhựa). Bánh răng ăn khớp khai `an-khop`, không ép 0,2.
 - mm; dung sai lắp ghép in FDM: ghi giá trị đã thử, chưa thử thì `TODO` (không đoán).
 - Thông số linh kiện chỉ lấy từ `components.yaml` hoặc datasheet có nguồn; thêm linh kiện mới phải kèm nguồn.

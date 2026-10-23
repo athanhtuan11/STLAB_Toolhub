@@ -6,7 +6,7 @@ Tang 1 (kiem-tra.py che-do=nhanh) chi kiem hinh hoc + va cham tren file lap rap.
 Chay (Python di kem FreeCAD co san yaml/matplotlib/PIL; khong can FreeCAD):
     "C:/Program Files/FreeCAD 1.1/bin/python.exe" scripts/cat-lop.py <ban-in.yaml> [ra=<thu muc>] [chi=P1,P2]
 
-ban-in.yaml (duong dan tuong doi theo file yaml) - mau: ban-in-mau.yaml canh script nay.
+ban-in.yaml (duong dan tuong doi theo thu_muc_du_lieu) - mau: maker/robotics-cad/mau-du-an/in_3d/ban-in.yaml.
 Ra: <ra>/<ban>/<ban>.3mf (mo thang bang Bambu Studio de in), tong-quan-in.png (bang + anh tung ban), bao-cao-in.json.
 Exit code 1 neu co ban FAIL (cat loi, ra ngoai ban in, vung lo lung) hoac co STL chua xep ban.
 """
@@ -203,7 +203,7 @@ def main():
     t0 = time.time()
     cfg_p = Path(a["yaml"]).resolve()
     cfg = yaml.safe_load(cfg_p.read_text(encoding="utf-8"))
-    goc = cfg_p.parent
+    goc = (cfg_p.parent / cfg.get("thu_muc_du_lieu", ".")).resolve()  # FCStd/STL co the o ngoai repo
     stl_dir = (goc / cfg["stl"]).resolve()
     ra = Path(a["ra"]).resolve() if a["ra"] else (goc / cfg["ra"]).resolve()
     prof = ra / "_profile"

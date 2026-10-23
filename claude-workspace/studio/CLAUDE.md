@@ -18,6 +18,9 @@ qua cả 4 MCP server trong `.mcp.json`.
     (xem trước) và `<nguon>-edit/xuat-<kieu>[-local]-<do-manh>/` (kết quả, không ghi đè). `/anh/file` chỉ trả `.jpg`
     trong `lab/` và `xuat-*`. Mọi lệnh tạo ảnh là POST (cần `X-Studio`).
   - `toolhub/workspace.py`: đọc pins/links/reports/CLAUDE.md (chỉ đọc). `toolhub/views.py`: trang + API.
+  - `toolhub/chuanbiin.py` (trang Dự án, dự án có `in_3d/ban-in.yaml`): nút **Chuẩn bị in** và **Tự chạy khi Lưu**
+    gọi `maker/robotics-cad/scripts/chuan-bi-in.py` / `theo-doi.py` bằng Python của FreeCAD, chạy nền (PID ở
+    `in_3d/_*.pid`). Chỉ đọc file FreeCAD đã lưu; ảnh chỉ trả `.png` mà `_ket-qua-chuan-bi-in.json` trỏ tới. POST cần `X-Studio`.
 - `bat/`: nhấp đúp để chạy (`mo-toolhub`, `mo-freecad`, `mo-blender`, `mo-lightcraft`, `mo-photocraft`,
   `mo-tat-ca`, `mo-claude`, `kiem-tra-mcp`).
 - `scripts/freecad_start_rpc.py`: bật RPC server cho phiên FreeCAD do launcher mở.

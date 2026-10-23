@@ -17,5 +17,50 @@
 </div>
 {% endif %}
 
+{% if in3d %}
+<section class="card" style="margin-bottom:14px">
+  <div class="row">
+    <h3 class="grow">Chuẩn bị in <span class="muted">(kiểm nhanh + xuất STL theo hướng in + cắt lớp Bambu)</span></h3>
+    <button class="primary" data-post="/api/in/{{ p.slug }}/chay/bat">Chuẩn bị in</button>
+    <button id="td" data-post="/api/in/{{ p.slug }}/theo-doi/bat">Tự chạy khi Lưu: bật</button>
+    <button data-post="/api/in/{{ p.slug }}/theo-doi/tat">tắt</button>
+  </div>
+  <div id="in-tt" class="muted">Đang đọc…</div>
+  <div id="in-kq"></div>
+  <pre id="in-log" class="doc" style="display:none;max-height:180px;overflow:auto"></pre>
+</section>
+<script>
+(() => {
+  const slug = {{ p.slug|tojson }};
+  const mau = { PASS: "ok", WARN: "", FAIL: "bad" };
+  let lan = "";
+  async function tai() {
+    const s = await (await fetch(`/api/in/${slug}`)).json();
+    const tt = [];
+    tt.push(s.chay ? "⏳ đang chạy…" : "rảnh");
+    tt.push(s.theo_doi ? "tự chạy khi Lưu: BẬT" : "tự chạy khi Lưu: tắt");
+    document.getElementById("in-tt").textContent = tt.join(" · ");
+    const lg = document.getElementById("in-log");
+    lg.style.display = s.chay && s.log ? "block" : "none";
+    lg.textContent = s.log;
+    const k = s.ket_qua;
+    const khoa = k ? k.thoi_gian + k.tong_s : "";
+    if (k && khoa !== lan) {
+      lan = khoa;
+      let h = `<p>Lần gần nhất: ${k.thoi_gian} (${k.tong_s} s) · file in: <code>${k.thu_muc_in}</code></p>`;
+      k.tang.forEach((t, i) => {
+        h += `<h4>${t.ten}: <span class="badge ${mau[t.ket_luan] || ""}">${t.ket_luan}</span> <span class="muted">${t.chi_tiet}</span></h4>`;
+        if (t.loi.length) h += "<ul>" + t.loi.map(x => `<li>${x.replace(/</g, "&lt;")}</li>`).join("") + "</ul>";
+        h += `<a href="/du-an/${slug}/anh-in/${i}?t=${Date.now()}" target="_blank"><img src="/du-an/${slug}/anh-in/${i}?t=${Date.now()}" style="max-width:100%;border:1px solid #ddd"></a>`;
+      });
+      document.getElementById("in-kq").innerHTML = h;
+    }
+    setTimeout(tai, s.chay || s.theo_doi ? 3000 : 15000);
+  }
+  tai();
+})();
+</script>
+{% endif %}
+
 <pre class="doc">{{ p.claude_md }}</pre>
 {% endblock %}
