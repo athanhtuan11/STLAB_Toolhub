@@ -28,10 +28,10 @@ in 3D,Wrist_spacer,1,P2_Turret_Turntable__0.20_PETG,Bambu PETG Basic @BBL A1,1.6
 in 3D,Forearm_plate_L,1,P3_Forearm_Plates__0.20_PETG,Bambu PETG Basic @BBL A1,12.86 cm³
 in 3D,Forearm_plate_R,1,P3_Forearm_Plates__0.20_PETG,Bambu PETG Basic @BBL A1,12.84 cm³
 in 3D,Gripper_top_plate,1,P3_Forearm_Plates__0.20_PETG,Bambu PETG Basic @BBL A1,1.69 cm³
-in 3D,Boom001,1,P4_Boom_Gripper_Housings__0.20_PETG_support,Bambu PETG Basic @BBL A1,74.01 cm³
-in 3D,Gripper_frame,1,P4_Boom_Gripper_Housings__0.20_PETG_support,Bambu PETG Basic @BBL A1,12.70 cm³
-in 3D,Housing_Elbow,1,P4_Boom_Gripper_Housings__0.20_PETG_support,Bambu PETG Basic @BBL A1,13.01 cm³
-in 3D,Housing_Shoulder,1,P4_Boom_Gripper_Housings__0.20_PETG_support,Bambu PETG Basic @BBL A1,13.01 cm³
+in 3D,Boom001,1,P4_Boom_Gripper_Housings__0.20_PETG,Bambu PETG Basic @BBL A1,74.01 cm³
+in 3D,Gripper_frame,1,P4_Boom_Gripper_Housings__0.20_PETG,Bambu PETG Basic @BBL A1,12.70 cm³
+in 3D,Housing_Elbow,1,P4_Boom_Gripper_Housings__0.20_PETG,Bambu PETG Basic @BBL A1,13.01 cm³
+in 3D,Housing_Shoulder,1,P4_Boom_Gripper_Housings__0.20_PETG,Bambu PETG Basic @BBL A1,13.01 cm³
 in 3D,Jaw_1_driven_by_servo,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,2.34 cm³
 in 3D,Jaw_2_idler,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,2.57 cm³
 in 3D,Pin_A,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,0.99 cm³

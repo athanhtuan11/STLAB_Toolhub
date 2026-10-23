@@ -65,7 +65,7 @@ maker/<project>/            tên tiếng Anh, mọi thứ của dự án ở đ�
 ### GĐ E – Vòng học từ bản in thật (nối với harness-lab) `[x]` (2026-10-23)
 - In xong: ghi 1 dòng vào `harness-lab/inbox.md` (in đạt? lỗi gì? sửa gì) bằng `/bai-hoc`.
 - Mỗi lỗi in lặp ≥ 2 lần → thành quy tắc/ngưỡng (`nguong-kiem-tra.yaml`) hoặc bước kiểm mới.
-- Việc đang treo: in `maker/in-3d/models/mau-dung-sai-a1` để xác nhận 0,2 mm; ngưỡng "mép sắc" 1 mm² và
+- Việc đang treo: in mẫu dung sai (mẫu cũ `maker/in-3d` đã xóa) để xác nhận 0,2 mm; ngưỡng "mép sắc" 1 mm² và
   "chồng nhiễu" 0,1 mm³ đang TẠM (Claude đặt).
 
 ## 3. Đo tiến bộ

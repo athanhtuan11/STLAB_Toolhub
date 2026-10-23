@@ -75,7 +75,7 @@ description: Thiet ke co khi robot trong FreeCAD cho STLab - chon linh kien tu d
    và nhắc đo hàng thật.
 3. Tham số hóa: Spreadsheet `params` (độ dày thành, dung sai, đường kính lỗ).
 4. Kiểm tra: in được không cần support không? thành ≥ 2 đường in? lỗ M3 chừa dung sai (giá trị trong
-   `maker/in-3d`; chưa có → TODO)?
+   chưa có số đo in thử → TODO)?
 5. Báo lại: kích thước chính (mm), khối lượng ước tính (vật liệu PLA/PETG), các giả định.
 
 ## Điện (nhắc khi ghép linh kiện)

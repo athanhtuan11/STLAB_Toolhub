@@ -14,6 +14,7 @@ Sau mỗi lần `apply`/`rollback`, cập nhật cột "Ghim" và "Kiểm tra".
 | [homeassistant-ai/skills](https://github.com/homeassistant-ai/skills) | `68f2690ff868` | MIT | Cộng đồng | 2026-10-21 | `home-assistant-best-practices` → smart-home |
 | [homeassistant-ai/ha-mcp](https://github.com/homeassistant-ai/ha-mcp) | `v8.7.0` (`a96752286be1`) | MIT | Cộng đồng | 2026-10-21 | MCP Home Assistant (**chưa bật**) |
 | [neka-nat/freecad-mcp](https://github.com/neka-nat/freecad-mcp) | `v0.1.27` (`78bf0230a033`) | MIT | Cộng đồng | 2026-10-21 | MCP FreeCAD → prompt-library |
+| GrabCAD – Tower Pro MG90S micro servo (snapshot 3, STEP) | file zip Tuan tải 2026-10-23 (đăng nhập GrabCAD) → `community/grabcad/towerpro-mg90s/` | Điều khoản GrabCAD (phi thương mại) – xem lại khi thương mại | Cộng đồng (không có SHA) | 2026-10-23: đo STEP khớp kích thước hãng công bố 32,2 × 12,15 × 28,3 | Servo lái MG90S → maker/cyberbrick-car |
 | [ahujasid/mcp-for-blender](https://github.com/ahujasid/mcp-for-blender) | `5a3618fccb2d` | MIT | Cộng đồng | 2026-10-21 | MCP Blender → prompt-library |
 | [YujxZJCN/teaching-skills](https://github.com/YujxZJCN/teaching-skills) | `fd0c486e61cb` | MIT | Cộng đồng (ít người dùng) | 2026-10-21 | `lesson-builder`, `lab-forge` → stlab |
 | [GarethManning/education-agent-skills](https://github.com/GarethManning/education-agent-skills) | `6bbbce418f82` | **CC BY-SA 4.0** | Cộng đồng | 2026-10-21 | `backwards-design-unit-planner`, `criterion-referenced-rubric-generator` → stlab |

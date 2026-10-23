@@ -36,8 +36,11 @@ def co_vit(label):
     return f"M{d} × {m.group(3)}", (label[:m.start()] + label[m.end():]).strip("_")
 
 
-def goc_ten(label):
-    return re.sub(r"\d{3}$", "", label).rstrip("_")
+def goc_ten(label, tat_ca=()):
+    """Bo hau to trung ten cua FreeCAD (Spacer_S001 -> Spacer_S) CHI KHI ten goc cung co trong model
+    (khong cat ma linh kien: CB_Battery_PC003, CB_Switch_XA007)."""
+    g = re.sub(r"\d{3}$", "", label).rstrip("_")
+    return g if (not tat_ca or g in tat_ca) else label
 
 
 def ban_in(label, cfg):
@@ -60,15 +63,17 @@ def lap(cfg_p):
     cfg_p, cfg, _, _, f_m = metrics.cau_hinh(cfg_p)
     m = json.loads(f_m.read_text(encoding="utf-8"))
     lk = next((x[11:].split(",") for x in cfg.get("check", []) if x.startswith("components=")), [])
+    nhom = cfg.get("bom_groups") or {}   # {glob Label: ten hien thi} - gop vd. 4 lop, 8 nam cham
+    tat_ca = set(m["parts"])
     vit, vit_o = Counter(), defaultdict(Counter)
     mua, in3d, chua = Counter(), [], []
     for label, p in m["parts"].items():
         v = co_vit(label)
         if v:
             vit[v[0]] += 1
-            vit_o[v[0]][goc_ten(v[1]) or "?"] += 1
+            vit_o[v[0]][goc_ten(v[1]) or "?"] += 1  # vi tri dung: gop truot001 -> truot
         elif any(fnmatch.fnmatch(label, g.strip()) for g in lk if g.strip()):
-            mua[goc_ten(label)] += 1
+            mua[next((ten for g, ten in nhom.items() if fnmatch.fnmatch(label, g)), goc_ten(label, tat_ca))] += 1
         else:
             b = ban_in(label, cfg)
             if b:
