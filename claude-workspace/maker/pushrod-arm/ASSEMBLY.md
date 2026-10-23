@@ -3,7 +3,8 @@
 Viết 2026-10-23 từ model hiện tại (`freecad/pushrod_arm.FCStd`). Thứ tự, vít, chốt lấy từ đo tiếp xúc giữa các chi tiết
 trong model; chỗ model không thể hiện ghi **TODO**. Ảnh: `freecad/images/assembly/step-XX-a.png` (toàn cảnh) và
 `-b.png` (phóng to) – phần đã lắp làm mờ, **chi tiết mới tô xanh**. Render lại khi sửa model:
-gửi `freecad/scripts/render_assembly.py` qua RPC FreeCAD (xem đầu file).
+gửi `freecad/scripts/render_assembly.py` qua RPC FreeCAD (xem đầu file). Bản PDF (chữ + hình): `ASSEMBLY.pdf` –
+tạo lại bằng `python maker/robotics-cad/scripts/assembly-pdf.py maker/pushrod-arm/ASSEMBLY.md`.
 
 ## Trước khi lắp
 - In đủ 7 bàn (`print/plates/`, PETG Basic + TPU). Gỡ chi tiết khi **bàn đã nguội** (PETG bám chặt PEI).
