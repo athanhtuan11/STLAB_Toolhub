@@ -6,6 +6,8 @@ Chay (Python di kem FreeCAD):
 Doc print.yaml: `fcstd`, `check` (tham so check.py), `export` (huong in), `plates` (ban in)
 - xem export-stl.py, slice.py.
 Chi DOC file .FCStd da luu (sua trong FreeCAD xong phai Luu truoc khi chay).
+Kem theo (2026-10-23): metrics.py (chi so hoi quy, freecad/metrics.json - LEN GIT, so voi commit truoc)
+va bom.py (BOM.csv + BOM.md, kiem bang vit trong ASSEMBLY.md) - chi canh bao, khong lam FAIL.
 Ra: tom tat + duong dan anh overview.png (tang 1) va print-overview.png (tang 2). Exit 1 neu co FAIL.
 """
 
@@ -18,6 +20,8 @@ from pathlib import Path
 import yaml
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+import metrics  # noqa: E402
 FCC = Path(r"C:\Program Files\FreeCAD 1.1\bin\freecadcmd.exe")
 NO_WINDOW = 0x08000000
 
@@ -28,6 +32,7 @@ def chay(lenh, log):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # dong thay doi/BOM co tieng Viet
     t0 = time.time()
     cfg_p = Path(sys.argv[1]).resolve()
     cfg = yaml.safe_load(cfg_p.read_text(encoding="utf-8"))
@@ -43,6 +48,7 @@ def main():
     print(f"Tang 1 (kiem nhanh) + xuat STL song song: {fcstd.name}", flush=True)
     p1 = chay([FCC, HERE / "check.py", "--pass", fcstd, *kt], logs / "check.txt")
     p2 = chay([FCC, HERE / "export-stl.py", "--pass", cfg_p], logs / "export-stl.txt")
+    p4 = chay([FCC, HERE / "metrics.py", "--pass", cfg_p], logs / "metrics.txt")
     p2.wait()
     t_xuat = time.time() - t0
     xs = json.loads((goc / cfg["stl"] / "_export-stl.json").read_text(encoding="utf-8"))
@@ -68,9 +74,32 @@ def main():
     kq.append(("Tang 2 cat lop", b2["ket_luan"], f"{t_cat:.0f} s, in {b2['tong_thoi_gian_in']}, {b2['tong_gam']} g",
                loi2 + ([f"tu xu ly lo lung -> {xl}"] if xl else []), ra / "print-overview.png"))
 
+    # hoi quy: metrics.json (+ gio/gam ban in) so voi git HEAD; BOM tu Label. Chi bao, khong FAIL.
+    p4.wait()
+    *_, f_m = metrics.cau_hinh(cfg_p)
+    if p4.returncode == 0 and f_m.exists():
+        metrics.them_ban_in(cfg_p, b2)
+        lk = next((x[11:].split(",") for x in cfg.get("check", []) if x.startswith("components=")), [])
+        tt, tom, dong = metrics.so_sanh(metrics.ban_git(f_m), json.loads(f_m.read_text(encoding="utf-8")), lk)
+        kq.append(("So voi commit truoc", tt, tom, dong, ""))
+        p5 = subprocess.run([sys.executable, HERE / "bom.py", cfg_p], capture_output=True, text=True,
+                            encoding="utf-8", creationflags=NO_WINDOW)
+        f_bom = cfg_p.parent / "_bom.json"
+        if p5.returncode == 0 and f_bom.exists():
+            bom = json.loads(f_bom.read_text(encoding="utf-8"))
+            vit = ", ".join(f"{k}: {n}" for k, n in bom["vit"].items())
+            loi5 = bom["lech_assembly"] + [f"chua phan loai: {x}" for x in bom["chua_phan_loai"]]
+            kq.append(("BOM", "WARN" if bom["lech_assembly"] else "PASS",
+                       f"vit {vit}; {bom['linh_kien_mua']} linh kien mua; {bom['chi_tiet_in']} chi tiet in", loi5,
+                       ""))
+        else:
+            kq.append(("BOM", "WARN", "bom.py loi", [p5.stderr[-300:]], ""))
+    else:
+        kq.append(("So voi commit truoc", "WARN", f"metrics.py loi, xem {logs / 'metrics.txt'}", [], ""))
+
     print(f"\n=== CHUAN BI IN: {time.time() - t0:.0f} s ===")
     for ten, tt, tg, loi, anh in kq:
-        print(f"{ten}: {tt} ({tg})  anh: {anh}")
+        print(f"{ten}: {tt} ({tg})" + (f"  anh: {anh}" if anh else ""))
         for x in loi:
             print(f"   - {x}")
     print(f"File in (mo bang Bambu Studio): {ra}\\<ban>\\<ban>.3mf")

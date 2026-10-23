@@ -12,6 +12,7 @@ Lắp ráp: **[ASSEMBLY.pdf](ASSEMBLY.pdf)** (15 trang, chữ + hình – để 
 - Động cơ N20 + trục vít tự hãm: khi kẹt cơ khí dòng tăng, nhựa quanh động cơ có thể nóng – thử lần đầu ở tốc độ thấp.
 
 ## Linh kiện mua (BOM) – đếm từ model 2026-10-23
+Bản tự sinh đầy đủ (vít, linh kiện, chi tiết in → bàn/nhựa): [BOM.md](BOM.md) / `BOM.csv` – cập nhật mỗi lần *Chuẩn bị in*.
 | Linh kiện | SL | Ghi chú |
 |---|---|---|
 | CyberBrick Multi-Function Controller Core XA003 | 1 | MCU |

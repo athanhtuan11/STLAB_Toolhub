@@ -64,6 +64,9 @@ description: Thiet ke co khi robot trong FreeCAD cho STLab - chon linh kien tu d
 - Chi tiết sinh bằng mô phỏng cắt (bánh vít "hob", ren…) toàn mặt B-spline: boolean chậm ~7 lần
   (đo 22/10: bánh vít z16 2.002 mặt → `common` 12,7 s; bản 354 mặt → 1,7 s). Giữ bản nặng chỉ để xuất STL;
   lắp ráp, kiểm va chạm, mô phỏng dùng bản nhẹ.
+- Sửa chi tiết bằng boolean (cắt hốc, thêm gân): dùng `maker/robotics-cad/scripts/safe_edit.py`
+  (`guard` → `backup` → `safe_cut`/`safe_fuse` → `apply` → `save`), không gọi `shape.cut()` trần – STEP linh kiện
+  lỗi BOP làm cut "thành công" mà bỏ 0 mm³. Chi tiết: `maker/robotics-cad/CLAUDE.md` mục Quy ước.
 - Trước lệnh dài: **lưu tài liệu** (`doc.save()`). Báo `GUI_DISPATCH_STUCK` → gọi `get_rpc_status`, không gửi thêm lệnh GUI.
 
 ## Khi thiết kế gá/khung

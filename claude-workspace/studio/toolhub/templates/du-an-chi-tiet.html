@@ -51,7 +51,7 @@
       k.tang.forEach((t, i) => {
         h += `<h4>${t.ten}: <span class="badge ${mau[t.ket_luan] || ""}">${t.ket_luan}</span> <span class="muted">${t.chi_tiet}</span></h4>`;
         if (t.loi.length) h += "<ul>" + t.loi.map(x => `<li>${x.replace(/</g, "&lt;")}</li>`).join("") + "</ul>";
-        h += `<a href="/du-an/${slug}/print-image/${i}?t=${Date.now()}" target="_blank"><img src="/du-an/${slug}/print-image/${i}?t=${Date.now()}" style="max-width:100%;border:1px solid #ddd"></a>`;
+        if (t.anh) h += `<a href="/du-an/${slug}/print-image/${i}?t=${Date.now()}" target="_blank"><img src="/du-an/${slug}/print-image/${i}?t=${Date.now()}" style="max-width:100%;border:1px solid #ddd"></a>`;
       });
       document.getElementById("in-kq").innerHTML = h;
     }
