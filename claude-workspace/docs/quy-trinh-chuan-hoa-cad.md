@@ -49,6 +49,8 @@ maker/<project>/            tên tiếng Anh, mọi thứ của dự án ở đ�
   backup 3 bản gần nhất ở `freecad/backup/`; mọi thứ khác (yaml, script, ảnh, README) lên git.
 
 ### GĐ C – "Release" bản in (KiBot/FCBot pattern) `[ ]`
+- Đã có nền (2026-10-23, xem `docs/freecad-automation-research.md`): `metrics.json` (changelog hình học từ git diff),
+  `BOM.csv`/`BOM.md` tự sinh, `safe_edit.py`. Còn: `release.py` + Tuan chọn repo/public-private/`gh`.
 - Khi `prepare-print` PASS và Tuan duyệt ảnh → tạo tag `<du-an>-vX.Y` + GitHub Release đính: 3MF từng bàn,
   `tong-quan.png`, `tong-quan-in.png`, BOM, changelog ngắn (sửa gì so với bản trước).
 - Đăng MakerWorld/Printables: làm tay từ Release (không tự đăng – đăng ra ngoài phải Tuan duyệt).

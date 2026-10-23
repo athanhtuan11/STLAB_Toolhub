@@ -35,6 +35,12 @@ Thiết kế cơ khí robot (khung, gá động cơ/cảm biến, hộp số) đ
    Hướng in, tham số kiểm, bàn in khai trong `print/print.yaml` (mẫu `project-template/print/print.yaml`;
    bản đầy đủ: `maker/pushrod-arm/print/print.yaml`). Chỉ đọc file đã **Lưu**; có `rest_pose` thì tự về tư thế gốc.
    Toolhub → Dự án → nút **Chuẩn bị in** / **Tự chạy khi Lưu** (`scripts/watch.py`); in xong `/print-result`.
+   Kèm theo (chỉ cảnh báo, không FAIL):
+   - `scripts/metrics.py`: thể tích/hộp bao/trọng tâm/số solid từng chi tiết + giờ/gam từng bàn → `freecad/metrics.json`
+     (**lên git**, commit cùng lần sửa model), so với commit trước: chi tiết đổi ngoài ý muốn hiện ngay;
+     `git diff freecad/metrics.json` = nhật ký thay đổi hình học. Tay: `python scripts/metrics.py diff <print.yaml>`.
+   - `scripts/bom.py`: `BOM.csv` + `BOM.md` (vít đếm theo cỡ, linh kiện mua, chi tiết in → bàn/nhựa) từ Label;
+     so SL vít với bảng trong `ASSEMBLY.md` (lệch → WARN, không tự sửa file viết tay).
    Bàn in lơ lửng: tự cho Bambu **xoay hướng in trước**, vẫn lơ lửng mới **bật support** (tách bàn `__orient`/`__support`);
    nhưng ưu tiên sửa thiết kế (vát 45°, gân đỡ) để bỏ support.
    Chi tiết từng tầng:
@@ -76,7 +82,12 @@ maker/<project>/            tên tiếng Anh, kebab-case
   DỪNG, hỏi Tuan; **không dùng `isTouched()`**: FreeCAD bật nó ngay khi nạp file), so tư thế với `rest.json`
   (file từng bị Lưu lúc mô phỏng; công cụ: `freecad/scripts/reset_rest_pose.py`), lưu bản sao vào `freecad/backup/`,
   giữ nguyên `Placement`, sửa xong kiểm lại rồi **tự Lưu**.
-  STEP linh kiện lỗi BOP (servo/N20 CyberBrick) làm boolean thất bại âm thầm → dùng khối đơn giản làm dao cắt.
+  STEP linh kiện lỗi BOP (servo/N20 CyberBrick) làm boolean thất bại âm thầm → script sửa model dùng
+  **`scripts/safe_edit.py`**: `guard()` (UndoCount, tư thế gốc) → `backup()` → `safe_cut()`/`safe_fuse()` (so lượng
+  bỏ/thêm với `expect_mm3` hoặc thể tích giao tính trên lưới manifold3d, thử lại boolean fuzzy, sai → `SafeEditError`,
+  model giữ nguyên) → `apply()` → kiểm → `save()`. Vẫn lỗi → dùng khối đơn giản (hộp, mặt đùn) làm dao cắt.
+  Thử 2026-10-23 trên servo (BOP lỗi): cắt 21,07 mm³ = ước lưới 21,07 mm³; N20 lưới không kín → phải truyền
+  `max_mm3`/`expect_mm3`.
 - **Nhựa mặc định: Bambu PETG Basic** (Tuan 2026-10-23) – profile chính hãng `Bambu PETG Basic @BBL A1` (245 °C, bàn 70 °C,
   13 mm³/s). Bàn in: Textured PEI (TDS: SuperTack/Textured/Smooth PEI, 65–75 °C; PEI bám chặt → đợi bàn nguội mới gỡ).
   `slice.py` đọc được cả preset riêng (vd. KINGROON-PETG) nếu đổi cuộn. Đệm/chi tiết dẻo: TPU 95A.
