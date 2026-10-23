@@ -17,8 +17,8 @@ Dự án đầu tiên theo quy trình chuẩn `maker/robotics-cad` (mẫu: `make
   giữ `Placement`; sửa xong tự Lưu). File từng bị **Lưu lúc đang mô phỏng** (23/10 13:34) → luôn về tư thế gốc trước khi sửa.
 - In xong: `/ket-qua-in` ghi kết quả (đạt/lỗi) vào README + `harness-lab/inbox.md`.
 
-## Còn chờ Tuan quyết (2026-10-23)
-- Hốc servo kẹp trong `Gripper_frame` khít 0,15 mm (cả 2 phía, mặt lớn ~800 mm²): giữ (kẹp chặt servo) hay mài 0,05 mm?
-- Washer trục bánh vít đã mài 1,2 → 1,1 mm (khe bánh vít 0,2 mm) → độ rơ dọc trục bánh vít 0,1 → 0,3 mm: chấp nhận không?
-- `Jaw_1_driven_by_servo`: lưới tự cắt (slicer vẫn cắt được) – cần soi.
-- 4 vấu bắt vít deck trong `Base_housing` treo z ≈ 21 mm → đang dùng support (+0,7 g); muốn bỏ thì thêm vát 45° dưới vấu.
+## Trạng thái (2026-10-23 15:00)
+- Đã xử lý: hốc servo mài lên 0,2 mm; washer chặn trục 1,1 mm (rơ dọc trục bánh vít tăng ≤ 0,1 mm – Tuan chấp nhận,
+  bánh vít trượt dọc trục không đổi vị trí thanh răng); `Jaw_1` lưới tự cắt là do chia lưới (B-rep + BOP OK) → WARN;
+  4 vấu deck có vát 45° → P1 không cần support. Còn support: tai chốt 2 Housing (+3 g, giữ – hạ tai sẽ đụng chạc).
+- Chờ: in thật rồi `/ket-qua-in`.

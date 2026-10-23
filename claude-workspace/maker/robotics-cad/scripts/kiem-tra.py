@@ -7,7 +7,7 @@ Tuy chon (sau --pass, dang khoa=gia-tri vi freecadcmd tu doc moi tham so "--x"):
     out=<thu muc>              noi ghi bao cao (mac dinh: <thu muc file>/kiem-tra/<ten file>/)
     linh-kien="SG90*,N20*"     nhan (Label, glob) la linh kien mua: chi kiem hinh hoc + va cham, khong kiem in
     bo-cap="Horn|Servo*"       cap duoc phep cham/chong (vd. horn lap tren truc servo); lap lai duoc
-    an-khop="Gear*|Pinion*"    cap banh rang an khop: khe nho -> INFO (chong khoi van FAIL); lap lai duoc
+    an-khop="Gear*|Pinion*"    cap an khop (banh rang) hoac dem/washer long: khe nho -> INFO (chong van FAIL)
     nhieu-solid="Spacer_D,..." object co y gom nhieu manh: khong bat loi "N solid"
     quet-khop=Khop:min:max[:buoc]  quet khop Assembly (Revolute/Cylindrical: do; Slider: mm); lap lai duoc
     xuat=3mf | xuat=step       xuat tung chi tiet in vao thu muc bao cao
@@ -715,6 +715,14 @@ def lam_viec(cts, ng, a, out, cdir, ds_ct, ds_cap, ten=""):
             t_luoi = time.time() - t1
             do("luoi", lambda: kiem_luoi(m))
             r["luoi"]["s"] = round(r["luoi"]["s"] + t_luoi, 2)
+            rl = r["luoi"]
+            if rl["trang_thai"] == "FAIL" and rl["tom_tat"] == "tu cat" and s.isValid():
+                # chi "tu cat": thuong do chia luoi o mat gan tiep tuyen (da gap: Jaw_1, 3 cap tam giac) -> hoi B-rep
+                try:
+                    s.check(True)
+                    rl["trang_thai"], rl["tom_tat"] = "WARN", "tu cat do chia luoi; B-rep hop le, BOP OK"
+                except Exception:
+                    pass
             if day_du:  # che do nhanh: do day / overhang / khoi luong de slicer xet (cat-lop.py, dung huong in)
                 do("do_day", lambda: kiem_do_day(m, ng))
                 do("overhang", lambda: kiem_overhang(s, m, ng))
