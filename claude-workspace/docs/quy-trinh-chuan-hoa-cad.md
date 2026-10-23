@@ -7,10 +7,10 @@ Trạng thái mỗi mục: `[x]` đã có · `[ ]` chưa làm · `[?]` chờ Tua
 
 | Bước | Lệnh | Thời gian |
 |---|---|---|
-| Kiểm nhanh (hình học, lưới, va chạm, cache) | `scripts/kiem-tra.py` | ~40 s lần đầu |
-| Xuất STL theo hướng in (hướng in khai trong YAML) | `scripts/xuat-stl.py` | ~5 s |
-| Cắt lớp Bambu CLI, lơ lửng → xoay → support | `scripts/cat-lop.py` | ~20 s |
-| **Cả vòng 1 lệnh** | `scripts/chuan-bi-in.py <du-an>/in_3d/ban-in.yaml` | **~1 phút** (trước: >1 giờ) |
+| Kiểm nhanh (hình học, lưới, va chạm, cache) | `scripts/check.py` | ~40 s lần đầu |
+| Xuất STL theo hướng in (hướng in khai trong YAML) | `scripts/export-stl.py` | ~5 s |
+| Cắt lớp Bambu CLI, lơ lửng → xoay → support | `scripts/slice.py` | ~20 s |
+| **Cả vòng 1 lệnh** | `scripts/prepare-print.py maker/<project>/print/print.yaml` | **~1 phút** (trước: >1 giờ) |
 
 Quy tắc đã chốt: khe lắp ghép 0,2 mm; 1 phiên Claude giữ FreeCAD; sửa model xong tự lưu (có backup);
 kiểm ổn thì tự commit + push GitHub. Chi tiết: `maker/robotics-cad/CLAUDE.md`.
@@ -29,32 +29,32 @@ kiểm ổn thì tự commit + push GitHub. Chi tiết: `maker/robotics-cad/CLAU
 ## 2. Plan chuẩn hóa (đề xuất – theo thứ tự lợi/công)
 
 ### GĐ A – Mẫu dự án chuẩn (1 buổi) `[x]` (2026-10-23)
-Mọi dự án CAD mới tạo từ 1 mẫu, để `chuan-bi-in.py` chạy ngay không cần sửa:
+Mọi dự án CAD mới tạo từ `maker/robotics-cad/project-template/`, để `prepare-print.py` chạy ngay:
 ```
-<du-an>/
-  README.md              mục tiêu, BOM (linh kiện mua + nguồn), ảnh, cách in
-  model.FCStd            lắp ráp; tư thế gốc ở rest.json (nếu có mô phỏng)
-  build/                 script dựng chi tiết (code-CAD) – nguồn chính của hình học
-  in_3d/ban-in.yaml      hướng in + tham số kiểm + bàn in   (STL/, PLATES_*/ là file sinh, không sửa tay)
-  _work/  _backup/       nháp, sao lưu (không lên git)
+maker/<project>/            tên tiếng Anh, mọi thứ của dự án ở đây
+  README.md  CLAUDE.md      mục tiêu, BOM, an toàn, bàn in, lịch sử (nội dung tiếng Việt)
+  freecad/                  <model>.FCStd (chỉ trên máy), _rest.json, _sim.FCMacro, scripts/, images/,
+                            check/ + backup/ (không lên git)
+  print/                    print.yaml (hướng in + kiểm + bàn in); stl/, plates/ (file sinh, không lên git)
 ```
 - Quy ước tên Label: linh kiện mua bắt đầu `CB_` / `LK_`; nhựa dẻo hậu tố `_TPU`; chi tiết đối xứng `_L`/`_R`
-  → `linh-kien=`, `hau_to` dùng glob chung, khỏi khai từng dự án.
-- Tạo lệnh `/du-an-moi` (hoặc nút Toolhub) sinh khung trên.
+  → `components=`, `suffix` dùng glob chung, khỏi khai từng dự án.
+- Lệnh `/new-project` sinh khung trên. Đặt tên tiếng Anh (Tuan 2026-10-23).
 
 ### GĐ B – Đưa dự án CAD vào git `[x]` (2026-10-23)
-- `D:\06_FreeCAD\...` hiện **không có git**; lịch sử chỉ là `_backup/`.
+- Trước 2026-10-23: dữ liệu ở `D:\06_FreeCAD\`, không có git.
 - Lựa chọn: (1) chuyển dự án vào `claude-workspace/maker/<du-an>/` + **Git LFS** cho `.FCStd/.step` (8 MB/lần lưu);
   (2) chỉ đưa `build/`, `ban-in.yaml`, README, ảnh lên git, FCStd giữ ngoài.
-- Khuyến nghị (2) trước: nhẹ, đúng tinh thần code-CAD; (1) khi cần lịch sử đầy đủ. **Tuan quyết.**
+- **Tuan chốt (2026-10-23 chiều):** gom HẾT vào `maker/<project>/`; `.FCStd` chỉ trên máy (không LFS),
+  backup 3 bản gần nhất ở `freecad/backup/`; mọi thứ khác (yaml, script, ảnh, README) lên git.
 
 ### GĐ C – "Release" bản in (KiBot/FCBot pattern) `[ ]`
-- Khi `chuan-bi-in` PASS và Tuan duyệt ảnh → tạo tag `<du-an>-vX.Y` + GitHub Release đính: 3MF từng bàn,
+- Khi `prepare-print` PASS và Tuan duyệt ảnh → tạo tag `<du-an>-vX.Y` + GitHub Release đính: 3MF từng bàn,
   `tong-quan.png`, `tong-quan-in.png`, BOM, changelog ngắn (sửa gì so với bản trước).
 - Đăng MakerWorld/Printables: làm tay từ Release (không tự đăng – đăng ra ngoài phải Tuan duyệt).
 
 ### GĐ D – Tự chạy, không phải nhớ `[x]` (2026-10-23)
-- **Cục bộ trước**: khi Lưu file `.FCStd` (theo dõi thời điểm sửa) → tự chạy `chuan-bi-in` nền, kết quả là ảnh.
+- **Cục bộ trước**: khi Lưu file `.FCStd` (theo dõi thời điểm sửa) → tự chạy `prepare-print` nền, kết quả là ảnh.
   Hoặc nút "Chuẩn bị in" trên Toolhub (đúng quy ước: tính năng mới → trang Toolhub).
 - **GitHub Actions sau** (khi có GĐ B): chỉ chạy phần không cần Bambu (kiểm + xuất STL) trên runner Linux;
   phần cắt lớp chạy trên máy này (self-hosted runner) vì cần profile Bambu + Windows. Đánh đổi: tốn công dựng,
@@ -74,10 +74,10 @@ Mọi dự án CAD mới tạo từ 1 mẫu, để `chuan-bi-in.py` chạy ngay 
 | Số bước tay mỗi lần in | xuất STL, xếp bàn, cắt lớp: đã tự động | chỉ còn duyệt ảnh + bấm in |
 
 ## 4. Việc Tuan cần quyết
-- [x] GĐ B: cách (2) – nguồn trong `maker/<du-an>/`, FCStd + file sinh ở `D:\06_FreeCAD\` (2026-10-23)
-- [x] GĐ D: làm cả hai – Toolhub → Dự án: **Chuẩn bị in** + **Tự chạy khi Lưu** (`scripts/theo-doi.py`)
-- [x] GĐ A: `maker/robotics-cad/mau-du-an/` + lệnh `/du-an-moi`; dự án mẫu: `maker/pushrod-arm/`
-- [x] GĐ E: lệnh `/ket-qua-in` → README dự án + `harness-lab/inbox.md`
+- [x] GĐ B: mọi thứ trong `maker/<project>/` (`freecad/` + `print/`), FCStd chỉ trên máy (2026-10-23)
+- [x] GĐ D: làm cả hai – Toolhub → Dự án: **Chuẩn bị in** + **Tự chạy khi Lưu** (`scripts/watch.py`)
+- [x] GĐ A: `maker/robotics-cad/project-template/` + lệnh `/new-project`; dự án mẫu: `maker/pushrod-arm/`
+- [x] GĐ E: lệnh `/print-result` → README dự án + `harness-lab/inbox.md`
 - [ ] GĐ C (Release): chưa làm
 
 ## Nguồn

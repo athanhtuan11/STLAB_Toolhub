@@ -1,3 +1,4 @@
 [flake8]
 max-line-length = 120
-exclude = .venv,claude-workspace/community
+# maker/*/freecad/scripts: job FreeCAD/RPC viet gon (gui nguyen file qua RPC), khong theo PEP8
+exclude = .venv,claude-workspace/community,claude-workspace/maker/*/freecad/scripts

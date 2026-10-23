@@ -1,4 +1,4 @@
-# <ten-du-an>
+# <project-name>
 
 <Mục tiêu: làm gì, cho ai, chạy thế nào. Máy in, đầu phun, nhựa.>
 
@@ -11,11 +11,11 @@
 | TODO | | |
 
 ## In
-Chạy **Chuẩn bị in** rồi chép bảng thời gian/nhựa từ `tong-quan-in.png` vào đây khi bản đã duyệt.
+Chạy **Chuẩn bị in** rồi chép bảng thời gian/nhựa từ `print/plates/print-overview.png` vào đây khi bản đã duyệt.
 
 ## Lịch sử sửa
 - YYYY-MM-DD: <sửa gì, vì sao>
 
 ## Lịch sử in
-<!-- /ket-qua-in ghi vào đây: ngày | bàn | đạt/lỗi | mô tả | ảnh -->
+<!-- /print-result ghi vào đây: ngày | plate | PASS/FAIL | mô tả | ảnh -->
 (chưa in)

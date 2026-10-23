@@ -29,42 +29,54 @@ Thiết kế cơ khí robot (khung, gá động cơ/cảm biến, hộp số) đ
 1. Chọn linh kiện trong `library/components.yaml`; chèn STEP từ thư viện (không tự vẽ lại linh kiện chuẩn).
 2. Dựng khung quanh linh kiện; tham số hóa kích thước chính bằng Spreadsheet.
 3. Kiểm tra va chạm và tầm quay khớp trong Assembly.
-4. **Một lệnh chuẩn bị in** (2026-10-23, pushrod_arm ~1 phút; trước đó >1 giờ):
-   `"C:/Program Files/FreeCAD 1.1/bin/python.exe" scripts/chuan-bi-in.py <du-an>/in_3d/ban-in.yaml`
-   = tầng 1 song song [xuất STL theo hướng in (`xuat-stl.py`) → tầng 2 cắt lớp]. Hướng in, tham số kiểm, bàn in
-   đều khai trong `ban-in.yaml` (mẫu `mau-du-an/in_3d/ban-in.yaml`; bản đầy đủ: `maker/pushrod-arm/in_3d/ban-in.yaml`).
-   Chỉ đọc file đã **Lưu**; có `tu_the_goc` thì tự về tư thế gốc trước khi xuất.
-   Toolhub → Dự án → nút **Chuẩn bị in** / **Tự chạy khi Lưu** (`scripts/theo-doi.py`); in xong `/ket-qua-in`.
-   Bàn in lơ lửng: tự cho Bambu **xoay hướng in trước**, vẫn lơ lửng mới **bật support** (tách bàn `__xoay`/`__support`);
+4. **Một lệnh chuẩn bị in** (2026-10-23, pushrod-arm ~1–2 phút; trước đó >1 giờ):
+   `"C:/Program Files/FreeCAD 1.1/bin/python.exe" scripts/prepare-print.py maker/<project>/print/print.yaml`
+   = tầng 1 (`check.py`) song song [xuất STL theo hướng in (`export-stl.py`) → tầng 2 cắt lớp (`slice.py`)].
+   Hướng in, tham số kiểm, bàn in khai trong `print/print.yaml` (mẫu `project-template/print/print.yaml`;
+   bản đầy đủ: `maker/pushrod-arm/print/print.yaml`). Chỉ đọc file đã **Lưu**; có `rest_pose` thì tự về tư thế gốc.
+   Toolhub → Dự án → nút **Chuẩn bị in** / **Tự chạy khi Lưu** (`scripts/watch.py`); in xong `/print-result`.
+   Bàn in lơ lửng: tự cho Bambu **xoay hướng in trước**, vẫn lơ lửng mới **bật support** (tách bàn `__orient`/`__support`);
    nhưng ưu tiên sửa thiết kế (vát 45°, gân đỡ) để bỏ support.
    Chi tiết từng tầng:
-   - **Tầng 1 – mỗi lần sửa** (file LẮP RÁP, ~10–30 s, có cache):
-     `freecadcmd scripts/kiem-tra.py --pass <file.FCStd> linh-kien=... bo-cap=... an-khop=...`
-     → hình học, lưới, **va chạm** (manifold3d), quét khớp. Ngưỡng: `nguong-kiem-tra.yaml`.
-   - **Tầng 2 – trước khi in** (STL đã xuất theo HƯỚNG IN, ~10 s cho cả dự án):
-     `"C:/Program Files/FreeCAD 1.1/bin/python.exe" scripts/cat-lop.py <du-an>/in_3d/ban-in.yaml`
-     → Bambu Studio CLI cắt lớp thật theo profile A1 chính hãng: vùng lơ lửng, support, thời gian, số gam,
-     ảnh từng bàn (`tong-quan-in.png`).
-   - `kiem-tra.py che-do=day-du` (BOP, độ dày thành, overhang theo hướng trong file, ~2 phút) chỉ khi cần soi kỹ;
+   - **Tầng 1 – mỗi lần sửa** (file LẮP RÁP, có cache): `freecadcmd scripts/check.py --pass <file.FCStd>
+     components=... ignore-pair=... mesh-pair=... multi-solid=...` → hình học, lưới, **va chạm** (manifold3d),
+     quét khớp (`sweep=`). Ngưỡng: `thresholds.yaml`. Ra `freecad/check/overview.png`.
+   - **Tầng 2 – trước khi in** (STL theo HƯỚNG IN, ~10–40 s): `slice.py print/print.yaml` → Bambu Studio CLI cắt lớp
+     theo profile A1 chính hãng: lơ lửng, support, thời gian, số gam. Ra `print/plates/<plate>/<plate>.3mf` (mở Bambu
+     để in) + `print/plates/print-overview.png`.
+   - `check.py mode=full` (BOP, độ dày thành, overhang theo hướng trong file, ~2 phút) chỉ khi cần soi kỹ;
      độ dày/overhang **đúng hướng in** thì tin kết quả slicer ở tầng 2.
    - FEM nếu chịu lực: theo `kiem-tra-model.md` mục 4. In thử chi tiết lắp ghép nhỏ trước (xem `maker/in-3d`).
 5. Robot di động/tay máy cần mô phỏng → RobotCAD: gán link/joint, vật liệu → xuất URDF.
 
-## Dự án mới (mẫu chuẩn, 2026-10-23)
-- Tạo bằng lệnh `/du-an-moi <ten>`: chép `mau-du-an/` → `maker/<ten>/` (nguồn, lên git) và tạo
-  `D:\06_FreeCAD\<ten_du_an>\` (FCStd, `_backup/`, `_work/`, `in_3d/` – dữ liệu nặng, không lên git).
+## Dự án (cấu trúc chuẩn, 2026-10-23 – mọi thứ của 1 dự án nằm trong `maker/<project>/`)
+```
+maker/<project>/            tên tiếng Anh, kebab-case
+  README.md  CLAUDE.md      mục tiêu, an toàn, BOM, bàn in, lịch sử sửa/in (nội dung tiếng Việt)
+  freecad/                  THÔNG TIN FREECAD
+    <model>.FCStd           chỉ trên máy (không lên git)  ·  <model>_rest.json (tư thế gốc)  ·  <model>_sim.FCMacro
+    images/  scripts/ (công cụ; history/ = script sửa model đã chạy)
+    check/  backup/         file sinh / bản sao lưu (không lên git)
+  print/                    THÔNG TIN BÀN IN
+    print.yaml              hướng in + tham số kiểm + bàn in
+    stl/  plates/           file sinh (không lên git): plates/<plate>/<plate>.3mf để in, print-overview.png
+```
+- Tạo bằng `/new-project <name>`: chép `project-template/` → `maker/<name>/`. Không để dữ liệu dự án ở nơi khác.
+- Macro trong thư mục macro của FreeCAD chỉ là **file chuyển tiếp** `exec(...)` tới macro trong dự án (1 nguồn).
 - Tên Label trong FreeCAD: linh kiện mua bắt đầu `CB_` (CyberBrick) hoặc `LK_` (khác), vít `M2_5x6`, `M3x8`…;
   nhựa dẻo hậu tố `_TPU`; chi tiết đối xứng `_L`/`_R`; bánh răng `Gear_*`/`Pinion_*`
-  → glob trong `ban-in.yaml` dùng chung, khỏi khai từng dự án.
+  → glob trong `print.yaml` dùng chung, khỏi khai từng dự án.
 
 ## Quy ước
 - **Một phiên Claude giữ FreeCAD** (2026-10-23, Tuan): 2 phiên cùng sửa/chạy FreeCAD thì lệch nhau và chậm.
   Phiên khác chỉ chạy `freecadcmd` riêng trên file đã lưu (kiểm, xuất) – không gửi lệnh vào FreeCAD đang mở.
   Trước khi sửa model qua RPC/MCP: kiểm `doc.UndoCount == 0` (có thao tác chưa lưu – vd. đang mô phỏng – thì
   DỪNG, hỏi Tuan; **không dùng `isTouched()`**: FreeCAD bật nó ngay khi nạp file), so tư thế với `rest.json`
-  (file từng bị Lưu lúc mô phỏng), lưu bản sao vào `_backup/`, giữ nguyên `Placement`, sửa xong kiểm lại rồi **tự Lưu**.
+  (file từng bị Lưu lúc mô phỏng; công cụ: `freecad/scripts/reset_rest_pose.py`), lưu bản sao vào `freecad/backup/`,
+  giữ nguyên `Placement`, sửa xong kiểm lại rồi **tự Lưu**.
   STEP linh kiện lỗi BOP (servo/N20 CyberBrick) làm boolean thất bại âm thầm → dùng khối đơn giản làm dao cắt.
-- Khe hở lắp ghép: **0,2 mm** (Tuan 2026-10-23, đã tính co ngót nhựa). Bánh răng ăn khớp khai `an-khop`, không ép 0,2.
+- Khe hở lắp ghép: **0,2 mm** (Tuan 2026-10-23, đã tính co ngót nhựa). Bánh răng ăn khớp / đệm lỏng khai `mesh-pair`.
+- Đặt tên **tiếng Anh** cho thư mục, file, script, khóa YAML, tham số (Tuan 2026-10-23); nội dung tài liệu tiếng Việt.
 - mm; dung sai lắp ghép in FDM: ghi giá trị đã thử, chưa thử thì `TODO` (không đoán).
 - Thông số linh kiện chỉ lấy từ `components.yaml` hoặc datasheet có nguồn; thêm linh kiện mới phải kèm nguồn.
 - Model trong `models/<du-an>/` (FCStd + STEP xuất). Ghi công tác giả khi dùng model CC-BY trong tài liệu.

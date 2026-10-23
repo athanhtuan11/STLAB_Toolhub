@@ -67,7 +67,7 @@ Sau mỗi lần `apply`/`rollback`, cập nhật cột "Ghim" và "Kiểm tra".
 obotcad` khi khởi động. Workbench vẫn nạp
   (`import freecad.cross` OK) và RobotCAD là Mod nạp cuối nên không chặn Mod khác. Không sửa bản ghim; xem lại khi lên bản mới.
 - **manifold3d 3.5.4** (Tuan duyệt 2026-10-23) – thư viện boolean mesh [elalish/manifold](https://github.com/elalish/manifold),
-  **Apache-2.0**, cũng là solver boolean "Manifold" của OpenSCAD/Blender. Dùng trong `maker/robotics-cad/scripts/kiem-tra.py`
+  **Apache-2.0**, cũng là solver boolean "Manifold" của OpenSCAD/Blender. Dùng trong `maker/robotics-cad/scripts/check.py`
   cho va chạm (giao khối `^` + `volume()`, khe hở `min_gap()`) thay boolean B-rep (1 cặp bánh răng mất ~700 s → < 1 s).
   - Wheel `manifold3d-3.5.4-cp311-cp311-win_amd64.whl`, SHA-256 `34ef0b1b70b6d153eb12a72706e128e9b629c562cd4ab103083afd17ca071fbd`
     (PyPI). Chỉ phụ thuộc numpy (dùng numpy 1.26.4 của FreeCAD).

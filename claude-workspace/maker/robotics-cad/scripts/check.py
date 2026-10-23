@@ -1,25 +1,25 @@
 """Kiem tra model FreeCAD truoc khi in 3D - gom checklist kiem-tra-model.md thanh 1 lenh.
 
 Chay (tien trinh freecadcmd rieng, KHONG dung FreeCAD dang mo / cong MCP):
-    "C:/Program Files/FreeCAD 1.1/bin/freecadcmd.exe" scripts/kiem-tra.py --pass <file.FCStd|.step> [khoa=gia-tri ...]
+    "C:/Program Files/FreeCAD 1.1/bin/freecadcmd.exe" scripts/check.py --pass <file.FCStd|.step> [khoa=gia-tri ...]
 
 Tuy chon (sau --pass, dang khoa=gia-tri vi freecadcmd tu doc moi tham so "--x"):
-    out=<thu muc>              noi ghi bao cao (mac dinh: <thu muc file>/kiem-tra/<ten file>/)
-    linh-kien="SG90*,N20*"     nhan (Label, glob) la linh kien mua: chi kiem hinh hoc + va cham, khong kiem in
-    bo-cap="Horn|Servo*"       cap duoc phep cham/chong (vd. horn lap tren truc servo); lap lai duoc
-    an-khop="Gear*|Pinion*"    cap an khop (banh rang) hoac dem/washer long: khe nho -> INFO (chong van FAIL)
-    nhieu-solid="Spacer_D,..." object co y gom nhieu manh: khong bat loi "N solid"
-    quet-khop=Khop:min:max[:buoc]  quet khop Assembly (Revolute/Cylindrical: do; Slider: mm); lap lai duoc
-    xuat=3mf | xuat=step       xuat tung chi tiet in vao thu muc bao cao
-    nguong=<file.yaml>         mac dinh nguong-kiem-tra.yaml (thu muc robotics-cad)
-    luong=<N>                  so tien trinh freecadcmd chay song song (mac dinh nua so luong CPU, toi da 8);
-                               luong=1: chay 1 tien trinh. Them luong KHONG giup: OpenCASCADE giu GIL.
-    lam-lai=1                  bo cache, kiem lai tat ca
-    che-do=nhanh (mac dinh)    hinh hoc (khong BOP) + luoi + va cham: dung khi dang thiet ke, file LAP RAP
-    che-do=day-du              them BOP + do day thanh + overhang + khoi luong + anh tung chi tiet
-                               (do day/overhang theo huong TRONG FILE; kiem in that = cat-lop.py, dung huong in)
+    out=<thu muc>              noi ghi bao cao (mac dinh: <thu muc file>/check/<ten file>/)
+    components="SG90*,N20*"     nhan (Label, glob) la linh kien mua: chi kiem hinh hoc + va cham, khong kiem in
+    ignore-pair="Horn|Servo*"    cap duoc phep cham/chong (vd. horn lap tren truc servo); lap lai duoc
+    mesh-pair="Gear*|Pinion*"    cap an khop (banh rang) hoac dem/washer long: khe nho -> INFO (chong van FAIL)
+    multi-solid="Spacer_D,..." object co y gom nhieu manh: khong bat loi "N solid"
+    sweep=Khop:min:max[:buoc]  quet khop Assembly (Revolute/Cylindrical: do; Slider: mm); lap lai duoc
+    export=3mf | export=step    xuat tung chi tiet in vao thu muc bao cao
+    thresholds=<file.yaml>     mac dinh thresholds.yaml (thu muc robotics-cad)
+    jobs=<N>                   so tien trinh freecadcmd chay song song (mac dinh nua so luong CPU, toi da 8);
+                               jobs=1: chay 1 tien trinh. Them luong KHONG giup: OpenCASCADE giu GIL.
+    rebuild=1                  bo cache, kiem lai tat ca
+    mode=fast (mac dinh)      hinh hoc (khong BOP) + luoi + va cham: dung khi dang thiet ke, file LAP RAP
+    mode=full                  them BOP + do day thanh + overhang + khoi luong + anh tung chi tiet
+                               (do day/overhang theo huong TRONG FILE; kiem in that = slice.py, dung huong in)
 
-Ra: bao-cao.json, tong-quan.png (bang PASS/WARN/FAIL), anh tung chi tiet, va-cham.png, quet-khop.png.
+Ra: report.json, overview.png (bang PASS/WARN/FAIL), anh tung chi tiet, collisions.png, sweep-<khop>.png.
 Exit code 1 neu co FAIL.
 Cache (<out>/.cache/): chi tiet / cap chi tiet khong doi hinh dang + vi tri + nguong thi khong kiem lai.
 
@@ -67,21 +67,21 @@ def tham_so():
     for t in (sys.argv[sys.argv.index("--pass") + 1:] if "--pass" in sys.argv else []):
         k, eq, v = t.partition("=")
         argv += [f"--{k}", v] if eq and not Path(t).exists() else [t]
-    ap = argparse.ArgumentParser(prog="kiem-tra.py")
+    ap = argparse.ArgumentParser(prog="check.py")
     ap.add_argument("file")
     ap.add_argument("--out")
-    ap.add_argument("--linh-kien", default="")
-    ap.add_argument("--bo-cap", action="append", default=[])
-    ap.add_argument("--an-khop", action="append", default=[])
-    ap.add_argument("--nhieu-solid", default="")
-    ap.add_argument("--quet-khop", action="append", default=[])
-    ap.add_argument("--xuat", choices=["3mf", "step"])
-    ap.add_argument("--nguong", default=str(HERE.parent / "nguong-kiem-tra.yaml"))
-    ap.add_argument("--luong", type=int, default=min(8, max(1, (os.cpu_count() or 2) // 2)))
-    ap.add_argument("--lam-lai", default="")
-    ap.add_argument("--che-do", choices=["nhanh", "day-du"], default="nhanh")
-    ap.add_argument("--phan", default="")  # noi bo: "k/N" = tien trinh con thu k
-    ap.add_argument("--tam", default="")   # noi bo: thu muc trao doi voi tien trinh cha
+    ap.add_argument("--components", default="")
+    ap.add_argument("--ignore-pair", action="append", default=[])
+    ap.add_argument("--mesh-pair", action="append", default=[])
+    ap.add_argument("--multi-solid", default="")
+    ap.add_argument("--sweep", action="append", default=[])
+    ap.add_argument("--export", choices=["3mf", "step"])
+    ap.add_argument("--thresholds", default=str(HERE.parent / "thresholds.yaml"))
+    ap.add_argument("--jobs", type=int, default=min(8, max(1, (os.cpu_count() or 2) // 2)))
+    ap.add_argument("--rebuild", default="")
+    ap.add_argument("--mode", choices=["fast", "full"], default="fast")
+    ap.add_argument("--part", default="")  # noi bo: "k/N" = tien trinh con thu k
+    ap.add_argument("--tmp", default="")   # noi bo: thu muc trao doi voi tien trinh cha
     return ap.parse_args(argv)
 
 
@@ -160,8 +160,8 @@ def kiem_hinh_hoc(s, linh_kien, nhieu_solid=False, bop_kiem=True):
 # ---------- 2. luoi ----------
 
 def tao_luoi(s, ng):
-    return MeshPart.meshFromShape(Shape=s, LinearDeflection=ng["luoi"]["linear_mm"],
-                                  AngularDeflection=ng["luoi"]["angular_rad"], Relative=False)
+    return MeshPart.meshFromShape(Shape=s, LinearDeflection=ng["mesh"]["linear_mm"],
+                                  AngularDeflection=ng["mesh"]["angular_rad"], Relative=False)
 
 
 def kiem_luoi(m):
@@ -237,9 +237,9 @@ def do_day_luoi(m, gioi_han, n_tia):
 
 def kiem_do_day(m, ng):
     """FAIL khi VUNG mong >= do_day_dien_tich_min_mm2; nho hon = mep sac (slicer tu bo) -> WARN."""
-    nguong = ng.get("do_day_thanh_min_mm")
-    gh = max(ng.get("do_day_gioi_han_mm", 5.0), 2 * (nguong or 0))
-    mau, so_tia = do_day_luoi(m, gh, ng.get("do_day_so_tia", 6000))
+    nguong = ng.get("min_wall_mm")
+    gh = max(ng.get("wall_limit_mm", 5.0), 2 * (nguong or 0))
+    mau, so_tia = do_day_luoi(m, gh, ng.get("wall_rays", 6000))
     if not mau:
         return kq("PASS" if nguong is not None else "INFO", f"khong co thanh mong hon {gh} mm",
                   so_tia=so_tia, diem_mong=[])
@@ -251,7 +251,7 @@ def kiem_do_day(m, ng):
     if not mong:
         return kq("PASS", f"min {mn:.2f} mm >= {nguong} mm", min_mm=mn, so_tia=so_tia, diem_mong=diem)
     dt_mong = sum(t[3] for t in mong)
-    dt_min = ng.get("do_day_dien_tich_min_mm2", 1.0)
+    dt_min = ng.get("thin_area_min_mm2", 1.0)
     if dt_mong >= dt_min:
         return kq("FAIL", f"thanh mong: {dt_mong:.1f} mm2 < {nguong} mm (min {mn:.2f} mm)",
                   min_mm=mn, dien_tich_mong_mm2=round(dt_mong, 2), so_tia=so_tia, diem_mong=diem)
@@ -262,7 +262,7 @@ def kiem_do_day(m, ng):
 # ---------- 5.3 overhang ----------
 
 def kiem_overhang(s, m, ng):
-    lim = ng.get("overhang_goc_deg")
+    lim = ng.get("overhang_deg")
     if lim is None:
         return kq("INFO", "chua co nguong", facet=[])
     zmin = s.BoundBox.ZMin
@@ -278,8 +278,8 @@ def kiem_overhang(s, m, ng):
 # ---------- 6. khoi luong ----------
 
 def kiem_khoi_luong(s, ng):
-    vl = ng.get("vat_lieu")
-    rho = (ng.get("khoi_luong_rieng_g_cm3") or {}).get(vl)
+    vl = ng.get("material")
+    rho = (ng.get("density_g_cm3") or {}).get(vl)
     V = sum(so.Volume for so in s.Solids)
     so = max(s.Solids, key=lambda x: x.Volume)  # Compound khong co CenterOfMass (6.3)
     com = so.CenterOfMass
@@ -388,7 +388,7 @@ def danh_sach_cap(cts, bo_cap):
 
 
 def va_cham_cap(cts, ng, bo_cap, cache=None):
-    xa = ng.get("khoang_xet_va_cham_mm", 5)
+    xa = ng.get("near_distance_mm", 5)
     ra = []
     for i, j in danh_sach_cap(cts, bo_cap):
         a, b = cts[i], cts[j]
@@ -406,16 +406,16 @@ def va_cham_cap(cts, ng, bo_cap, cache=None):
 
 def khe_qua_nho(d, ng):
     """Khe < nguong, tru sai so luoi (da giac noi tiep lam lo nho di ~0.01 mm -> khe thiet ke 0.2 do ra 0.19)."""
-    kh = ng.get("khe_ho_min_mm")
-    return kh is not None and d < kh - ng.get("khe_ho_dung_sai_mm", 0.0)
+    kh = ng.get("min_clearance_mm")
+    return kh is not None and d < kh - ng.get("clearance_tolerance_mm", 0.0)
 
 
 def danh_gia_cap(c, ng, an_khop=()):
-    kh = ng.get("khe_ho_min_mm")
+    kh = ng.get("min_clearance_mm")
     v, d = c["the_tich_mm3"], c["khe_ho_mm"]
     if v != v:  # nan
         return "WARN", "common() loi (hinh hoc hong?)"
-    if v > ng.get("chong_toi_thieu_mm3", 1e-3):
+    if v > ng.get("min_overlap_mm3", 1e-3):
         if c.get("cach") == "luoi-bao-loi":  # linh kien STEP loi -> bao loi "beo" hon that
             return "WARN", f"chong {v:.2f} mm3 (xap xi bang bao loi linh kien, kiem bang mat)"
         return "FAIL", f"chong {v:.2f} mm3"
@@ -472,7 +472,7 @@ def quet_khop(doc, spec, ng, bo_cap, linh_kien_mau):
     quay = j.JointType in ("Revolute", "Cylindrical")
     if not quay and j.JointType != "Slider":
         raise SystemExit(f"Khop '{nhan}' loai {j.JointType}: chi quet Revolute/Cylindrical/Slider")
-    buoc = float(p[3]) if len(p) > 3 else ng["quet_khop_buoc_deg" if quay else "quet_khop_buoc_mm"]
+    buoc = float(p[3]) if len(p) > 3 else ng["sweep_step_deg" if quay else "sweep_step_mm"]
     goc = App.Placement(j.Offset2)
     cache, moi_buoc = {}, []
     n = int(round((hi - lo) / buoc))
@@ -506,7 +506,7 @@ def quet_khop(doc, spec, ng, bo_cap, linh_kien_mau):
         tt, tom = "FAIL", f"chong o {xau[0]['gia_tri']}..{xau[-1]['gia_tri']} {don_vi} ({len(xau)}/{len(buoc_ds)} buoc)"
     else:
         km = [b["khe_min_mm"] for b in buoc_ds if b["khe_min_mm"] is not None]
-        kh = ng.get("khe_ho_min_mm")
+        kh = ng.get("min_clearance_mm")
         mn = min(km) if km else None
         if mn is not None and mn < 1e-4:
             tt, tom = "WARN", f"cham (khe 0 mm) trong {lo}..{hi} {don_vi}"
@@ -706,8 +706,8 @@ def lam_viec(cts, ng, a, out, cdir, ds_ct, ds_cap, ten=""):
             r[muc] = f()
             r[muc]["s"] = round(time.time() - t1, 2)
 
-        nhieu = any(fnmatch.fnmatch(ct["nhan"], x.strip()) for x in a.nhieu_solid.split(",") if x.strip())
-        day_du = a.che_do == "day-du"
+        nhieu = any(fnmatch.fnmatch(ct["nhan"], x.strip()) for x in a.multi_solid.split(",") if x.strip())
+        day_du = a.mode == "full"
         do("hinh_hoc", lambda: kiem_hinh_hoc(s, ct["linh_kien"], nhieu, bop_kiem=day_du))
         if not ct["linh_kien"]:
             t1 = time.time()
@@ -723,13 +723,13 @@ def lam_viec(cts, ng, a, out, cdir, ds_ct, ds_cap, ten=""):
                     rl["trang_thai"], rl["tom_tat"] = "WARN", "tu cat do chia luoi; B-rep hop le, BOP OK"
                 except Exception:
                     pass
-            if day_du:  # che do nhanh: do day / overhang / khoi luong de slicer xet (cat-lop.py, dung huong in)
+            if day_du:  # che do nhanh: do day / overhang / khoi luong de slicer xet (slice.py, dung huong in)
                 do("do_day", lambda: kiem_do_day(m, ng))
                 do("overhang", lambda: kiem_overhang(s, m, ng))
                 do("khoi_luong", lambda: kiem_khoi_luong(s, ng))
-            if a.xuat == "3mf":
+            if a.export == "3mf":
                 m.write(str(out / f"{ten_file(ct['nhan'])}.3mf"))
-            elif a.xuat == "step":
+            elif a.export == "step":
                 s.exportStep(str(out / f"{ten_file(ct['nhan'])}.step"))
             ct["ket_qua"] = r
             if day_du:
@@ -737,7 +737,7 @@ def lam_viec(cts, ng, a, out, cdir, ds_ct, ds_cap, ten=""):
         kq_p[ct["khoa"]] = {k: {kk: vv for kk, vv in v.items() if kk != "facet"} for k, v in r.items()}
         print(f"{ten}[{n}/{len(ds_ct)}] {ct['nhan']} {time.time() - t0:.1f} s: "
               + ", ".join(f"{k}={v['trang_thai']}" for k, v in r.items()), flush=True)
-    xa = ng.get("khoang_xet_va_cham_mm", 5)
+    xa = ng.get("near_distance_mm", 5)
     t0 = time.time()
     for n, (i, j) in enumerate(ds_cap, 1):
         a, b, t1 = cts[i], cts[j], time.time()
@@ -757,7 +757,7 @@ def lam_viec(cts, ng, a, out, cdir, ds_ct, ds_cap, ten=""):
 
 def chay_song_song(a, src, out, cdir, ds_ct, ds_cap, so_ct, n):
     """n tien trinh freecadcmd con, moi tien trinh lam ds[k::n]; doi xong roi gop."""
-    tam = cdir / "tam"
+    tam = cdir / "tmp"
     tam.mkdir(exist_ok=True)
     for f in tam.glob("*"):
         f.unlink()
@@ -765,10 +765,10 @@ def chay_song_song(a, src, out, cdir, ds_ct, ds_cap, so_ct, n):
     exe = Path(App.getHomePath()) / "bin" / "freecadcmd.exe"
     ps = []
     for k in range(n):
-        cmd = [str(exe), str(Path(__file__).resolve()), "--pass", str(src), f"phan={k}/{n}", f"tam={tam}",
-               f"out={out}", f"nguong={a.nguong}", f"linh-kien={a.linh_kien}", f"nhieu-solid={a.nhieu_solid}",
-               f"che-do={a.che_do}"]
-        cmd += [f"xuat={a.xuat}"] if a.xuat else []
+        cmd = [str(exe), str(Path(__file__).resolve()), "--pass", str(src), f"part={k}/{n}", f"tmp={tam}",
+               f"out={out}", f"thresholds={a.thresholds}", f"components={a.components}", f"multi-solid={a.multi_solid}",
+               f"mode={a.mode}"]
+        cmd += [f"export={a.export}"] if a.export else []
         log = open(tam / f"log-{k}.txt", "w", encoding="utf-8")
         p = subprocess.Popen(cmd, stdout=log, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
                              creationflags=0x08000000 if os.name == "nt" else 0)  # CREATE_NO_WINDOW
@@ -807,13 +807,13 @@ def main():
     a = tham_so()
     t0 = time.time()
     src = Path(a.file).resolve()
-    ng = yaml.safe_load(Path(a.nguong).read_text(encoding="utf-8"))
-    out = Path(a.out) if a.out else src.parent / "kiem-tra" / src.stem
+    ng = yaml.safe_load(Path(a.thresholds).read_text(encoding="utf-8"))
+    out = Path(a.out) if a.out else src.parent / "check" / src.stem
     cdir = out / ".cache"
     cdir.mkdir(parents=True, exist_ok=True)
 
     doc = mo_file(src)
-    lk_mau = a.linh_kien.split(",")
+    lk_mau = a.components.split(",")
     cts = chi_tiet_la(doc)
     if not cts:
         raise SystemExit("Khong tim thay chi tiet nao co solid")
@@ -821,22 +821,22 @@ def main():
         ct["linh_kien"] = la_linh_kien(ct, lk_mau)
         ct["khoa"] = khoa_ct(ct)
 
-    if a.phan:  # tien trinh con
-        k, n = (int(x) for x in a.phan.split("/"))
-        viec = json.loads((Path(a.tam) / "viec.json").read_text(encoding="utf-8"))
+    if a.part:  # tien trinh con
+        k, n = (int(x) for x in a.part.split("/"))
+        viec = json.loads((Path(a.tmp) / "viec.json").read_text(encoding="utf-8"))
         if viec["so_ct"] != len(cts):
             raise SystemExit(f"So chi tiet lech: cha {viec['so_ct']}, con {len(cts)}")
         r = lam_viec(cts, ng, a, out, cdir, viec["ct"][k::n], [tuple(x) for x in viec["cap"][k::n]], f"<{k}> ")
-        (Path(a.tam) / f"phan-{k}.json").write_text(json.dumps(r), encoding="utf-8")
+        (Path(a.tmp) / f"phan-{k}.json").write_text(json.dumps(r), encoding="utf-8")
         return 0
 
-    cache = doc_cache(cdir, ng, a.lam_lai, a.che_do)
-    tat_ca_cap = danh_sach_cap(cts, a.bo_cap)
-    ds_ct = [i for i, ct in enumerate(cts) if a.xuat or ct["khoa"] not in cache["p"]
-             or (a.che_do == "day-du" and not ct["linh_kien"]
+    cache = doc_cache(cdir, ng, a.rebuild, a.mode)
+    tat_ca_cap = danh_sach_cap(cts, a.ignore_pair)
+    ds_ct = [i for i, ct in enumerate(cts) if a.export or ct["khoa"] not in cache["p"]
+             or (a.mode == "full" and not ct["linh_kien"]
                  and not (out / f"{ten_file(ct['nhan'])}.png").exists())]
     ds_cap = [(i, j) for i, j in tat_ca_cap if khoa_cap(cts[i]["khoa"], cts[j]["khoa"]) not in cache["c"]]
-    n = min(a.luong, max(1, len(ds_ct) + len(ds_cap) // 300))
+    n = min(a.jobs, max(1, len(ds_ct) + len(ds_cap) // 300))
     print(f"{len(cts)} chi tiet, {len(tat_ca_cap)} cap. Can kiem: {len(ds_ct)} chi tiet, {len(ds_cap)} cap "
           f"(con lai lay tu cache). Chay {n} tien trinh.", flush=True)
     if n > 1:
@@ -854,7 +854,7 @@ def main():
     for g in (*cdir.glob("*.brep"), *cdir.glob("*.stl")):
         if g.stem not in dung_c:
             g.unlink()
-    (cdir / f"cache-{a.che_do}.json").write_text(json.dumps(cache), encoding="utf-8")
+    (cdir / f"cache-{a.mode}.json").write_text(json.dumps(cache), encoding="utf-8")
     for ct in cts:
         ct["ket_qua"] = cache["p"][ct["khoa"]]
     cap = []
@@ -867,8 +867,8 @@ def main():
             else:
                 r["giao"] = __import__("Mesh").Mesh(f) if f.endswith(".stl") else Part.read(f)
         cap.append({"a": cts[i]["nhan"], "b": cts[j]["nhan"], **r})
-    vc, giao = kiem_va_cham(cap, len(cts), ng, a.an_khop)
-    qk = [quet_khop(doc, spec, ng, a.bo_cap, lk_mau) for spec in a.quet_khop]
+    vc, giao = kiem_va_cham(cap, len(cts), ng, a.mesh_pair)
+    qk = [quet_khop(doc, spec, ng, a.ignore_pair, lk_mau) for spec in a.sweep]
 
     tat_ca = [v["trang_thai"] for ct in cts for v in ct["ket_qua"].values()]
     tat_ca += [vc["trang_thai"]] + [q["trang_thai"] for q in qk]
@@ -887,19 +887,19 @@ def main():
     }
 
     # anh chi tiet da ve trong lam_viec (hoac con tu lan truoc neu lay tu cache); xoa anh khong con dung
-    giu = {"tong-quan.png"} | ({f"{ten_file(ct['nhan'])}.png" for ct in cts if not ct["linh_kien"]}
-                               if a.che_do == "day-du" else set())
-    giu |= {f"quet-{ten_file(q['khop'])}.png" for q in qk} | ({"va-cham.png"} if giao else set())
+    giu = {"overview.png"} | ({f"{ten_file(ct['nhan'])}.png" for ct in cts if not ct["linh_kien"]}
+                              if a.mode == "full" else set())
+    giu |= {f"sweep-{ten_file(q['khop'])}.png" for q in qk} | ({"collisions.png"} if giao else set())
     for f in out.glob("*.png"):
         if f.name not in giu:
             f.unlink()
     if giao:
-        anh_va_cham(cts, giao, out / "va-cham.png")
+        anh_va_cham(cts, giao, out / "collisions.png")
     for q in qk:
-        anh_quet(q, out / f"quet-{ten_file(q['khop'])}.png")
+        anh_quet(q, out / f"sweep-{ten_file(q['khop'])}.png")
     bc["thoi_gian_chay_s"] = round(time.time() - t0, 1)
-    anh_tong_quan(bc, out / "tong-quan.png")
-    (out / "bao-cao.json").write_text(json.dumps(bc, ensure_ascii=False, indent=1), encoding="utf-8")
+    anh_tong_quan(bc, out / "overview.png")
+    (out / "report.json").write_text(json.dumps(bc, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"KET LUAN: {ket_luan}  ({bc['thoi_gian_chay_s']} s)  -> {out}")
     App.closeDocument(doc.Name)
     return 1 if ket_luan == "FAIL" else 0

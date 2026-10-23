@@ -1,13 +1,14 @@
-"""Cat lop bang Bambu Studio CLI theo ban-in.yaml -> bao cao kha nang in DUNG HUONG IN (tang 2 cua quy trinh).
+"""Cat lop bang Bambu Studio CLI theo print.yaml -> bao cao kha nang in DUNG HUONG IN (tang 2 cua quy trinh).
 
 Slicer la noi kiem kha nang in that: vung lo lung, support, thoi gian, so gam - theo profile A1 chinh hang.
-Tang 1 (kiem-tra.py che-do=nhanh) chi kiem hinh hoc + va cham tren file lap rap.
+Tang 1 (check.py mode=fast) chi kiem hinh hoc + va cham tren file lap rap.
 
 Chay (Python di kem FreeCAD co san yaml/matplotlib/PIL; khong can FreeCAD):
-    "C:/Program Files/FreeCAD 1.1/bin/python.exe" scripts/cat-lop.py <ban-in.yaml> [ra=<thu muc>] [chi=P1,P2]
+    "C:/Program Files/FreeCAD 1.1/bin/python.exe" scripts/slice.py <print.yaml> [out=<thu muc>] [only=P1,P2]
 
-ban-in.yaml (duong dan tuong doi theo thu_muc_du_lieu) - mau: maker/robotics-cad/mau-du-an/in_3d/ban-in.yaml.
-Ra: <ra>/<ban>/<ban>.3mf (mo thang bang Bambu Studio de in), tong-quan-in.png (bang + anh tung ban), bao-cao-in.json.
+print.yaml (duong dan tuong doi theo data_dir) - mau: maker/robotics-cad/project-template/print/print.yaml.
+Ra: <plates_dir>/<plate>/<plate>.3mf (mo thang bang Bambu Studio de in),
+    print-overview.png (bang + anh tung ban), print-report.json.
 Exit code 1 neu co ban FAIL (cat loi, ra ngoai ban in, vung lo lung) hoac co STL chua xep ban.
 """
 
@@ -43,7 +44,7 @@ SUPPORT = {"enable_support": "1", "support_type": "tree(auto)", "support_on_buil
 
 
 def tham_so():
-    a = {"yaml": None, "ra": None, "chi": ""}
+    a = {"yaml": None, "out": None, "only": ""}
     for t in sys.argv[1:]:
         k, eq, v = t.partition("=")
         if eq and k in a:
@@ -203,9 +204,9 @@ def main():
     t0 = time.time()
     cfg_p = Path(a["yaml"]).resolve()
     cfg = yaml.safe_load(cfg_p.read_text(encoding="utf-8"))
-    goc = (cfg_p.parent / cfg.get("thu_muc_du_lieu", ".")).resolve()  # FCStd/STL co the o ngoai repo
+    goc = (cfg_p.parent / cfg.get("data_dir", ".")).resolve()  # FCStd/STL co the o ngoai repo
     stl_dir = (goc / cfg["stl"]).resolve()
-    ra = Path(a["ra"]).resolve() if a["ra"] else (goc / cfg["ra"]).resolve()
+    ra = Path(a["out"]).resolve() if a["out"] else (goc / cfg["plates_dir"]).resolve()
     prof = ra / "_profile"
     prof.mkdir(parents=True, exist_ok=True)
     tat_ca = sorted(stl_dir.glob("*.stl"))
@@ -214,8 +215,8 @@ def main():
 
     # xep STL vao ban; STL nao chua xep / bi xep 2 lan -> bao
     xep = {}
-    for ten, b in cfg["ban"].items():
-        bo = b.get("bo", [])
+    for ten, b in cfg["plates"].items():
+        bo = b.get("exclude", [])
         xep[ten] = [f for f in tat_ca if any(fnmatch.fnmatch(f.name, g) for g in b["stl"])
                     and not any(fnmatch.fnmatch(f.name, g) for g in bo)]
     dem = {f.name: sum(f in v for v in xep.values()) for f in tat_ca}
@@ -223,20 +224,20 @@ def main():
     trung = [n for n, c in dem.items() if c > 1]
 
     idx = chi_muc_profile()
-    may = phang(idx, "machine", cfg["may"])
+    may = phang(idx, "machine", cfg["machine"])
     may["from"] = "system"
     p_may = ghi(may, prof / "machine.json")
-    chon = [x.strip() for x in a["chi"].split(",") if x.strip()]
+    chon = [x.strip() for x in a["only"].split(",") if x.strip()]
     chay, proc_d = {}, {}
-    for ten, b in cfg["ban"].items():
+    for ten, b in cfg["plates"].items():
         if chon and not any(fnmatch.fnmatch(ten, c) for c in chon):
             continue
         if not xep[ten]:
             print(f"bo qua {ten}: khong co STL", flush=True)
             continue
         d = phang(idx, "process", b["process"])
-        d.update(cfg.get("chung") or {})
-        d.update(b.get("sua") or {})
+        d.update(cfg.get("common") or {})
+        d.update(b.get("overrides") or {})
         d.update({"name": f"STLab {ten}", "from": "User", "inherits": b["process"], "instantiation": "true"})
         p_proc = ghi(d, prof / f"process_{ten}.json")
         proc_d[ten] = d
@@ -255,7 +256,7 @@ def main():
         if b.get("co_canh_bao_cat") and b.get("so_chi_tiet", 0) > 1:
             td, a_ = chay[b["ban"]][2], chay[b["ban"]][3]
             for f in a_["stl"]:
-                le[(b["ban"], f.name)] = cat(td / "_tung-chi-tiet" / f.stem, f.stem, [f], *a_["profile"])
+                le[(b["ban"], f.name)] = cat(td / "_per-part" / f.stem, f.stem, [f], *a_["profile"])
     kq_le = {}
     if le:
         print(f"Cat lai {len(le)} chi tiet rieng de tim du canh bao ...", flush=True)
@@ -273,7 +274,7 @@ def main():
 
     # Lo lung -> (1) cho Bambu tu xoay huong in (--orient 1); (2) van lo lung -> them support
     # (thu tu do Tuan quy dinh 2026-10-23).
-    # Chi tiet xu ly tach ra ban rieng "<ban>__xoay" / "<ban>__support" de ban goc khong bi xoay/support theo.
+    # Chi tiet xu ly tach ra ban rieng "<ban>__orient" / "<ban>__support" de ban goc khong bi xoay/support theo.
     lo = []
     for b in bans:
         stl = chay[b["ban"]][3]["stl"]
@@ -284,7 +285,7 @@ def main():
     xu_ly = {}
     if lo:
         print(f"{len(lo)} chi tiet lo lung -> thu cho Bambu xoay huong in ...", flush=True)
-        tx = {(bn, f.name): cat(chay[bn][2] / "_xoay" / f.stem, f.stem, [f], *chay[bn][3]["profile"], xoay=True)
+        tx = {(bn, f.name): cat(chay[bn][2] / "_orient" / f.stem, f.stem, [f], *chay[bn][3]["profile"], xoay=True)
               for bn, f in lo}
         doi(tx)
         can_sp = [(bn, f) for bn, f in lo if lo_lung(doc_ket_qua(tx[(bn, f.name)][2], f.stem))]
@@ -308,7 +309,7 @@ def main():
                     if f.is_file():
                         f.unlink()  # 3MF cu khong con dung -> xoa de khong in nham
             if tach_x:
-                moi[bn + "__xoay"] = cat(ra / (bn + "__xoay"), bn + "__xoay", tach_x, pm, pp, pf, xoay=True)
+                moi[bn + "__orient"] = cat(ra / (bn + "__orient"), bn + "__orient", tach_x, pm, pp, pf, xoay=True)
             if tach_s:
                 moi[bn + "__support"] = cat(ra / (bn + "__support"), bn + "__support", tach_s, pm, p_sp[bn], pf,
                                             xoay=True)
@@ -328,8 +329,8 @@ def main():
           "tong_gam": round(sum(b.get("gam", 0) for b in bans), 1),
           "stl_chua_xep": chua_xep, "stl_xep_2_lan": trung, "xu_ly_lo_lung": xu_ly, "ban": bans,
           "thoi_gian_chay_s": round(time.time() - t0, 1)}
-    anh_tong_quan(bc, ra / "tong-quan-in.png")
-    (ra / "bao-cao-in.json").write_text(json.dumps(bc, ensure_ascii=False, indent=1), encoding="utf-8")
+    anh_tong_quan(bc, ra / "print-overview.png")
+    (ra / "print-report.json").write_text(json.dumps(bc, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"KET LUAN: {ket_luan}  ({bc['thoi_gian_chay_s']} s)  -> {ra}")
     return 1 if ket_luan == "FAIL" else 0
 
