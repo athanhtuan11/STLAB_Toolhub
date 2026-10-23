@@ -3,8 +3,8 @@
 fcstd: ../freecad/<model>.FCStd
 # rest_pose: ../freecad/<model>_rest.json   # neu co macro mo phong: {Name: [[x,y,z],[q0,q1,q2,q3]]}
 machine: Bambu Lab A1 0.4 nozzle             # profile may trong Bambu Studio
-# Nhua mac dinh (ban nao khong khai filament): PETG - preset rieng da hieu chinh cua Tuan trong Bambu Studio
-filament: KINGROON-PETG PETG Basic @Bambu Lab A1 0.4 nozzle
+# Nhua mac dinh (ban nao khong khai filament): cuon Bambu PETG Basic - profile chinh hang
+filament: Bambu PETG Basic @BBL A1
 # filament_overrides: {filament_max_volumetric_speed: ["8"]}   # ghi de khoa filament (gia tri dang list)
 stl: stl                                     # file sinh
 plates_dir: plates                           # file sinh: <plate>/<plate>.3mf + print-overview.png

@@ -23,24 +23,25 @@ In trên **Bambu Lab A1**, đầu phun 0,4 mm, PLA (+ đệm kẹp TPU 95A).
 | Vít M2.5 × 10 | 2 | |
 Nguồn model linh kiện: `community/cyberbrick-official` (xem `maker/robotics-cad/library/cyberbrick-sources.tsv`).
 
-## In (bản 2026-10-23 – PETG, chưa in thử)
-Nhựa mặc định **PETG KINGROON** (preset riêng đã hiệu chỉnh: flow 0,95, PA 0,02, 8 mm³/s, 240/250 °C, bàn textured 70 °C);
-đệm kẹp TPU 95A. 7 bàn, tổng **~12 h 29, ~288 g** (Bambu Studio 02.07). Ảnh: `print/plates/print-overview.png`;
-file in: `print/plates/<plate>/<plate>.3mf` (mở bằng Bambu Studio, chọn đúng cuộn PETG KINGROON).
+## In (bản 2026-10-23 – Bambu PETG Basic, chưa in thử)
+Nhựa: cuộn **Bambu PETG Basic** – profile chính hãng `Bambu PETG Basic @BBL A1` (245 °C, bàn Textured PEI 70 °C, flow 0,94,
+13 mm³/s, quạt 30–50 %); đệm kẹp TPU 95A. 7 bàn, tổng **~10 h 26, ~281 g** (Bambu Studio 02.07).
+Ảnh: `print/plates/print-overview.png`; file in: `print/plates/<plate>/<plate>.3mf` (mở Bambu Studio, chọn cuộn PETG Basic).
 | Bàn | Thời gian | Nhựa | Ghi chú |
 |---|---|---|---|
-| P1_Base (0,24 Draft) | 3 h 18 | 95,4 g | vấu deck có vát 45° → không support |
-| P2_Turret_Turntable (0,20) | 3 h 17 | 76,3 g | |
-| P3_Forearm_Plates (0,20) | 51 ph | 21,8 g | |
-| P4_Boom_Gripper_Housings (0,20, support) | 3 h 13 | 71,1 g | gộp 2 Housing (tai chốt cần support) vào bàn support sẵn có |
-| P5_Gears_Racks_Pins (0,16) | 1 h 29 | 22,4 g | |
+| P1_Base (0,24 Draft) | 2 h 27 | 92,9 g | vấu deck có vát 45° → không support |
+| P2_Turret_Turntable (0,20) | 2 h 48 | 74,3 g | |
+| P3_Forearm_Plates (0,20) | 41 ph | 21,3 g | |
+| P4_Boom_Gripper_Housings (0,20, support) | 2 h 40 | 69,3 g | gộp 2 Housing (tai chốt cần support) vào bàn support sẵn có |
+| P5_Gears_Racks_Pins (0,16) | 1 h 28 | 21,8 g | |
 | P6_GripperPads (TPU 95A) | 4 ph | 0,5 g | |
-| P7_Worms (0,12, 100%) | 13 ph | 0,9 g | |
+| P7_Worms (0,12, 100%) | 14 ph | 0,9 g | |
 
-Muốn nhanh hơn: làm **Calibration → Max volumetric speed** trong Bambu Studio cho cuộn KINGROON. Nếu đạt 12 mm³/s
-thì sửa preset → tổng ~10 h 37 (đã cắt thử 2026-10-23: 10 mm³/s ~11 h 19). Chưa hiệu chỉnh thì giữ 8.
+Lưu ý PETG Basic (TDS chính hãng): PEI bám rất chặt → **đợi bàn nguội rồi mới gỡ**; cuộn để ngoài > 72 h ở độ ẩm > 50 %
+thì sấy trước (máy sấy/tủ sấy có quạt, không dùng lò vi sóng/lò bếp).
 
 ## Lịch sử sửa
+- 2026-10-23 16:00: nhựa → **Bambu PETG Basic** (profile chính hãng, 13 mm³/s) → 10 h 26, 281 g.
 - 2026-10-23 15:40: đổi nhựa PLA → **PETG KINGROON** (preset riêng); gộp 2 Housing vào bàn support P4 → 7 bàn
   (thời gian in 9 h → 12 h 29 do preset giới hạn 8 mm³/s; PLA chính hãng 21 mm³/s).
 - 2026-10-23 15:15: gom toàn bộ dự án về `maker/pushrod-arm/` (`freecad/` + `print/`), đặt tên tiếng Anh;

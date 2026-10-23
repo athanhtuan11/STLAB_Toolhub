@@ -3,9 +3,10 @@
 fcstd: ../freecad/pushrod_arm.FCStd
 rest_pose: ../freecad/pushrod_arm_rest.json   # file Luu luc dang mo phong van xuat dung tu the goc
 machine: Bambu Lab A1 0.4 nozzle               # profile may trong Bambu Studio
-# Nhua MAC DINH (ban nao khong khai filament): PETG KINGROON - preset rieng cua Tuan trong Bambu Studio
-# (da hieu chinh: flow 0.95, PA 0.02, 8 mm3/s, 240/250 C, ban textured 70 C). Doi sang PETG khac: doi ten preset.
-filament: KINGROON-PETG PETG Basic @Bambu Lab A1 0.4 nozzle
+# Nhua MAC DINH (ban nao khong khai filament): cuon Bambu PETG Basic - profile chinh hang (Tuan chot 2026-10-23)
+# 245 C, ban 70 C (Textured PEI), flow 0.94, 13 mm3/s, quat 30-50 %. TDS: ban 65-75 C; PEI bam chat -> doi ban nguoi moi go;
+# mo cuon > 72 h o do am > 50 % thi say truoc khi in.
+filament: Bambu PETG Basic @BBL A1
 stl: stl                                       # file sinh (khong len git)
 plates_dir: plates                             # file sinh: <plate>/<plate>.3mf de in + print-overview.png
 
@@ -53,7 +54,7 @@ export:
 common: {only_one_wall_top: "1", infill_combination: "1", sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
 
 # Ban in (profile chinh hang Bambu + ghi de). Lo lung -> slice.py tu xoay, van lo lung moi support (ban __orient/__support).
-# 2026-10-23: chuyen PLA -> PETG; gop 2 Housing (tai chot can support) vao ban support P4 -> 7 ban thay vi 8.
+# 2026-10-23: chuyen PLA -> PETG (Bambu PETG Basic); gop 2 Housing (tai chot can support) vao ban support P4 -> 7 ban thay vi 8.
 plates:
   P1_Base__0.24Draft_PETG:
     process: 0.24mm Draft @BBL A1
