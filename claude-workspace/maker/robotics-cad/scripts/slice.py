@@ -10,6 +10,13 @@ print.yaml (duong dan tuong doi theo data_dir) - mau: maker/robotics-cad/project
 Ra: <plates_dir>/<plate>/<plate>.3mf (mo thang bang Bambu Studio de in),
     print-overview.png (bang + anh tung ban), print-report.json.
 Exit code 1 neu co ban FAIL (cat loi, ra ngoai ban in, vung lo lung) hoac co STL chua xep ban.
+
+TRUOC khi cat (printability.py, 2026-10-23 - Tuan in that thay phan NHO RA khong support bi hong):
+- chi tiet co phan nho ra (mat up xuong < 45 do, rong hon cau duoc) o ban CHUA bat support -> tach sang ban
+  "<ban>__support" (giu nguyen huong in, bat tree support). Slicer KHONG bao loai nay (chi bao cum roi han).
+- ban co chi tiet nho (chan < brim_contact_max_mm2) hoac cao manh -> bat brim (tru khi print.yaml da khai brim_type
+  khac auto_brim).
+Nguong: thresholds.yaml muc `print:`.
 """
 
 from __future__ import annotations
@@ -28,6 +35,9 @@ from pathlib import Path
 
 import yaml
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import printability  # noqa: E402
+
 EXE = Path(r"C:\Program Files\Bambu Studio\bambu-studio.exe")
 BBL = EXE.parent / "resources" / "profiles" / "BBL"
 MAU = {"PASS": "#4caf50", "WARN": "#ff9800", "FAIL": "#e53935", "INFO": "#9e9e9e"}
@@ -43,6 +53,8 @@ GHI_CHU = {
 NANG = ("floating regions", "floating cantilever", "empty layer")
 # support them khi xoay huong in van lo lung
 SUPPORT = {"enable_support": "1", "support_type": "tree(auto)", "support_on_build_plate_only": "0"}
+BRIM = {"brim_type": "outer_only", "brim_width": "5"}
+NGUONG = Path(__file__).resolve().parent.parent / "thresholds.yaml"
 
 
 def tham_so():
@@ -228,12 +240,17 @@ def main():
     chua_xep = [n for n, c in dem.items() if c == 0]
     trung = [n for n, c in dem.items() if c > 1]
 
+    # phan tich hinh hoc theo huong in: phan nho ra can support, chi tiet nho can brim
+    tng = yaml.safe_load(NGUONG.read_text(encoding="utf-8")) if NGUONG.exists() else {}
+    ngp = dict(tng.get("print") or {}, overhang_deg=tng.get("overhang_deg", 45))
+    pt = {f.name: printability.phan_tich(f, ngp) for f in tat_ca}
+
     idx = chi_muc_profile()
     may = phang(idx, "machine", cfg["machine"])
     may["from"] = "system"
     p_may = ghi(may, prof / "machine.json")
     chon = [x.strip() for x in a["only"].split(",") if x.strip()]
-    chay, proc_d = {}, {}
+    chay, proc_d, xu_ly, brim = {}, {}, {}, {}
     if not chon:  # chay ca du an: xoa thu muc ban cu (doi ten/bo ban) de khong in nham 3MF cu - day la file sinh
         con = set(cfg["plates"]) | {f"{t}__orient" for t in cfg["plates"]} | {f"{t}__support" for t in cfg["plates"]}
         for d in ra.iterdir():
@@ -263,7 +280,30 @@ def main():
         fil.setdefault("type", "filament")
         fil.setdefault("instantiation", "true")
         p_fil = ghi(fil, prof / f"filament_{ten}.json")
-        chay[ten] = cat(ra / ten, ten, xep[ten], p_may, p_proc, p_fil)
+        stl_ban = xep[ten]
+        co_sp = str(d.get("enable_support", "0")) == "1"
+        treo = [] if co_sp else [f for f in stl_ban if pt[f.name]["can_support"]]
+        nho = [f for f in stl_ban if pt[f.name]["can_brim"]]
+        # auto_brim = de Bambu tu quyet -> Tuan thay chi tiet nho van bong (2026-10-23) -> ghi de; chi giu brim khai ro
+        if nho and (b.get("overrides") or {}).get("brim_type") in (None, "auto_brim"):
+            d.update(BRIM)
+            p_proc = ghi(d, prof / f"process_{ten}.json")
+            brim[ten] = {f.name: pt[f.name]["ly_do_brim"] for f in nho}
+        con = [f for f in stl_ban if f not in treo]
+        if con:
+            chay[ten] = cat(ra / ten, ten, con, p_may, p_proc, p_fil)
+        else:
+            for f in (ra / ten).glob("*") if (ra / ten).exists() else []:
+                if f.is_file():
+                    f.unlink()
+        if treo:  # nho ra o ban khong support -> ban rieng co support, GIU huong in
+            d2 = dict(d, **SUPPORT)
+            d2["name"] += " support"
+            p_sp = ghi(d2, prof / f"process_{ten}__support.json")
+            proc_d[ten + "__support"] = d2
+            chay[ten + "__support"] = cat(ra / (ten + "__support"), ten + "__support", treo, p_may, p_sp, p_fil)
+            xu_ly[ten] = {"xoay": [], "support": [f.name for f in treo],
+                          "ly_do": {f.name: pt[f.name]["cum_nho"][:2] for f in treo}}
     print(f"Cat lop {len(chay)} ban song song ...", flush=True)
     doi(chay)
     bans = [doc_ket_qua(td, ten) for ten, (_, _, td, _) in chay.items()]
@@ -296,12 +336,13 @@ def main():
     # Chi tiet xu ly tach ra ban rieng "<ban>__orient" / "<ban>__support" de ban goc khong bi xoay/support theo.
     lo = []
     for b in bans:
+        if str(proc_d.get(b["ban"], {}).get("enable_support", "0")) == "1":
+            continue  # ban da co support -> lo lung do support do
         stl = chay[b["ban"]][3]["stl"]
         if len(stl) == 1:
             lo += [(b["ban"], stl[0])] if lo_lung(b) else []
         else:
             lo += [(b["ban"], f) for f in stl if (b["ban"], f.name) in kq_le and lo_lung(kq_le[(b["ban"], f.name)])]
-    xu_ly = {}
     if lo:
         print(f"{len(lo)} chi tiet lo lung -> thu cho Bambu xoay huong in ...", flush=True)
         tx = {(bn, f.name): cat(chay[bn][2] / "_orient" / f.stem, f.stem, [f], *chay[bn][3]["profile"], xoay=True)
@@ -329,13 +370,16 @@ def main():
                         f.unlink()  # 3MF cu khong con dung -> xoa de khong in nham
             if tach_x:
                 moi[bn + "__orient"] = cat(ra / (bn + "__orient"), bn + "__orient", tach_x, pm, pp, pf, xoay=True)
-            if tach_s:
-                moi[bn + "__support"] = cat(ra / (bn + "__support"), bn + "__support", tach_s, pm, p_sp[bn], pf,
-                                            xoay=True)
-            xu_ly[bn] = {"xoay": [f.name for f in tach_x], "support": [f.name for f in tach_s]}
+            if tach_s:  # gop voi ban __support da tach truoc do (phan nho ra) neu co
+                cu = chay[bn + "__support"][3]["stl"] if bn + "__support" in chay else []
+                moi[bn + "__support"] = cat(ra / (bn + "__support"), bn + "__support", cu + tach_s, pm, p_sp[bn], pf,
+                                            xoay=not cu)
+            x = xu_ly.setdefault(bn, {"xoay": [], "support": []})
+            x["xoay"] += [f.name for f in tach_x]
+            x["support"] += [f.name for f in tach_s]
         doi(moi)
         thay = [doc_ket_qua(v[2], ten) for ten, v in moi.items()]
-        bans = sorted([b for b in bans if b["ban"] not in xu_ly] + thay, key=lambda b: b["ban"])
+        bans = sorted([b for b in bans if b["ban"] not in moi] + thay, key=lambda b: b["ban"])
     for b in bans:
         print(f"  {b['ban']}: {b['trang_thai']} {b.get('thoi_gian_s', 0) // 60} ph, {b.get('gam', 0)} g "
               + "; ".join(b["loi"] + b.get("canh_bao", [])), flush=True)
@@ -346,7 +390,7 @@ def main():
     bc = {"yaml": str(cfg_p), "thoi_gian": time.strftime("%Y-%m-%d %H:%M"), "ket_luan": ket_luan,
           "tong_thoi_gian_in": f"{tong_s // 3600}h{tong_s % 3600 // 60:02d}",
           "tong_gam": round(sum(b.get("gam", 0) for b in bans), 1),
-          "stl_chua_xep": chua_xep, "stl_xep_2_lan": trung, "xu_ly_lo_lung": xu_ly, "ban": bans,
+          "stl_chua_xep": chua_xep, "stl_xep_2_lan": trung, "xu_ly_lo_lung": xu_ly, "brim": brim, "ban": bans,
           "thoi_gian_chay_s": round(time.time() - t0, 1)}
     anh_tong_quan(bc, ra / "print-overview.png")
     (ra / "print-report.json").write_text(json.dumps(bc, ensure_ascii=False, indent=1), encoding="utf-8")

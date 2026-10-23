@@ -77,13 +77,14 @@ Sinh tự động từ `freecad/pushrod_arm.FCStd` bằng `maker/robotics-cad/sc
 | Bàn | Thời gian | Nhựa (g) | Support |
 |---|---|---|---|
 | P1_Base__0.24Draft_PETG | 2h27 | 92.9 | – |
-| P2_Turret_Turntable__0.20_PETG | 2h48 | 74.3 | – |
+| P2_Turret_Turntable__0.20_PETG | 2h53 | 75.5 | – |
 | P3_Forearm_Plates__0.20_PETG | 0h41 | 21.3 | – |
 | P4_Boom_Gripper_Housings__0.20_PETG_support | 2h40 | 69.3 | có |
-| P5_Gears_Racks_Pins__0.16_PETG | 1h28 | 21.8 | – |
-| P6_GripperPads__TPU95A | 0h04 | 0.5 | – |
-| P7_Worms__0.12_PETG_100pct | 0h14 | 0.9 | – |
-| **Tổng** | **10h26** | **281.0** | |
+| P5_Gears_Racks_Pins__0.16_PETG | 1h13 | 19.4 | – |
+| P5_Gears_Racks_Pins__0.16_PETG__support | 0h28 | 3.8 | có |
+| P6_GripperPads__TPU95A | 0h05 | 0.6 | – |
+| P7_Worms__0.12_PETG_100pct__support | 0h14 | 0.9 | có |
+| **Tổng** | **10h45** | **283.7** | |
 
 ## Chưa phân loại (TODO)
 Label không khớp quy ước vít / `components=` / `export.rules`:

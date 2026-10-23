@@ -26,24 +26,29 @@ Bản tự sinh đầy đủ (vít, linh kiện, chi tiết in → bàn/nhựa):
 | Vít M2.5 × 10 | 2 | |
 Nguồn model linh kiện: `community/cyberbrick-official` (xem `maker/robotics-cad/library/cyberbrick-sources.tsv`).
 
-## In (bản 2026-10-23 – Bambu PETG Basic, chưa in thử)
+## In (bản 2026-10-23 chiều – Bambu PETG Basic, sau lần in thử đầu)
 Nhựa: cuộn **Bambu PETG Basic** – profile chính hãng `Bambu PETG Basic @BBL A1` (245 °C, bàn Textured PEI 70 °C, flow 0,94,
-13 mm³/s, quạt 30–50 %); đệm kẹp TPU 95A. 7 bàn, tổng **~10 h 26, ~281 g** (Bambu Studio 02.07).
+13 mm³/s, quạt 30–50 %); đệm kẹp TPU 95A. 8 bàn, tổng **~10 h 45, ~284 g** (Bambu Studio 02.07).
+Bảng số liệu luôn mới nhất: [BOM.md](BOM.md) mục "Bàn in".
 Ảnh: `print/plates/print-overview.png`; file in: `print/plates/<plate>/<plate>.3mf` (mở Bambu Studio, chọn cuộn PETG Basic).
 | Bàn | Thời gian | Nhựa | Ghi chú |
 |---|---|---|---|
 | P1_Base (0,24 Draft) | 2 h 27 | 92,9 g | vấu deck có vát 45° → không support |
-| P2_Turret_Turntable (0,20) | 2 h 48 | 74,3 g | |
+| P2_Turret_Turntable (0,20) | 2 h 53 | 75,5 g | **brim** (đệm, washer nhỏ) |
 | P3_Forearm_Plates (0,20) | 41 ph | 21,3 g | |
 | P4_Boom_Gripper_Housings (0,20, support) | 2 h 40 | 69,3 g | gộp 2 Housing (tai chốt cần support) vào bàn support sẵn có |
-| P5_Gears_Racks_Pins (0,16) | 1 h 28 | 21,8 g | |
-| P6_GripperPads (TPU 95A) | 4 ph | 0,5 g | |
-| P7_Worms (0,12, 100%) | 14 ph | 0,9 g | |
+| P5_Gears_Racks_Pins (0,16) | 1 h 13 | 19,4 g | **brim** (chốt, washer nhỏ) |
+| P5_Gears_Racks_Pins__support (0,16) | 28 ph | 3,8 g | 2 bánh vít + bánh răng: mặt dưới bánh vít nhô ra → **support** |
+| P6_GripperPads (TPU 95A) | 4 ph | 0,5 g | brim |
+| P7_Worms__support (0,12, 100%) | 14 ph | 0,9 g | 2 trục vít nằm ngang: nửa dưới nhô ra → **support** |
 
 Lưu ý PETG Basic (TDS chính hãng): PEI bám rất chặt → **đợi bàn nguội rồi mới gỡ**; cuộn để ngoài > 72 h ở độ ẩm > 50 %
 thì sấy trước (máy sấy/tủ sấy có quạt, không dùng lò vi sóng/lò bếp).
 
 ## Lịch sử sửa
+- 2026-10-23 17:40: in thử lỗi (Tuan) – phần nhô ra in **không support**, chi tiết nhỏ bong bàn. Sửa QUY TRÌNH (không
+  sửa model): `slice.py` phân tích STL theo hướng in trước khi cắt (`printability.py`) → tự tách bàn `__support`
+  (bánh vít + trục vít) và bật brim cho bàn có chi tiết nhỏ (P2, P5, P6) → 10 h 45, 284 g.
 - 2026-10-23 16:00: nhựa → **Bambu PETG Basic** (profile chính hãng, 13 mm³/s) → 10 h 26, 281 g.
 - 2026-10-23 15:40: đổi nhựa PLA → **PETG KINGROON** (preset riêng); gộp 2 Housing vào bàn support P4 → 7 bàn
   (thời gian in 9 h → 12 h 29 do preset giới hạn 8 mm³/s; PLA chính hãng 21 mm³/s).
@@ -60,4 +65,6 @@ thì sấy trước (máy sấy/tủ sấy có quạt, không dùng lò vi sóng
 
 ## Lịch sử in
 <!-- /print-result ghi vào đây: ngày | plate | PASS/FAIL | mô tả | ảnh -->
-(chưa in)
+- 2026-10-23 | (bàn chưa ghi rõ) | FAIL | phần treo/nhô ra in không support → lỗi; chi tiết nhỏ cần brim (Tuan báo).
+  Nguyên nhân: slicer chỉ báo cụm rời hẳn, phần nhô dính liền không bị báo. Đã sửa quy trình, cắt lại 8 bàn – xem Lịch sử sửa.
+  TODO Tuan: bàn/chi tiết nào hỏng + ảnh, để đối chiếu với danh sách tự phát hiện.

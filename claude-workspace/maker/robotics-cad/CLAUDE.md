@@ -43,6 +43,10 @@ Thiết kế cơ khí robot (khung, gá động cơ/cảm biến, hộp số) đ
      so SL vít với bảng trong `ASSEMBLY.md` (lệch → WARN, không tự sửa file viết tay).
    Bàn in lơ lửng: tự cho Bambu **xoay hướng in trước**, vẫn lơ lửng mới **bật support** (tách bàn `__orient`/`__support`);
    nhưng ưu tiên sửa thiết kế (vát 45°, gân đỡ) để bỏ support.
+   **Phần nhô ra** (mặt úp xuống < 43°, rộng > 5 mm – slicer KHÔNG báo vì vẫn dính chi tiết; in thử 2026-10-23 hỏng vì
+   vậy): `scripts/printability.py` phân tích STL theo hướng in TRƯỚC khi cắt → tách sang bàn `__support`, giữ hướng in.
+   **Chi tiết nhỏ** (chân chạm bàn < 120 mm² hoặc cao/mảnh) → bàn đó bật brim 5 mm (ghi đè `auto_brim`).
+   Ngưỡng: `thresholds.yaml` mục `print:`. Tay: `python scripts/printability.py <thư mục stl>`.
    Chi tiết từng tầng:
    - **Tầng 1 – mỗi lần sửa** (file LẮP RÁP, có cache): `freecadcmd scripts/check.py --pass <file.FCStd>
      components=... ignore-pair=... mesh-pair=... multi-solid=...` → hình học, lưới, **va chạm** (manifold3d),

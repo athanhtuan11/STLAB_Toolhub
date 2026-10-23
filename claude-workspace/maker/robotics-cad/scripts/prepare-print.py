@@ -72,7 +72,9 @@ def main():
     xl = "; ".join(f"{k}: support {v['support']}" + (f", xoay {v['xoay']}" if v["xoay"] else "")
                    for k, v in b2.get("xu_ly_lo_lung", {}).items() if v["xoay"] or v["support"])
     kq.append(("Tang 2 cat lop", b2["ket_luan"], f"{t_cat:.0f} s, in {b2['tong_thoi_gian_in']}, {b2['tong_gam']} g",
-               loi2 + ([f"tu xu ly lo lung -> {xl}"] if xl else []), ra / "print-overview.png"))
+               loi2 + ([f"tu xu ly nho ra / lo lung -> {xl}"] if xl else [])
+               + [f"brim: {k} ({len(v)} chi tiet nho)" for k, v in b2.get("brim", {}).items()],
+               ra / "print-overview.png"))
 
     # hoi quy: metrics.json (+ gio/gam ban in) so voi git HEAD; BOM tu Label. Chi bao, khong FAIL.
     p4.wait()
