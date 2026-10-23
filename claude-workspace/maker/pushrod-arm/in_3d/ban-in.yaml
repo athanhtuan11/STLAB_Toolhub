@@ -20,6 +20,7 @@ kiem_tra:
   - an-khop=Pinion_WormWheel_*|Worm_*
   - an-khop=Pinion_WormWheel_*|Rack_*
   - an-khop=Jaw_1_driven_by_servo|Jaw_2_idler     # 2 ham kep an khop rang quanh 2 chot
+  - an-khop=Washer_shaft_*|Housing_*              # washer chan doc truc ngoai vach, tu do 0.1 mm (khong phai lap ghep)
   - nhieu-solid=Spacer_D,Spacer_E
 
 # Huong in tung chi tiet (chuyen tu bang S trong _work/test_export_v4.py)

@@ -24,11 +24,10 @@ In trên **Bambu Lab A1**, đầu phun 0,4 mm, PLA (+ đệm kẹp TPU 95A).
 Nguồn model linh kiện: `community/cyberbrick-official` (xem `maker/robotics-cad/library/cyberbrick-sources.tsv`).
 
 ## In (bản 2026-10-23 – chưa in thử)
-9 bàn, tổng **~9 giờ, ~295 g** nhựa (theo Bambu Studio 02.07, profile A1 chính hãng). Ảnh: `anh/tong-quan-in.png`.
+8 bàn, tổng **~9 giờ, ~295 g** nhựa (theo Bambu Studio 02.07, profile A1 chính hãng, 15:00). Ảnh: `anh/tong-quan-in.png`.
 | Bàn | Thời gian | Nhựa | Ghi chú |
 |---|---|---|---|
-| P1 Đế (0,24 Draft) | 38 ph | 30,8 g | |
-| P1 Đế – support | 1 h 22 | 66,8 g | Base_housing: 4 vấu deck treo → support |
+| P1 Đế (0,24 Draft) | 1 h 59 | 97,7 g | vấu deck đã có vát 45° → không support |
 | P2 Turret, mâm (0,20) | 2 h 19 | 78,1 g | |
 | P3 Forearm, vỏ xi-lanh (0,20) | 38 ph | 22,3 g | |
 | P3 – support | 1 h 08 | 25,9 g | 2 Housing: tai chốt treo z 3–9 mm |
@@ -38,6 +37,9 @@ Nguồn model linh kiện: `community/cyberbrick-official` (xem `maker/robotics-
 | P7 Trục vít (0,12, 100%) | 8 ph | 0,9 g | |
 
 ## Lịch sử sửa
+- 2026-10-23 15:00 (Claude, VS Code, Tuan duyệt): mài hốc servo kẹp trong `Gripper_frame` 0,05 mm (2 mặt 52,5 mm²,
+  khe 0,15 → 0,2); vát 45° dưới 4 vấu bắt vít deck trong `Base_housing` (+0,7 cm³) → bàn P1 **bỏ được support**;
+  washer chặn trục để tự do 0,1 mm (khai `an-khop`). Kết quả: kiểm nhanh WARN (không FAIL), cắt lớp PASS.
 - 2026-10-23 (Claude, VS Code): về tư thế gốc (file bị lưu lúc mô phỏng); khe lắp ghép lên 0,2 mm – mài 2 washer trục
   1,2 → 1,1 mm, khoét housing 0,2 mm vùng bánh vít quay (2 housing); gọt 2 trụ vít lấn 0,1 mm qua khe đáy
   `Base_housing` (bỏ 2 mặt treo 0,09 mm²). Backup: `D:\06_FreeCAD\pushrod_arm\_backup\*20261023-142*`.
