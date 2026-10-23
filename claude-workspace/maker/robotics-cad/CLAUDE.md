@@ -53,7 +53,8 @@ Thiết kế cơ khí robot (khung, gá động cơ/cảm biến, hộp số) đ
 ```
 maker/<project>/            tên tiếng Anh, kebab-case
   README.md  CLAUDE.md      mục tiêu, an toàn, BOM, bàn in, lịch sử sửa/in (nội dung tiếng Việt)
-  ASSEMBLY.md               hướng dẫn lắp từng bước + ảnh freecad/images/assembly/ (mẫu: maker/pushrod-arm)
+  ASSEMBLY.md / .pdf        hướng dẫn lắp từng bước + ảnh freecad/images/assembly/ (mẫu: maker/pushrod-arm);
+                            PDF: scripts/assembly-pdf.py (Edge headless, không cần cài thêm)
   freecad/                  THÔNG TIN FREECAD
     <model>.FCStd           chỉ trên máy (không lên git)  ·  <model>_rest.json (tư thế gốc)  ·  <model>_sim.FCMacro
     images/  scripts/ (công cụ; history/ = script sửa model đã chạy)
