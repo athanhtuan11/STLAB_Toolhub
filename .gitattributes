@@ -1,0 +1,14 @@
+# Chuan hoa xuong dong: repo luu LF, Git tu doi khi checkout theo may.
+* text=auto
+
+# Script shell phai la LF, CRLF lam bash loi ($'\r': command not found)
+*.sh text eol=lf
+
+# File .bat cua Windows giu CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# File CAD/nhi phan: khong doi xuong dong, khong diff
+*.FCStd binary
+*.stl binary
+*.3mf binary
