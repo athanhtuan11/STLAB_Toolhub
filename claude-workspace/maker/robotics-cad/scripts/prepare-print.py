@@ -1,4 +1,9 @@
-"""Chuan bi in bang 1 lenh: [kiem nhanh tang 1] song song [xuat STL theo huong in -> cat lop tang 2].
+"""Chuan bi in bang 1 lenh: KIEM HET TRUOC, SACH MOI CAT LOP (Tuan 2026-10-23: "xong xuoi tat ca roi hay ra file in").
+
+  1) song song: kiem nhanh tang 1 (check.py) | xuat STL theo huong in (export-stl.py) | metrics.py
+  2) kha nang in tren STL (printability: mat nho ra khong do + KIEM THEO LOP: cum roi) - vai giay
+  3) CHI KHI 1) khong FAIL va 2) khong co nho ra/cum roi -> cat lop Bambu (slice.py) ra file in .3mf
+     (co loi -> dung, khong cat: tiet kiem thoi gian, khong de lai file in sai). Ep cat: them `force` sau print.yaml.
 
 Chay (Python di kem FreeCAD):
     "C:/Program Files/FreeCAD 1.1/bin/python.exe" scripts/prepare-print.py <project>/print/print.yaml
@@ -35,6 +40,7 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8")  # dong thay doi/BOM co tieng Viet
     t0 = time.time()
     cfg_p = Path(sys.argv[1]).resolve()
+    ep_cat = "force" in sys.argv[2:]
     cfg = yaml.safe_load(cfg_p.read_text(encoding="utf-8"))
     goc = (cfg_p.parent / cfg.get("data_dir", ".")).resolve()  # FCStd/STL co the o ngoai repo
     fcstd = (goc / cfg["fcstd"]).resolve()
@@ -54,33 +60,61 @@ def main():
     xs = json.loads((goc / cfg["stl"] / "_export-stl.json").read_text(encoding="utf-8"))
     print(f"  xuat STL: {xs['so_stl']} file, {t_xuat:.0f} s"
           + (f"; QUY TAC KHONG KHOP: {xs['quy_tac_khong_khop']}" if xs["quy_tac_khong_khop"] else ""), flush=True)
-    print("Tang 2 (cat lop Bambu) ...", flush=True)
-    p3 = chay([sys.executable, HERE / "slice.py", cfg_p], logs / "slice.txt")
-    p3.wait()
-    t_cat = time.time() - t0 - t_xuat
+    # 2) kha nang in tren STL theo huong in (trong luc check.py van chay)
+    import printability
+    tng = yaml.safe_load((HERE.parent / "thresholds.yaml").read_text(encoding="utf-8"))
+    ngp = dict(tng.get("print") or {}, overhang_deg=tng.get("overhang_deg", 45))
+    t1 = time.time()
+    loi_in, cb_in = [], []
+    for f in sorted((goc / cfg["stl"]).glob("*.stl")):
+        r = printability.phan_tich(f, ngp)
+        if r["can_support"]:
+            loi_in.append(f"{f.name}: nho ra khong do " + ", ".join(
+                f"{c['mm2']} mm2 o z {c['z_mm']}" for c in r["cum_nho"][:2]) + " -> sua thiet ke / `support: true`")
+        for x in printability.kiem_lop(f):
+            if x["loai"].startswith("roi"):
+                loi_in.append(f"{f.name}: cum ROI {x['mm2']} mm2 o z {x['z_mm']} (xy {x['bao_xy']})")
+            elif x["loai"] == "vuon ra" and x.get("mm2", 0) > 20:
+                cb_in.append(f"{f.name}: vuon ra {x['mm2']} mm2 o z {x['z_mm']} (bac cau? xy {x['bao_xy']})")
+    print(f"  kha nang in: {len(loi_in)} loi, {len(cb_in)} canh bao ({time.time() - t1:.1f} s)", flush=True)
     p1.wait()
-
     kq = []
     b1 = json.loads((out_kt / "report.json").read_text(encoding="utf-8"))
     loi1 = [f"{c['nhan']}: {k} {v['tom_tat']}" for c in b1["chi_tiet"] for k, v in c["ket_qua"].items()
             if v["trang_thai"] == "FAIL"]
     loi1 += [f"{x['a']} ~ {x['b']}: {x['tom_tat']}" for x in b1["va_cham"]["cap"] if x["trang_thai"] == "FAIL"]
     kq.append(("Tang 1 kiem nhanh", b1["ket_luan"], f"{b1['thoi_gian_chay_s']} s", loi1, out_kt / "overview.png"))
-    b2 = json.loads((ra / "print-report.json").read_text(encoding="utf-8"))
-    loi2 = [f"{b['ban']}: {x}" for b in b2["ban"] for x in b["loi"]]
-    loi2 += [f"STL chua xep ban: {n}" for n in b2["stl_chua_xep"]]
-    xl = "; ".join(f"{k}: support {v['support']}" + (f", xoay {v['xoay']}" if v["xoay"] else "")
-                   for k, v in b2.get("xu_ly_lo_lung", {}).items() if v["xoay"] or v["support"])
-    kq.append(("Tang 2 cat lop", b2["ket_luan"], f"{t_cat:.0f} s, in {b2['tong_thoi_gian_in']}, {b2['tong_gam']} g",
-               loi2 + ([f"tu xu ly nho ra / lo lung -> {xl}"] if xl else [])
-               + [f"brim: {k} ({len(v)} chi tiet nho)" for k, v in b2.get("brim", {}).items()],
-               ra / "print-overview.png"))
+    kq.append(("Kha nang in (STL)", "FAIL" if loi_in else ("WARN" if cb_in else "PASS"),
+               f"{xs['so_stl']} STL", loi_in + cb_in, ""))
+
+    # 3) chi cat lop khi da sach
+    b2 = None
+    if (b1["ket_luan"] != "FAIL" and not loi_in) or ep_cat:
+        print("Tang 2 (cat lop Bambu) ...", flush=True)
+        t2 = time.time()
+        p3 = chay([sys.executable, HERE / "slice.py", cfg_p], logs / "slice.txt")
+        p3.wait()
+        t_cat = time.time() - t2
+        b2 = json.loads((ra / "print-report.json").read_text(encoding="utf-8"))
+    else:
+        kq.append(("Tang 2 cat lop", "INFO", "CHUA CAT - sua loi o tren truoc (file in cu trong plates/ KHONG con dung)",
+                   [], ""))
+    if b2 is not None:
+        loi2 = [f"{b['ban']}: {x}" for b in b2["ban"] for x in b["loi"]]
+        loi2 += [f"STL chua xep ban: {n}" for n in b2["stl_chua_xep"]]
+        xl = "; ".join(f"{k}: support {v['support']}" + (f", xoay {v['xoay']}" if v["xoay"] else "")
+                       for k, v in b2.get("xu_ly_lo_lung", {}).items() if v["xoay"] or v["support"])
+        kq.append(("Tang 2 cat lop", b2["ket_luan"], f"{t_cat:.0f} s, in {b2['tong_thoi_gian_in']}, {b2['tong_gam']} g",
+                   loi2 + ([f"tu xu ly nho ra / lo lung -> {xl}"] if xl else [])
+                   + [f"brim: {k} ({len(v)} chi tiet nho)" for k, v in b2.get("brim", {}).items()],
+                   ra / "print-overview.png"))
 
     # hoi quy: metrics.json (+ gio/gam ban in) so voi git HEAD; BOM tu Label. Chi bao, khong FAIL.
     p4.wait()
     *_, f_m = metrics.cau_hinh(cfg_p)
     if p4.returncode == 0 and f_m.exists():
-        metrics.them_ban_in(cfg_p, b2)
+        if b2 is not None:
+            metrics.them_ban_in(cfg_p, b2)
         lk = next((x[11:].split(",") for x in cfg.get("check", []) if x.startswith("components=")), [])
         tt, tom, dong = metrics.so_sanh(metrics.ban_git(f_m), json.loads(f_m.read_text(encoding="utf-8")), lk)
         kq.append(("So voi commit truoc", tt, tom, dong, ""))
@@ -104,7 +138,10 @@ def main():
         print(f"{ten}: {tt} ({tg})" + (f"  anh: {anh}" if anh else ""))
         for x in loi:
             print(f"   - {x}")
-    print(f"File in (mo bang Bambu Studio): {ra}\\<ban>\\<ban>.3mf")
+    if b2 is not None:
+        print(f"File in (mo bang Bambu Studio): {ra}\\<ban>\\<ban>.3mf")
+    else:
+        print("CHUA RA FILE IN: sua loi tang 1 / kha nang in roi chay lai (ep cat: them `force`).")
     # tom tat canh print.yaml cho Toolhub (trang Du an) doc; file sinh, khong len git
     tom = {"thoi_gian": time.strftime("%Y-%m-%d %H:%M"), "tong_s": round(time.time() - t0), "thu_muc_in": str(ra),
            "tang": [{"ten": ten, "ket_luan": tt, "chi_tiet": tg, "loi": loi, "anh": str(anh)}

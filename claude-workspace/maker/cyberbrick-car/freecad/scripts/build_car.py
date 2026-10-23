@@ -16,15 +16,16 @@ LIB = os.path.join(PROJ, "..", "..", "community", "cyberbrick-official", "models
 
 P = dict(            # ---- tham so chinh (mm) ----
     wheelbase=140.0, track=72.0, wheel_r=16.8, tire_w=13.7,
-    plate_z0=4.0, plate_t=3.0,          # tam san: gam 4 mm
+    plate_z0=4.0, plate_t=2.4,          # tam san: gam 4 mm; 2.4 mm + cua so giam tai (tiet kiem nhua, Tuan 2026-10-23)
     clr=0.2,                            # khe lap ghep (Tuan chot 0.2)
-    shell_t=1.6,                        # vo than xe
+    shell_t=1.3,                        # vo than xe = dung 3 duong Bambu (0.42 + 2 x 0.45); 1.2 -> 2 duong + lap khe vun
+                                        # -> slicer bao floating (2026-10-23). 1.6 -> 1.3 tiet kiem nhua
     kingpin_y=20.0, kingpin_dx=7.0,     # chot lai truoc tam banh 7 mm (caster duong: tu ve thang)
     arm_len=12.0,                       # lai Ackermann: tay lai huong ve tam truc sau
     servo_dy=-3.5,                      # lech servo sang phai de gia servo nam trong san
     servo_type="pg001",                 # servo lai: "pg001" (CyberBrick 9g 180) | "mg90s" (Tower Pro, mua ngoai) - gia dung chung
     servo_horn_r=8.2,
-    rear_arch_r=18.8, front_arch_r=19.6, front_arch_dx=5.0,
+    rear_arch_r=18.3, front_arch_r=18.8, front_arch_dx=5.0,   # dinh hoc banh duoi mat chan bun >= 3 mm
     stub_d=5.0,                         # truc banh truoc IN LIEN VANH (in dung), qua lo giot nuoc o khop lai
     rear_bore_d=5.4, rear_bore_af=3.7,  # truc ra double-D (do STEP: D5.3, dep 3.6 = chuan TT); TODO do bo 2 truc
     post_top=30.0, magnet_d=4.4, magnet_h=2.1,
@@ -103,6 +104,9 @@ GB_ROT = App.Rotation(V(0, 1, 0), -90)
 GB_MOVE = V(11.15, -6.2, Z_AX)                                               # vo hop so doi xung quanh Y = 0
 gearbox = placed(gb, GB_ROT, GB_MOVE)
 add("CB_Gearbox_030_dual_axis", gearbox, (0.95, 0.80, 0.10))
+# truc ra ben trai (bo 2 truc LA013): STEP chinh hang chi co bo 1 truc (truc phai, loi 8.1 mm). Do tu anh huong dan lap
+# chinh hang (Assembly_Guide_of_Dual_Axis_030..., hinh chieu canh, ti le theo vo 18 mm): loi ~9 mm moi ben, D ~5.3-5.6.
+add("CB_Gearbox_shaft_left", cyl(2.65, 9.0, V(0, -9.0, Z_AX), V(0, -1, 0)), (0.9, 0.9, 0.9))
 # hop bao VO hop so (khong tinh dong co / truc): local x +-11, y -2.8..15.2, z -32.2..22.15
 H = dict(x0=11.15 - 22.15, x1=11.15 + 32.2, y=9.0, z0=Z_AX - 11.0, z1=Z_AX + 11.0)
 
@@ -217,10 +221,15 @@ for dx in (-6.75, 6.75):
     add_ch.append(cyl(2.4, SW_C.z - PLATE_TOP + 0.01, V(SW_C.x + dx, SW_C.y + 15.5 * (1 if dx > 0 else -1), PLATE_TOP - 0.01), V(0, 0, 1)))
 # gia servo: tam dung truoc tai servo, cua so cho co truc
 TAB_X = TAB_FRONT                                                           # mat sau gia = mat truoc tai servo
-bracket = box(TAB_X, -13.6 + SDY, PLATE_TOP - 0.01, TAB_X + 2.6, 21.0 + SDY, SHAFT_Z + 6.1 + 3.5)
-# cua so bao ca 2 than (PG001 y -6.06..+16.69, z +-5.9; MG90S y -5.9..+16.8, z +-6.1 quanh truc) - luon servo tu sau
-bracket = bracket.cut(box(TAB_X - 1, SDY - 6.06 - P["clr"], PLATE_TOP, TAB_X + 5, SDY + 16.8 + P["clr"],
-                          SHAFT_Z + 6.1 + P["clr"]))
+# cua so bao ca 2 than (PG001 y -6.06..+16.69, z +-5.9; MG90S y -5.9..+16.8, z +-6.1 quanh truc) - luon servo tu sau.
+# Tran cua so: 2 mai 45 do chum lai, chi chua cau 5 mm o dinh (cau 23 mm thang -> vuon ra khi in, kiem lop 2026-10-23)
+WY0, WY1, WZ = SDY - 6.06 - P["clr"], SDY + 16.8 + P["clr"], SHAFT_Z + 6.1 + P["clr"]
+RISE = ((WY1 - WY0) - 5.0) / 2
+bracket = box(TAB_X, -13.6 + SDY, PLATE_TOP - 0.01, TAB_X + 2.6, 21.0 + SDY, WZ + RISE + 2.0)
+gable = pos(Part.Face(Part.makePolygon([V(TAB_X - 1, WY0, PLATE_TOP), V(TAB_X - 1, WY1, PLATE_TOP), V(TAB_X - 1, WY1, WZ),
+                                        V(TAB_X - 1, WY1 - RISE, WZ + RISE), V(TAB_X - 1, WY0 + RISE, WZ + RISE),
+                                        V(TAB_X - 1, WY0, WZ), V(TAB_X - 1, WY0, PLATE_TOP)])).extrude(V(6, 0, 0)))
+bracket = bracket.cut(gable)
 for ty in (SDY + 19.28, SDY - 8.49):                                       # trung binh 2 loai (lech <= 0.13 mm)
     bracket = bracket.cut(cyl(0.8, 10, V(TAB_X - 1, ty, SHAFT_Z), V(1, 0, 0)))   # lo moi vit M2
 add_ch.append(bracket)
@@ -228,6 +237,15 @@ add_ch.append(bracket)
 POSTS = [(-14.0, 19.0), (-14.0, -19.0), (FX - 35.0, 33.0), (FX - 35.0, -33.0)]
 for x, y in POSTS:
     add_ch.append(cyl(3.5, P["post_top"] - PLATE_TOP + 0.01, V(x, y, PLATE_TOP - 0.01), V(0, 0, 1)))
+# cua so giam tai (khong cat duoi tru / vach / gia): sau pin, giua bo thu, giua san, truoc giua 2 tai lai, sau truc sau
+for x0, y0, x1, y1 in ((47, 14, 91, 34), (54, -34, 70, -18), (72, -4, 90, 8), (103, -10, 114, 12), (FX - 12, -10, FX + 2, 10),
+                       (-27, -14, -19, 14)):
+    w = box(x0, y0, P["plate_z0"] - 1, x1, y1, PLATE_TOP + 1)
+    try:
+        w = w.makeFillet(2.5, [e for e in w.Edges if e.BoundBox.ZLength > 1])
+    except Exception:
+        pass
+    plate = plate.cut(w)
 chassis = fuse(plate, *add_ch)
 for x, y in POSTS:
     chassis = chassis.cut(cyl(P["magnet_d"] / 2, P["magnet_h"] + 0.01, V(x, y, P["post_top"] - P["magnet_h"]), V(0, 0, 1)))
@@ -359,10 +377,10 @@ for nm, x, sgn, rear in (("RL", 0, 1, True), ("RR", 0, -1, True), ("FL", FX, 1, 
 Z0 = PLATE_TOP + 0.2
 ST = [  # x, nua rong w, cao vai (belt) zb, cao dinh h, nua rong mai wr
     # IN DUNG (duoi up xuong ban): duoi no ra <= ~45 do de vo tu in khong can do
-    (-41.5, 24, 17, 21.0, 19), (-35, 30, 22, 26.0, 25), (-28, 36, 27, 31.5, 31), (-21, 42, 31, 35.5, 36.5),
-    (0, 44, 35, 38.5, 40), (18, 44, 36, 45, 31),
-    (38, 43.5, 37, 55, 26), (66, 43.5, 37, 56, 26), (88, 43.5, 37, 48, 30), (108, 43.5, 37, 40.5, 37),
-    (FX, 43.5, 36.5, 39.0, 40), (FX + 20, 42, 30, 32.5, 37), (FX + 34, 34, 21, 23.5, 29),
+    (-41.5, 24, 17, 21.0, 19), (-35, 30, 22, 26.0, 25), (-28, 36, 27, 31.5, 31), (-21, 42, 33, 37.0, 36.5),
+    (0, 44, 39, 42.0, 40), (18, 44, 37.5, 45, 31),                              # vom chan bun sau phong
+    (38, 43.5, 37, 55, 26), (66, 43.5, 37, 56, 26), (88, 43.5, 37, 48, 30), (108, 43.5, 37.5, 41.0, 37),
+    (FX, 43.5, 39.5, 43.0, 40), (FX + 20, 42, 34, 36.0, 37),                     # vom chan bun truoc phong (FX + 34, 34, 21, 23.5, 29),
     (FX + 39, 26, 16.5, 19.0, 21), (FX + 41, 17, 13.5, 15.5, 13)]               # mui bo tron
 
 
@@ -381,7 +399,7 @@ def section(x, w, zb, h, wr, z0, t=0.0, n=48):
         else:        # nua tren: vom + thu hep ve mai
             k = 1.0 - min(wr, w) / w
             y = w * math.copysign(abs(ca) ** (2 / 3.2), ca) * (1.0 - k * sa ** 4)
-            z = zc + (h - zc) * sa ** (2 / 2.4)
+            z = zc + (h - zc) * sa ** (2 / 3.5)                              # vai day (vom chan bun che banh)
         pts.append(V(x, y, z))
     bs = Part.BSplineCurve()
     bs.interpolate(pts, PeriodicFlag=True)

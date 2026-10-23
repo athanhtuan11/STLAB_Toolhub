@@ -15,6 +15,7 @@ Sinh tự động từ `freecad/cyberbrick_car.FCStd` bằng `maker/robotics-cad
 |---|---|
 | `CB_Battery_PC003` | 1 |
 | `CB_Gearbox_030_dual_axis` | 1 |
+| `CB_Gearbox_shaft_left` | 1 |
 | `CB_Magnet_CA001 (nam cham 4 x 2 mm)` | 8 |
 | `CB_Servo9g_180_steering` | 1 |
 | `CB_Switch_XA007` | 1 |
@@ -25,8 +26,8 @@ Sinh tự động từ `freecad/cyberbrick_car.FCStd` bằng `maker/robotics-cad
 ## Chi tiết in 3D
 | Chi tiết | Bàn in | Nhựa | Thể tích (cm³) |
 |---|---|---|---|
-| `Body_coupe` | P1_Body__0.20_PETG | Bambu PETG Basic @BBL A1 | 70.28 |
-| `Chassis` | P2_Chassis_Steering__0.20_PETG | Bambu PETG Basic @BBL A1 | 41.78 |
+| `Body_coupe` | P1_Body__0.20_PETG | Bambu PETG Basic @BBL A1 | 81.12 |
+| `Chassis` | P2_Chassis_Steering__0.20_PETG | Bambu PETG Basic @BBL A1 | 31.09 |
 | `Gearbox_strap` | P2_Chassis_Steering__0.20_PETG | Bambu PETG Basic @BBL A1 | 0.32 |
 | `Knuckle_L` | P2_Chassis_Steering__0.20_PETG | Bambu PETG Basic @BBL A1 | 1.34 |
 | `Knuckle_R` | P2_Chassis_Steering__0.20_PETG | Bambu PETG Basic @BBL A1 | 1.34 |
@@ -41,7 +42,7 @@ Sinh tự động từ `freecad/cyberbrick_car.FCStd` bằng `maker/robotics-cad
 ## Bàn in (số liệu slicer)
 | Bàn | Thời gian | Nhựa (g) | Support |
 |---|---|---|---|
-| P1_Body__0.20_PETG | 4h19 | 64.3 | – |
-| P2_Chassis_Steering__0.20_PETG | 1h34 | 41.1 | – |
-| P3_Wheels__0.16_PETG | 1h23 | 22.0 | – |
-| **Tổng** | **7h17** | **127.4** | |
+| P1_Body__0.20_PETG | 4h20 | 63.3 | – |
+| P2_Chassis_Steering__0.20_PETG | 1h30 | 34.3 | – |
+| P3_Wheels__0.16_PETG | 1h26 | 20.4 | – |
+| **Tổng** | **7h17** | **118.0** | |
