@@ -31,7 +31,9 @@ Thiết kế cơ khí robot (khung, gá động cơ/cảm biến, hộp số) đ
 3. Kiểm tra va chạm và tầm quay khớp trong Assembly.
 4. **Một lệnh chuẩn bị in** (2026-10-23, pushrod-arm ~1–2 phút; trước đó >1 giờ):
    `"C:/Program Files/FreeCAD 1.1/bin/python.exe" scripts/prepare-print.py maker/<project>/print/print.yaml`
-   = tầng 1 (`check.py`) song song [xuất STL theo hướng in (`export-stl.py`) → tầng 2 cắt lớp (`slice.py`)].
+   = **kiểm hết trước, sạch mới cắt lớp** (Tuan 2026-10-23): tầng 1 (`check.py`) ∥ xuất STL (`export-stl.py`) ∥
+   `metrics.py` → khả năng in trên STL (`printability`: nhô ra không đỡ + **kiểm theo lớp**) → chỉ khi không FAIL mới
+   tầng 2 cắt lớp (`slice.py`) ra .3mf. Có lỗi → dừng, không ra file in (ép: thêm `force`).
    Hướng in, tham số kiểm, bàn in khai trong `print/print.yaml` (mẫu `project-template/print/print.yaml`;
    bản đầy đủ: `maker/pushrod-arm/print/print.yaml`). Chỉ đọc file đã **Lưu**; có `rest_pose` thì tự về tư thế gốc.
    Toolhub → Dự án → nút **Chuẩn bị in** / **Tự chạy khi Lưu** (`scripts/watch.py`); in xong `/print-result`.
@@ -101,6 +103,9 @@ maker/<project>/            tên tiếng Anh, kebab-case
 - **Nhựa mặc định: Bambu PETG Basic** (Tuan 2026-10-23) – profile chính hãng `Bambu PETG Basic @BBL A1` (245 °C, bàn 70 °C,
   13 mm³/s). Bàn in: Textured PEI (TDS: SuperTack/Textured/Smooth PEI, 65–75 °C; PEI bám chặt → đợi bàn nguội mới gỡ).
   `slice.py` đọc được cả preset riêng (vd. KINGROON-PETG) nếu đổi cuộn. Đệm/chi tiết dẻo: TPU 95A.
+- Vỏ mỏng in đứng: bề dày = **bội số đường in Bambu** (0,42 + n × 0,45: 1 đường 0,42 / 2 đường 0,87 / 3 đường 1,3 mm).
+  Lệch (vd. 1,2 mm) → slicer in thiếu đường + lấp khe vụn → báo "floating" (cyberbrick-car 2026-10-23).
+  Slicer báo lỗi mà không chỉ chỗ → cắt STL thành lát (manifold3d) cho Bambu cắt từng lát để khoanh vùng.
 - Khe hở lắp ghép: **0,2 mm** (Tuan 2026-10-23, đã tính co ngót nhựa). Bánh răng ăn khớp / đệm lỏng khai `mesh-pair`.
 - Đặt tên **tiếng Anh** cho thư mục, file, script, khóa YAML, tham số (Tuan 2026-10-23); nội dung tài liệu tiếng Việt.
 - mm; dung sai lắp ghép in FDM: ghi giá trị đã thử, chưa thử thì `TODO` (không đoán).

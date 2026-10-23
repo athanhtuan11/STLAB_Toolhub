@@ -18,7 +18,7 @@ bộ phát/thu CyberBrick (XA003 + XA004/XA005). Model **sinh từ tham số**: 
 | Truyền động | động cơ 030 (LA024) + bộ bánh răng 2 trục **LA013 1:21** (khuyên dùng; có 1:37/1:48/…) – trục ra double-D làm luôn trục bánh sau |
 | Lái | servo **PG001** (CyberBrick) hoặc **MG90S** (mua ngoài) – giá servo dùng chung; chốt lái trước tâm bánh 7 mm (caster) |
 | Thân | gắn bằng 4 cặp nam châm 4 × 2 mm (tháo nhanh) |
-| In | 3 bàn, **~7 h 17, ~127 g** Bambu PETG Basic (số liệu luôn mới: [BOM.md](BOM.md)); **không support** |
+| In | 3 bàn, **~7 h 17, ~118 g** Bambu PETG Basic (số liệu luôn mới: [BOM.md](BOM.md)); **không support** |
 
 Tốc độ ước tính (chưa đo): 030 không tải 10 500 vòng/phút ±10 % (8 V), định mức 6 900 → qua 1:21 ≈ 330–500 vòng/phút ở
 bánh Φ33,7 → **≈ 0,6–0,9 m/s**. TODO: đo thật.
@@ -57,8 +57,10 @@ Giá servo: mặt tựa theo MG90S; PG001 vít kéo áp vào giá (lệch 0,47 m
 7. Dây: servo → S1, động cơ → cổng M (theo sơ đồ chính hãng xe Truck); 8 nam châm (để ý cực hút nhau).
 
 ## TODO (cần đo/hỏi trước khi in khớp chặt)
-- Trục ra của **bộ 2 trục** (LA013): độ dài phần lồi mỗi bên, kích thước double-D. Model hiện dùng số đo bộ 1 trục:
-  Φ5,3 mm, dẹt 3,6 mm, lồi 8,1 mm.
+- Trục ra **bộ 2 trục** (LA013): cửa hàng Bambu không ghi số. Đo theo tỉ lệ ảnh hướng dẫn lắp chính hãng
+  (`Assembly_Guide_of_Dual_Axis_030_Reduction_Motor.pdf`, hình chiếu cạnh, lấy bề dày vỏ 18 mm làm thước):
+  **lồi ≈ 9 mm mỗi bên (±1 mm)**, Φ ≈ 5,3–5,6, có mặt dẹt + lỗ ở đầu trục. Moay-ơ bánh sau ôm 8,4 mm – đủ.
+  TODO đo thật khi có hàng.
 - Vỏ hộp số 2 trục: có lỗ Φ4 ở cùng vị trí bộ 1 trục không (chốt định vị trên vách sàn).
 - Lốp LA027 ôm vành: kiểm độ chặt (vành Φ26,8/Φ30,1).
 - Bộ phát: chọn cấu hình kênh (lái/ga) trong app CyberBrick.
@@ -69,6 +71,13 @@ Giá servo: mặt tựa theo MG90S; PG001 vít kéo áp vào giá (lệch 0,47 m
 8 nam châm 4 × 2 mm, vít (bảng vít trong [BOM.md](BOM.md)).
 
 ## Lịch sử sửa
+- 2026-10-23 (2): tiết kiệm nhựa 127 → 118 g:
+  - Vỏ 1,6 → 1,3 mm. Thử 1,2 mm thì slicer báo floating.
+  - Sàn 3 → 2,4 mm, thêm 6 cửa sổ giảm tải.
+  - Infill: sàn 25 → 15 %, vành 40 → 20 %.
+
+  Chắn bùn phồng che kín bánh. Trước đó hốc bánh xuyên thủng nóc chắn bùn và để lại vỏ mỏng mà Bambu báo cantilever.
+  Trần cửa sổ giá servo đổi thành mái 45°. Quy trình mới: kiểm hết rồi mới cắt lớp.
 - 2026-10-23: v0.2 – in không support (thân in đứng, khớp lái mới trục in liền vành, gân nam châm, hốc bánh 45°),
   giá servo dùng chung PG001/MG90S, `safe_edit` bắt được 3 boolean hỏng âm thầm (removeSplitter lộn ngược solid,
   mảnh vụn, mặt gần trùng). Kiểm nhanh WARN (hộp số ước bằng bao lồi), cắt lớp PASS 7 h 17, 127 g.

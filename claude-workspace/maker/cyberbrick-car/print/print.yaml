@@ -43,13 +43,13 @@ common: {only_one_wall_top: "1", sparse_infill_pattern: grid, curr_bed_type: Tex
 plates:
   P1_Body__0.20_PETG:                       # than xe in dung (cao ~223 mm), khong support
     process: 0.20mm Standard @BBL A1
-    overrides: {wall_loops: "4", sparse_infill_density: "15%"}
+    overrides: {wall_loops: "3", sparse_infill_density: "12%"}   # vo 1.2 = 3 duong
     stl: ["01_Body__*.stl"]
   P2_Chassis_Steering__0.20_PETG:
     process: 0.20mm Standard @BBL A1
-    overrides: {wall_loops: "3", sparse_infill_density: "25%"}
+    overrides: {wall_loops: "3", sparse_infill_density: "15%"}
     stl: ["02_Chassis__*.stl"]
   P3_Wheels__0.16_PETG:
     process: 0.16mm Optimal @BBL A1
-    overrides: {wall_loops: "4", sparse_infill_density: "40%"}
+    overrides: {wall_loops: "3", sparse_infill_density: "20%"}
     stl: ["03_Wheels__*.stl"]
