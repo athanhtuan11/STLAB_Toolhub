@@ -2,6 +2,7 @@ from flask import Blueprint, abort, jsonify, render_template, request, send_file
 
 import launcher
 
+from . import chuanbiin
 from . import photolab
 from . import workspace as ws
 
@@ -78,7 +79,36 @@ def du_an_chi_tiet(slug):
     p = ws.project(slug)
     if p is None:
         abort(404)
-    return render_template("du-an-chi-tiet.html", p=p)
+    return render_template("du-an-chi-tiet.html", p=p, in3d=chuanbiin.cau_hinh(p["rel"]) is not None)
+
+
+# ---------- Chuan bi in (maker/robotics-cad/scripts/chuan-bi-in.py) ----------
+def _rel(slug):
+    p = ws.project(slug)
+    if p is None or chuanbiin.cau_hinh(p["rel"]) is None:
+        abort(404)
+    return p["rel"]
+
+
+@bp.get("/api/in/<slug>")
+def api_in(slug):
+    return jsonify(chuanbiin.trang_thai(_rel(slug)))
+
+
+@bp.post("/api/in/<slug>/<kieu>/<lenh>")
+def api_in_lenh(slug, kieu, lenh):
+    rel = _rel(slug)
+    if kieu not in chuanbiin.KIEU or lenh not in ("bat", "tat"):
+        abort(404)
+    return jsonify(chuanbiin.bat(rel, kieu) if lenh == "bat" else chuanbiin.tat(rel, kieu))
+
+
+@bp.get("/du-an/<slug>/anh-in/<int:i>")
+def du_an_anh_in(slug, i):
+    p = chuanbiin.anh(_rel(slug), i)
+    if p is None:
+        abort(404)
+    return send_file(p, max_age=0)
 
 
 @bp.get("/anh")

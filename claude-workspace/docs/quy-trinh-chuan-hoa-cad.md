@@ -28,7 +28,7 @@ kiểm ổn thì tự commit + push GitHub. Chi tiết: `maker/robotics-cad/CLAU
 
 ## 2. Plan chuẩn hóa (đề xuất – theo thứ tự lợi/công)
 
-### GĐ A – Mẫu dự án chuẩn (1 buổi) `[ ]`
+### GĐ A – Mẫu dự án chuẩn (1 buổi) `[x]` (2026-10-23)
 Mọi dự án CAD mới tạo từ 1 mẫu, để `chuan-bi-in.py` chạy ngay không cần sửa:
 ```
 <du-an>/
@@ -42,7 +42,7 @@ Mọi dự án CAD mới tạo từ 1 mẫu, để `chuan-bi-in.py` chạy ngay 
   → `linh-kien=`, `hau_to` dùng glob chung, khỏi khai từng dự án.
 - Tạo lệnh `/du-an-moi` (hoặc nút Toolhub) sinh khung trên.
 
-### GĐ B – Đưa dự án CAD vào git `[?]`
+### GĐ B – Đưa dự án CAD vào git `[x]` (2026-10-23)
 - `D:\06_FreeCAD\...` hiện **không có git**; lịch sử chỉ là `_backup/`.
 - Lựa chọn: (1) chuyển dự án vào `claude-workspace/maker/<du-an>/` + **Git LFS** cho `.FCStd/.step` (8 MB/lần lưu);
   (2) chỉ đưa `build/`, `ban-in.yaml`, README, ảnh lên git, FCStd giữ ngoài.
@@ -53,14 +53,14 @@ Mọi dự án CAD mới tạo từ 1 mẫu, để `chuan-bi-in.py` chạy ngay 
   `tong-quan.png`, `tong-quan-in.png`, BOM, changelog ngắn (sửa gì so với bản trước).
 - Đăng MakerWorld/Printables: làm tay từ Release (không tự đăng – đăng ra ngoài phải Tuan duyệt).
 
-### GĐ D – Tự chạy, không phải nhớ `[ ]`
+### GĐ D – Tự chạy, không phải nhớ `[x]` (2026-10-23)
 - **Cục bộ trước**: khi Lưu file `.FCStd` (theo dõi thời điểm sửa) → tự chạy `chuan-bi-in` nền, kết quả là ảnh.
   Hoặc nút "Chuẩn bị in" trên Toolhub (đúng quy ước: tính năng mới → trang Toolhub).
 - **GitHub Actions sau** (khi có GĐ B): chỉ chạy phần không cần Bambu (kiểm + xuất STL) trên runner Linux;
   phần cắt lớp chạy trên máy này (self-hosted runner) vì cần profile Bambu + Windows. Đánh đổi: tốn công dựng,
   lợi khi có nhiều người cùng sửa.
 
-### GĐ E – Vòng học từ bản in thật (nối với harness-lab) `[ ]`
+### GĐ E – Vòng học từ bản in thật (nối với harness-lab) `[x]` (2026-10-23)
 - In xong: ghi 1 dòng vào `harness-lab/inbox.md` (in đạt? lỗi gì? sửa gì) bằng `/bai-hoc`.
 - Mỗi lỗi in lặp ≥ 2 lần → thành quy tắc/ngưỡng (`nguong-kiem-tra.yaml`) hoặc bước kiểm mới.
 - Việc đang treo: in `maker/in-3d/models/mau-dung-sai-a1` để xác nhận 0,2 mm; ngưỡng "mép sắc" 1 mm² và
@@ -74,9 +74,11 @@ Mọi dự án CAD mới tạo từ 1 mẫu, để `chuan-bi-in.py` chạy ngay 
 | Số bước tay mỗi lần in | xuất STL, xếp bàn, cắt lớp: đã tự động | chỉ còn duyệt ảnh + bấm in |
 
 ## 4. Việc Tuan cần quyết
-- [?] GĐ B: dự án CAD vào git theo cách (1) hay (2)?
-- [?] GĐ D: ưu tiên nút Toolhub hay tự chạy khi Lưu?
-- [?] Làm GĐ A ngay (mẫu dự án) cho dự án robot kế tiếp?
+- [x] GĐ B: cách (2) – nguồn trong `maker/<du-an>/`, FCStd + file sinh ở `D:\06_FreeCAD\` (2026-10-23)
+- [x] GĐ D: làm cả hai – Toolhub → Dự án: **Chuẩn bị in** + **Tự chạy khi Lưu** (`scripts/theo-doi.py`)
+- [x] GĐ A: `maker/robotics-cad/mau-du-an/` + lệnh `/du-an-moi`; dự án mẫu: `maker/pushrod-arm/`
+- [x] GĐ E: lệnh `/ket-qua-in` → README dự án + `harness-lab/inbox.md`
+- [ ] GĐ C (Release): chưa làm
 
 ## Nguồn
 - FCBot – tự sinh file sản xuất từ FreeCAD, Docker cho CI: https://github.com/asymworks/fcbot

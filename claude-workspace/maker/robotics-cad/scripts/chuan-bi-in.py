@@ -31,7 +31,7 @@ def main():
     t0 = time.time()
     cfg_p = Path(sys.argv[1]).resolve()
     cfg = yaml.safe_load(cfg_p.read_text(encoding="utf-8"))
-    goc = cfg_p.parent
+    goc = (cfg_p.parent / cfg.get("thu_muc_du_lieu", ".")).resolve()  # FCStd/STL co the o ngoai repo
     fcstd = (goc / cfg["fcstd"]).resolve()
     ra = (goc / cfg["ra"]).resolve()
     logs = ra / "_log"
@@ -74,6 +74,12 @@ def main():
         for x in loi:
             print(f"   - {x}")
     print(f"File in (mo bang Bambu Studio): {ra}\\<ban>\\<ban>.3mf")
+    # tom tat canh ban-in.yaml cho Toolhub (trang Du an) doc; file sinh, khong len git
+    tom = {"thoi_gian": time.strftime("%Y-%m-%d %H:%M"), "tong_s": round(time.time() - t0), "thu_muc_in": str(ra),
+           "tang": [{"ten": ten, "ket_luan": tt, "chi_tiet": tg, "loi": loi, "anh": str(anh)}
+                    for ten, tt, tg, loi, anh in kq]}
+    f_tom = cfg_p.parent / "_ket-qua-chuan-bi-in.json"
+    f_tom.write_text(json.dumps(tom, ensure_ascii=False, indent=1), encoding="utf-8")
     return 1 if any(tt == "FAIL" for _, tt, _, _, _ in kq) else 0
 
 
