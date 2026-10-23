@@ -41,11 +41,17 @@ Thiết kế cơ khí robot (khung, gá động cơ/cảm biến, hộp số) đ
      `git diff freecad/metrics.json` = nhật ký thay đổi hình học. Tay: `python scripts/metrics.py diff <print.yaml>`.
    - `scripts/bom.py`: `BOM.csv` + `BOM.md` (vít đếm theo cỡ, linh kiện mua, chi tiết in → bàn/nhựa) từ Label;
      so SL vít với bảng trong `ASSEMBLY.md` (lệch → WARN, không tự sửa file viết tay).
-   Bàn in lơ lửng: tự cho Bambu **xoay hướng in trước**, vẫn lơ lửng mới **bật support** (tách bàn `__orient`/`__support`);
-   nhưng ưu tiên sửa thiết kế (vát 45°, gân đỡ) để bỏ support.
-   **Phần nhô ra** (mặt úp xuống < 43°, rộng > 5 mm – slicer KHÔNG báo vì vẫn dính chi tiết; in thử 2026-10-23 hỏng vì
-   vậy): `scripts/printability.py` phân tích STL theo hướng in TRƯỚC khi cắt → tách sang bàn `__support`, giữ hướng in.
-   **Chi tiết nhỏ** (chân chạm bàn < 120 mm² hoặc cao/mảnh) → bàn đó bật brim 5 mm (ghi đè `auto_brim`).
+   **Support – chính sách Tuan (2026-10-23, sau in thử lỗi):** vẽ tối ưu để KHÔNG cần support (vát 45°, lỗ giọt nước,
+   chia chi tiết, đổi hướng in); bắt buộc mới support, và support do **mình vẽ** – KHÔNG để Bambu/slicer tự sinh:
+   - `scripts/printability.py` phân tích STL theo hướng in trước khi cắt: mặt úp xuống < 43°, rộng > 5 mm (không bắc cầu
+     được), dải > 2,5 mm (ren/vành răng/vát nhỏ tự in được), cao > 1 mm → "nhô ra không đỡ" = **WARN** (slicer KHÔNG báo
+     loại này vì vẫn dính chi tiết – lý do lần in thử hỏng).
+   - Sửa: ưu tiên sửa model; bắt buộc thì `support: true` ở quy tắc xuất trong print.yaml → `export-stl.py` dựng trụ dưới
+     đúng các vùng đó (khe Z 0,2 mm, gộp chung STL), hoặc vẽ tay `Support_*` trong CAD. Slicer báo "floating" do khe 0,2
+     của support tự vẽ → ghi chú, không FAIL.
+   - Lơ lửng thật (cụm rời) = FAIL → sửa thiết kế. `support_policy: slicer` trong print.yaml = hành vi cũ (tự xoay /
+     tree support) – chỉ khi Tuan cho phép.
+   - **Chi tiết nhỏ** (chân chạm bàn < 120 mm² hoặc cao/mảnh) → bàn đó bật brim 5 mm (ghi đè `auto_brim`).
    Ngưỡng: `thresholds.yaml` mục `print:`. Tay: `python scripts/printability.py <thư mục stl>`.
    Chi tiết từng tầng:
    - **Tầng 1 – mỗi lần sửa** (file LẮP RÁP, có cache): `freecadcmd scripts/check.py --pass <file.FCStd>

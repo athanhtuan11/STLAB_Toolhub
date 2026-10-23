@@ -12,8 +12,12 @@ Ra: <plates_dir>/<plate>/<plate>.3mf (mo thang bang Bambu Studio de in),
 Exit code 1 neu co ban FAIL (cat loi, ra ngoai ban in, vung lo lung) hoac co STL chua xep ban.
 
 TRUOC khi cat (printability.py, 2026-10-23 - Tuan in that thay phan NHO RA khong support bi hong):
-- chi tiet co phan nho ra (mat up xuong < 45 do, rong hon cau duoc) o ban CHUA bat support -> tach sang ban
-  "<ban>__support" (giu nguyen huong in, bat tree support). Slicer KHONG bao loai nay (chi bao cum roi han).
+- chi tiet co phan nho ra (mat up xuong < 43 do, rong hon cau duoc) ma KHONG co support tu ve ben duoi
+  -> WARN "sua thiet ke / ve Support_*" (Slicer KHONG bao loai nay - chi bao cum roi han).
+  CHINH SACH (Tuan 2026-10-23): ve toi uu de khong can support; bat buoc thi support TU VE trong model
+  (Label Support_*, khe Z 0.2 mm, xuat chung quy tac voi chi tiet); KHONG de slicer tu sinh support.
+  `support_policy: slicer` trong print.yaml -> hanh vi cu: tu tach ban "<ban>__support" bat tree support cua slicer,
+  lo lung -> tu xoay roi support.
 - ban co chi tiet nho (chan < brim_contact_max_mm2) hoac cao manh -> bat brim (tru khi print.yaml da khai brim_type
   khac auto_brim).
 Nguong: thresholds.yaml muc `print:`.
@@ -250,7 +254,8 @@ def main():
     may["from"] = "system"
     p_may = ghi(may, prof / "machine.json")
     chon = [x.strip() for x in a["only"].split(",") if x.strip()]
-    chay, proc_d, xu_ly, brim = {}, {}, {}, {}
+    chay, proc_d, xu_ly, brim, nho_ra = {}, {}, {}, {}, {}
+    slicer_sp = cfg.get("support_policy", "modeled") == "slicer"
     if not chon:  # chay ca du an: xoa thu muc ban cu (doi ten/bo ban) de khong in nham 3MF cu - day la file sinh
         con = set(cfg["plates"]) | {f"{t}__orient" for t in cfg["plates"]} | {f"{t}__support" for t in cfg["plates"]}
         for d in ra.iterdir():
@@ -282,7 +287,13 @@ def main():
         p_fil = ghi(fil, prof / f"filament_{ten}.json")
         stl_ban = xep[ten]
         co_sp = str(d.get("enable_support", "0")) == "1"
-        treo = [] if co_sp else [f for f in stl_ban if pt[f.name]["can_support"]]
+        treo_all = [] if co_sp else [f for f in stl_ban if pt[f.name]["can_support"]]
+        if co_sp and not slicer_sp:
+            nho_ra[ten] = ["ban dung support TU DONG cua slicer (print.yaml enable_support) - nen sua thiet ke / ve Support_*"]
+        if treo_all and not slicer_sp:
+            nho_ra[ten] = [f"{f.name}: nho ra khong do " + ", ".join(f"{c['mm2']} mm2 rong {c['rong_mm']} mm o z {c['z_mm']}"
+                                                                for c in pt[f.name]["cum_nho"][:2]) for f in treo_all]
+        treo = treo_all if slicer_sp else []
         nho = [f for f in stl_ban if pt[f.name]["can_brim"]]
         # auto_brim = de Bambu tu quyet -> Tuan thay chi tiet nho van bong (2026-10-23) -> ghi de; chi giu brim khai ro
         if nho and (b.get("overrides") or {}).get("brim_type") in (None, "auto_brim"):
@@ -307,6 +318,28 @@ def main():
     print(f"Cat lop {len(chay)} ban song song ...", flush=True)
     doi(chay)
     bans = [doc_ket_qua(td, ten) for ten, (_, _, td, _) in chay.items()]
+    # support TU VE (export support: true, khe Z 0.2): slicer khong biet do la support -> bao "floating" o lop ngay tren
+    # khe (giong top_z_distance cua support slicer). printability da kiem moi mat nho ra deu co do -> doi thanh ghi chu.
+    fx = stl_dir / "_export-stl.json"
+    tu_ve = set(json.loads(fx.read_text(encoding="utf-8")).get("support_tu_ve", {})) if fx.exists() else set()
+
+    def bo_khe(b):
+        giu = []
+        for x in b.get("loi", []):
+            if any(f"object {n} has" in x for n in tu_ve) and not pt.get(next(n for n in tu_ve if f"object {n} has" in x),
+                                                                        {}).get("can_support"):
+                b.setdefault("ghi_chu", []).append("support tu ve (khe 0.2 mm): " + x.split("It seems object ")[-1]
+                                                   .split(" has")[0])
+            else:
+                giu.append(x)
+        b["loi"] = giu
+        b["trang_thai"] = "FAIL" if giu else ("WARN" if b.get("canh_bao") else "PASS")
+
+    for b in bans:  # nho ra khong co support (chinh sach modeled) -> WARN de sua thiet ke
+        if nho_ra.get(b["ban"]):
+            b["canh_bao"] = b.get("canh_bao", []) + nho_ra[b["ban"]]
+            if b["trang_thai"] == "PASS":
+                b["trang_thai"] = "WARN"
 
     # Bambu CLI chi bao 1 canh bao cat lop moi ban (lan nao bao chi tiet nao khong co dinh)
     # -> ban co canh bao: cat lai TUNG chi tiet de biet du chi tiet nao loi (nhanh: ~2 s, song song)
@@ -330,12 +363,14 @@ def main():
                     b["loi"] += [x for x in r["loi"] if "It seems object" in x]
                     b["canh_bao"] += [x for x in r["canh_bao"] if "It seems object" in x]
                 b["trang_thai"] = "FAIL" if b["loi"] else ("WARN" if b["canh_bao"] else "PASS")
+    for b in bans:
+        bo_khe(b)
 
     # Lo lung -> (1) cho Bambu tu xoay huong in (--orient 1); (2) van lo lung -> them support
     # (thu tu do Tuan quy dinh 2026-10-23).
     # Chi tiet xu ly tach ra ban rieng "<ban>__orient" / "<ban>__support" de ban goc khong bi xoay/support theo.
     lo = []
-    for b in bans:
+    for b in bans if slicer_sp else []:  # modeled: lo lung = FAIL, sua thiet ke (khong tu xoay / support)
         if str(proc_d.get(b["ban"], {}).get("enable_support", "0")) == "1":
             continue  # ban da co support -> lo lung do support do
         stl = chay[b["ban"]][3]["stl"]

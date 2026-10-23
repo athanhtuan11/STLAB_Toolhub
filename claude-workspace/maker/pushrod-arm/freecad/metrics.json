@@ -1455,7 +1455,7 @@
    "support": false
   },
   "P2_Turret_Turntable__0.20_PETG": {
-   "time_s": 10411,
+   "time_s": 10409,
    "grams": 75.5,
    "support": false
   },
@@ -1464,30 +1464,25 @@
    "grams": 21.3,
    "support": false
   },
-  "P4_Boom_Gripper_Housings__0.20_PETG_support": {
-   "time_s": 9619,
-   "grams": 69.3,
-   "support": true
-  },
-  "P5_Gears_Racks_Pins__0.16_PETG": {
-   "time_s": 4408,
-   "grams": 19.4,
+  "P4_Boom_Gripper_Housings__0.20_PETG": {
+   "time_s": 8966,
+   "grams": 74.6,
    "support": false
   },
-  "P5_Gears_Racks_Pins__0.16_PETG__support": {
-   "time_s": 1727,
-   "grams": 3.8,
-   "support": true
+  "P5_Gears_Racks_Pins__0.16_PETG": {
+   "time_s": 5639,
+   "grams": 23.1,
+   "support": false
   },
   "P6_GripperPads__TPU95A": {
    "time_s": 303,
    "grams": 0.6,
    "support": false
   },
-  "P7_Worms__0.12_PETG_100pct__support": {
-   "time_s": 883,
+  "P7_Worms__0.12_PETG_100pct": {
+   "time_s": 878,
    "grams": 0.9,
-   "support": true
+   "support": false
   }
  }
 }
