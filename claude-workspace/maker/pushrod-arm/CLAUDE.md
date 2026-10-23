@@ -13,7 +13,7 @@ Cấu trúc chuẩn: `maker/robotics-cad/CLAUDE.md` mục "Dự án".
 
 ## Bàn in – `print/`
 - `print.yaml`: hướng in từng chi tiết, tham số kiểm, 7 bàn in (profile A1 chính hãng + ghi đè). Nhựa mặc định
-  **PETG KINGROON** (preset riêng của Tuan trong Bambu Studio, 8 mm³/s); đệm kẹp TPU 95A.
+  **Bambu PETG Basic** (profile chính hãng `Bambu PETG Basic @BBL A1`); đệm kẹp TPU 95A.
 - `plates/<plate>/<plate>.3mf`: **file để mở Bambu Studio và in**; `plates/print-overview.png`: bảng + ảnh từng bàn.
 - `stl/`: STL theo hướng in – file sinh.
 
@@ -25,6 +25,6 @@ Cấu trúc chuẩn: `maker/robotics-cad/CLAUDE.md` mục "Dự án".
 - In xong: `/print-result pushrod-arm <plate> pass|fail [mô tả]`.
 
 ## Trạng thái (2026-10-23)
-- Kiểm nhanh: WARN, không FAIL. Cắt lớp PETG: PASS – 7 bàn, ~12 h 29, ~288 g. Support chỉ ở bàn P4 (Boom, khung kẹp,
-  tai chốt 2 Housing). Nhanh hơn: hiệu chỉnh max volumetric speed (12 mm³/s → ~10 h 37).
+- Kiểm nhanh: WARN, không FAIL. Cắt lớp Bambu PETG Basic: PASS – 7 bàn, ~10 h 26, ~281 g. Support chỉ ở bàn P4
+  (Boom, khung kẹp, tai chốt 2 Housing).
 - Chờ: in thật.
