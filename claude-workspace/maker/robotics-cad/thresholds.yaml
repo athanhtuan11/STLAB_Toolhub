@@ -2,7 +2,7 @@
 # Moi gia tri phai co nguon; chua co nguon thi de null -> script bao "chua co nguong" (khong tu doan).
 # Nguon chi tiet: kiem-tra-model.md (muc ghi trong ngoac).
 
-material: PLA              # PLA | PETG | PETG-HF - dung de uoc khoi luong
+material: PETG             # PLA | PETG | PETG-HF - dung de uoc khoi luong (mac dinh PETG tu 2026-10-23)
 
 density_g_cm3:             # TDS Bambu Lab, mau in 100% infill (4.4)
   PLA: 1.24
