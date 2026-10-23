@@ -33,27 +33,32 @@ export:
     - {names: [Turntable_gear_m1_z60, Turntable, Pinion_m1_z10_turntable], group: 01_Base, rotate: {x: 180}}
     - {names: [Turret_one_piece], group: 02_Turret}
     - {names: [Spacer_S, Spacer_S001, Spacer_A, Spacer_A001], group: 02_Turret, rotate: {x: 90}}
-    - {names: [Boom001], group: 03_Boom, rotate: {x: 90}}
+    - {names: [Boom001], group: 03_Boom, rotate: {x: 90}, support: true}
     - {names: [Spacer_D, Spacer_E], group: 04_Forearm, rotate: {x: 90}, split_solids: true}
     - {names: [Forearm_plate_L, Forearm_plate_R, Wrist_spacer], group: 04_Forearm, rotate: {x: 90}}
-    - {names: [Housing_Shoulder, Rack_Shoulder, Washer_shaft_Shoulder], group: 05_PushRod_Shoulder, rotate: {x: 90}, frame: Rack_Shoulder}
-    - {names: [Pinion_WormWheel_Shoulder], group: 05_PushRod_Shoulder, rotate: {x: -90}, frame: Rack_Shoulder}
-    - {names: [Worm_Shoulder], group: 05_PushRod_Shoulder, rotate: {y: -90}, frame: Rack_Shoulder}
-    - {names: [Housing_Elbow, Rack_Elbow, Washer_shaft_Elbow], group: 05_PushRod_Elbow, rotate: {x: 90}, frame: Rack_Elbow}
-    - {names: [Pinion_WormWheel_Elbow], group: 05_PushRod_Elbow, rotate: {x: -90}, frame: Rack_Elbow}
-    - {names: [Worm_Elbow], group: 05_PushRod_Elbow, rotate: {y: -90}, frame: Rack_Elbow}
+    - {names: [Housing_Shoulder], group: 05_PushRod_Shoulder, rotate: {x: 90}, frame: Rack_Shoulder, support: true}
+    - {names: [Rack_Shoulder, Washer_shaft_Shoulder], group: 05_PushRod_Shoulder, rotate: {x: 90}, frame: Rack_Shoulder}
+    - {names: [Pinion_WormWheel_Shoulder], group: 05_PushRod_Shoulder, rotate: {x: -90}, frame: Rack_Shoulder, support: true}
+    - {names: [Worm_Shoulder], group: 05_PushRod_Shoulder, rotate: {y: -90}, frame: Rack_Shoulder, support: true}   # dung = lo lung (dau ren)
+    - {names: [Housing_Elbow], group: 05_PushRod_Elbow, rotate: {x: 90}, frame: Rack_Elbow, support: true}
+    - {names: [Rack_Elbow, Washer_shaft_Elbow], group: 05_PushRod_Elbow, rotate: {x: 90}, frame: Rack_Elbow}
+    - {names: [Pinion_WormWheel_Elbow], group: 05_PushRod_Elbow, rotate: {x: -90}, frame: Rack_Elbow, support: true}
+    - {names: [Worm_Elbow], group: 05_PushRod_Elbow, rotate: {y: -90}, frame: Rack_Elbow, support: true}   # dung = lo lung (dau ren)
     # khung kep: tu the goc cua kep (E0 + 130 mm theo -30 do, nghieng 30 do quanh Y)
     - {names: [Jaw_1_driven_by_servo], group: 06_Gripper, rotate: {x: -90}, frame: [209.00144394797778, 0, 133.90666646784498, 0, 1, 0, 30]}
     - {names: [Jaw_1_driven_by_servo_TPU_pad, Jaw_2_idler_TPU_pad], group: 06_Gripper, rotate: {x: 90}, suffix: _TPU,
        frame: [209.00144394797778, 0, 133.90666646784498, 0, 1, 0, 30]}
-    - {names: [Jaw_2_idler, Gripper_frame, Gripper_top_plate, Pin_jaw2, Spacer_jaw2, Washer_pin], group: 06_Gripper, rotate: {x: 90},
+    - {names: [Gripper_frame], group: 06_Gripper, rotate: {x: 90}, support: true,
+       frame: [209.00144394797778, 0, 133.90666646784498, 0, 1, 0, 30]}
+    - {names: [Jaw_2_idler, Gripper_top_plate, Pin_jaw2, Spacer_jaw2, Washer_pin], group: 06_Gripper, rotate: {x: 90},
        frame: [209.00144394797778, 0, 133.90666646784498, 0, 1, 0, 30]}
     - {names: [Pin_S, Pin_A, Pin_B, Pin_C, Pin_D, Pin_E], group: 07_Pins}
     - {names: [Pin_S_washer, Pin_A_washer, Pin_B_washer, Pin_C_washer, Pin_D_washer, Pin_E_washer], group: 07_Pins, rotate: {x: 90}}
 
 common: {only_one_wall_top: "1", infill_combination: "1", sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
 
-# Ban in (profile chinh hang Bambu + ghi de). Lo lung -> slice.py tu xoay, van lo lung moi support (ban __orient/__support).
+# Ban in (profile chinh hang Bambu + ghi de). Support: KHONG de slicer sinh (Tuan 2026-10-23) - sua thiet ke truoc,
+# bat buoc thi `support: true` o quy tac xuat (support tu ve, khe Z 0.2 mm). Lo lung = FAIL -> sua thiet ke.
 # 2026-10-23: chuyen PLA -> PETG (Bambu PETG Basic); gop 2 Housing (tai chot can support) vao ban support P4 -> 7 ban thay vi 8.
 plates:
   P1_Base__0.24Draft_PETG:
@@ -69,10 +74,9 @@ plates:
     process: 0.20mm Standard @BBL A1
     overrides: {wall_loops: "3", sparse_infill_density: "20%"}
     stl: ["*__Forearm_plate_*.stl", "*__Gripper_top_plate.stl"]
-  P4_Boom_Gripper_Housings__0.20_PETG_support:
+  P4_Boom_Gripper_Housings__0.20_PETG:          # support TU VE (export support: true), khong dung support slicer
     process: 0.20mm Standard @BBL A1
-    overrides: {wall_loops: "3", sparse_infill_density: "20%", enable_support: "1", support_type: tree(auto),
-                support_threshold_angle: "40", support_on_build_plate_only: "0"}
+    overrides: {wall_loops: "3", sparse_infill_density: "20%"}
     stl: ["*__Boom001.stl", "*__Gripper_frame.stl", "*__Housing_Shoulder.stl", "*__Housing_Elbow.stl"]
   P5_Gears_Racks_Pins__0.16_PETG:
     process: 0.16mm Optimal @BBL A1

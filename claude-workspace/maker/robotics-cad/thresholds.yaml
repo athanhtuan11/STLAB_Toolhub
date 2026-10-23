@@ -44,3 +44,10 @@ print:
   min_patch_height_mm: 1.0     # vat nho sat ban (cao < 1 mm) -> bo qua
   brim_contact_max_mm2: 120.0  # TAM: dien tich chan cham ban nho hon -> bat brim (Tuan 2026-10-23: chi tiet nho can brim)
   brim_aspect_min: 2.5         # TAM: cao / be ngang nho nhat >= -> chi tiet cao manh -> brim
+  bed_near_mm: 0.6             # mat nho ra sat ban hon -> lop dau ep xuong ban, khong can do
+  short_overhang_mm: 2.5       # TAM: dai nho ra hep hon (2*dien tich/chu vi, chieu XY) -> tu in duoc: ren dung, vanh
+                               # rang, vat nho. Tuan in kiem ren truc vit dung (pushrod P7) roi chinh.
+  support_gap_mm: 0.2          # support TU VE (export `support: true`): khe Z giua support va chi tiet = 1 lop 0.2
+  support_gap_max_mm: 0.6      # mat nho ra co mat ngua ben duoi trong khoang nay -> coi la da duoc do
+# CHINH SACH SUPPORT (Tuan 2026-10-23): ve toi uu de khong can support (vat 45 do, lo giot nuoc, chia chi tiet, doi huong
+# in); bat buoc moi support va support do MINH VE (Support_* trong CAD hoac `support: true` khi xuat) - khong de slicer sinh.

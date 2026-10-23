@@ -42,10 +42,10 @@ Sinh tự động từ `freecad/pushrod_arm.FCStd` bằng `maker/robotics-cad/sc
 | `Forearm_plate_L` | P3_Forearm_Plates__0.20_PETG | Bambu PETG Basic @BBL A1 | 12.86 |
 | `Forearm_plate_R` | P3_Forearm_Plates__0.20_PETG | Bambu PETG Basic @BBL A1 | 12.84 |
 | `Gripper_top_plate` | P3_Forearm_Plates__0.20_PETG | Bambu PETG Basic @BBL A1 | 1.69 |
-| `Boom001` | P4_Boom_Gripper_Housings__0.20_PETG_support | Bambu PETG Basic @BBL A1 | 74.01 |
-| `Gripper_frame` | P4_Boom_Gripper_Housings__0.20_PETG_support | Bambu PETG Basic @BBL A1 | 12.70 |
-| `Housing_Elbow` | P4_Boom_Gripper_Housings__0.20_PETG_support | Bambu PETG Basic @BBL A1 | 13.01 |
-| `Housing_Shoulder` | P4_Boom_Gripper_Housings__0.20_PETG_support | Bambu PETG Basic @BBL A1 | 13.01 |
+| `Boom001` | P4_Boom_Gripper_Housings__0.20_PETG | Bambu PETG Basic @BBL A1 | 74.01 |
+| `Gripper_frame` | P4_Boom_Gripper_Housings__0.20_PETG | Bambu PETG Basic @BBL A1 | 12.70 |
+| `Housing_Elbow` | P4_Boom_Gripper_Housings__0.20_PETG | Bambu PETG Basic @BBL A1 | 13.01 |
+| `Housing_Shoulder` | P4_Boom_Gripper_Housings__0.20_PETG | Bambu PETG Basic @BBL A1 | 13.01 |
 | `Jaw_1_driven_by_servo` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 2.34 |
 | `Jaw_2_idler` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 2.57 |
 | `Pin_A` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.99 |
@@ -79,12 +79,11 @@ Sinh tự động từ `freecad/pushrod_arm.FCStd` bằng `maker/robotics-cad/sc
 | P1_Base__0.24Draft_PETG | 2h27 | 92.9 | – |
 | P2_Turret_Turntable__0.20_PETG | 2h53 | 75.5 | – |
 | P3_Forearm_Plates__0.20_PETG | 0h41 | 21.3 | – |
-| P4_Boom_Gripper_Housings__0.20_PETG_support | 2h40 | 69.3 | có |
-| P5_Gears_Racks_Pins__0.16_PETG | 1h13 | 19.4 | – |
-| P5_Gears_Racks_Pins__0.16_PETG__support | 0h28 | 3.8 | có |
+| P4_Boom_Gripper_Housings__0.20_PETG | 2h29 | 74.6 | – |
+| P5_Gears_Racks_Pins__0.16_PETG | 1h33 | 23.1 | – |
 | P6_GripperPads__TPU95A | 0h05 | 0.6 | – |
-| P7_Worms__0.12_PETG_100pct__support | 0h14 | 0.9 | có |
-| **Tổng** | **10h45** | **283.7** | |
+| P7_Worms__0.12_PETG_100pct | 0h14 | 0.9 | – |
+| **Tổng** | **10h26** | **288.9** | |
 
 ## Chưa phân loại (TODO)
 Label không khớp quy ước vít / `components=` / `export.rules`:
