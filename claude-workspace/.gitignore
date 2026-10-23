@@ -1,0 +1,35 @@
+# Repo cong dong: chi luu diem ghim (community/pins.tsv), khong luu ban clone.
+# Dung lai bang: community/update-community.sh clone
+/community/*/
+!/community/reports/
+
+# Symlink toi skill/agent cong dong: tao lai bang community/update-community.sh link
+**/.claude/skills/
+**/.claude/agents/
+
+# Du lieu ca nhan hoc vien: khong dua len GitHub
+/stlab/bao-cao-phu-huynh/
+
+# Moi truong Python (uv tao lai tu uv.lock)
+.venv/
+__pycache__/
+
+# Bi mat va cau hinh ca nhan
+.env
+.env.*
+*.local.json
+CLAUDE.local.md
+credentials*.json
+
+
+# video-ai: clip/phan tich/ket qua la du lieu rieng tu va nang -> khong len git
+/video-ai/projects/*/
+
+# photo-ai: model tai lai theo models/SHA256SUMS; anh la du lieu rieng tu
+/photo-ai/models/*.onnx
+/photo-ai/models/*.task
+# photo-ai: LUT tao lai bang scripts/luts.py --default (tu nguon cong dong)
+/photo-ai/luts/
+/photo-ai/.lab-state.json
+/photo-ai/tools/*
+!/photo-ai/tools/SHA256SUMS

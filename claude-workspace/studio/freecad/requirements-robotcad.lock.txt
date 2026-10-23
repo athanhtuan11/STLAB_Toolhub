@@ -1,0 +1,19 @@
+# Lock day du (sinh 2026-10-21) - cai bang: install-robotcad-deps.bat (pip --no-deps).
+# KHONG co numpy/lxml/setuptools/packaging/pyyaml/six/typing_extensions/python-dateutil/pyparsing/docutils:
+# FreeCAD 1.1 da co san (numpy 1.26.4); cai them se de len ban cua FreeCAD va lam hong module.
+absl-py==2.5.1
+catkin-pkg==1.1.1
+distro==1.9.0
+etils==1.14.0
+fsspec==2026.9.0
+glfw==2.11.0
+mujoco==3.15.0
+PyOpenGL==3.1.10
+ros-ament-index-python==1.11.0
+rospkg==1.6.3
+urdf_parser_py==0.0.4
+websockets==17.3
+xacro==2.1.1
+xacrodoc==2.0.1
+xmltodict==1.0.4
+zipp==4.1.1

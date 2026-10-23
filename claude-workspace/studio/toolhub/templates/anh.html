@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Sửa ảnh{% endblock %}
+{% block content %}
+<div class="head">
+  <div>
+    <h1>Sửa ảnh – thử LUT / preset</h1>
+    <p class="sub">Chọn một tấm, tích kiểu màu để so sánh <b>gốc</b> với <b>đã áp</b>. Ưng rồi mới bấm
+      “Áp dụng cho tất cả”. Ảnh gốc chỉ đọc; kết quả ghi vào thư mục <code>-edit</code> mới, không ghi đè.</p>
+  </div>
+</div>
+
+<form id="srcForm" class="lab-src">
+  <input id="src" class="grow" value="{{ src }}" placeholder="Thư mục ảnh gốc, vd. D:\temp\102D7100" spellcheck="false">
+  <button class="primary" type="submit">Mở</button>
+</form>
+<p class="muted" id="srcInfo"></p>
+
+<section class="lab" id="lab" hidden>
+  <aside class="lab-side">
+    <h2>Kiểu màu</h2>
+    <div id="looks" class="looks" role="radiogroup" aria-label="Kiểu màu"></div>
+
+    <label class="row check"><input type="checkbox" id="local">
+      <span>Nâng sáng người (PhotoCraft)<br><span class="muted">tự chọn người, sáng mặt ngược sáng – chạy trước LUT</span></span></label>
+
+    <label class="strength">Độ mạnh <b id="strengthVal">100%</b>
+      <input type="range" id="strength" min="0" max="100" step="5" value="100"></label>
+
+    <div class="apply-box">
+      <div class="muted" id="applyInfo"></div>
+      <button class="primary" id="applyBtn" type="button">Áp dụng cho tất cả</button>
+      <div class="progress" id="progress" hidden><div></div></div>
+      <div id="jobInfo" class="muted"></div>
+      <div id="jobResult"></div>
+    </div>
+    <p class="muted keys">Phím tắt: ↑ ↓ đổi kiểu · ← → đổi ảnh · giữ <kbd>Space</kbd> để xem gốc ở bên phải</p>
+  </aside>
+
+  <div class="lab-main">
+    <div class="compare">
+      <figure>
+        <figcaption>Gốc (máy ảnh)</figcaption>
+        <a id="origLink" target="_blank"><img id="orig" alt="Ảnh gốc"></a>
+      </figure>
+      <figure>
+        <figcaption id="afterCap">Đã áp</figcaption>
+        <a id="afterLink" target="_blank" class="stack">
+          <img id="under" alt="">
+          <img id="over" alt="Ảnh đã áp kiểu màu">
+        </a>
+        <div class="busy" id="busy" hidden>Đang tạo bản xem trước…</div>
+      </figure>
+    </div>
+    <h2><span id="photoName"></span> <span class="muted" id="photoCount"></span></h2>
+    <div class="thumbs" id="thumbs"></div>
+  </div>
+</section>
+<script src="{{ url_for('static', filename='anh.js') }}"></script>
+{% endblock %}

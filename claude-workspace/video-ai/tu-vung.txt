@@ -1,0 +1,14 @@
+# Tu vung rieng cho chep loi (moi dong mot cum). Them ten rieng/thuat ngu hay bi nghe sai.
+STLab
+ESP32
+Arduino
+Raspberry Pi
+in 3D
+Bambu Lab
+FreeCAD
+Blender
+CyberBrick
+servo
+robot
+Đức Trọng
+Lâm Đồng

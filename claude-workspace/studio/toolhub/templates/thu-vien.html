@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Thư viện linh kiện{% endblock %}
+{% block content %}
+{% set labels = {
+  'kich_thuoc_mm': 'Kích thước (mm)', 'khoi_luong_g': 'Khối lượng (g)', 'dien_ap_v': 'Điện áp (V)',
+  'momen_stall_kgf_cm': 'Mô-men stall (kgf·cm)', 'toc_do': 'Tốc độ', 'mat_bich_mm': 'Mặt bích (mm)',
+  'goc_buoc_deg': 'Góc bước (°)', 'buoc_moi_vong': 'Bước/vòng', 'dong_dinh_muc_a': 'Dòng định mức (A)',
+  'momen_giu_n_cm': 'Mô-men giữ (N·cm)', 'dien_tro_pha_ohm': 'Điện trở pha (Ω)', 'truc_mm': 'Trục (mm)',
+  'muc_logic_v': 'Mức logic (V)', 'ghi_chu': 'Ghi chú', 'bo_mach_mm': 'Bo mạch (mm)', 'lo_bat': 'Lỗ bắt',
+  'dong_lam_viec_ma': 'Dòng làm việc (mA)', 'tam_do_cm': 'Tầm đo (cm)', 'goc_do_deg': 'Góc đo (°)',
+  'tan_so_khz': 'Tần số (kHz)', 'dien_ap_toi_da_v': 'Điện áp tối đa (V)', 'dong_tong_a': 'Dòng tổng (A)',
+  'trong_mm': 'Đường kính trong (mm)', 'ngoai_mm': 'Đường kính ngoài (mm)', 'day_mm': 'Bề dày (mm)'} %}
+<div class="head">
+  <div>
+    <h1>Thư viện linh kiện robotics</h1>
+    <p class="sub">{{ lib.components|length }} linh kiện trong danh mục (cập nhật {{ lib.updated }}) ·
+      model: {{ lib.stats.step }} STEP, {{ lib.stats.stl }} STL, {{ lib.stats.fcstd }} FCStd –
+      FreeCAD-library đã ghim (CC-BY 3.0, ghi công tác giả) + CyberBrick chính thức của Bambu Lab.</p>
+  </div>
+  <div class="actions">
+    <button class="primary" data-post="/api/start/freecad" data-busy="Đang mở…">Mở FreeCAD + Claude</button>
+    <button data-post="/api/open/maker--robotics-cad">Sửa danh mục (VS Code)</button>
+  </div>
+</div>
+
+<div class="actions" style="margin-bottom:14px" id="filters">
+  <button data-filter="" class="primary">Tất cả</button>
+  {% for t in lib.types %}<button data-filter="{{ t }}">{{ t }}</button>{% endfor %}
+</div>
+
+<section class="grid" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr))">
+  {% for c in lib.components %}
+  <article class="card" data-type="{{ c.loai }}">
+    <div class="row">
+      <span class="dot {{ 'ok' if c.model_ok else 'bad' }}" title="{{ 'Có model STEP trong thư viện' if c.model_ok else 'Không tìm thấy file model' }}"></span>
+      <h3 class="grow">{{ c.ten }}</h3><span class="badge plain">{{ c.loai }}</span>
+    </div>
+    <div class="row">
+      {% if c.model_ok %}<span class="badge ok">STEP</span>{% endif %}
+      {% if c.stl_ok %}<span class="badge ok">STL</span>{% endif %}
+      {% if not c.model_ok %}<span class="badge bad">chưa có model</span>{% endif %}
+    </div>
+    {% if c.bbox_mm %}<div class="muted">Hộp bao model: {{ c.bbox_mm|join(' × ') }} mm</div>{% endif %}
+    {% if c.thong_so %}
+    <table style="font-size:13px">
+      {% for k, v in c.thong_so.items() %}<tr><td class="muted" style="padding:3px 8px 3px 0;border:none;white-space:nowrap">{{ labels.get(k, k.replace('_', ' ')) }}</td><td style="padding:3px 0;border:none">{{ v }}</td></tr>{% endfor %}
+    </table>
+    {% else %}<div class="muted">Chưa có thông số có nguồn.</div>{% endif %}
+    {% if c.todo %}<div>{% for t in c.todo %}<span class="badge bad wrap" style="margin:2px 4px 2px 0">TODO: {{ t }}</span>{% endfor %}</div>{% endif %}
+    <div class="muted" style="margin-top:auto">
+      {% for n in c.nguon %}{% if n.startswith('http') %}<a href="{{ n }}" target="_blank" rel="noopener">nguồn {{ loop.index }}</a>{% else %}{{ n }}{% endif %}{% if not loop.last %} · {% endif %}{% endfor %}
+    </div>
+    <div class="mono muted" title="{{ c.model }}" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.model }}</div>
+  </article>
+  {% endfor %}
+</section>
+
+<footer>
+  Danh mục: <code>maker/robotics-cad/library/components.yaml</code>. CyberBrick: model + datasheet trong
+  <code>community/cyberbrick-official/</code> (tải lại: <code>library/cyberbrick.py fetch</code> rồi <code>build</code>).
+  Kích thước "hộp bao" đo từ model (gồm chân/cổng nhô ra);
+  thông số khác chỉ ghi khi có nguồn. Trong FreeCAD: Macro → PartsLibrary để duyệt toàn bộ thư viện.
+</footer>
+
+<script>
+document.getElementById("filters").addEventListener("click", e => {
+  const b = e.target.closest("button[data-filter]"); if (!b) return;
+  document.querySelectorAll("#filters button").forEach(x => x.classList.toggle("primary", x === b));
+  document.querySelectorAll(".card[data-type]").forEach(c => c.hidden = !!b.dataset.filter && c.dataset.type !== b.dataset.filter);
+});
+</script>
+{% endblock %}

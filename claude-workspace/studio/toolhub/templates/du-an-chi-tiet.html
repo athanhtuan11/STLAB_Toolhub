@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ p.rel }}{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('hub.du_an') }}">← Dự án</a></p>
+<div class="head">
+  <div>
+    <h1>{{ p.rel }}</h1>
+    <p class="sub">{{ p.title }} · {{ p.todo }} TODO</p>
+  </div>
+  <button class="primary" data-post="/api/open/{{ p.slug }}">Mở trong VS Code</button>
+</div>
+
+{% if p.links or p.mcp %}
+<div class="actions" style="margin-bottom:14px">
+  {% for l in p.links %}<span class="badge plain" title="{{ l.src }}">{{ l.kind }}: {{ l.name }}</span>{% endfor %}
+  {% for m in p.mcp %}<span class="badge">MCP {{ m }}</span>{% endfor %}
+</div>
+{% endif %}
+
+<pre class="doc">{{ p.claude_md }}</pre>
+{% endblock %}

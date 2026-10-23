@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{% endblock %} · STLAB Toolhub</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+  <div class="inner">
+    <a class="brand" href="{{ url_for('hub.tong_quan') }}">STLAB <span>Toolhub</span></a>
+    <nav>
+      {% for ep, label in nav %}
+      <a href="{{ url_for(ep) }}" class="{{ 'on' if request.endpoint == ep or (request.endpoint or '').startswith(ep + '_') else '' }}">{{ label }}</a>
+      {% endfor %}
+    </nav>
+  </div>
+</header>
+<main>
+{% block content %}{% endblock %}
+</main>
+<div id="log" aria-live="polite"></div>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

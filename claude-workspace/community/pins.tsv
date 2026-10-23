@@ -1,0 +1,22 @@
+# name	url	type	ref	sha	prev_sha	allowlist	auto	license
+anthropics-skills	https://github.com/anthropics/skills.git	sha	-	dbd4588f9e1033efb41dad4bef2f7947c8993d44	-	yes	off	Apache-2.0 + source-available (docx/pdf/pptx/xlsx)
+shanraisshan-claude-code-best-practice	https://github.com/shanraisshan/claude-code-best-practice.git	sha	-	9f9f5d9faec17b8646cceeb35ad9e4e0f5b85c56	-	no	off	MIT
+mattpocock-skills	https://github.com/mattpocock/skills.git	tag	v1.3.1	24fe0ef7737efae15c87225755e9f6f5965e4888	-	no	off	MIT
+voltagent-subagents	https://github.com/VoltAgent/awesome-claude-code-subagents.git	sha	-	408d3c9eee2d0c75c12a3abb5de29e53c2ca6b9e	-	no	off	MIT
+homeassistant-ai-skills	https://github.com/homeassistant-ai/skills.git	sha	-	68f2690ff868cde35f4e755cde82a69666f89b06	-	no	off	MIT
+homeassistant-ai-ha-mcp	https://github.com/homeassistant-ai/ha-mcp.git	tag	v8.7.0	a96752286be1a6511f32a62e90213641c8d18068	-	no	off	MIT
+neka-nat-freecad-mcp	https://github.com/neka-nat/freecad-mcp.git	tag	v0.1.27	78bf0230a03324b56c9a0b7f55150fb5be2a0d42	-	no	off	MIT
+ahujasid-mcp-for-blender	https://github.com/ahujasid/mcp-for-blender.git	sha	-	5a3618fccb2d982d0dd61e7a1879912c3100073b	-	no	off	MIT
+yujxzjcn-teaching-skills	https://github.com/YujxZJCN/teaching-skills.git	sha	-	fd0c486e61cb1f065b88133b599e8806dfaeac12	-	no	off	MIT
+garethmanning-education-agent-skills	https://github.com/GarethManning/education-agent-skills.git	sha	-	6bbbce418f82e11044009c9f3b7373a354de5bd0	-	no	off	CC-BY-SA-4.0
+drfenixion-freecad-robotcad	https://github.com/drfenixion/freecad.robotcad.git	tag	v12.10.3	80c483bcccca03763e7b0e37367ca7846b2bc24a	-	no	off	LGPL-2.1
+looooo-freecad-gears	https://github.com/looooo/freecad.gears.git	sha	-	83ec154b1925347622b61812f75d2ed51e956b9f	-	no	off	GPL-3.0
+shaise-freecad-sheetmetal	https://github.com/shaise/FreeCAD_SheetMetal.git	sha	-	cbf6595b68ad015266923749c160c3555a72e1fd	-	no	off	LGPL-2.1
+github-awesome-copilot	https://github.com/github/awesome-copilot.git	sha	-	613efc8c21d9b3ce642dff361d17006cd9967e28	-	no	off	MIT (chi skills/freecad-scripts)
+freecad-library	https://github.com/FreeCAD/FreeCAD-library.git	sha	-	f5ca01cdcaa2f69b9295a6382719c2d90628780c	-	no	off	CC-BY-3.0 (ghi cong tac gia)
+midasmatterhorn-artcraft-skills	https://github.com/midasmatterhorn/artcraft-skills.git	sha	-	aa35c244d1151f6c0b9b79aedeba1d9c93342afa	-	no	off	MIT (filmcraft/, lightcraft/)
+abpy-fujifilm-camera-profiles	https://github.com/abpy/FujifilmCameraProfiles.git	sha	-	b5a1f16abfb2759b337c83d69d9dc49470e7e518	-	no	off	none (khong co file LICENSE)
+cedeber-hald-clut	https://github.com/cedeber/hald-clut.git	sha	-	3b3180f82d4dcea1e6e8c5648473539a910d7f49	-	no	off	GPL-3.0 (repo); LUT goc RawTherapee film sim
+peva3-lightroom-presets	https://github.com/peva3/Lightroom-Presets.git	sha	-	f22f4d8057aaaada6df3f0ed7fbe6b952a30db77	-	no	off	MIT
+arduino-docs-content	https://github.com/arduino/docs-content.git	sha	-	b12ffb3a317c900b1c9d1b00ec1e5f94a978891f	-	no	off	CC-BY-SA-4.0 (chi STEP board, sparse)
+espressif-kicad-libraries	https://github.com/espressif/kicad-libraries.git	tag	3.2.1	1dfc3110895c9cd62daf332f49c49ee0ee200831	-	no	off	CC-BY-SA-4.0 + mien tru thiet ke (nhu KiCad)

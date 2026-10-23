@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Skills & agents{% endblock %}
+{% block content %}
+<div class="head">
+  <div>
+    <h1>Skills & agents</h1>
+    <p class="sub">{{ ok }}/{{ total }} liên kết tốt. Danh sách trong <code>community/links.tsv</code>.
+      Tạo lại: <code>bash community/update-community.sh link</code></p>
+  </div>
+</div>
+
+{% for scope, rows in groups.items() %}
+<h2>{{ scope }}</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th></th><th>Tên</th><th>Loại</th><th>Nguồn</th><th>Trỏ tới</th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+  <tr>
+    <td><span class="dot {{ 'ok' if r.ok else 'bad' }}" title="{{ 'Symlink tốt' if r.ok else 'Hỏng hoặc chưa tạo' }}"></span></td>
+    <td><b>{{ r.name }}</b></td>
+    <td><span class="badge plain">{{ r.kind }}</span></td>
+    <td>{% if r.origin.startswith('tự viết') %}<span class="badge">{{ r.origin }}</span>{% else %}{{ r.origin }}{% endif %}</td>
+    <td class="mono muted">{{ r.src }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endfor %}
+{% endblock %}

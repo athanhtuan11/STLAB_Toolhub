@@ -1,0 +1,9 @@
+# Chi lay file STEP chinh hang cua board Arduino (repo goc ~9,8 GB). Them board: them dong roi chay lai clone/sparse-checkout.
+/LICENSE*
+/content/hardware/uno/boards/uno-r4-wifi/downloads/*-step.zip
+/content/hardware/uno/boards/uno-q/downloads/*-step.zip
+/content/hardware/nano/boards/nano-esp32/downloads/*-step.zip
+/content/hardware/nano/boards/nano-r4/downloads/*-step.zip
+/content/hardware/mega/boards/giga-r1-wifi/downloads/*-step.zip
+/content/hardware/modulino/modulino-nodes/*/downloads/*-step.zip
+/static/resources/3d/nano-enclosure.stp

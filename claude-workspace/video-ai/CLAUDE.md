@@ -1,0 +1,31 @@
+# video-ai – tự dựng video ngắn từ clip tự quay (FilmCraft)
+
+## Mục tiêu
+Tuan đưa clip tự quay + vài dòng mong muốn → Claude phân tích, lập kế hoạch, FilmCraft dựng theo template
+(kiểu CapCut) → dự án `.fcproj` chỉnh tiếp được + video xuất sẵn.
+
+## Thư mục một dự án `projects/<ten-du-an>/` (KHÔNG lên git – clip riêng tư)
+- `inbox/` clip gốc · `brief.md` mong muốn (mẫu: `projects/_mau-brief.md`) · `rieng-tu.txt` clip không trích ảnh
+- `analysis/` (analyze.py): `tom-tat.md`, `<clip>/contact.jpg`, `transcript.fixed.json`, `info.json`
+- `plan.json` (Claude viết) · `build/` (.fcproj, captions.srt, kiem-tra-*.png) · `out/` (.mp4 + .srt)
+
+## Quy trình (skill `video-ai` hướng dẫn chi tiết)
+1. `uv run python scripts/analyze.py projects/<ten>` – chép lời tiếng Việt trên máy (faster-whisper CPU,
+   ~0,8× thời lượng clip), cắt cảnh, ảnh. Sửa tên riêng nghe sai: `tu-vung.txt`, `sua-loi.txt`.
+2. Claude đọc `brief.md` + `analysis/tom-tat.md` + xem `contact.jpg` → viết `plan.json`.
+3. `uv run python scripts/build.py projects/<ten>` – dựng trong FilmCraft (chạy nền), xuất video.
+4. Claude xem `build/kiem-tra-*.png`, sửa plan nếu cần, dựng lại. Tuan mở `.fcproj` để chỉnh tay nếu muốn.
+
+## Template (`templates/<id>/cau-hinh.yaml`)
+- `reel-9x16`: TikTok/Reels/Shorts – khung dọc bám chủ thể, bỏ từ đệm + khoảng lặng > 0,35 s, phụ đề
+  in cứng, chữ mở đầu/CTA, −14 LUFS. TODO: màu/logo/nhạc STLab.
+
+## Sự thật đã kiểm chứng (2026-10-21, FilmCraft 0.9.0)
+- Bản phát hành **không có Whisper** (`transcript.generate` không chạy) → chép lời ngoài, phụ đề tự tạo.
+- `auto_reframe` chỉ dịch khung, phải phóng `motion` để phủ kín (build.py tự tính).
+- `essentialSound.autoMatch` lệch ~3 LU sau khi cắt lặng → build.py đo EBU R128 trên bản dựng rồi chỉnh.
+- Phụ đề chỉ có trong MP4 khi xuất với `burnCaptions`.
+
+## Riêng tư
+- Âm thanh/chép lời xử lý trên máy. Ảnh khung hình + chép lời được Claude đọc (gửi lên Claude).
+- Clip có học sinh: cần đồng ý của phụ huynh; ghi tên clip vào `rieng-tu.txt` để không trích ảnh.

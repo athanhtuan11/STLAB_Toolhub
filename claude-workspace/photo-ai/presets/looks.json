@@ -1,0 +1,17 @@
+{
+  "_ghi_chu": "Cac kieu mau de so sanh (scripts/looks.py). base = preset STLab qua LightCraft. lut: ap len base qua PhotoCraft Color Lookup. xmp: preset Lightroom ap thang len anh goc qua LightCraft. Duong dan tinh tu community/; hald -> luts/<slug>.cube (scripts/luts.py --default).",
+  "looks": [
+    {"id": "base", "label": "STLab hien tai"},
+    {"id": "portra160nc", "label": "Kodak Portra 160 NC (RT)", "hald": "cedeber-hald-clut/HaldCLUT/Film Simulation/Color/Kodak/Kodak Portra 160 NC 2.png"},
+    {"id": "portra400", "label": "Kodak Portra 400 (RT)", "hald": "cedeber-hald-clut/HaldCLUT/Film Simulation/Color/Kodak/Kodak Portra 400 2.png"},
+    {"id": "fuji400h", "label": "Fuji 400H (RT)", "hald": "cedeber-hald-clut/HaldCLUT/Film Simulation/Color/Fuji/Fuji 400H 2.png"},
+    {"id": "fuji160c", "label": "Fuji 160C (RT)", "hald": "cedeber-hald-clut/HaldCLUT/Film Simulation/Color/Fuji/Fuji 160C 2.png"},
+    {"id": "classicneg", "label": "Fuji Classic Neg (abpy)", "cube": "abpy-fujifilm-camera-profiles/provia conversion luts/Provia to Classic Neg sRGB.cube"},
+    {"id": "nostalgicneg", "label": "Fuji Nostalgic Neg (abpy)", "cube": "abpy-fujifilm-camera-profiles/provia conversion luts/Provia to Nostalgic Neg sRGB.cube"},
+    {"id": "naturalskin", "label": "Natural Skin (peva3 XMP)", "xmp": "peva3-lightroom-presets/Presets/Mobile/Natural Skin.xmp"},
+    {"id": "cleanbaby", "label": "Clean Baby Portrait (peva3 XMP)", "xmp": "peva3-lightroom-presets/Presets/Genre/Clean Baby Portrait.xmp"},
+    {"id": "airywedding", "label": "Bright & Airy Wedding (peva3 XMP)", "xmp": "peva3-lightroom-presets/Presets/Genre/Bright & Airy Wedding.xmp"},
+    {"id": "xmpportra400", "label": "Kodak Portra 400 (peva3 XMP)", "xmp": "peva3-lightroom-presets/Presets/Color-Negative/Kodak Portra 400.xmp"},
+    {"id": "xmp400h", "label": "Fujifilm Pro 400H (peva3 XMP)", "xmp": "peva3-lightroom-presets/Presets/Color-Negative/Fujifilm Pro 400H.xmp"}
+  ]
+}

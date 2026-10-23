@@ -1,0 +1,589 @@
+# Danh mục linh kiện robotics STLab (đơn vị mm, g, V, A). Tên khóa không dấu, nội dung tiếng Việt.
+# Quy tắc:
+#   - model: đường dẫn trong community/freecad-library (CC-BY 3.0: ghi công tác giả khi dùng/chia sẻ).
+#   - bbox_mm: ĐO TỪ MODEL bằng FreeCAD (hộp bao, gồm cả chân/cổng nhô ra), ngày 2026-10-21.
+#   - thong_so: chỉ ghi khi có nguồn (nguon). Nguồn mâu thuẫn -> ghi cả hai. Chưa có -> todo.
+#   - Hàng cùng mã có thể khác thông số: đo lại hàng thật trước khi chốt thiết kế.
+#   - thu_vien: cyberbrick -> model/stl tinh tu library_roots.cyberbrick (tai bang library/cyberbrick.py,
+#     nguon chinh thuc Bambu Lab, xem cyberbrick-sources.tsv). bbox_mm CyberBrick: do tu STEP bang FreeCAD
+#     (optimalBoundingBox, 2026-10-21); STL cua hang bo bot dau cam nen co the nho hon toi 4 mm.
+#   - thu_vien: boards -> STEP board chinh hang (Arduino giai nen bang library/boards.py) hoac DUNG TU BAN VE
+#     (dung_tu_ban_ve: true, library/boards_param.py): mat bang dung ban ve, chieu cao linh kien la UOC -> do hang that.
+#   - thu_vien: espressif -> STEP module ESP32 chinh hang (espressif/kicad-libraries 3.2.1, CC-BY-SA-4.0).
+version: 1
+cap_nhat: 2026-10-22
+library_root: community/freecad-library
+library_roots:
+  cyberbrick: community/cyberbrick-official/models
+  n20: community/n20-motor/models
+  boards: community/boards-official/models
+  espressif: community/espressif-kicad-libraries/3dmodels/espressif.3dshapes
+
+components:
+  - id: sg90
+    ten: Servo SG90 (TowerPro, 9 g)
+    loai: servo
+    model: Electrical Parts/Servos/SG-90/Servo-sg90.step
+    model_khac: [Electrical Parts/Servos/SG-90/SG90-1-arm-horn.step, Electrical Parts/Servos/SG-90/SG90-2-arms-horn.step]
+    bbox_mm: [11.8, 32.4, 29.9]
+    thong_so:
+      kich_thuoc_mm: "23 × 12,2 × 29 (trang TowerPro); 22,2 × 11,8 × 31 (datasheet phổ biến) – đo lại hàng thật"
+      khoi_luong_g: 9
+      dien_ap_v: 4.8
+      momen_stall_kgf_cm: "1,8 @ 4,8 V (TowerPro); nhiều hàng nhái chỉ ~1,2"
+      toc_do: "0,1 s/60° @ 4,8 V (bản digital); 0,12 s/60° (bản analog)"
+    nguon:
+      - https://towerpro.com.tw/product/sg90-7/
+      - https://towerpro.com.tw/product/sg90-analog/
+    todo: [góc quay thực tế, dòng stall (A)]
+
+  - id: nema17-17hs4401
+    ten: Động cơ bước NEMA 17 (17HS4401, thân 40 mm)
+    loai: stepper
+    model: Electrical Parts/Motors/Stepper/NEMA/NEMA_17_with_connector.step
+    model_khac: [Electrical Parts/Motors/Stepper/NEMA/Nema-17_Mount_Bracket/Nema-17_MountBracket.step]
+    bbox_mm: [48.2, 42.3, 62.0]
+    thong_so:
+      mat_bich_mm: 42.3
+      goc_buoc_deg: 1.8
+      buoc_moi_vong: 200
+      dong_dinh_muc_a: "1,7/pha (phổ biến); có bản 1,5 A cùng mã – xem nhãn động cơ"
+      momen_giu_n_cm: "40–43 (tùy nhà bán)"
+      dien_tro_pha_ohm: 1.5
+      truc_mm: 5
+    nguon:
+      - https://www.handsontec.com/dataspecs/17HS4401S.pdf
+    todo: [khoảng cách lỗ bắt M3 (cần datasheet hãng), điện cảm pha]
+
+  - id: dc-motor-encoder-mabuchi
+    ten: Động cơ DC có encoder (Mabuchi)
+    loai: dc-motor
+    model: Electrical Parts/Motors/DC motor/Mabuchi-Encoder/DCMotorEncoder.step
+    bbox_mm: [23.2, 19.0, 65.0]
+    thong_so: {}
+    todo: [mã động cơ chính xác, điện áp, tốc độ, số xung encoder]
+
+  - id: n20-gearmotor
+    ten: Động cơ giảm tốc N20 (micro metal gearmotor, khuôn chung 12 × 10 mm)
+    loai: dc-motor
+    thu_vien: n20
+    model: n20-tieu-chuan/n20-tieu-chuan.step
+    stl: n20-tieu-chuan/n20-tieu-chuan.stl
+    model_khac:
+      - n20-hop-so-dai-1000/ (hộp số dài, tỉ số 1000:1 – STEP báo lỗi hình học nhẹ)
+      - n20-truc-sau-encoder/ (trục sau 1 mm cho encoder)
+      - n20-encoder-cam-sau/, n20-encoder-cam-canh/ (có encoder từ)
+      - n20-gia-bat-1086/ (kèm giá bắt Pololu 1086)
+      - bo-cam-jst-sh-phia-sau/, bo-cam-jst-sh-canh/ (bo đầu cắm JST-SH)
+    bbox_mm: [12.0, 10.0, 35.8]
+    thong_so:
+      kich_thuoc_mm: "12 × 10; hộp số 9 (bản 1000:1 dài hơn); trục Φ3 vát D, dài ≈ 9,3 (Pololu); lỗ M1.6"
+      khoi_luong_g: "≈ 10 (Pololu)"
+      ghi_chu: "Điện áp/tốc độ/mô-men khác nhau theo hãng và tỉ số – xem datasheet đúng mã đang dùng"
+    nguon:
+      - https://www.pololu.com/product/2364/resources
+      - "Bản vẽ: community/n20-motor/pdf/pololu-micro-metal-gearmotors-dimensions.pdf"
+    todo: [hàng N20 trôi nổi có thể lệch 0,2–0,5 mm và trục dài 10 mm – đo hàng thật]
+
+  - id: esp32-doit-devkit-v1
+    ten: ESP32 DOIT DevKit V1
+    loai: vi-dieu-khien
+    model: Computing/SingleBoardComputers/ESP32/ESP32_DOIT_DevKit_v1/ESP32_DOIT_DevKit_V1.step
+    bbox_mm: [52.5, 28.3, 13.2]
+    thong_so:
+      muc_logic_v: 3.3
+      ghi_chu: "GPIO 3,3 V – không nối trực tiếp tín hiệu 5 V"
+    nguon:
+      - https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf
+    todo: [khoảng cách hàng chân (bản 30 hay 38 chân), lỗ bắt (thường không có)]
+
+  - id: raspberry-pi-4b
+    ten: Raspberry Pi 4 Model B
+    loai: may-tinh-nhung
+    model: Computing/SingleBoardComputers/Raspberry/Raspberry Pi 4B/Raspberry Pi 4B.step
+    bbox_mm: [92.9, 19.9, 58.5]
+    thong_so:
+      bo_mach_mm: "85 × 56"
+      lo_bat: "4 lỗ M2.5, tâm lỗ 58 × 49 mm, cách 2 cạnh 3,5 mm"
+    nguon:
+      - https://kapycad.com/en/academy/standards/raspberry-pi
+      - https://github.com/raspberrypi/documentation/issues/1262
+    todo: [đối chiếu bản vẽ cơ khí chính thức (PDF raspberrypi.com), nguồn cấp 5 V – dòng tối thiểu]
+
+  - id: raspberry-pi-pico
+    ten: Raspberry Pi Pico
+    loai: vi-dieu-khien
+    model: Computing/SingleBoardComputers/Raspberry/Raspberry Pi Pico/Pico-R3.step
+    bbox_mm: [21.0, 3.7, 52.3]
+    thong_so: {}
+    todo: [lỗ bắt, mức logic – lấy từ datasheet Pico]
+
+  - id: hc-sr04
+    ten: Cảm biến siêu âm HC-SR04
+    loai: cam-bien
+    model: Sensors/Ultrasonic Sensors/HC-SR04.step
+    bbox_mm: [45.0, 26.0, 16.5]
+    thong_so:
+      dien_ap_v: 5
+      dong_lam_viec_ma: 15
+      tam_do_cm: "2 – 400"
+      goc_do_deg: 15
+      tan_so_khz: 40
+      kich_thuoc_mm: "45 × 20 × 15 (datasheet)"
+    nguon:
+      - https://cdn.sparkfun.com/datasheets/Sensors/Proximity/HCSR04.pdf
+    todo: ["chân Echo ra 5 V: cần chia áp khi nối ESP32/Pico (3,3 V)"]
+
+  - id: l298n-module
+    ten: Module driver L298N (2 cầu H)
+    loai: driver-dong-co
+    model: Electrical Parts/Motor Drivers/L298N/L298N.step
+    bbox_mm: [43.0, 43.0, 28.0]
+    thong_so:
+      dien_ap_toi_da_v: 46
+      dong_tong_a: "4 (ST); 2 A/cầu theo nguồn thứ ba"
+    nguon:
+      - https://www.st.com/en/motor-drivers/l298.html
+    todo: [sụt áp trên cầu H gây nóng – cân nhắc TB6612/DRV8833 cho động cơ nhỏ]
+
+  - id: bearing-608zz
+    ten: Ổ bi 608ZZ
+    loai: o-bi
+    model: Mechanical Parts/Bearings/608ZZ_Ball_Bearing.step
+    bbox_mm: [22.0, 22.0, 7.0]
+    thong_so:
+      trong_mm: 8
+      ngoai_mm: 22
+      day_mm: 7
+    nguon:
+      - "ISO 15 (ký hiệu 608: d = 8, D = 22, B = 7); khớp hộp bao đo từ model"
+    todo: []
+
+  # ---------- CyberBrick (Bambu Lab) – model chính thức từ cửa hàng Bambu, 2026-10-21 ----------
+  # Datasheet PDF: community/cyberbrick-official/pdf/. Kết nối: SH1.0 (tín hiệu), XH2.54 (nguồn).
+  - id: cb-xa003-controller-core
+    ten: CyberBrick – Lõi điều khiển đa năng XA003 (ESP32-C3)
+    loai: cyberbrick
+    thu_vien: cyberbrick
+    model: xa003-multi-function-controller-core/multi-function-controller-core.step
+    stl: xa003-multi-function-controller-core/multi-function-controller-core.stl
+    bbox_mm: [23.2, 27.9, 11.5]
+    thong_so:
+      vi_dieu_khien: ESP32-C3 (Bluetooth + WiFi), lập trình MicroPython
+      dien_ap_type_c_v: 5
+      dien_ap_pin_v: "3,7–12,6"
+      tam_dieu_khien_m: 4
+    nguon:
+      - https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list
+      - https://github.com/CyberBrick-Official/CyberBrick_Controller_Core
+    todo: [dòng tiêu thụ (mA), sơ đồ chân – xem ảnh pinout trên wiki]
+
+  - id: cb-xa004-receiver
+    ten: CyberBrick – Bộ thu (lõi XA003 + shield thu XA004)
+    loai: cyberbrick
+    thu_vien: cyberbrick
+    model: xa003-xa004-remote-control-receiver/remote-control-receiver.step
+    stl: xa003-xa004-remote-control-receiver/remote-control-receiver.stl
+    bbox_mm: [29.0, 22.6, 30.0]
+    thong_so:
+      dien_ap_v: "7,4–12,6 (cổng XH2.54)"
+      dong_toi_da_a: 3
+      cong: "2 động cơ DC (SH1.0 2P, PWM), 4 servo 5 V (header 3 chân), 2 LED WS2812 (SH1.0 3P)"
+    nguon:
+      - https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list
+    todo: [dòng mỗi cổng động cơ (A)]
+
+  - id: cb-xa005-transmitter
+    ten: CyberBrick – Bộ phát (lõi XA003 + shield phát XA005)
+    loai: cyberbrick
+    thu_vien: cyberbrick
+    model: xa003-xa005-remote-control-transmitter/remote-control-transmitter.step
+    stl: xa003-xa005-remote-control-transmitter/remote-control-transmitter.stl
+    bbox_mm: [34.0, 21.6, 31.0]
+    thong_so:
+      dien_ap_v: "4,5–12,6 (cổng XH2.54)"
+      dong_lam_viec_ma: 65
+      cong: "6 analog L1–L3/R1–R3 (SH1.0 3P), 4 số K1–K4 (SH1.0 2P)"
+    nguon:
+      - https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list
+    todo: []
+
+  - id: cb-pg001-servo-9g
+    ten: CyberBrick – Servo 9 g có ly hợp (PG001 180° / PG002 360°)
+    loai: cyberbrick
+    thu_vien: cyberbrick
+    model: pg002-pg001-9g-servo-motor-with-clutch-protection/9g-servo-motor-with-clutch-protection.step
+    stl: pg002-pg001-9g-servo-motor-with-clutch-protection/9g-servo-motor-with-clutch-protection.stl
+    model_khac: [cross-arm, half-arm1, line-arm (.step/.stl cùng thư mục)]
+    bbox_mm: [46.9, 12.0, 30.8]
+    thong_so:
+      kich_thuoc_mm: "32,5 × 12 × 23 thân (bản vẽ PG001); lỗ bắt Φ2,2 cách 27,8"
+      khoi_luong_g: "9 ± 0,5"
+      dien_ap_v: "4,8–6"
+      momen_stall_kgf_cm: "≥ 1,0 @ 4,8 V; ≥ 1,2 @ 6 V (PG001)"
+      toc_do: "≤ 0,14 s/60° @ 4,8 V; ≤ 0,12 s/60° @ 6 V"
+      dong_stall_ma: "≤ 550 @ 4,8 V; ≤ 650 @ 6 V"
+      goc: "PG001: 180° ± 10° (500–2500 µs); PG002: quay liên tục 360°"
+      ly_hop: "trượt ở ≥ 0,9 kgf·cm @ 4,8 V; ngắt khi kẹt 5 s"
+    nguon:
+      - "Datasheet B-PG001 (pdf/9g Servo Motor 180° - PG001.pdf)"
+      - https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list
+    todo: [thông số riêng PG002 (xem pdf/9g Servo Motor 360° - PG002.pdf)]
+
+  - id: cb-la024-motor-030
+    ten: CyberBrick – Động cơ DC 030 có SH1.0 (LA024) + hộp giảm tốc
+    loai: cyberbrick
+    thu_vien: cyberbrick
+    model: la024-030-micro-dc-motor-with-sh1-0/030-micro-dc-motor-with-sh1-0.step
+    stl: la024-030-micro-dc-motor-with-sh1-0/030-micro-dc-motor-with-sh1-0.stl
+    model_khac: [030-micro-dc-motor-with-sh1-0-reducer.step (kèm hộp giảm tốc, hộp bao 22 × 26,1 × 78,9)]
+    bbox_mm: [12.0, 52.2, 15.5]
+    thong_so:
+      dien_ap_v: "8 định mức; 5–9 dải dùng"
+      toc_do: "10 500 ± 10 % vòng/phút không tải; 6 900 ± 10 % tại tải định mức (5 g·cm)"
+      dong_khong_tai_ma: "≤ 45"
+      dong_khoi_dong_ma: "≤ 350"
+      khoi_luong_g: "≈ 22"
+      truc_mm: 1.5
+    nguon:
+      - "Datasheet LA024 (pdf/030_Micro_DC_Motor_-LA024.pdf)"
+    todo: [tỉ số hộp giảm tốc (xem Assembly_Guide_of_*_030_Reduction_Motor.pdf)]
+
+  - id: cb-n20-motor
+    ten: CyberBrick – Động cơ giảm tốc N20 (LA002 150 / LA003 400 / LA004 1000 vòng/phút)
+    loai: cyberbrick
+    thu_vien: n20
+    # Hang khong phat hanh model -> dung model N20 chuan cua Pololu (cung khuon 12 x 10 mm, xem id n20-gearmotor)
+    model: n20-tieu-chuan/n20-tieu-chuan.step
+    stl: n20-tieu-chuan/n20-tieu-chuan.stl
+    model_khac: [bo-cam-jst-sh-phia-sau/ (bo SH phia sau, gan giong ban CyberBrick)]
+    bbox_mm: [12.0, 10.0, 35.8]
+    thong_so:
+      kich_thuoc_mm: "12 × 10; hộp số 9,0; thân 15,1; bo sau 1,2 + đầu cắm 2,4; trục Φ3 vát D dài 10; lỗ 2 × M1.6 cách 9,0 (LA002)"
+      dien_ap_v: "6 định mức; 3–7 dải dùng (LA002)"
+      toc_do: "150 ± 10 % (LA002), 400 (LA003), 1000 (LA004) vòng/phút không tải"
+      dong_khong_tai_ma: "≤ 40 (LA002)"
+      dong_stall_a: "≤ 0,65 (LA002)"
+      momen_khoi_dong: "≥ 700 g·cm (LA002); đường đặc tính: kẹt ≈ 852 g·cm"
+    nguon:
+      - "Datasheet B-LA002 (community/cyberbrick-official/pdf/B-LA002.pdf, 2024-03-08)"
+      - https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list
+    todo: [model Pololu dài 35,8 mm so với ≈ 36,1 mm của LA002 (trục 9,3 so với 10) – đo hàng thật trước khi làm khớp chặt, thông số LA003/LA004 (xem PDF)]
+
+  - id: cb-la026-differential
+    ten: CyberBrick – Bộ vi sai nhựa LA026
+    loai: cyberbrick
+    thu_vien: cyberbrick
+    model: la026-plastic-differential-gear-kit/plastic-differential-gear-kit.step
+    stl: la026-plastic-differential-gear-kit/plastic-differential-gear-kit.stl
+    bbox_mm: [22.2, 22.2, 65.0]
+    nguon: ["Bộ CAD chính thức CyberBrick_Module_CAD_Models.zip"]
+    todo: [tỉ số truyền]
+
+  - id: cb-la027-tire
+    ten: CyberBrick – Lốp cao su Φ33,7 × 13,85 mm (LA027)
+    loai: cyberbrick
+    thu_vien: cyberbrick
+    model: la027-phi33-7x13-85mm-rubber-tire/phi33-7x13-85mm-rubber-tire.step
+    stl: la027-phi33-7x13-85mm-rubber-tire/phi33-7x13-85mm-rubber-tire.stl
+    bbox_mm: [13.7, 33.6, 33.6]
+    nguon: ["Bộ CAD chính thức CyberBrick_Module_CAD_Models.zip"]
+    todo: []
+
+  - id: cb-pc003-battery-14500
+    ten: CyberBrick – Pin Li-ion 14500 7,4 V 800 mAh (PC003)
+    loai: cyberbrick
+    thu_vien: cyberbrick
+    model: pc003-14500-7-4v-800mah-li-ion-battery/14500-7-4v-800mah-li-ion-battery.step
+    stl: pc003-14500-7-4v-800mah-li-ion-battery/14500-7-4v-800mah-li-ion-battery.stl
+    bbox_mm: [28.4, 158.9, 18.5]
+    thong_so:
+      dien_ap_v: "7,4 danh định (2S Li-ion)"
+      dung_luong_mah: 800
+    nguon: ["Tên linh kiện trong bộ CAD chính thức"]
+    todo: [hộp bao gồm cả dây – đo lại thân pin, dòng xả tối đa (A), mạch bảo vệ]
+
+  - id: cb-xa012-aaa-case
+    ten: CyberBrick – Hộp pin 3 × AAA có XH2.54 (XA012)
+    loai: cyberbrick
+    thu_vien: cyberbrick
+    model: xa012-3x1-5v-aaa-battery-case-with-xh2-54-connector/3x1-5v-aaa-battery-case-with-xh2-54-connector.step
+    stl: xa012-3x1-5v-aaa-battery-case-with-xh2-54-connector/3x1-5v-aaa-battery-case-with-xh2-54-connector.stl
+    bbox_mm: [37.0, 17.5, 81.7]
+    thong_so:
+      dien_ap_v: "4,5 (3 × 1,5 V) – chỉ đủ cho bộ phát (≥ 4,5 V), không đủ cho bộ thu (≥ 7,4 V)"
+    nguon: [https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list]
+    todo: []
+
+  - id: cb-xa007-power-switch
+    ten: CyberBrick – Công tắc nguồn XH2.54 (XA007)
+    loai: cyberbrick
+    thu_vien: cyberbrick
+    model: xa007-power-switch-board-with-2pin-xh2-54-connector/power-switch-board-with-2pin-xh2-54-connector.step
+    stl: xa007-power-switch-board-with-2pin-xh2-54-connector/power-switch-board-with-2pin-xh2-54-connector.stl
+    bbox_mm: [20.5, 19.8, 32.0]
+    nguon: [https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list]
+    todo: [dòng tối đa qua công tắc (A)]
+
+  - id: cb-xa009-joystick-1axis
+    ten: CyberBrick – Joystick 1 trục (XA009)
+    loai: cyberbrick
+    thu_vien: cyberbrick
+    model: xa009-single-axis-channel-joystick-with-3pin-sh1-0-connector/single-axis-channel-joystick-with-3pin-sh1-0-connector.step
+    stl: xa009-single-axis-channel-joystick-with-3pin-sh1-0-connector/single-axis-channel-joystick-with-3pin-sh1-0-connector.stl
+    bbox_mm: [34.0, 25.1, 27.0]
+    nguon: [https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list]
+    todo: []
+
+  - id: cb-xa011-joystick-2axis
+    ten: CyberBrick – Joystick 2 trục (XA011)
+    loai: cyberbrick
+    thu_vien: cyberbrick
+    model: xa011-dual-axis-channel-joystick-with-3pin-sh1-0-connector/dual-axis-channel-joystick-with-3pin-sh1-0-connector.step
+    stl: xa011-dual-axis-channel-joystick-with-3pin-sh1-0-connector/dual-axis-channel-joystick-with-3pin-sh1-0-connector.stl
+    bbox_mm: [34.0, 25.6, 28.5]
+    nguon: [https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list]
+    todo: []
+
+  - id: cb-xa010-rocker-3pos
+    ten: CyberBrick – Công tắc gạt 3 vị trí (XA010)
+    loai: cyberbrick
+    thu_vien: cyberbrick
+    model: xa010-rocker-switch-board-with-sh1-0-connector-three-positions/rocker-switch-board-with-sh1-0-connector-three-positions.step
+    stl: xa010-rocker-switch-board-with-sh1-0-connector-three-positions/rocker-switch-board-with-sh1-0-connector-three-positions.stl
+    bbox_mm: [27.0, 26.0, 14.5]
+    nguon: [https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list]
+    todo: []
+
+  - id: cb-xa008-button
+    ten: CyberBrick – Nút nhấn (XA008)
+    loai: cyberbrick
+    thu_vien: cyberbrick
+    model: xa008-button-board-with-2pin-sh1-0-connector/button-board-with-2pin-sh1-0-connector.step
+    stl: xa008-button-board-with-2pin-sh1-0-connector/button-board-with-2pin-sh1-0-connector.stl
+    bbox_mm: [29.0, 18.7, 13.0]
+    nguon: [https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list]
+    todo: []
+
+  - id: cb-xa006-led-hub
+    ten: CyberBrick – Hub LED WS2812 (XA006, 4 cổng)
+    loai: cyberbrick
+    thu_vien: cyberbrick
+    model: xa006-ws2812-led-light-adapter-board-with-3pin-sh1-0-connector/ws2812-led-light-adapter-board-with-3pin-sh1-0-connector.step
+    stl: xa006-ws2812-led-light-adapter-board-with-3pin-sh1-0-connector/ws2812-led-light-adapter-board-with-3pin-sh1-0-connector.stl
+    bbox_mm: [6.0, 6.8, 28.0]
+    nguon: [https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list]
+    todo: []
+
+  - id: cb-kb003-led
+    ten: CyberBrick – LED RGBW WS2812 dây IDC 0,8 (KB003)
+    loai: cyberbrick
+    thu_vien: cyberbrick
+    model: kb003-ws2812-rgbw-led-with-0-8mm-idc/ws2812-rgbw-led-with-0-8mm-idc.step
+    stl: kb003-ws2812-rgbw-led-with-0-8mm-idc/ws2812-rgbw-led-with-0-8mm-idc.stl
+    bbox_mm: [6.0, 2.9, 6.0]
+    nguon: [https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list]
+    todo: []
+
+  - id: cb-phu-kien
+    ten: CyberBrick – Phụ kiện (lò xo BB007/BB016, nam châm CA001 Φ4 × 2, vít M2.5 × 6 AA050)
+    loai: cyberbrick
+    thu_vien: cyberbrick
+    model: ca001-4x2-mm-round-magnet/4x2-mm-round-magnet.step
+    stl: ca001-4x2-mm-round-magnet/4x2-mm-round-magnet.stl
+    model_khac: [bb007-0-5x5x20-mm-helical-compression-spring/, bb016-0-6x8x20-mm-helical-compression-spring/, aa050-m2-5x6-bhcs-machine-screw/]
+    bbox_mm: [4.0, 4.0, 2.0]
+    nguon: ["Bộ CAD chính thức; pdf/Accessories Specification.pdf"]
+    todo: []
+
+  # --- Board chinh hang / dung tu ban ve (2026-10-22). bbox do bang FreeCAD (community/boards-official/models.json)
+  - id: arduino-uno-r4-wifi
+    ten: Arduino UNO R4 WiFi (ABX00087)
+    loai: vi-dieu-khien
+    thu_vien: boards
+    model: arduino-uno-r4-wifi/arduino-uno-r4-wifi.step
+    bbox_mm: [70.5, 53.3, 14.5]
+    nguon: [https://docs.arduino.cc/hardware/uno-r4-wifi/]
+    todo: ["mức logic", "lỗ bắt – lấy từ datasheet ABX00087"]
+
+  - id: arduino-uno-q
+    ten: Arduino UNO Q (ABX00162)
+    loai: vi-dieu-khien
+    thu_vien: boards
+    model: arduino-uno-q/arduino-uno-q.step
+    bbox_mm: [69.1, 53.3, 16.0]
+    nguon: [https://docs.arduino.cc/hardware/uno-q/]
+    todo: ["mức logic", "nguồn cấp"]
+
+  - id: arduino-nano-esp32
+    ten: Arduino Nano ESP32 (ABX00083)
+    loai: vi-dieu-khien
+    thu_vien: boards
+    model: arduino-nano-esp32/arduino-nano-esp32.step
+    bbox_mm: [44.3, 17.8, 11.7]
+    nguon: [https://docs.arduino.cc/hardware/nano-esp32/]
+    todo: [mức logic – kiểm datasheet]
+
+  - id: arduino-nano-r4
+    ten: Arduino Nano R4 (ABX00142)
+    loai: vi-dieu-khien
+    thu_vien: boards
+    model: arduino-nano-r4/arduino-nano-r4.step
+    bbox_mm: [44.3, 17.8, 4.8]
+    nguon: [https://docs.arduino.cc/hardware/nano-r4/]
+    todo: ["mức logic – kiểm datasheet", "model không kèm header"]
+
+  - id: arduino-giga-r1-wifi
+    ten: Arduino GIGA R1 WiFi (ABX00063)
+    loai: vi-dieu-khien
+    thu_vien: boards
+    model: arduino-giga-r1-wifi/arduino-giga-r1-wifi.step
+    bbox_mm: [104.0, 53.3, 12.1]
+    nguon: [https://docs.arduino.cc/hardware/giga-r1-wifi/]
+    todo: ["mức logic 3,3 V? – kiểm datasheet"]
+
+  - id: arduino-modulino
+    ten: Arduino Modulino (13 module I2C Qwiic – buttons, buzzer, distance, knob, pixels, thermo…)
+    loai: cam-bien
+    thu_vien: boards
+    model: arduino-modulino-thermo/arduino-modulino-thermo.step
+    model_khac: [arduino-modulino-buttons/, arduino-modulino-buzzer/, arduino-modulino-distance/, arduino-modulino-extender/,
+                 arduino-modulino-hub/, arduino-modulino-joystick/, arduino-modulino-knob/, arduino-modulino-latch/,
+                 arduino-modulino-light/, arduino-modulino-matrix/, arduino-modulino-motors/, arduino-modulino-movement/,
+                 arduino-modulino-pixels/, arduino-modulino-vibro/]
+    bbox_mm: [41.0, 25.4, 4.6]
+    ghi_chu: "Cùng bo 41 × 25,4 mm; bản có núm/joystick/latch/motors cao hơn (xem models.json)"
+    nguon: [https://docs.arduino.cc/hardware/modulino-thermo/]
+    todo: []
+
+  - id: raspberry-pi-5
+    ten: Raspberry Pi 5 (dựng từ bản vẽ)
+    loai: may-tinh-nhung
+    thu_vien: boards
+    dung_tu_ban_ve: true
+    model: raspberry-pi-5/raspberry-pi-5.step
+    bbox_mm: [88.0, 57.0, 17.2]
+    thong_so:
+      bo_mach_mm: "85 × 56"
+      lo_bat: "4 lỗ Ø2,7 (M2.5), khoảng cách tâm 58 × 49 mm, cách 2 cạnh 3,5 mm"
+      cong: "USB-C x = 11,2; micro-HDMI x = 25,8 / 39,2 (cạnh dưới); Ethernet y = 10,2, USB-A y = 29,1 / 47 (cạnh phải, nhô 3 mm)"
+    nguon: [https://datasheets.raspberrypi.com/rpi5/raspberry-pi-5-mechanical-drawing.pdf]
+    todo: ["độ dày PCB", "chiều cao cổng (đang lấy theo model Pi 4B)", "quạt/tản nhiệt chính hãng", "cổng PCIe/FPC chưa dựng"]
+
+  - id: raspberry-pi-zero-2-w
+    ten: Raspberry Pi Zero 2 W (dựng từ bản vẽ)
+    loai: may-tinh-nhung
+    thu_vien: boards
+    dung_tu_ban_ve: true
+    model: raspberry-pi-zero-2-w/raspberry-pi-zero-2-w.step
+    bbox_mm: [65.0, 31.0, 10.1]
+    thong_so:
+      bo_mach_mm: "65 × 30"
+      lo_bat: "4 lỗ, khoảng cách tâm 58 × 23 mm, cách 2 cạnh 3,5 mm"
+      cong: "mini-HDMI x = 12,4; micro-USB x = 41,4 (dữ liệu) / 54 (nguồn) – cạnh dưới"
+    nguon: [https://datasheets.raspberrypi.com/rpizero2/raspberry-pi-zero-2-w-mechanical-drawing.pdf]
+    todo: ["Ø lỗ (bản vẽ không ghi, đang dùng 2,7)", "độ dày PCB", "khe thẻ SD + cổng camera chưa dựng", "model có header (bản W thường không hàn sẵn)"]
+
+  - id: esp32-devkitc-v4
+    ten: ESP32-DevKitC V4 – 38 chân (dựng từ bản vẽ + module WROOM-32E chính hãng)
+    loai: vi-dieu-khien
+    thu_vien: boards
+    dung_tu_ban_ve: true
+    model: esp32-devkitc-v4/esp32-devkitc-v4.step
+    bbox_mm: [55.3, 27.9, 13.2]
+    thong_so:
+      bo_mach_mm: "48,26 × 27,94 (anten nhô thêm 6,04)"
+      chan: "2 hàng × 19 chân, bước 2,54, hai hàng cách 25,40 – vừa breadboard thì chỉ chừa 1 hàng lỗ mỗi bên"
+      muc_logic_v: 3.3
+    nguon: [https://dl.espressif.com/dl/schematics/esp32_devkitc_v4_dimensions.pdf]
+    todo: ["không có lỗ bắt", "độ dày PCB", "chiều cao header + chân (đang ước 8,5 mm)", "vị trí nút EN/Boot"]
+
+  - id: stm32-nucleo-64
+    ten: STM32 Nucleo-64 (MB1136 – F401RE, F411RE, F446RE…; dựng từ bản vẽ ST)
+    loai: vi-dieu-khien
+    thu_vien: boards
+    dung_tu_ban_ve: true
+    model: stm32-nucleo-64/stm32-nucleo-64.step
+    bbox_mm: [70.0, 83.5, 16.1]
+    thong_so:
+      bo_mach_mm: "70 × 82,5 (bẻ ST-LINK còn 70 × 57,54)"
+      lo_bat: "3 lỗ: (10,87; 54,57), (59,13; 53,30), (43,89; 2,50) – gốc góc dưới trái, y hướng về ST-LINK"
+      header: "Arduino UNO V3 (cái, mặt trên) + ST Morpho 2 × 19 (đực, 2 mặt), cột ngoài Morpho cách 63,50"
+    nguon:
+      - "ST UM1724 Rev 14, Figure 5 (community/boards-official/drawings/um1724-stm32-nucleo64.pdf)"
+      - "Đối chiếu: community/boards-official/models/stm32-nucleo-64/doi-chieu-ban-ve.png"
+    todo: ["Ø lỗ (bản vẽ không ghi, đang dùng 3,2 như UNO)", "độ dày PCB", "chiều cao header (ước 8,5)", "mini-USB ST-LINK (thân ước)", "bản Nucleo-64 mới MB1717/MB2046 (USB-C) có thể khác"]
+
+  - id: stm32-blue-pill
+    ten: STM32F103C8T6 "Blue Pill" (hàng generic – dựng từ nguồn cộng đồng)
+    loai: vi-dieu-khien
+    thu_vien: boards
+    dung_tu_ban_ve: true
+    model: stm32-blue-pill/stm32-blue-pill.step
+    bbox_mm: [54.3, 22.9, 18.6]
+    thong_so:
+      bo_mach_mm: "22,86 × 53,34 (nguồn khác: 23 × 53, 22,5 × 53; bản J.2 dài 58,42)"
+      chan: "2 hàng × 20 chân, bước 2,54, hai hàng cách 15,24 (qeda ghi 15) – không có lỗ bắt"
+      muc_logic_v: 3.3
+    nguon:
+      - https://stm32-base.org/boards/STM32F103C8T6-Blue-Pill
+      - https://git.cuvoodoo.info/kingkevin/qeda_library/src/branch/master/devboard/blue-pill.yaml
+      - https://www.diyaudio.com/community/threads/stm32-blue-pill.413191/
+    todo: ["ĐO HÀNG THẬT: kích thước bo + khoảng cách 2 hàng chân", "vị trí jumper BOOT0/BOOT1, nút reset"]
+
+  - id: esp32-s3-devkitc-1
+    ten: ESP32-S3-DevKitC-1 v1.1 – 44 chân (dựng từ DXF Espressif + module S3-WROOM-1 chính hãng)
+    loai: vi-dieu-khien
+    thu_vien: boards
+    dung_tu_ban_ve: true
+    model: esp32-s3-devkitc-1/esp32-s3-devkitc-1.step
+    bbox_mm: [70.2, 25.4, 13.2]
+    thong_so:
+      bo_mach_mm: "25,40 × 62,74 (anten nhô thêm 6,41)"
+      chan: "2 hàng × 22 chân, bước 2,54, cách mép 1,27 (2 hàng cách 22,86); chân cuối cách mép USB 8,00"
+      cong: "2 micro-USB (UART, USB) tâm 6,0 / 19,4 tính từ cạnh"
+      muc_logic_v: 3.3
+    nguon: [https://dl.espressif.com/dl/schematics/esp_idf/DXF_ESP32-S3-DevKitC-1_V1.1_20220429.dxf]
+    todo: ["không có lỗ bắt", "độ dày PCB", "chiều cao header (ước 8,5)", "bản v1.0 / bản có cổng USB-C có thể khác"]
+
+  - id: lolin-d1-mini-v4
+    ten: LOLIN (Wemos) D1 mini v4.0.0 – ESP8266 (dựng từ bản vẽ LOLIN)
+    loai: vi-dieu-khien
+    thu_vien: boards
+    dung_tu_ban_ve: true
+    model: lolin-d1-mini-v4/lolin-d1-mini-v4.step
+    bbox_mm: [34.8, 25.4, 13.3]
+    thong_so:
+      bo_mach_mm: "34,3 × 25,4"
+      chan: "2 hàng × 8 chân, hai hàng cách 22,86"
+      lo_bat: "2 lỗ Ø2,0, cách nhau 20,4, cách cạnh 2,5; tâm cách đầu đối diện USB ~3,24 (đo trên bản vẽ)"
+      muc_logic_v: 3.3
+      khoi_luong_g: 3
+    nguon: [https://www.wemos.cc/en/latest/d1/d1_mini.html, https://www.wemos.cc/en/latest/_static/files/dim_d1_mini_v4.0.0.pdf]
+    todo: ["độ dày PCB", "cổng USB-C (thân ước)", "bản v3 (micro-USB) khác cổng", "bo góc tròn chưa dựng"]
+
+  - id: esp32-cam
+    ten: AI-Thinker ESP32-CAM (dựng từ datasheet)
+    loai: vi-dieu-khien
+    thu_vien: boards
+    dung_tu_ban_ve: true
+    model: esp32-cam/esp32-cam.step
+    bbox_mm: [40.5, 27.0, 13.0]
+    thong_so:
+      bo_mach_mm: "27 × 40,5 × 4,5 (±0,2) theo bảng thông số; hình vẽ ghi 27 × 40"
+      chan: "DIP-16: 2 hàng × 8 chân, cách 22,86, chân cuối cách mép 4,58; vùng anten 6,218 ở đầu kia"
+      nguon_cap_v: 5
+      dong_ma: "180 (tắt đèn flash) / 310 (bật flash tối đa) ở 5 V"
+      khoi_luong_g: 10
+    nguon: [https://www.elecrow.com/download//product/DTC42499M/ESP32-CAM_datasheet.pdf, https://docs.ai-thinker.com/en/esp32-cam]
+    todo: ["camera OV2640 (ống kính + cáp FPC) CHƯA dựng – đo hàng thật", "khe thẻ microSD, đèn flash", "không có lỗ bắt"]
+
+  - id: esp32-module
+    ten: Module ESP32 chính hãng (WROOM-32E, S3-WROOM-1, C3-MINI-1, C6, H2… 29 model)
+    loai: vi-dieu-khien
+    thu_vien: espressif
+    model: ESP32-S3-WROOM-1.STEP
+    bbox_mm: [18.0, 25.5, 3.1]
+    ghi_chu: "Dùng khi tự vẽ mạch/hộp quanh module; danh sách đủ + bbox trong community/boards-official/models.json"
+    nguon: [https://github.com/espressif/kicad-libraries]
+    todo: []

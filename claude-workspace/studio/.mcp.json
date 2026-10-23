@@ -1,0 +1,31 @@
+{
+  "mcpServers": {
+    "freecad": {
+      "command": "uvx",
+      "args": ["--from", "D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/community/neka-nat-freecad-mcp", "freecad-mcp",
+               "--freecadcmd", "\"C:/Program Files/FreeCAD 1.1/bin/freecadcmd.exe\""]
+    },
+    "blender": {
+      "command": "uvx",
+      "args": ["--from", "D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/community/ahujasid-mcp-for-blender", "mcp-for-blender"],
+      "env": {
+        "DISABLE_TELEMETRY": "1",
+        "BLENDER_MCP_DISABLE_TELEMETRY": "1",
+        "BLENDER_MCP_SAFE_MODE": "1",
+        "BLENDERMCP_NO_UPDATE_CHECK": "1"
+      }
+    },
+    "filmcraft": {
+      "command": "C:/Program Files/FilmCraft/filmcraft-cli.exe",
+      "args": ["mcp", "--bridge", "127.0.0.1:7920"]
+    },
+    "lightcraft": {
+      "command": "C:/Program Files/LightCraft/lightcraft-cli.exe",
+      "args": ["mcp", "--connect", "127.0.0.1:7980", "--compact"]
+    },
+    "photocraft": {
+      "command": "C:/Program Files/PhotoCraft/photocraft-cli.exe",
+      "args": ["mcp", "--bridge", "127.0.0.1:7878", "--control-token-file", "${USERPROFILE}/.photocraft/control.token"]
+    }
+  }
+}

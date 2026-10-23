@@ -1,0 +1,227 @@
+# Quản lý nguồn cộng đồng
+
+Nguồn sự thật về điểm ghim là `community/pins.tsv`; bảng dưới đây là bản để đọc.
+Sau mỗi lần `apply`/`rollback`, cập nhật cột "Ghim" và "Kiểm tra".
+
+## Nguồn đang dùng
+
+| Repo | Ghim | License | Tin cậy | Kiểm tra | Dùng cho |
+|---|---|---|---|---|---|
+| [anthropics/skills](https://github.com/anthropics/skills) | `dbd4588f9e10` | Apache-2.0; docx/pdf/pptx/xlsx là source-available | **Chính thức** (allowlist) | 2026-10-21 | `docx`, `pptx`, `xlsx` → stlab |
+| [shanraisshan/claude-code-best-practice](https://github.com/shanraisshan/claude-code-best-practice) | `9f9f5d9faec1` (sparse: `.claude`, `best-practice`, `tips`) | MIT | Cộng đồng | 2026-10-21 | Mẫu cấu trúc `.claude`/CLAUDE.md (chỉ đọc) |
+| [mattpocock/skills](https://github.com/mattpocock/skills) | `v1.3.1` (`24fe0ef7737e`) | MIT | Cộng đồng | 2026-10-21 | `grill-me`, `handoff`, `diagnosing-bugs`, `research` (~/.claude); `pr` (oss-toolkit) |
+| [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) | `408d3c9eee2d` | MIT | Cộng đồng | 2026-10-21 | Agent `embedded-systems`, `iot-engineer`, `cpp-pro`, `python-pro` → maker |
+| [homeassistant-ai/skills](https://github.com/homeassistant-ai/skills) | `68f2690ff868` | MIT | Cộng đồng | 2026-10-21 | `home-assistant-best-practices` → smart-home |
+| [homeassistant-ai/ha-mcp](https://github.com/homeassistant-ai/ha-mcp) | `v8.7.0` (`a96752286be1`) | MIT | Cộng đồng | 2026-10-21 | MCP Home Assistant (**chưa bật**) |
+| [neka-nat/freecad-mcp](https://github.com/neka-nat/freecad-mcp) | `v0.1.27` (`78bf0230a033`) | MIT | Cộng đồng | 2026-10-21 | MCP FreeCAD → prompt-library |
+| [ahujasid/mcp-for-blender](https://github.com/ahujasid/mcp-for-blender) | `5a3618fccb2d` | MIT | Cộng đồng | 2026-10-21 | MCP Blender → prompt-library |
+| [YujxZJCN/teaching-skills](https://github.com/YujxZJCN/teaching-skills) | `fd0c486e61cb` | MIT | Cộng đồng (ít người dùng) | 2026-10-21 | `lesson-builder`, `lab-forge` → stlab |
+| [GarethManning/education-agent-skills](https://github.com/GarethManning/education-agent-skills) | `6bbbce418f82` | **CC BY-SA 4.0** | Cộng đồng | 2026-10-21 | `backwards-design-unit-planner`, `criterion-referenced-rubric-generator` → stlab |
+| [drfenixion/freecad.robotcad](https://github.com/drfenixion/freecad.robotcad) | `v12.10.3` (`80c483bcccca`) | LGPL-2.1 | Cộng đồng, 454★ | 2026-10-21 | Workbench RobotCAD (URDF, khớp, quán tính) → FreeCAD Mod |
+| [looooo/freecad.gears](https://github.com/looooo/freecad.gears) | `83ec154b1925` | GPL-3.0 | Cộng đồng, 363★ | 2026-10-21 | Workbench bánh răng → FreeCAD Mod |
+| [shaise/FreeCAD_SheetMetal](https://github.com/shaise/FreeCAD_SheetMetal) | `cbf6595b68ad` (0.8.26) | LGPL-2.1 | Cộng đồng, 349★ | 2026-10-21 | Workbench tấm/bracket → FreeCAD Mod |
+| [FreeCAD/FreeCAD-library](https://github.com/FreeCAD/FreeCAD-library) | `f5ca01cdcaa2` (sparse, `freecad-library.sparse`) | **CC-BY 3.0** (ghi công) | Chính thức (tổ chức FreeCAD), 2k★ | 2026-10-21 | Thư viện linh kiện robotics (~950 MB) + macro PartsLibrary |
+| [arduino/docs-content](https://github.com/arduino/docs-content) | `b12ffb3a317c` (sparse: chỉ `*-step.zip` của 5 board + 14 Modulino, `arduino-docs-content.sparse`, ~9 MB) | **CC-BY-SA-4.0** | **Chính hãng** (tổ chức Arduino) | 2026-10-22 | STEP UNO R4 WiFi, UNO Q, Nano ESP32, Nano R4, GIGA R1, Modulino → giải nén bằng `maker/robotics-cad/library/boards.py` |
+| [espressif/kicad-libraries](https://github.com/espressif/kicad-libraries) | `3.2.1` (`1dfc3110895c`, sparse: `3dmodels/`) | **CC-BY-SA-4.0** + miễn trừ cho thiết kế (như thư viện KiCad) | **Chính hãng** (Espressif), 1,4k★ | 2026-10-22 | 29 STEP module ESP32/S2/S3/C3/C5/C6/H2 (không có board DevKit) |
+| [github/awesome-copilot](https://github.com/github/awesome-copilot) | `613efc8c21d9` (sparse: `skills/freecad-scripts`) | MIT | Tổ chức GitHub, 40k★ | 2026-10-21 | Skill `freecad-scripts` → `~/.claude/skills` (dùng chung) |
+| [midasmatterhorn/artcraft-skills](https://github.com/midasmatterhorn/artcraft-skills) | `aa35c244d115` (sparse: `filmcraft/`, `lightcraft/`) | MIT | Cộng đồng, 30★ (dẫn chứng theo mã nguồn FilmCraft 0.9.0 @4a69a03, LightCraft 0.9.1 @4f0b110) | 2026-10-21 | Skill `filmcraft`, `lightcraft` → `~/.claude/skills` |
+| [abpy/FujifilmCameraProfiles](https://github.com/abpy/FujifilmCameraProfiles) | `b5a1f16abfb2` | **Không có file LICENSE** | Cộng đồng, 588★ | 2026-10-21 | LUT Fuji film sim. Chỉ `provia conversion luts/` áp thẳng lên JPEG được (Classic Neg, Nostalgic Neg); `cube lut/` cần RAW + profile tuyến tính |
+| [cedeber/hald-clut](https://github.com/cedeber/hald-clut) | `3b3180f82d4d` (sparse: Film Simulation/Color/{Fuji,Kodak}, Fujifilm XTrans III) | Repo GPL-3.0; bộ RawTherapee Film Simulation **CC BY-SA 4.0** (Pat David, Pavlov Dmitry, Michael Ezra) | Cộng đồng, 324★ | 2026-10-21 | HaldCLUT phim (Portra, 400H…) → `photo-ai/scripts/luts.py` đổi sang `.cube`. **Không lấy** `Apple/`, `Pixelmator Pro/` (trích từ app thương mại). XTrans III chỉ dành cho RAW trung tính |
+| [peva3/Lightroom-Presets](https://github.com/peva3/Lightroom-Presets) | `f22f4d8057aa` | MIT | Cộng đồng, 99★, repo mới (2026-05) | 2026-10-21 | 445 preset XMP Lightroom (chỉ `.xmp` + `.md`) → LightCraft `render --settings x.xmp` (áp được) |
+
+## Những gì nguồn chạy/truy cập (đọc mã ngày 2026-10-21)
+- **Skill markdown** (mattpocock, homeassistant-ai, teaching-skills, GarethManning): không có script,
+  không có `allowed-tools`, không có hook. Riêng `diagnosing-bugs` có `hitl-loop.template.sh`,
+  là mẫu để copy, chỉ dùng `read`/`printf`.
+- **docx/pptx/xlsx**: script Python gọi `soffice` (LibreOffice) và git cục bộ qua `subprocess`.
+  Không gọi mạng (`urllib` chỉ dùng để parse đường dẫn).
+- **Agent VoltAgent**: được cấp `Read, Write, Edit, Bash, Glob, Grep`, model `sonnet`.
+- **freecad-mcp**: addon mở XML-RPC và `exec()` code nhận được trong FreeCAD.
+  Mặc định chỉ nghe ở `127.0.0.1`; tùy chọn `0.0.0.0` kèm lọc IP: **không bật**.
+- **mcp-for-blender**: `execute_blender_code` chạy Python tùy ý. Telemetry gửi về Supabase
+  (có thể kèm `prompt_text`) nếu đồng ý: tắt bằng `DISABLE_TELEMETRY=1` (đã đặt trong `.mcp.json`).
+  Addon tự kiểm tra bản mới từ nhánh `main`: tắt bằng `BLENDERMCP_NO_UPDATE_CHECK=1`.
+  Có tích hợp API ngoài (Poly Haven, Sketchfab, Hyper3D/fal.ai, Poly Pizza, "premium").
+  `BLENDER_MCP_SAFE_MODE=1` bật sandbox giới hạn module/builtin.
+- **ha-mcp**: cần token admin Home Assistant. Có tool xóa entity/device, restart, ghi/xóa file.
+  Có chế độ read-only (`/readonly`), bật/tắt từng tool. Không có telemetry (theo README).
+
+### FreeCAD robotics (đọc mã 2026-10-21)
+- **Gears, SheetMetal**: `subprocess` chỉ trong script dev (dịch, test) – không chạy khi dùng. Không gọi mạng.
+- **RobotCAD**:
+  - Không tự `pip install` khi nạp; thiếu thư viện thì mở hộp thoại để người dùng bấm cài (PyPI, không ghim).
+    → Đã cài sẵn **bản ghim** bằng `studio/freecad/install-robotcad-deps.bat` (lock: `requirements-robotcad.lock.txt`)
+    vào `~\.local\share\FreeCAD\AdditionalPythonPackages\py311` (RobotCAD đặt thư mục này đầu `sys.path`).
+    **Không** cài numpy/lxml/setuptools… ở đó vì sẽ đè bản của FreeCAD (numpy 1.26.4).
+  - Biến môi trường `DEBUG` → mở `debugpy` trên **0.0.0.0:5678** (ai trong LAN cũng chạy được mã).
+    Launcher gỡ `DEBUG` khi mở FreeCAD (`env_unset` trong `studio/apps.json`).
+  - Lệnh do người dùng bấm có gửi dữ liệu ra ngoài: "Transfer project to external code generator" (robotcad.ru),
+    LLM provider (openrouter.ai, routerai.ru, Ollama local). **Không dùng.**
+  - 4 git submodule (ros2_controllers, sdformat, robot_descriptions, Dynamic_World_Generator) **chưa tải**:
+    phục vụ ROS2/Gazebo (cần Linux/WSL2).
+- **FreeCAD-library**: dữ liệu (STEP/FCStd) + macro `PartsLibrary.FCMacro` (chức năng git chỉ bật khi có python-git – chưa cài).
+  Repo có tên file chứa `:` → clone đặt `core.protectNTFS=false` **chỉ trong clone này** và loại thư mục đó khỏi sparse.
+- **freecad-scripts**: chỉ markdown (SKILL.md + references), không script/hook.
+- **RobotCAD v12.10.3 – lỗi upstream (2026-10-22)**: `package.xml` khai `<subdirectory>freecad/robotcad`, mã thật ở
+  `freecad/cross` → FreeCAD in `Error in InitApplications … freecad
+obotcad` khi khởi động. Workbench vẫn nạp
+  (`import freecad.cross` OK) và RobotCAD là Mod nạp cuối nên không chặn Mod khác. Không sửa bản ghim; xem lại khi lên bản mới.
+
+### Model board vi điều khiển (tìm 2026-10-22)
+- **Đã có** trong FreeCAD-library: Arduino UNO/Mega/Nano, ESP32 DOIT DevKit v1, Pi 4B, Pico.
+- **Thêm** (chính hãng, chỉ dữ liệu): Arduino docs-content, Espressif kicad-libraries (bảng trên).
+- **Không có STEP ghim được** → dựng từ bản vẽ cơ khí chính hãng bằng `maker/robotics-cad/library/boards_param.py`
+  (mặt bằng đúng bản vẽ, chiều cao linh kiện ƯỚC – đo hàng thật): Pi 5, Pi Zero 2 W, ESP32-DevKitC V4,
+  ESP32-S3-DevKitC-1 (đọc tọa độ từ DXF), STM32 Nucleo-64 (UM1724 Fig. 5, khớp chéo chuẩn Arduino UNO – xem
+  `models/stm32-nucleo-64/doi-chieu-ban-ve.png`), LOLIN D1 mini v4, ESP32-CAM (datasheet AI-Thinker).
+  Bản vẽ lưu ở `community/boards-official/drawings/` (datasheets.raspberrypi.com, dl.espressif.com, wemos.cc;
+  UM1724 lấy từ bản lưu của mikrocontroller.ti.bfh.ch vì st.com chặn tải tự động; datasheet ESP32-CAM từ elecrow.com).
+- **Blue Pill**: hàng generic, không có bản vẽ hãng. Nguồn cộng đồng mâu thuẫn (23 × 53 stm32-base, 22,5 × 53 qeda,
+  22,86 × 53,34 diyAudio; khoảng 2 hàng chân 15 hoặc 15,24) → dựng 22,86 × 53,34 / 15,24, **phải đo hàng thật**.
+- **Còn thiếu**: NodeMCU (nhiều biến thể: Amica ~49 × 26, LoLin V3 ~58 × 31 – cần biết STLab dùng loại nào;
+  repo chính thức nodemcu/nodemcu-devkit-v1.0 chỉ có Altium/Gerber .rar).
+- **Cân nhắc, chưa lấy**: Adafruit_CAD_Parts (MIT, 1,5k★, ~1,2 GB – chỉ board Adafruit); NopSCADlib (GPL-3, OpenSCAD →
+  chỉ STL; có Pi Zero/3/4, BlackPill, TP4056, MT3608, MP1584EN…); KiCad packages3D (chỉ Pico/Pico W);
+  GrabCAD/Printables/SnapMagic (cần tài khoản, license thường không rõ – không ghim được).
+- `update-community.sh clone`: sửa lỗi dừng ngang khi file `.sparse` không có dòng `# git-config` (grep trả 1 + pipefail).
+
+### Video AI (2026-10-21)
+- **FilmCraft 0.9.0** (đã cài; [storytold/filmcraft](https://github.com/storytold/filmcraft), Apache-2.0, 15k★): cổng `--control 7920`
+  **không có token**. Bản phát hành **không có Whisper/Kokoro** (`transcript.generate`, `tts.*` giọng tự nhiên không chạy).
+- **artcraft-skills/filmcraft**: chỉ markdown; KHÔNG chạy `install.sh/ps1` của repo (dùng symlink).
+- **faster-whisper 1.2.1** (MIT) + ctranslate2 4.8.3, PyAV ghim < 19 (bản 19 làm hỏng faster-whisper 1.2.1).
+  Model `large-v3-turbo` tải 1 lần từ Hugging Face vào `%LOCALAPPDATA%\stlab-video-ai\models`. Chạy CPU (GPU 1660 chậm hơn).
+- Đã xem, không dùng: `juan52878911/filmcraft-studio` (MIT, chỉ macOS – tham khảo kiến trúc), `jhonsu01/filmcraft-mcp-server`
+  (trùng MCP có sẵn), auto-editor / PySceneDetect (FilmCraft + ffmpeg đã đủ), PhoWhisper (ngừng cập nhật 2024).
+- `edge-tts 7.3.1` chỉ dùng **một lần** (uvx, không cài) để tạo clip thử giọng Việt; 7.2.8 bị Microsoft từ chối (403).
+
+### Ảnh AI – LightCraft (duyệt 2026-10-21, giai đoạn 1)
+- **artcraft-skills/lightcraft**: chỉ markdown (`SKILL.md`, `evidence.md`, `agents/openai.yaml`); không script, hook,
+  `allowed-tools`, không gọi mạng. Viết cho LightCraft **0.9.1** = bản đã cài (`lightcraft-cli 0.9.1`, đủ `run/render/mcp`).
+  - Skill mô tả macOS. Trên Windows: app `C:\Program Files\LightCraft\lightcraft.exe`, **CLI có sẵn** cạnh app
+    (macOS phải tải riêng), log/thư viện theo `%APPDATA%`/`Pictures` (TODO: xác nhận đường dẫn log ở giai đoạn 2).
+  - Thử headless 2026-10-21 (`run --demo … app.export`): OK, ra JPEG 2048×1365 px. Trên Windows `app.export path=`
+    phải là **đường dẫn file** (`…\demo1.jpg`); đưa thư mục → `Access is denied (os error 5)`.
+    `develop.set` trả `null` nhưng **có áp** (kiểm bằng `develop.get`, 2026-10-21). `develop.auto` quá tay với ảnh
+    JPEG ngược sáng (exposure −0,88, shadows +52 → xám, đục): **không dùng**, dùng preset riêng.
+    `render --settings` **không áp** preset JSON phẳng (`{"light.exposure":…}`) – dùng `--set k=v` (2026-10-21,
+    khớp 100% với `run develop.set`). `app.export metadata=copyright` vẫn giữ Artist/Copyright do máy ảnh ghi (có thể là email người chụp).
+  - Điều skill nhấn mạnh: cổng `--control` **không có token**; một thư viện chỉ một tiến trình ghi (`catalog.lock`);
+    `ok: true` không chứng minh ảnh đúng – phải kiểm file xuất. Khử nhiễu AI / SAM 3 không kèm model.
+- Công cụ bổ trợ **đã duyệt, chưa cài** (cài + ghim lock ở giai đoạn 3–4, môi trường `uv` riêng):
+
+| Công cụ | Bản dự kiến | License | Tin cậy | Dùng cho | Ghi chú an toàn |
+|---|---|---|---|---|---|
+| [ExifTool](https://exiftool.org) | 13.59 | GPL / Perl Artistic | Chuẩn ngành, 5k★ (mirror) | Ghi tác giả/bản quyền, **xóa GPS** | Chạy cục bộ, không mạng |
+| [opencv-python-headless](https://github.com/opencv/opencv-python) | 5.0.0.93 | MIT (wrapper) / Apache-2.0 (OpenCV) | Tổ chức OpenCV | Chấm độ nét, cháy sáng → lọc ảnh | Không mạng |
+| [ImageHash](https://github.com/JohannesBuchner/imagehash) | 4.3.2 | BSD-2-Clause | 3,9k★ | Tìm ảnh trùng/chụp liên tiếp | Nhẹ (thay imagededup) |
+| [rembg](https://github.com/danielgatis/rembg) | v2.0.85 (`202e42649a84`) | MIT | 25k★ | Tách nền ảnh sản phẩm | Mặc định `bria-rmbg` (tốt nhất, ~1 GB; thương mại phải trả phí → xem bảng "Xem lại khi làm thương mại"); `birefnet-general` (MIT) là phương án thay. **Cấm** `withoutbg` (gửi ảnh lên cloud – lý do riêng tư, không phải license). Model tải từ GitHub release của rembg lần đầu |
+| BiRefNet (model) | `birefnet-general` | MIT ([ZhengPeng7/BiRefNet](https://github.com/ZhengPeng7/BiRefNet), 4,3k★) | — | Model tách nền | — |
+| [Real-ESRGAN-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) | `realesrgan-ncnn-vulkan-20220424-windows.zip` (release Real-ESRGAN v0.2.5.0) | MIT (file LICENSE; Real-ESRGAN gốc BSD-3) | 37k★ (gốc), không cập nhật từ 2022 | Phóng ảnh điện thoại nhỏ | Vulkan chạy GTX 1660 SUPER 6 GB. Model `realesrgan-x4plus`. **Đã cài 2026-10-22** vào `photo-ai/tools/realesrgan/`, SHA-256 zip `abc02804…802d` (`photo-ai/tools/SHA256SUMS`); 800→3200 px ≈ 8 s. Nét hơn nhưng **da mịn kiểu sáp, chữ bị viền** → chỉ dùng cho ảnh nhỏ thật sự |
+
+### CyberBrick – model chính thức Bambu Lab (tải 2026-10-21)
+- Nguồn: link "3D Model / Solid Model / Specification" trên trang sản phẩm Bambu Store (CDN `store.bblcdn.com`),
+  danh sách trong wiki https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list. 48 file (215 MB):
+  36 STL, 36 STEP, 45 PDF, 4 3MF, 10 JSON (cấu hình điều khiển). **Không có file chạy** (đã quét trước khi giải nén).
+- Lưu ở `community/cyberbrick-official/` (không lên git); danh sách + SHA-256: `maker/robotics-cad/library/cyberbrick-sources.tsv`;
+  tải/sắp lại: `maker/robotics-cad/library/cyberbrick.py`. FreeCAD 1.1 mở hợp lệ cả 26 STEP (2026-10-21).
+- Không có license ghi kèm (tài liệu kỹ thuật do hãng phát hành công khai) → bảng "Xem lại khi làm thương mại".
+- Hãng không phát hành model N20 (LA002–LA004), chỉ datasheet → dùng model N20 chuẩn của Pololu (mục dưới).
+
+### Động cơ N20 – model Pololu Micro Metal Gearmotor (tải 2026-10-21)
+- N20 là khuôn chung nhiều hãng (12 × 10 mm, hộp số 9 mm, trục Φ3 vát D, lỗ M1.6). FreeCAD-library không có;
+  GitHub chỉ có dự án dùng N20, không có model đáng tin. Chọn **Pololu** (hãng phát hành STEP chính thức):
+  https://www.pololu.com/product/2364/resources → zip 26 STEP (278 MB giải nén) + PDF bản vẽ kích thước.
+- Đã quét: chỉ `.step` + README, không có file chạy. SHA-256 trong `maker/robotics-cad/library/n20-sources.tsv`.
+- Sắp 8 biến thể vào `community/n20-motor/models/` (STEP + STL xuất bằng FreeCAD 1.1). So datasheet CyberBrick LA002:
+  dài 35,8 so với ≈ 36,1 mm (trục 9,3 so với 10) – đủ để dựng gá, đo hàng thật trước khi làm khớp chặt.
+- Không ghi license kèm file → bảng "Xem lại khi làm thương mại".
+- Mã nguồn lõi: [CyberBrick-Official/CyberBrick_Controller_Core](https://github.com/CyberBrick-Official/CyberBrick_Controller_Core) (234★, chưa ghim).
+
+### LUT / preset cộng đồng cho ảnh (duyệt 2026-10-21)
+- LightCraft ≈ Lightroom, PhotoCraft ≈ Photoshop → dùng lại tài nguyên định dạng Adobe. Chỉ là **dữ liệu**
+  (`.xmp`, `.cube`, `.png`), không có mã chạy; không gọi mạng.
+- Kiểm thực tế: LightCraft `render --settings preset.xmp` **áp được** XMP Lightroom (PV 15.4); PhotoCraft
+  `image.adjustments.colorLookup {"file": "D:/.../x.cube"}` áp được LUT (đường dẫn **kiểu Windows**, `/d/...` lỗi).
+  PhotoCraft **chép EXIF từ ảnh vào** → luôn đưa ảnh đã `metadata=none` và kiểm GPS ở QA.
+- So sánh 12 kiểu trên 4 ảnh 20/10 (`scripts/looks.py`): LUT RawTherapee (Portra 160 NC, Fuji 400H) cho da
+  tự nhiên nhất; preset XMP peva3 áp thẳng lên JPEG ngược sáng thường bị nhạt/đục.
+- Không tìm được bộ Photoshop Actions `.atn` miễn phí có uy tín trên GitHub (chủ yếu hàng bán); PhotoCraft
+  tự làm được chọn người/trời/mặt (`select.subject`, `select.sky`, `image.detectFaces`) nên không cần.
+- Tránh: repo kiểu "Lightroom Photo Studio for Windows" mới tạo (dấu hiệu mồi mã độc);
+  `dpnkrpl/awesome-lightroom-presets` (5000 preset không rõ nguồn, có thể là preset bán bị chia sẻ lậu).
+
+## Thay đổi bên ngoài workspace (để gỡ/khôi phục)
+| Ngày | Vị trí | Thay đổi | Khôi phục |
+|---|---|---|---|
+| 2026-10-21 | `~/.claude/skills/{grill-me,handoff,diagnosing-bugs,research,robotics-cad,freecad-scripts}` | symlink → workspace (nguồn duy nhất) | `update-community.sh unlink` |
+| 2026-10-21 | `~/.claude/CLAUDE.md` | tạo mới (trước đó không có) | xóa file |
+| 2026-10-21 | `%APPDATA%\FreeCAD\v1-1\Mod\FreeCADMCP` | symlink → freecad-mcp v0.1.27 | `unlink`, rồi chuyển `Mod-backup\FreeCADMCP-0.1.26-2026-10-21` về `Mod\FreeCADMCP` |
+| 2026-10-21 | `%APPDATA%\Blender Foundation\Blender\5.1\scripts\addons\blender_mcp.py` | symlink → mcp-for-blender | `unlink` |
+| 2026-10-21 | Blender 5.1 `config\userpref.blend` | bật addon "MCP for Blender" | chép đè từ `userpref.blend.bak-2026-10-21` |
+| 2026-10-21 | Biến môi trường người dùng | `BLENDERMCP_NO_UPDATE_CHECK=1` | `reg delete HKCU\Environment /v BLENDERMCP_NO_UPDATE_CHECK` |
+| 2026-10-21 | Windows | Bật Developer Mode (cho symlink) | Settings → For developers |
+| 2026-10-21 | `%APPDATA%\FreeCAD\v1-1\Mod\{freecad.robotcad, freecad.gears, SheetMetal}`, `Macro\PartsLibrary.FCMacro` | symlink → bản ghim | `update-community.sh unlink` |
+| 2026-10-21 | `~\.local\share\FreeCAD\AdditionalPythonPackages\py311` | thư viện Python ghim cho RobotCAD (16 gói, xem lock) | xóa thư mục |
+| 2026-10-21 | `%LOCALAPPDATA%\stlab-video-ai\models` | model faster-whisper large-v3-turbo (~1,6 GB) | xóa thư mục |
+| 2026-10-21 | FreeCAD tham số `Plugins/parts_library/destination` | trỏ tới `community/freecad-library` | macro PartsLibrary → Settings |
+| 2026-10-21 | Claude Desktop `%LOCALAPPDATA%\Claude-Data\claude_pzs8sxrjxfjjc\claude_desktop_config.json` | **chưa đổi**; `dong-bo-claude-desktop.bat` sẽ thêm blender, lightcraft và thay freecad (`uvx freecad-mcp` không ghim) bằng bản ghim | chép đè từ file `.bak-*` cạnh nó |
+| 2026-10-21 | `%USERPROFILE%\Pictures\stlab-studio\` | thư mục PhotoCraft được đọc/ghi qua MCP | xóa thư mục |
+| 2026-10-21 | `~/.claude/skills/lightcraft` | symlink → artcraft-skills/lightcraft (`aa35c24`) | `update-community.sh unlink` |
+
+Các bản clone có `__pycache__/`, `*.pyc`, `build/`, `*.egg-info/` trong `.git/info/exclude`
+(lệnh `exclude`), vì FreeCAD/Blender/uv sinh các file này khi chạy trực tiếp từ bản ghim.
+
+## Đã xem và KHÔNG dùng
+| Repo | Lý do |
+|---|---|
+| schwarztim/bambu-mcp | Nhúng khóa trích từ Bambu Connect để vượt xác thực firmware: rủi ro pháp lý/ToS |
+| Eyalm321, griches, rowbotik (bambu) | Không hỗ trợ A1 / 0★ |
+| loryanstrant, bberrevoets, NickLD, Vortitron (ESPHome MCP) | Quá mới, ít người dùng: xem lại sau |
+| ezrover, agodianel, f2daz (skill ESP32) | Ít người dùng hoặc ngừng cập nhật: thử nghiệm sau khi đọc mã |
+| idealo/imagededup | Kéo theo PyTorch (vài GB) cho việc ImageHash làm được |
+| dpnkrpl/awesome-lightroom-presets | 5000 preset không rõ nguồn gốc (nghi chia sẻ lậu preset bán) |
+| WattSnailInferno/lightroom-presets-studio, patriciasilvadatamac/Lightroom-Photo-Studio, digistoremaster/… | Repo mới, mô tả "phần mềm Lightroom cho Windows": dấu hiệu mồi mã độc |
+| pyrocat101/Fujifilm-LUTs | LUT cho ACES/log (video, RAW), không hợp JPEG |
+| cedeber/hald-clut `Apple/`, `Pixelmator Pro/` | Trích từ app thương mại |
+
+## Xem lại khi làm thương mại
+Chính sách (2026-10-21): STLab dùng **phi thương mại** → license không chặn, ưu tiên repo nhiều sao.
+Khi chuyển sang thương mại, rà bảng này trước (và cột License ở bảng "Nguồn đang dùng").
+
+| Nguồn | License / ràng buộc | Đang dùng ở đâu |
+|---|---|---|
+| hesreallyhim/awesome-claude-code | CC BY-NC-ND 4.0 (phi thương mại, không phái sinh) | Tra cứu |
+| GarethManning/education-agent-skills | CC BY-SA 4.0 (ghi công, chia sẻ cùng license) | stlab |
+| FreeCAD/FreeCAD-library | CC-BY 3.0 (ghi công) | FreeCAD |
+| anthropics/skills docx/pdf/pptx/xlsx | Source-available | stlab |
+| theosib/FreeCAD-MCP-Server | Không có license | Chưa dùng |
+| chaofengc/IQA-PyTorch (pyiqa) | NTU S-Lab + CC BY-NC-SA 4.0 | Ứng viên chấm điểm thẩm mỹ ảnh |
+| briaai/RMBG-1.4, RMBG-2.0 (mặc định của rembg) | BRIA: thương mại phải trả phí | Ứng viên tách nền (chất lượng tốt nhất của rembg) |
+| upscayl (fork ncnn) | AGPL-3.0 | Chưa dùng |
+| Pololu Micro Metal Gearmotor STEP (N20) | Không ghi license; hãng phát hành công khai | maker/robotics-cad |
+| CyberBrick model/datasheet (Bambu Lab) | Không ghi license; tài liệu hãng phát hành công khai | maker/robotics-cad, cyberbrick-car |
+| abpy/FujifilmCameraProfiles | Không có license (mặc định: giữ mọi quyền) | photo-ai LUT Classic/Nostalgic Neg |
+| RawTherapee Film Simulation (qua cedeber/hald-clut) | CC BY-SA 4.0 (ghi công Pat David và cộng sự; LUT phái sinh cùng license) | photo-ai `luts/*.cube` |
+| RawTherapee Film Simulation HaldCLUT | Không rõ (nhiều tác giả) | Ứng viên LUT cho PhotoCraft |
+| abpy/FujifilmCameraProfiles (588★) | Không có license; mô phỏng giả lập phim của Fujifilm | Ứng viên LUT |
+
+## Chính sách cập nhật (tóm tắt)
+1. Ghim tag/SHA, không bám `main`. Nâng cấp từng repo một, giữ `prev_sha` để rollback.
+2. Mặc định chỉ kiểm tra và báo cáo. Bạn duyệt từng repo rồi mới `apply`.
+3. Tự áp dụng chỉ khi `allowlist=yes` **và** `auto=on` (hiện tất cả đều `off`).
+   Có thay đổi nhạy cảm thì tự dừng.
+
+## Lệnh (chạy tại `claude-workspace`, Git Bash)
+```bash
+bash community/update-community.sh status            # diem ghim va trang thai
+bash community/update-community.sh check [ten]       # bao cao -> community/reports/YYYY-MM-DD.md
+bash community/update-community.sh apply <ten> <ref> # chuyen ghim (sau khi duyet)
+bash community/update-community.sh rollback <ten>    # quay ve ghim truoc
+bash community/update-community.sh check --auto      # chi tac dong repo allowlist + auto=on
+bash community/update-community.sh clone             # may moi: clone dung diem ghim
+bash community/update-community.sh link | verify | unlink   # symlink theo links.tsv
+```
+Trong Claude Code: `/update-community [ten]` (chỉ báo cáo).
+Đánh dấu nhạy cảm gồm: `HOOK`, `MCP`, `QUYEN` (settings), `PHU-THUOC`, `SCRIPT-MOI`, `SHELL-DOI`,
+và `NOI-DUNG` (dòng thêm có `curl`, `eval(`, `subprocess`, `Bash(`, `allowed-tools`, `mcpServers`…).

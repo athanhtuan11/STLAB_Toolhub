@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Báo cáo {{ name }}{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('hub.cong_dong') }}">← Nguồn cộng đồng</a></p>
+<h1>Báo cáo {{ name[:-3] }}</h1>
+<p class="sub">Tìm mục <b>THAY DOI NHAY CAM</b> trước khi quyết định apply.</p>
+<pre class="doc">{{ text }}</pre>
+{% endblock %}

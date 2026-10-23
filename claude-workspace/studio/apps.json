@@ -1,0 +1,76 @@
+{
+  "web_port": 5050,
+  "media_dir": "{userprofile}/Pictures/stlab-studio",
+  "layout": {
+    "enabled": true,
+    "app_side": "left",
+    "app_ratio": 0.62,
+    "monitor": 0
+  },
+  "claude_desktop": {
+    "aumid": "Claude_pzs8sxrjxfjjc!Claude",
+    "image": "claude.exe",
+    "path_contains": "WindowsApps\\Claude_",
+    "config": "{localappdata}/Claude-Data/claude_pzs8sxrjxfjjc/claude_desktop_config.json"
+  },
+  "apps": [
+    {
+      "id": "freecad",
+      "name": "FreeCAD 1.1",
+      "exe": "C:/Program Files/FreeCAD 1.1/bin/freecad.exe",
+      "args": ["{studio}/scripts/freecad_start_rpc.py"],
+      "image": "freecad.exe",
+      "port": 9875,
+      "mcp": "freecad",
+      "env_unset": ["DEBUG"],
+      "note": "RPC server tự bật; có RobotCAD, Gears, SheetMetal + thư viện linh kiện robotics"
+    },
+    {
+      "id": "blender",
+      "name": "Blender 5.1",
+      "exe": "C:/Program Files/Blender Foundation/Blender 5.1/blender-launcher.exe",
+      "args": [],
+      "image": "blender.exe",
+      "port": 9876,
+      "mcp": "blender",
+      "env": {"BLENDERMCP_NO_UPDATE_CHECK": "1"},
+      "note": "Addon MCP for Blender tự bật server (Auto-Start Server)"
+    },
+    {
+      "id": "filmcraft",
+      "name": "FilmCraft 0.9.0",
+      "exe": "C:/Program Files/FilmCraft/filmcraft.exe",
+      "args": ["--control", "7920"],
+      "image": "filmcraft.exe",
+      "port": 7920,
+      "mcp": "filmcraft",
+      "note": "Dựng video (kiểu Premiere). Cổng điều khiển không có token; quy trình tự dựng: video-ai/"
+    },
+    {
+      "id": "lightcraft",
+      "name": "LightCraft 0.9.1",
+      "exe": "C:/Program Files/LightCraft/lightcraft.exe",
+      "args": ["--control", "7980"],
+      "image": "lightcraft.exe",
+      "port": 7980,
+      "mcp": "lightcraft",
+      "note": "Cổng điều khiển không có token: mọi tiến trình trên máy đều gọi được"
+    },
+    {
+      "id": "photocraft",
+      "name": "PhotoCraft 0.11.1",
+      "exe": "C:/Program Files/PhotoCraft/photocraft.exe",
+      "args": [
+        "--control", "7878",
+        "--control-token-file", "{userprofile}/.photocraft/control.token",
+        "--automation-read-root", "{media}",
+        "--automation-write-root", "{media}"
+      ],
+      "image": "photocraft.exe",
+      "port": 7878,
+      "mcp": "photocraft",
+      "single_instance": true,
+      "note": "Có token (~/.photocraft); chỉ đọc/ghi file trong thư mục media"
+    }
+  ]
+}

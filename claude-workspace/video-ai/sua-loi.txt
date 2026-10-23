@@ -1,0 +1,7 @@
+# Bang sua loi chep loi co dinh: "sai => dung" (khong phan biet hoa thuong, ca tu/cum tu).
+# Them khi thay Whisper nghe sai mot ten rieng lap lai nhieu lan.
+Slab => STLab
+Slap => STLab
+S lab => STLab
+Ét lab => STLab
+in 3G => in 3D

@@ -1,0 +1,22 @@
+[project]
+name = "stlab-photo-ai"
+version = "0.1.0"
+description = "Tu sua anh: loc anh (mat nhoe, mat nham, trung lap) -> LightCraft chinh mau -> xuat Facebook"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  # Face Landmarker: diem eyeBlinkLeft/Right. Apache-2.0
+  "mediapipe==1.1.1",
+  # Ban OpenCV ma mediapipe dung (khong them opencv-python-headless: trung module cv2).
+  # Do do net vung mat + YuNet (FaceDetectorYN). Apache-2.0
+  "opencv-contrib-python==5.0.0.93",
+  # Gom anh chup lien tiep. BSD-2
+  "ImageHash==4.3.2",
+  "pillow>=10,<12",
+  "numpy>=1.26,<3",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 110

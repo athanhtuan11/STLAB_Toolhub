@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Dự án{% endblock %}
+{% block content %}
+<div class="head">
+  <div>
+    <h1>Dự án</h1>
+    <p class="sub">Mỗi dự án có CLAUDE.md riêng (tự nạp quy ước chung của workspace). Mở trong VS Code để làm việc với Claude Code.</p>
+  </div>
+  <button data-post="/api/open/_root">Mở cả workspace</button>
+</div>
+
+<section class="grid">
+  {% for p in projects %}
+  <article class="card">
+    <div class="row"><h3 class="grow"><a href="{{ url_for('hub.du_an_chi_tiet', slug=p.slug) }}">{{ p.rel }}</a></h3>
+      {% if p.todo %}<span class="badge">{{ p.todo }} TODO</span>{% else %}<span class="badge ok">đủ</span>{% endif %}</div>
+    <div class="muted">{{ p.title }}</div>
+    <div class="muted">
+      {% for l in p.links %}<span class="badge plain">{{ l.name }}</span> {% endfor %}
+      {% for m in p.mcp %}<span class="badge">MCP {{ m }}</span> {% endfor %}
+      {% if not p.links and not p.mcp %}Chưa liên kết skill/agent{% endif %}
+    </div>
+    <div class="actions" style="margin-top:auto">
+      <a class="btn" href="{{ url_for('hub.du_an_chi_tiet', slug=p.slug) }}">Xem CLAUDE.md</a>
+      <button data-post="/api/open/{{ p.slug }}">Mở VS Code</button>
+    </div>
+  </article>
+  {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,22 @@
+[project]
+name = "stlab-video-ai"
+version = "0.1.0"
+description = "Tu dung video ngan tu clip tu quay: phan tich (chep loi, canh) -> ke hoach -> FilmCraft"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  # Chep loi tieng Viet tren may (MIT). FilmCraft ban phat hanh khong co Whisper -> nap qua transcript.set
+  "faster-whisper==1.2.1",
+  # PyAV 19 bo tham so metadata_errors ma faster-whisper 1.2.1 con dung -> giu < 19
+  "av>=11,<19",
+  "pyyaml>=6.0,<7",
+]
+
+[project.optional-dependencies]
+# Chay tren GPU NVIDIA (CUDA 12 + cuDNN 9 dang goi pip, khong can cai CUDA Toolkit)
+gpu = ["nvidia-cublas-cu12>=12.4,<13", "nvidia-cudnn-cu12>=9.1,<10"]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 110

@@ -1,0 +1,38 @@
+# git-config core.protectNTFS=false
+# Chi lay thu muc phuc vu robotics (maker). Bo thu muc co ten chua ":" (Windows khong tao duoc).
+/*.*
+/Robots/Quadruped robot/
+/Sensors/
+/Electrical Parts/Servos/
+/Electrical Parts/Motors/
+/Electrical Parts/Motor Drivers/
+/Electrical Parts/Batteries/
+/Electrical Parts/DCDC/
+/Electronics Parts/Microcontroller/
+/Electronics Parts/Displays/
+/Electronics Parts/Rotatory encoders/
+/Electronics Parts/Headers/
+/Electronics Parts/Connectors/
+/Electronics Parts/Buttons/
+/Electronics Parts/Switch/
+/Electronics Parts/Fans/
+/Electronics Parts/Heatsinks/
+/Electronics Parts/Buzzers/
+/Electronics Parts/LEDs/
+/Electronics Parts/Potentiometer/
+/Electronics Parts/Relays/
+/Electronics Parts/Optical/
+/Electronics Parts/Antennas/
+/Mechanical Parts/Bearings/
+/Mechanical Parts/Pulleys/
+/Mechanical Parts/Wheels/
+!/Mechanical Parts/Wheels/Wheel-RC-1:8-17mm-hex/
+/Mechanical Parts/Coupling/
+/Mechanical Parts/Mountings/
+/Mechanical Parts/Profiles EN/Makerbeam/
+/Mechanical Parts/Profiles EN/OpenBuilds/
+/Mechanical Parts/Profiles EN/Misumi_profiles/
+/Mechanical Parts/Profiles EN/Item_Compatible_Profiles/
+/Mechanical Parts/Profiles EN/BOSCH/
+/Mechanical Parts/Profiles EN/Generic/
+/Computing/SingleBoardComputers/

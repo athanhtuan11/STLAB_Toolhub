@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Ứng dụng & MCP{% endblock %}
+{% block content %}
+<div class="head">
+  <div>
+    <h1>Ứng dụng & MCP</h1>
+    <p class="sub">Bấm <b>Mở</b>: ứng dụng mở kèm cổng MCP và xếp
+      {{ 'bên trái' if layout.app_side == 'left' else 'bên phải' }} ({{ (layout.app_ratio * 100)|round|int }}% màn hình),
+      Claude Desktop bên còn lại để bạn ra lệnh cho Claude điều khiển ứng dụng.</p>
+  </div>
+  <div class="actions">
+    <button data-post="{% for n in mcp %}/api/mcp-check/{{ n }} {% endfor %}" data-busy="Đang kiểm tra…">Kiểm tra MCP tất cả</button>
+    <button data-post="/api/claude">Mở Claude Code (VS Code)</button>
+  </div>
+</div>
+
+<section class="grid">
+  {% for a in apps %}
+  <article class="card" data-app="{{ a.id }}">
+    <div class="row"><span class="dot"></span><h3 class="grow">{{ a.name }}</h3><span class="badge plain">:{{ a.port }}</span></div>
+    <div class="state muted">Đang kiểm tra…</div>
+    <div class="muted" style="min-height:2.6em">{{ a.note }}</div>
+    <div class="actions">
+      <button class="primary grow" data-post="/api/start/{{ a.id }}" data-busy="Đang mở…">Mở + Claude</button>
+      <button class="grow" data-post="/api/layout/{{ a.id }}" data-busy="Đang xếp…">Xếp cạnh Claude</button>
+      {% if a.mcp %}<button class="grow" data-post="/api/mcp-check/{{ a.mcp }}" data-busy="Đang kiểm tra…">Kiểm tra MCP</button>{% endif %}
+    </div>
+  </article>
+  {% endfor %}
+</section>
+
+<h2>Claude Desktop</h2>
+<div class="card">
+  <div class="row">
+    <h3 class="grow">MCP trong Claude Desktop</h3>
+    {% set missing = desktop.rows|selectattr('state', 'ne', 'khop')|list %}
+    {% if missing %}<span class="badge bad">{{ missing|length }} cần đồng bộ</span>{% else %}<span class="badge ok">đủ 4 server</span>{% endif %}
+  </div>
+  <div class="actions">
+    {% for r in desktop.rows %}
+    <span class="badge {{ 'ok' if r.state == 'khop' else 'bad' }}">{{ r.name }}: {{ {'khop': 'khớp', 'khac': 'khác bản ghim', 'thieu': 'chưa có'}[r.state] }}</span>
+    {% endfor %}
+    {% for e in desktop.extra %}<span class="badge plain" title="Server riêng của bạn, giữ nguyên">{{ e }}</span>{% endfor %}
+  </div>
+  <div class="muted">
+    Claude Desktop chỉ đọc cấu hình MCP lúc khởi động. Để đồng bộ: <b>thoát hẳn Claude Desktop</b>
+    (biểu tượng ở khay hệ thống → Quit), rồi bấm nút dưới. Bản cũ được sao lưu cạnh file
+    <code>{{ desktop.path }}</code>; các server và cài đặt khác của bạn giữ nguyên.
+  </div>
+  <div class="actions"><button data-post="/api/desktop-sync" data-busy="Đang đồng bộ…" data-reload="1">Đồng bộ 4 MCP sang Claude Desktop</button></div>
+</div>
+
+<footer>
+  Đổi bên/tỉ lệ/màn hình trong <code>studio/apps.json</code> → <code>layout</code> (app_side: left|right, app_ratio, monitor: 0 = màn hình chính).<br>
+  PhotoCraft chỉ đọc/ghi trong <code>{{ media }}</code>. Không có nút tắt ứng dụng (tránh mất bài đang làm): tắt trong app.
+</footer>
+{% endblock %}

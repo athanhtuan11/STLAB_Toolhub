@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Prompt library{% endblock %}
+{% block content %}
+<div class="head">
+  <div>
+    <h1>Prompt library</h1>
+    <p class="sub">Prompt đã chạy thử cho FreeCAD và Blender, trong <code>maker/prompt-library/</code>, theo mẫu <code>_mau-prompt.md</code>.</p>
+  </div>
+  <button data-post="/api/open/maker--prompt-library">Mở prompt-library trong VS Code</button>
+</div>
+
+{% if prompts %}
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Ứng dụng</th><th>Prompt</th><th>File</th></tr></thead>
+  <tbody>
+  {% for p in prompts %}
+  <tr><td><span class="badge plain">{{ p.app }}</span></td><td><b>{{ p.name }}</b></td><td class="mono muted">{{ p.rel }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<div class="note-box">Chưa có prompt nào. Chạy thử một prompt trong Claude Code (thư mục <code>maker/prompt-library</code> hoặc
+<code>studio</code>), thấy tốt thì lưu vào <code>freecad/</code> hoặc <code>blender/</code> theo mẫu.</div>
+{% endif %}
+{% endblock %}
