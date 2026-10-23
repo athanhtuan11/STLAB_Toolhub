@@ -62,7 +62,7 @@ Thiết kế cơ khí robot (khung, gá động cơ/cảm biến, hộp số) đ
      để in) + `print/plates/print-overview.png`.
    - `check.py mode=full` (BOP, độ dày thành, overhang theo hướng trong file, ~2 phút) chỉ khi cần soi kỹ;
      độ dày/overhang **đúng hướng in** thì tin kết quả slicer ở tầng 2.
-   - FEM nếu chịu lực: theo `kiem-tra-model.md` mục 4. In thử chi tiết lắp ghép nhỏ trước (xem `maker/in-3d`).
+   - FEM nếu chịu lực: theo `kiem-tra-model.md` mục 4. In thử chi tiết lắp ghép nhỏ trước.
 5. Robot di động/tay máy cần mô phỏng → RobotCAD: gán link/joint, vật liệu → xuất URDF.
 
 ## Dự án (cấu trúc chuẩn, 2026-10-23 – mọi thứ của 1 dự án nằm trong `maker/<project>/`)
@@ -111,4 +111,4 @@ maker/<project>/            tên tiếng Anh, kebab-case
 
 ## TODO
 - TODO: danh sách robot đang làm (xe 2 bánh? tay máy 4 bậc? robot 4 chân?).
-- TODO: dung sai lắp ghép trên A1 – in `maker/in-3d/models/mau-dung-sai-a1` rồi ghi vào `maker/in-3d/CLAUDE.md`.
+- TODO: dung sai lắp ghép trên A1 – in mẫu thử khe 0,1–0,4 mm (mẫu cũ `maker/in-3d` đã xóa 2026-10-23; dựng lại khi cần).

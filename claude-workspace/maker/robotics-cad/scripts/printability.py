@@ -192,6 +192,34 @@ def ghi_stl(p, tri):
         f.write(rec.tobytes())
 
 
+def kiem_lop(stl, lop_mm=0.2, vuon_mm=0.3, dien_tich_min_mm2=0.5):
+    """Kiem THEO LOP nhu slicer (manifold3d cat lop): moi lop so voi lop duoi -> phan vuon ra > vuon_mm (cantilever)
+    va cum ROI (floating). Tra danh sach {loai, z_mm, mm2, bao_xy}. Slicer chi bao "floating ..." khong chi cho - ham
+    nay chi dung cho (da dung tim loi than xe cyberbrick-car 2026-10-23)."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / ".pylib"))
+    import manifold3d as m3
+    tri = doc_stl(stl)
+    tri = tri - np.array([0, 0, tri[:, :, 2].min()])
+    v, idx = np.unique(np.round(tri.reshape(-1, 3), 5), axis=0, return_inverse=True)
+    m = m3.Manifold(m3.Mesh(v.astype(np.float32), idx.reshape(-1, 3).astype(np.uint32)))
+    if m.status() != m3.Error.NoError:
+        return [{"loai": "luoi khong kin - khong kiem duoc theo lop"}]
+    ra, truoc, z, h = [], None, lop_mm / 2, float(tri[:, :, 2].max())
+    while z < h:
+        cs = m.slice(z)
+        if truoc is not None and cs.area() > 0:
+            vr = cs - truoc.offset(vuon_mm, m3.JoinType.Round)
+            if vr.area() > dien_tich_min_mm2:
+                ra.append({"loai": "vuon ra", "z_mm": round(z, 2), "mm2": round(vr.area(), 1),
+                           "bao_xy": [round(x, 1) for x in vr.bounds()]})
+            for dao in cs.decompose():
+                if (dao ^ truoc).area() < 1e-6 and dao.area() > 0.05:
+                    ra.append({"loai": "roi (floating)", "z_mm": round(z, 2), "mm2": round(dao.area(), 2),
+                               "bao_xy": [round(x, 1) for x in dao.bounds()]})
+        truoc, z = cs, z + lop_mm
+    return ra
+
+
 def phan_tich(stl, nguong=None):
     ng = dict(MAC_DINH, **(nguong or {}))
     tri = doc_stl(stl)

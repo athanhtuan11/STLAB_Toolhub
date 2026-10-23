@@ -14,7 +14,8 @@ Vi sao (da gap 2026-10-23): STEP linh kien (servo/N20 CyberBrick) loi BOP -> `cu
 bo 0 mm3 (that bai AM THAM). safe_cut so luong vat lieu bo di voi muc KY VONG doc lap:
     - `expect_mm3` neu nguoi viet script biet truoc, hoac
     - the tich giao tinh tren LUOI bang manifold3d (khong dung BOP, nen khong bi STEP loi danh lua).
-Lech -> thu lai boolean "fuzzy" (Part.Shape.cut(tools, tolerance), co tu OCC 7.x / FreeCAD 0.20) voi dung sai tang dan;
+mesh_mm: do min luoi uoc luong (mac dinh 0.02 mm; chi tiet lon / mat B-spline -> 0.2-0.3 cho nhanh,
+noi rel_tol tuong ung). Lech -> thu lai boolean "fuzzy" (Part.Shape.cut(tools, tolerance), co tu OCC 7.x / FreeCAD 0.20) voi dung sai tang dan;
 van lech -> SafeEditError (giu nguyen model). Khi do: dung dao cat don gian (hop, mat dun) thay cho STEP.
 """
 
@@ -95,12 +96,12 @@ def mesh_common_mm3(a, b, linear_mm=0.02):
     return (ma ^ mb).volume()
 
 
-def _boolean(op, obj_or_shape, tool, expect_mm3, max_mm3, rel_tol, abs_tol_mm3, solids, fuzzy):
+def _boolean(op, obj_or_shape, tool, expect_mm3, max_mm3, rel_tol, abs_tol_mm3, solids, fuzzy, mesh_mm=0.02):
     base, t, plc = _local(obj_or_shape, tool)
     v0 = base.Volume
     uoc, nguon = expect_mm3, "expect_mm3"
     if uoc is None:
-        g = mesh_common_mm3(base, t)
+        g = mesh_common_mm3(base, t, mesh_mm)
         if g is not None:
             uoc, nguon = (g if op == "cut" else t.Volume - g), "luoi manifold3d"
     if uoc is None and max_mm3 is None:
@@ -114,7 +115,9 @@ def _boolean(op, obj_or_shape, tool, expect_mm3, max_mm3, rel_tol, abs_tol_mm3, 
                 r = base.cut([t], fz) if fz else base.cut(t)
             else:
                 r = base.fuse([t], fz) if fz else base.fuse(t)
-                r = r.removeSplitter()
+                r2 = r.removeSplitter()  # gop mat thua; tren mat B-spline co the LON NGUOC solid (gap 2026-10-23)
+                if r2.isValid() and r2.Volume > 0 and abs(r2.Volume - r.Volume) < 1e-3 * max(1.0, abs(r.Volume)):
+                    r = r2
         except Exception as e:  # OCC nem loi khi boolean hong
             thu.append({"fuzzy_mm": fz, "loi": str(e)[:120]})
             continue
@@ -133,17 +136,17 @@ def _boolean(op, obj_or_shape, tool, expect_mm3, max_mm3, rel_tol, abs_tol_mm3, 
 
 
 def safe_cut(obj_or_shape, tool, expect_mm3=None, max_mm3=None, rel_tol=0.1, abs_tol_mm3=0.5, solids=None,
-             fuzzy=FUZZY_MM):
+             fuzzy=FUZZY_MM, mesh_mm=0.02):
     """Tru `tool` khoi chi tiet. Tra (shape moi, info) - shape co Placement cu; KHONG gan vao object.
     Dat khi: isValid, so solid = truoc (hoac `solids`), luong bo di khop muc uoc (+-max(abs_tol, rel_tol*uoc)),
     khong vuot `max_mm3`. Loi -> SafeEditError."""
-    return _boolean("cut", obj_or_shape, tool, expect_mm3, max_mm3, rel_tol, abs_tol_mm3, solids, fuzzy)
+    return _boolean("cut", obj_or_shape, tool, expect_mm3, max_mm3, rel_tol, abs_tol_mm3, solids, fuzzy, mesh_mm)
 
 
 def safe_fuse(obj_or_shape, tool, expect_mm3=None, max_mm3=None, rel_tol=0.1, abs_tol_mm3=0.5, solids=None,
-              fuzzy=FUZZY_MM):
+              fuzzy=FUZZY_MM, mesh_mm=0.02):
     """Them `tool` vao chi tiet (vd. gan gan, vat). Luong them uoc = V(tool) - V(giao) tren luoi."""
-    return _boolean("fuse", obj_or_shape, tool, expect_mm3, max_mm3, rel_tol, abs_tol_mm3, solids, fuzzy)
+    return _boolean("fuse", obj_or_shape, tool, expect_mm3, max_mm3, rel_tol, abs_tol_mm3, solids, fuzzy, mesh_mm)
 
 
 def apply(obj, shape):

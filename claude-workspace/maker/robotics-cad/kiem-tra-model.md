@@ -220,7 +220,7 @@ Thời gian: Gmsh 0,6 s, CalculiX ~4,4 s. Chuỗi Gmsh → ccx → đọc kết 
 2. **Infill/thành**: số liệu TDS là 100% infill; in 15–20% infill thì độ cứng và bền thấp hơn nhiều – mức giảm **TODO** (không có số liệu chính hãng). Chi tiết chịu lực: tăng số wall / infill hoặc mô hình hóa như chi tiết đặc rồi kiểm bằng mẫu thử.
 3. **Ứng suất cực đại ở ngàm/góc nhọn** là điểm kỳ dị lưới: làm mịn lưới thì σ max có thể tăng mãi. Đọc ứng suất cách ngàm một đoạn, bo góc trong model, kiểm hội tụ lưới (2 kích thước lưới).
 4. Nhựa **rão (creep)** và mềm dần khi nóng (HDT PLA 57 °C ở 0,45 MPa) – FEM tuyến tính tĩnh không thấy được. Chi tiết gần động cơ/pin hoặc ngoài nắng: ưu tiên PETG.
-5. **Hệ số an toàn: TODO** – chưa tìm được nguồn chính hãng/tiêu chuẩn cho chi tiết FDM. Đề xuất STLab tự xác định bằng thử phá hủy mẫu in thật (cùng thông số in) rồi ghi vào `maker/in-3d`. Cho tới khi có: coi kết quả FEM chỉ để **so sánh phương án** (A cứng hơn B), không để khẳng định "đủ bền".
+5. **Hệ số an toàn: TODO** – chưa tìm được nguồn chính hãng/tiêu chuẩn cho chi tiết FDM. Đề xuất STLab tự xác định bằng thử phá hủy mẫu in thật (cùng thông số in) rồi ghi vào maker/robotics-cad/CLAUDE.md. Cho tới khi có: coi kết quả FEM chỉ để **so sánh phương án** (A cứng hơn B), không để khẳng định "đủ bền".
 
 ---
 
@@ -229,7 +229,7 @@ Thời gian: Gmsh 0,6 s, CalculiX ~4,4 s. Chuỗi Gmsh → ccx → đọc kết 
 ### 5.1 Khuyến nghị nhà sản xuất (có nguồn)
 - **Overhang**: Bambu wiki – góc giữa mặt nghiêng và **mặt bàn** < 45° thì nên thêm support, > 45° thì không cần [S17]. (Ngưỡng *support threshold angle* trong Bambu Studio là khái niệm khác; giá trị nhập càng lớn càng nhiều support [S17].)
 - **Bridge tối đa**: TDS PLA Basic 30 mm, PETG Basic/HF ~30 mm [S14][S15][S16].
-- **Độ dày thành tối thiểu, dung sai lỗ/trục/snap-fit cho A1: TODO** – chưa thấy số chính hãng; STLab in mẫu `maker/in-3d/models/mau-dung-sai-a1` rồi ghi vào `maker/in-3d/CLAUDE.md` (bảng hiện đang TODO).
+- **Độ dày thành tối thiểu, dung sai lỗ/trục/snap-fit cho A1: TODO** – chưa thấy số chính hãng; STLab in mẫu dung sai (mẫu cũ maker/in-3d đã xóa 2026-10-23) rồi ghi vào `maker/in-3d/CLAUDE.md` (bảng hiện đang TODO).
 
 ### 5.2 Đo độ dày thành (script, đã chạy trên FreeCAD 1.1.4 ngày 2026-10-21)
 FreeCAD 1.1 **không có công cụ đo độ dày** (`Part Thickness` là lệnh *tạo vỏ rỗng*, không phải đo). Cách đã thử, chạy trên B-rep:
@@ -327,7 +327,7 @@ Kết quả mẫu: Body đạt mọi kiểm tra; chi tiết vách mỏng báo ov
 > giao cho slicer: `scripts/slice.py` (Bambu Studio CLI); cả vòng: `scripts/prepare-print.py`. Quy trình 2 tầng: xem `CLAUDE.md` mục Quy trình.
 > Bản B-rep ở 5.2 lấy mẫu 3×3 điểm/mặt nên **bỏ sót** mép sắc 0,02–0,12 mm mà bản lưới bắt được (đã đối chiếu cùng tia).
 1. Viết `maker/robotics-cad/scripts/kiem-tra.py`: gom mục 1, 2, 3.2, 5.2, 5.3, 6 thành 1 script chạy `freecadcmd scripts/kiem-tra.py --pass <file.FCStd> [--quet-khop <joint>:<min>:<max>:<buoc>]`, ghi `bao-cao-kiem-tra.json` + 3MF; tự thêm `bin/` vào PATH cho FEM. Ngưỡng (độ dày, overhang, dung sai) đọc từ 1 file YAML, mặc định `TODO` → báo "chưa có ngưỡng" thay vì tự đoán.
-2. In mẫu dung sai + overhang + bridge trên A1 (PLA, PETG) → điền `maker/in-3d/CLAUDE.md`, rồi đưa ngưỡng vào YAML.
+2. In mẫu dung sai + overhang + bridge trên A1 (PLA, PETG) → ghi kết quả vào maker/robotics-cad/CLAUDE.md, rồi đưa ngưỡng vào YAML.
 3. In và kéo/uốn mẫu đơn giản (cùng thông số in) để có hệ số hiệu chỉnh FEM ↔ thực tế và hệ số an toàn cho STLab.
 4. Bọc các kiểm tra thành `unittest` (7.1) để chạy hàng loạt mọi file trong `models/`.
 

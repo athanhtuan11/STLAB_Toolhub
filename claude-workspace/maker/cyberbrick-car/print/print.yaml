@@ -1,0 +1,55 @@
+# cyberbrick-car - THONG TIN BAN IN (doc boi maker/robotics-cad/scripts/prepare-print.py)
+# Model SINH tu freecad/scripts/build_car.py (tham so) -> sua tham so roi chay lai script, khong sua tay trong FreeCAD.
+fcstd: ../freecad/cyberbrick_car.FCStd
+machine: Bambu Lab A1 0.4 nozzle
+filament: Bambu PETG Basic @BBL A1
+stl: stl
+plates_dir: plates
+
+# BOM (bom.py): gop cac Label cung loai thanh 1 dong
+bom_groups:
+  "CB_Tire_*": "CB_Tire_LA027 (lop cao su D33.7 x 13.85)"
+  "CB_Magnet_4x2_*": "CB_Magnet_CA001 (nam cham 4 x 2 mm)"
+
+check:
+  - out=../freecad/check
+  - components=CB_*,LK_*,M2_5x*,M2x*
+  - ignore-pair=M2_5x*|*
+  - ignore-pair=M2x*|*
+  - ignore-pair=CB_Magnet_*|*                   # nam cham nam trong hoc
+  - ignore-pair=CB_Tire_*|Wheel_*               # lop cao su om vanh (keo gian)
+  - ignore-pair=LK_Servo_horn|CB_Servo9g_*      # horn lap tren truc servo
+  - ignore-pair=LK_Servo_horn|LK_Servo_MG90S_*  # (servo_type: mg90s)
+  - ignore-pair=CB_Gearbox_*|Wheel_R*           # moay-o banh sau lap tren truc ra hop so
+  - ignore-pair=CB_XA004_receiver|Chassis       # mach bat vit tua tren 4 tru
+  - ignore-pair=CB_Switch_XA007|Chassis
+  - mesh-pair=Tie_rod|Knuckle_*                 # thanh giang tua tren tay lai (vit lam chot)
+  - mesh-pair=Knuckle_*|Chassis                 # khop lai xoay tren tai duoi
+  - mesh-pair=Wheel_F*|Knuckle_*                # truc in lien vanh quay trong lo khop lai
+  - mesh-pair=Washer_axle_*|Knuckle_*           # long den giu truc: khe doc 0.3
+  - ignore-pair=Washer_axle_*|Wheel_F*          # long den ep vao dau truc (vit M2.5)
+
+export:
+  mesh: {linear_mm: 0.03, angular_rad: 0.2618}
+  rules:
+    - {names: [Body_coupe], group: 01_Body, rotate: {y: -90}}               # IN DUNG, duoi xuong ban: vo tu in khong do
+    - {names: [Chassis, Gearbox_strap, Washer_axle_*], group: 02_Chassis}
+    - {names: [Tie_rod, Knuckle_*], group: 02_Chassis, rotate: {x: 180}}    # tay lai / thanh giang nam tren ban
+    - {names: [Wheel_RL, Wheel_FL], group: 03_Wheels, rotate: {x: -90}}     # mat nan up xuong ban
+    - {names: [Wheel_RR, Wheel_FR], group: 03_Wheels, rotate: {x: 90}}
+
+common: {only_one_wall_top: "1", sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
+
+plates:
+  P1_Body__0.20_PETG:                       # than xe in dung (cao ~223 mm), khong support
+    process: 0.20mm Standard @BBL A1
+    overrides: {wall_loops: "4", sparse_infill_density: "15%"}
+    stl: ["01_Body__*.stl"]
+  P2_Chassis_Steering__0.20_PETG:
+    process: 0.20mm Standard @BBL A1
+    overrides: {wall_loops: "3", sparse_infill_density: "25%"}
+    stl: ["02_Chassis__*.stl"]
+  P3_Wheels__0.16_PETG:
+    process: 0.16mm Optimal @BBL A1
+    overrides: {wall_loops: "4", sparse_infill_density: "40%"}
+    stl: ["03_Wheels__*.stl"]

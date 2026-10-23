@@ -1,0 +1,25 @@
+﻿Loai,Ten,SL,Ban in,Nhua,Ghi chu
+vit,M2 × 6,2,,,switch 2
+vit,M2 × 8,3,,,"horn_pin 1, servo 2"
+vit,M2.5 × 16,2,,,"kingpin_L 1, kingpin_R 1"
+vit,M2.5 × 6,10,,,"axle_L 1, axle_R 1, receiver 4, strap_L 1, strap_R 1, tierod_L 1, tierod_R 1"
+linh kien mua,CB_Battery_PC003,1,,,
+linh kien mua,CB_Gearbox_030_dual_axis,1,,,
+linh kien mua,CB_Magnet_CA001 (nam cham 4 x 2 mm),8,,,
+linh kien mua,CB_Servo9g_180_steering,1,,,
+linh kien mua,CB_Switch_XA007,1,,,
+linh kien mua,CB_Tire_LA027 (lop cao su D33.7 x 13.85),4,,,
+linh kien mua,CB_XA004_receiver,1,,,
+linh kien mua,LK_Servo_horn,1,,,
+in 3D,Body_coupe,1,P1_Body__0.20_PETG,Bambu PETG Basic @BBL A1,70.28 cm³
+in 3D,Chassis,1,P2_Chassis_Steering__0.20_PETG,Bambu PETG Basic @BBL A1,41.78 cm³
+in 3D,Gearbox_strap,1,P2_Chassis_Steering__0.20_PETG,Bambu PETG Basic @BBL A1,0.32 cm³
+in 3D,Knuckle_L,1,P2_Chassis_Steering__0.20_PETG,Bambu PETG Basic @BBL A1,1.34 cm³
+in 3D,Knuckle_R,1,P2_Chassis_Steering__0.20_PETG,Bambu PETG Basic @BBL A1,1.34 cm³
+in 3D,Tie_rod,1,P2_Chassis_Steering__0.20_PETG,Bambu PETG Basic @BBL A1,0.36 cm³
+in 3D,Washer_axle_L,1,P2_Chassis_Steering__0.20_PETG,Bambu PETG Basic @BBL A1,0.04 cm³
+in 3D,Washer_axle_R,1,P2_Chassis_Steering__0.20_PETG,Bambu PETG Basic @BBL A1,0.04 cm³
+in 3D,Wheel_FL,1,P3_Wheels__0.16_PETG,Bambu PETG Basic @BBL A1,4.52 cm³
+in 3D,Wheel_FR,1,P3_Wheels__0.16_PETG,Bambu PETG Basic @BBL A1,4.52 cm³
+in 3D,Wheel_RL,1,P3_Wheels__0.16_PETG,Bambu PETG Basic @BBL A1,5.07 cm³
+in 3D,Wheel_RR,1,P3_Wheels__0.16_PETG,Bambu PETG Basic @BBL A1,5.07 cm³
