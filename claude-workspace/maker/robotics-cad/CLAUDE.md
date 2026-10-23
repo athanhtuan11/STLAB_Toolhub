@@ -75,6 +75,8 @@ maker/<project>/            tên tiếng Anh, kebab-case
   (file từng bị Lưu lúc mô phỏng; công cụ: `freecad/scripts/reset_rest_pose.py`), lưu bản sao vào `freecad/backup/`,
   giữ nguyên `Placement`, sửa xong kiểm lại rồi **tự Lưu**.
   STEP linh kiện lỗi BOP (servo/N20 CyberBrick) làm boolean thất bại âm thầm → dùng khối đơn giản làm dao cắt.
+- **Nhựa mặc định: PETG** (Tuan 2026-10-23) – preset riêng đã hiệu chỉnh `KINGROON-PETG PETG Basic @Bambu Lab A1 0.4 nozzle`
+  (Bambu Studio của Tuan; `slice.py` đọc cả preset riêng). Bàn in: Textured PEI. Đệm/chi tiết dẻo: TPU 95A.
 - Khe hở lắp ghép: **0,2 mm** (Tuan 2026-10-23, đã tính co ngót nhựa). Bánh răng ăn khớp / đệm lỏng khai `mesh-pair`.
 - Đặt tên **tiếng Anh** cho thư mục, file, script, khóa YAML, tham số (Tuan 2026-10-23); nội dung tài liệu tiếng Việt.
 - mm; dung sai lắp ghép in FDM: ghi giá trị đã thử, chưa thử thì `TODO` (không đoán).

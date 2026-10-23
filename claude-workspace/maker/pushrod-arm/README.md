@@ -23,20 +23,26 @@ In trên **Bambu Lab A1**, đầu phun 0,4 mm, PLA (+ đệm kẹp TPU 95A).
 | Vít M2.5 × 10 | 2 | |
 Nguồn model linh kiện: `community/cyberbrick-official` (xem `maker/robotics-cad/library/cyberbrick-sources.tsv`).
 
-## In (bản 2026-10-23 – chưa in thử)
-8 bàn, tổng **~9 giờ, ~295 g** nhựa (theo Bambu Studio 02.07, profile A1 chính hãng, 15:00). Ảnh: `print/plates/print-overview.png`; file in: `print/plates/<plate>/<plate>.3mf`.
+## In (bản 2026-10-23 – PETG, chưa in thử)
+Nhựa mặc định **PETG KINGROON** (preset riêng đã hiệu chỉnh: flow 0,95, PA 0,02, 8 mm³/s, 240/250 °C, bàn textured 70 °C);
+đệm kẹp TPU 95A. 7 bàn, tổng **~12 h 29, ~288 g** (Bambu Studio 02.07). Ảnh: `print/plates/print-overview.png`;
+file in: `print/plates/<plate>/<plate>.3mf` (mở bằng Bambu Studio, chọn đúng cuộn PETG KINGROON).
 | Bàn | Thời gian | Nhựa | Ghi chú |
 |---|---|---|---|
-| P1_Base (0,24 Draft) | 1 h 59 | 97,7 g | vấu deck đã có vát 45° → không support |
-| P2_Turret_Turntable (0,20) | 2 h 19 | 78,1 g | |
-| P3_Forearm_Housings (0,20) | 38 ph | 22,3 g | |
-| P3_Forearm_Housings__support | 1 h 08 | 25,9 g | 2 Housing: tai chốt treo z 3–9 mm |
-| P4_Boom_GripperFrame (0,20, support) | 1 h 21 | 47,0 g | |
-| P5_Gears_Racks_Pins (0,16) | 1 h 18 | 22,9 g | |
+| P1_Base (0,24 Draft) | 3 h 18 | 95,4 g | vấu deck có vát 45° → không support |
+| P2_Turret_Turntable (0,20) | 3 h 17 | 76,3 g | |
+| P3_Forearm_Plates (0,20) | 51 ph | 21,8 g | |
+| P4_Boom_Gripper_Housings (0,20, support) | 3 h 13 | 71,1 g | gộp 2 Housing (tai chốt cần support) vào bàn support sẵn có |
+| P5_Gears_Racks_Pins (0,16) | 1 h 29 | 22,4 g | |
 | P6_GripperPads (TPU 95A) | 4 ph | 0,5 g | |
-| P7_Worms (0,12, 100%) | 8 ph | 0,9 g | |
+| P7_Worms (0,12, 100%) | 13 ph | 0,9 g | |
+
+Muốn nhanh hơn: làm **Calibration → Max volumetric speed** trong Bambu Studio cho cuộn KINGROON. Nếu đạt 12 mm³/s
+thì sửa preset → tổng ~10 h 37 (đã cắt thử 2026-10-23: 10 mm³/s ~11 h 19). Chưa hiệu chỉnh thì giữ 8.
 
 ## Lịch sử sửa
+- 2026-10-23 15:40: đổi nhựa PLA → **PETG KINGROON** (preset riêng); gộp 2 Housing vào bàn support P4 → 7 bàn
+  (thời gian in 9 h → 12 h 29 do preset giới hạn 8 mm³/s; PLA chính hãng 21 mm³/s).
 - 2026-10-23 15:15: gom toàn bộ dự án về `maker/pushrod-arm/` (`freecad/` + `print/`), đặt tên tiếng Anh;
   thôi dùng `D:\06_FreeCAD` (giữ 3 bản sao lưu mới nhất ở `freecad/backup/`; thư mục cũ Tuan tự xóa).
 - 2026-10-23 15:00 (Claude, VS Code, Tuan duyệt): mài hốc servo kẹp trong `Gripper_frame` 0,05 mm (2 mặt 52,5 mm²,

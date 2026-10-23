@@ -16,6 +16,8 @@ from __future__ import annotations
 
 import fnmatch
 import json
+import os
+import shutil
 import subprocess
 import sys
 import textwrap
@@ -33,9 +35,9 @@ MAU = {"PASS": "#4caf50", "WARN": "#ff9800", "FAIL": "#e53935", "INFO": "#9e9e9e
 BO_QUA = {"not_support_traditional_timelapse"}
 # canh bao do chinh profile hang gay ra -> ghi chu, khong tinh WARN
 GHI_CHU = {
-    # PLA chinh hang: ban 65 C > vitrification 45 C. A1 khung ho; nhieu kha nang nham may buong kin (tac dau in).
-    # TODO: mo 3MF bang Bambu Studio xem GUI co bao khong.
-    "bed_temperature_too_high_than_filament": "ban 65 C > hoa mem 45 C (profile hang, A1 khung ho)",
+    # Profile nhua dat nhiet ban > nhiet hoa mem (PLA chinh hang: 65 > 45 C). A1 khung ho; nhieu kha nang canh bao
+    # nham may buong kin (tac dau in). TODO: mo 3MF bang Bambu Studio xem GUI co bao khong.
+    "bed_temperature_too_high_than_filament": "nhiet ban > nhiet hoa mem cua nhua (theo profile, A1 khung ho)",
 }
 # loi lam hong ban in -> FAIL (cum tu trong warning_message cua result.json)
 NANG = ("floating regions", "floating cantilever", "empty layer")
@@ -57,9 +59,12 @@ def tham_so():
 
 
 def chi_muc_profile():
+    """Profile chinh hang + preset rieng cua Tuan trong Bambu Studio (preset rieng de len neu trung ten).
+    Preset rieng (vd. KINGROON-PETG) da hieu chinh flow/PA tren may that -> uu tien cho ban in that."""
     idx = {}
+    user = sorted(Path(os.environ.get("APPDATA", "")).joinpath("BambuStudio", "user").glob("*"))
     for sub in ("machine", "process", "filament"):
-        for f in (BBL / sub).rglob("*.json"):
+        for f in [*(BBL / sub).rglob("*.json"), *(p for u in user for p in (u / sub).rglob("*.json"))]:
             try:
                 d = json.loads(f.read_text(encoding="utf-8"))
             except ValueError:
@@ -229,6 +234,14 @@ def main():
     p_may = ghi(may, prof / "machine.json")
     chon = [x.strip() for x in a["only"].split(",") if x.strip()]
     chay, proc_d = {}, {}
+    if not chon:  # chay ca du an: xoa thu muc ban cu (doi ten/bo ban) de khong in nham 3MF cu - day la file sinh
+        con = set(cfg["plates"]) | {f"{t}__orient" for t in cfg["plates"]} | {f"{t}__support" for t in cfg["plates"]}
+        for d in ra.iterdir():
+            if d.is_dir() and not d.name.startswith("_") and d.name not in con:
+                shutil.rmtree(d)
+        for f in prof.glob("*.json"):
+            if f.name != "machine.json":  # vua ghi o tren
+                f.unlink()  # profile ban ghep lai moi lan chay
     for ten, b in cfg["plates"].items():
         if chon and not any(fnmatch.fnmatch(ten, c) for c in chon):
             continue
@@ -241,8 +254,14 @@ def main():
         d.update({"name": f"STLab {ten}", "from": "User", "inherits": b["process"], "instantiation": "true"})
         p_proc = ghi(d, prof / f"process_{ten}.json")
         proc_d[ten] = d
-        fil = phang(idx, "filament", b["filament"])
-        fil["from"] = "system"
+        fil = phang(idx, "filament", b.get("filament") or cfg["filament"])  # khong khai -> filament mac dinh du an
+        fil.setdefault("from", "system")
+        # ghi de nhua (khoa cua profile filament, gia tri dang list: {filament_max_volumetric_speed: ["12"]})
+        fil.update(cfg.get("filament_overrides") or {})
+        fil.update(b.get("filament_overrides") or {})
+        # preset rieng (Bambu Studio GUI tao) thieu 2 khoa nay -> CLI bao "preset file is invalid" (da gap 2026-10-23)
+        fil.setdefault("type", "filament")
+        fil.setdefault("instantiation", "true")
         p_fil = ghi(fil, prof / f"filament_{ten}.json")
         chay[ten] = cat(ra / ten, ten, xep[ten], p_may, p_proc, p_fil)
     print(f"Cat lop {len(chay)} ban song song ...", flush=True)

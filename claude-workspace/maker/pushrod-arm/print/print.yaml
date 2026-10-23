@@ -3,6 +3,9 @@
 fcstd: ../freecad/pushrod_arm.FCStd
 rest_pose: ../freecad/pushrod_arm_rest.json   # file Luu luc dang mo phong van xuat dung tu the goc
 machine: Bambu Lab A1 0.4 nozzle               # profile may trong Bambu Studio
+# Nhua MAC DINH (ban nao khong khai filament): PETG KINGROON - preset rieng cua Tuan trong Bambu Studio
+# (da hieu chinh: flow 0.95, PA 0.02, 8 mm3/s, 240/250 C, ban textured 70 C). Doi sang PETG khac: doi ten preset.
+filament: KINGROON-PETG PETG Basic @Bambu Lab A1 0.4 nozzle
 stl: stl                                       # file sinh (khong len git)
 plates_dir: plates                             # file sinh: <plate>/<plate>.3mf de in + print-overview.png
 
@@ -50,32 +53,28 @@ export:
 common: {only_one_wall_top: "1", infill_combination: "1", sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
 
 # Ban in (profile chinh hang Bambu + ghi de). Lo lung -> slice.py tu xoay, van lo lung moi support (ban __orient/__support).
+# 2026-10-23: chuyen PLA -> PETG; gop 2 Housing (tai chot can support) vao ban support P4 -> 7 ban thay vi 8.
 plates:
-  P1_Base__0.24Draft_PLA:
+  P1_Base__0.24Draft_PETG:
     process: 0.24mm Draft @BBL A1
-    filament: Bambu PLA Basic @BBL A1
     overrides: {wall_loops: "3", sparse_infill_density: "12%", top_shell_layers: "4", bottom_shell_layers: "3"}
     stl: ["*__Base_housing.stl", "*__Base_deck.stl", "*__Base_foot.stl"]
-  P2_Turret_Turntable__0.20_PLA:
+  P2_Turret_Turntable__0.20_PETG:
     process: 0.20mm Standard @BBL A1
-    filament: Bambu PLA Basic @BBL A1
     overrides: {wall_loops: "3", sparse_infill_density: "20%"}
     stl: ["*__Turret_one_piece.stl", "*__Turntable.stl", "*__Slide_ring.stl", "*__Spacer_S*.stl", "*__Spacer_A*.stl",
           "*__Wrist_spacer.stl", "*__Spacer_D_*.stl", "*__Spacer_E_*.stl", "*__Washer_shaft_*.stl", "*__Turntable_gear_m1_z60.stl"]
-  P3_Forearm_Housings__0.20_PLA:
+  P3_Forearm_Plates__0.20_PETG:
     process: 0.20mm Standard @BBL A1
-    filament: Bambu PLA Basic @BBL A1
     overrides: {wall_loops: "3", sparse_infill_density: "20%"}
-    stl: ["*__Forearm_plate_*.stl", "*__Gripper_top_plate.stl", "*__Housing_Shoulder.stl", "*__Housing_Elbow.stl"]
-  P4_Boom_GripperFrame__0.20_PLA_support:
+    stl: ["*__Forearm_plate_*.stl", "*__Gripper_top_plate.stl"]
+  P4_Boom_Gripper_Housings__0.20_PETG_support:
     process: 0.20mm Standard @BBL A1
-    filament: Bambu PLA Basic @BBL A1
     overrides: {wall_loops: "3", sparse_infill_density: "20%", enable_support: "1", support_type: tree(auto),
                 support_threshold_angle: "40", support_on_build_plate_only: "0"}
-    stl: ["*__Boom001.stl", "*__Gripper_frame.stl"]
-  P5_Gears_Racks_Pins__0.16_PLA:
+    stl: ["*__Boom001.stl", "*__Gripper_frame.stl", "*__Housing_Shoulder.stl", "*__Housing_Elbow.stl"]
+  P5_Gears_Racks_Pins__0.16_PETG:
     process: 0.16mm Optimal @BBL A1
-    filament: Bambu PLA Basic @BBL A1
     overrides: {wall_loops: "4", sparse_infill_density: "40%", wall_generator: arachne, top_shell_layers: "6",
                 bottom_shell_layers: "5", brim_type: auto_brim, infill_combination: "0"}
     stl: ["*__Rack_*.stl", "*__Jaw_1_driven_by_servo*.stl", "*__Jaw_2_idler*.stl", "*__Pinion*.stl", "*__Pin_*.stl",
@@ -87,9 +86,8 @@ plates:
     overrides: {wall_loops: "3", sparse_infill_density: "100%", sparse_infill_pattern: zig-zag, infill_combination: "0",
                 only_one_wall_top: "0"}
     stl: ["*_TPU.stl"]
-  P7_Worms__0.12_PLA_100pct:
+  P7_Worms__0.12_PETG_100pct:
     process: 0.12mm Fine @BBL A1
-    filament: Bambu PLA Basic @BBL A1
     overrides: {wall_loops: "4", sparse_infill_density: "100%", sparse_infill_pattern: zig-zag, infill_combination: "0",
                 wall_generator: arachne, brim_type: outer_only, brim_width: "4", only_one_wall_top: "0"}
     stl: ["*__Worm_*.stl"]
