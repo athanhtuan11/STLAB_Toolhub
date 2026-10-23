@@ -4,6 +4,8 @@ Cánh tay 4 bậc dùng bộ điều khiển **CyberBrick** (Bambu Lab): xoay đ
 2 xi-lanh **thanh răng – bánh vít – trục vít** chạy động cơ N20, kẹp 2 hàm ăn khớp răng (servo 180°).
 In trên **Bambu Lab A1**, đầu phun 0,4 mm, PLA (+ đệm kẹp TPU 95A).
 
+Lắp ráp: **[ASSEMBLY.md](ASSEMBLY.md)** (13 bước, ảnh từng bước).
+
 ## An toàn
 - Pin: `Battery_bay` là khoang pin của bộ CyberBrick – loại pin, điện áp: **TODO** (xem datasheet XA003/XA004 trước khi cắm).
   Pin Li-ion: không sạc khi không có người trông, không để chập cực khi lắp dây.
@@ -18,7 +20,7 @@ In trên **Bambu Lab A1**, đầu phun 0,4 mm, PLA (+ đệm kẹp TPU 95A).
 | CyberBrick servo 9g 180° | 1 | kẹp |
 | Động cơ N20 (bản CyberBrick, có trục vít) | 2 | vai, khuỷu |
 | Khoang pin (`Battery_bay`) | 1 | TODO loại pin |
-| Vít M2.5 × 6 | 15 | |
+| Vít M2.5 × 6 | 21 | gồm 6 vít khóa chốt in |
 | Vít M2.5 × 8 | 4 | bắt deck |
 | Vít M2.5 × 10 | 2 | |
 Nguồn model linh kiện: `community/cyberbrick-official` (xem `maker/robotics-cad/library/cyberbrick-sources.tsv`).
