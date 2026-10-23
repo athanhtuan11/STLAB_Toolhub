@@ -322,9 +322,9 @@ Kết quả mẫu: Body đạt mọi kiểm tra; chi tiết vách mỏng báo ov
 
 ## 8. Đề xuất bước tiếp
 
-> **Cập nhật 2026-10-23:** mục 1 đã làm thành `scripts/kiem-tra.py`, nhưng đo độ dày (5.2) và va chạm (3.2) chuyển sang
+> **Cập nhật 2026-10-23:** mục 1 đã làm thành `scripts/check.py`, nhưng đo độ dày (5.2) và va chạm (3.2) chuyển sang
 > **lưới** (numpy/scipy + manifold3d) vì bản B-rep quá chậm (bánh răng ~700 s/chi tiết). Khả năng in theo hướng in thật
-> giao cho slicer: `scripts/cat-lop.py` (Bambu Studio CLI). Quy trình 2 tầng: xem `CLAUDE.md` mục Quy trình.
+> giao cho slicer: `scripts/slice.py` (Bambu Studio CLI); cả vòng: `scripts/prepare-print.py`. Quy trình 2 tầng: xem `CLAUDE.md` mục Quy trình.
 > Bản B-rep ở 5.2 lấy mẫu 3×3 điểm/mặt nên **bỏ sót** mép sắc 0,02–0,12 mm mà bản lưới bắt được (đã đối chiếu cùng tia).
 1. Viết `maker/robotics-cad/scripts/kiem-tra.py`: gom mục 1, 2, 3.2, 5.2, 5.3, 6 thành 1 script chạy `freecadcmd scripts/kiem-tra.py --pass <file.FCStd> [--quet-khop <joint>:<min>:<max>:<buoc>]`, ghi `bao-cao-kiem-tra.json` + 3MF; tự thêm `bin/` vào PATH cho FEM. Ngưỡng (độ dày, overhang, dung sai) đọc từ 1 file YAML, mặc định `TODO` → báo "chưa có ngưỡng" thay vì tự đoán.
 2. In mẫu dung sai + overhang + bridge trên A1 (PLA, PETG) → điền `maker/in-3d/CLAUDE.md`, rồi đưa ngưỡng vào YAML.
