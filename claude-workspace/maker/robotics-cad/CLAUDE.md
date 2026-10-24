@@ -68,6 +68,12 @@ Thiết kế cơ khí robot (khung, gá động cơ/cảm biến, hộp số) đ
    - **Tầng 2 – trước khi in** (STL theo HƯỚNG IN, ~10–40 s): `slice.py print/print.yaml` → Bambu Studio CLI cắt lớp
      theo profile A1 chính hãng: lơ lửng, support, thời gian, số gam. Ra `print/plates/<plate>/<plate>.3mf` (mở Bambu
      để in) + `print/plates/print-overview.png`.
+   - **Quét khớp / mô phỏng / script đo riêng: KHÔNG dùng boolean B-rep mỗi tư thế** (`common`/`distToShape`
+     0,1–12 s/cặp) → `scripts/fast_collide.py`: chia lưới 1 lần (manifold3d, linh kiện lưới hở → bao lồi), mỗi
+     tư thế chỉ nhân ma trận (~ms/cặp). pushrod-arm 2026-10-24: quét 24 tư thế + kẹp **16 s thay 395 s**, kết quả
+     trùng B-rep. `min_gap` giữ bán kính ≤ 20 mm (50 mm trả sai/treo). FreeCAD 1.1 không có lệnh kiểm va chạm sẵn
+     (Assembly chỉ có Solve/Simulation/BOM) – nút kiểm của hãng đã dùng: Part Check Geometry (BOP, `mode=full`),
+     Mesh, Bambu Studio CLI (tầng 2).
    - `check.py mode=full` (BOP, độ dày thành, overhang theo hướng trong file, ~2 phút) chỉ khi cần soi kỹ;
      độ dày/overhang **đúng hướng in** thì tin kết quả slicer ở tầng 2.
    - FEM nếu chịu lực: theo `kiem-tra-model.md` mục 4. In thử chi tiết lắp ghép nhỏ trước.
