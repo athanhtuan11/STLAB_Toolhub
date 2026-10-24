@@ -32,9 +32,22 @@ def _manifold(shape, lin=0.05, ang=0.2618, hull_fallback=True):
         return mf, False
     if not hull_fallback:
         return None, False
-    manh = [np.array([(p.x, p.y, p.z) for p in c.Topology[0]]) for c in m.getSeparateComponents()]
-    return manifold3d.Manifold.batch_boolean(
-        [manifold3d.Manifold.hull_points(p) for p in manh if len(p) >= 4], manifold3d.OpType.Add), True
+    # Tung SOLID rieng: solid kin -> dung dung hinh; chi solid ho moi bao loi. (2026-10-24: hop so 030 - bao loi ca
+    # cum "banh rang r6 + truc Ø5,3" phinh to, bao chong gia 154 mm3 voi moay-o truc vit.)
+    parts, hull = [], False
+    for so in (shape.Solids or [shape]):
+        sm = _mesh(so, lin, ang)
+        q = manifold3d.Mesh(vert_properties=np.array([(p.x, p.y, p.z) for p in sm.Topology[0]], dtype=np.float32),
+                            tri_verts=np.array(sm.Topology[1], dtype=np.uint32))
+        q.merge()
+        mq = manifold3d.Manifold(q)
+        if mq.status() == manifold3d.Error.NoError and not mq.is_empty():
+            parts.append(mq)
+            continue
+        hull = True
+        parts += [manifold3d.Manifold.hull_points(np.array([(p.x, p.y, p.z) for p in c.Topology[0]]))
+                  for c in sm.getSeparateComponents() if c.CountPoints >= 4]
+    return manifold3d.Manifold.batch_boolean(parts, manifold3d.OpType.Add), hull
 
 
 def _m34(pl):

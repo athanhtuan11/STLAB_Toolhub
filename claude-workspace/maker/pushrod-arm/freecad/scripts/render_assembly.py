@@ -7,11 +7,11 @@ P = r"D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/maker/pushrod-arm/freecad/"
 OUT = P + "images/assembly/"
 STEPS = [  # (ma buoc, glob Label cac chi tiet MOI) - thu tu = thu tu lap trong ASSEMBLY.md
     ("01", ["Base_foot", "Base_housing"]),
-    ("02", ["CB_Servo9g_360_turntable", "Pinion_m1_z10_turntable", "Battery_bay", "CB_XA004_receiver", "Socket_2x8", "CB_XA003_core"]),
+    ("02", ["CB_Servo9g_360_turntable", "Pinion_m1_z10_turntable", "Battery_bay", "Receiver_riser", "CB_XA003_XA004_receiver"]),
     ("03", ["Base_deck", "Slide_ring", "Turntable", "Turntable_gear_m1_z60", "M2_5x10_gear*"]),
     ("04", ["M2_5x8_deck*"]),
     ("05", ["Turret_one_piece", "M2_5x6_turret*"]),
-    ("06", ["Housing_*", "Pinion_WormWheel_*", "Worm_*", "CB_N20_*", "Washer_shaft_*", "M2_5x6_shaft_*", "Rack_*"]),
+    ("06", ["Housing_*", "Pinion_WormWheel_*", "Worm_*", "CB_030_gearbox_*", "Pin_gearbox_*", "Washer_shaft_*", "M2_5x6_shaft_*", "Rack_*"]),
     ("07", ["Boom001", "Spacer_S", "Spacer_S001", "Pin_S", "Pin_S_*"]),
     ("08", ["Spacer_A", "Spacer_A001", "Pin_A", "Pin_A_*", "Pin_B", "Pin_B_*"]),
     ("09", ["Forearm_plate_L", "Forearm_plate_R", "Spacer_D", "Spacer_E", "Wrist_spacer", "M2_5x6_wrist_spacer*"]),

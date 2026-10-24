@@ -41,7 +41,7 @@ for tag, zs in (("Shoulder", -1), ("Elbow", 1)):
     WORM_D[tag] = REST[OBJ["Rack_" + tag].Name].Rotation.multVec(V(1, 0, 0))
 
 BASE_FIXED = {"Base_housing", "Base_foot", "Base_deck", "Slide_ring", "CB_Servo9g_360_turntable",
-              "Pinion_m1_z10_turntable", "CB_XA004_receiver", "Socket_2x8", "CB_XA003_core", "Battery_bay"}
+              "Pinion_m1_z10_turntable", "CB_XA003_XA004_receiver", "Receiver_riser", "Battery_bay"}
 def grp(label):
     gg = [o for o in DOC.Objects if o.Label == label]
     out = []
@@ -126,8 +126,8 @@ def set_pose(yaw=None, L1=None, L2=None, grip=None, update=True):
 
 def reset(): set_pose(0, L1_0, L2_0, 0)
 
-COLL_SETS = {"ROD1": ["Housing_Shoulder", "Rack_Shoulder", "CB_N20_Shoulder", "Worm_Shoulder", "Pinion_WormWheel_Shoulder", "Washer_shaft_Shoulder", "M2_5x6_shaft_Shoulder"],
-             "ROD2": ["Housing_Elbow", "Rack_Elbow", "CB_N20_Elbow", "Worm_Elbow", "Pinion_WormWheel_Elbow", "Washer_shaft_Elbow", "M2_5x6_shaft_Elbow"],
+COLL_SETS = {"ROD1": ["Housing_Shoulder", "Rack_Shoulder", "CB_030_gearbox_Shoulder", "Pin_gearbox_Shoulder", "Worm_Shoulder", "Pinion_WormWheel_Shoulder", "Washer_shaft_Shoulder", "M2_5x6_shaft_Shoulder"],
+             "ROD2": ["Housing_Elbow", "Rack_Elbow", "CB_030_gearbox_Elbow", "Pin_gearbox_Elbow", "Worm_Elbow", "Pinion_WormWheel_Elbow", "Washer_shaft_Elbow", "M2_5x6_shaft_Elbow"],
              "BOOM": ["Boom001"],
              "FORE": ["Forearm_plate_L", "Forearm_plate_R", "Gripper_frame", "CB_Servo9g_180_gripper", "Jaw_1_driven_by_servo", "Jaw_2_idler", "Gripper_top_plate", "Spacer_D", "Wrist_spacer"],
              "TUR": ["Turret_one_piece", "Spacer_S", "Spacer_S001", "Spacer_A", "Spacer_A001"],

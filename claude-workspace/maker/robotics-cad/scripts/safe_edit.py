@@ -60,7 +60,13 @@ def backup(doc, note="truoc-sua"):
     d = Path(doc.FileName).parent / "backup"
     d.mkdir(exist_ok=True)
     f = d / f"{Path(doc.FileName).stem}.{time.strftime('%Y%m%d-%H%M%S')}.{note}.FCStd"
-    doc.saveCopy(str(f))
+    if App.GuiUp:
+        doc.saveCopy(str(f))
+    else:
+        # CLI: saveCopy cung BO du lieu hien thi -> backup mat GUI, save(gui_from=backup) khong con gi de chep lai
+        # (2026-10-24: mat mau/an hien qua 4 lan sua). Sau guard() (UndoCount 0) file tren dia = noi dung doc.
+        import shutil
+        shutil.copy2(doc.FileName, f)
     return f
 
 
