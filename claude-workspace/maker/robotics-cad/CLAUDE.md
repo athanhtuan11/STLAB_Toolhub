@@ -30,6 +30,7 @@ Thiết kế cơ khí robot (khung, gá động cơ/cảm biến, hộp số) đ
   Sửa logic pipeline thì sửa trong `scripts/`, workbench tự theo.
 
 ## Quy trình
+0. **Giao diện trước** (Tuan 2026-10-24): `design/brief.md` → 3 concept dáng (bóng hông/đỉnh/3/4) + `cmf.png` (≤ 3 màu, cuộn có thật) + render + mockup UI nếu có → `contact-sheet.png` → Tuan chọn bằng ảnh. Chưa chọn thì chưa dựng cơ khí. Mức A/B/C và checklist: `studio/design/DESIGN.md`, `project-template/design/brief.md`.
 1. Chọn linh kiện trong `library/components.yaml`; chèn STEP từ thư viện (không tự vẽ lại linh kiện chuẩn).
 2. Dựng khung quanh linh kiện; tham số hóa kích thước chính bằng Spreadsheet.
 3. Kiểm tra va chạm và tầm quay khớp trong Assembly.

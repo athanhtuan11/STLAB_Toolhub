@@ -21,6 +21,7 @@ MAKER = RCAD.parent
 WS = MAKER.parent                              # claude-workspace
 TEMPLATE = RCAD / "project-template"
 CATALOG = RCAD / "library" / "components.yaml"
+TOKENS = WS / "studio" / "design" / "tokens.json"   # mau/chu dung chung voi Toolhub (studio/design/DESIGN.md)
 ICONS = WB / "stlab_wb" / "icons"
 BIN = Path(App.getHomePath()) / "bin"
 FCC = BIN / "freecadcmd.exe"
@@ -33,6 +34,10 @@ if str(SCRIPTS) not in sys.path:
 
 NAME_OK = re.compile(r"^[A-Za-z0-9_.\-]+$")
 PROJECT_NAME = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
+
+
+def tokens():
+    return json.loads(TOKENS.read_text(encoding="utf-8"))
 
 
 def icon(name):

@@ -24,6 +24,7 @@ qua cả 4 MCP server trong `.mcp.json`.
   - `toolhub/printprep.py` (trang Dự án, dự án có `print/print.yaml`): nút **Chuẩn bị in** và **Tự chạy khi Lưu**
     gọi `maker/robotics-cad/scripts/prepare-print.py` / `watch.py` bằng Python của FreeCAD, chạy nền (PID ở
     `print/_*.pid`). Chỉ đọc file FreeCAD đã lưu; ảnh chỉ trả `.png` mà `_prepare-print-result.json` trỏ tới. POST cần `X-Studio`.
+- **Hệ thiết kế** (2026-10-24): `design/tokens.json` là nguồn màu/chữ duy nhất cho Toolhub + workbench FreeCAD + trang ESP32; `python design/build_tokens.py` sinh `toolhub/static/tokens.css` và kiểm tương phản. Font Be Vietnam Pro (OFL) lưu tại `toolhub/static/fonts/`. Không đặt hex trong `style.css`/template. Xem `design/DESIGN.md`.
 - `bat/`: nhấp đúp để chạy (`mo-toolhub`, `mo-freecad`, `mo-blender`, `mo-lightcraft`, `mo-photocraft`,
   `mo-tat-ca`, `mo-claude`, `kiem-tra-mcp`).
 - `scripts/freecad_start_rpc.py`: bật RPC server cho phiên FreeCAD do launcher mở.

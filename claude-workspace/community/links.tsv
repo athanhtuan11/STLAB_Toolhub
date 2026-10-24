@@ -4,6 +4,7 @@
 ~/.claude/skills/handoff	community/mattpocock-skills/skills/productivity/handoff
 ~/.claude/skills/diagnosing-bugs	community/mattpocock-skills/skills/engineering/diagnosing-bugs
 ~/.claude/skills/research	community/mattpocock-skills/skills/engineering/research
+~/.claude/skills/frontend-design	community/anthropics-skills/skills/frontend-design
 ~/.claude/skills/robotics-cad	custom/skills/robotics-cad
 ~/.claude/skills/freecad-scripts	community/github-awesome-copilot/skills/freecad-scripts
 ~/.claude/skills/filmcraft	community/midasmatterhorn-artcraft-skills/filmcraft

@@ -151,9 +151,9 @@ class WorkflowPanel(QtWidgets.QWidget):
         for k, lb in self.status.items():
             if k in res:
                 kl, tom, _img = res[k]
-                lb.setText(f"{RESULT_NAME[k]}: <b style='color:{COLOR.get(kl, '#000')}'>{kl}</b> · {tom}")
+                lb.setText(f"{RESULT_NAME[k]}: <b style='color:{COLOR.get(kl, COLOR['TEXT'])}'>{kl}</b> · {tom}")
             else:
-                lb.setText(f"{RESULT_NAME[k]}: <span style='color:#888'>chưa chạy</span>")
+                lb.setText(f"{RESULT_NAME[k]}: <span style='color:{COLOR['MUTED']}'>chưa chạy</span>")
 
     # ------------------------------------------------------------ log
     def append(self, text):
