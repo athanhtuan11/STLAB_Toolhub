@@ -33,6 +33,7 @@ Sau mỗi lần `apply`/`rollback`, cập nhật cột "Ghim" và "Kiểm tra".
 | [abpy/FujifilmCameraProfiles](https://github.com/abpy/FujifilmCameraProfiles) | `b5a1f16abfb2` | **Không có file LICENSE** | Cộng đồng, 588★ | 2026-10-21 | LUT Fuji film sim. Chỉ `provia conversion luts/` áp thẳng lên JPEG được (Classic Neg, Nostalgic Neg); `cube lut/` cần RAW + profile tuyến tính |
 | [cedeber/hald-clut](https://github.com/cedeber/hald-clut) | `3b3180f82d4d` (sparse: Film Simulation/Color/{Fuji,Kodak}, Fujifilm XTrans III) | Repo GPL-3.0; bộ RawTherapee Film Simulation **CC BY-SA 4.0** (Pat David, Pavlov Dmitry, Michael Ezra) | Cộng đồng, 324★ | 2026-10-21 | HaldCLUT phim (Portra, 400H…) → `photo-ai/scripts/luts.py` đổi sang `.cube`. **Không lấy** `Apple/`, `Pixelmator Pro/` (trích từ app thương mại). XTrans III chỉ dành cho RAW trung tính |
 | [peva3/Lightroom-Presets](https://github.com/peva3/Lightroom-Presets) | `f22f4d8057aa` | MIT | Cộng đồng, 99★, repo mới (2026-05) | 2026-10-21 | 445 preset XMP Lightroom (chỉ `.xmp` + `.md`) → LightCraft `render --settings x.xmp` (áp được) |
+| [remotion-dev/skills](https://github.com/remotion-dev/skills) | `6c67adcd9cdb` (@remotion/skills 4.0.538) | **Không có file LICENSE**; Remotion License của monorepo (free cá nhân/công ty ≤ 3 NV) | **Chính hãng** (tổ chức Remotion), 5,6k★ | 2026-10-24 | Skill `remotion-best-practices` (router, chứa đủ 11 skill con) → `~/.claude/skills`: video motion graphics bằng React |
 
 ## Những gì nguồn chạy/truy cập (đọc mã ngày 2026-10-21)
 - **Skill markdown** (mattpocock, homeassistant-ai, teaching-skills, GarethManning): không có script,
@@ -178,6 +179,14 @@ obotcad` khi khởi động. Workbench vẫn nạp
 - Tránh: repo kiểu "Lightroom Photo Studio for Windows" mới tạo (dấu hiệu mồi mã độc);
   `dpnkrpl/awesome-lightroom-presets` (5000 preset không rõ nguồn, có thể là preset bán bị chia sẻ lậu).
 
+### Remotion skills (đọc mã 2026-10-24)
+- 12 skill (`remotion-best-practices` là router chứa bản sao các skill còn lại → chỉ liên kết skill này, tránh trùng tên).
+  Không hook, không `allowed-tools`, không `.mcp.json`. 2 script `prep-*.mjs` (remotion-maps) chỉ đọc/ghi file cục bộ.
+- Lệnh skill sẽ bảo chạy: `npx create-video@latest` (**không ghim** – khi dùng thì ghim phiên bản), `npm i`, `npx remotion studio/render`
+  (tải Chromium headless lần đầu). Node đã có: v24.15.0. `remotion-docs` gọi Algolia search (key công khai chỉ đọc) + remotion.dev.
+- Remotion **chưa cài** vào dự án nào. Telemetry Remotion: `TODO` đọc trước khi cài (xem `docs/project-video-marketing-research.md`).
+- `scripts/*.ts`, `package.json` của repo là công cụ đồng bộ nội bộ của Remotion – không chạy.
+
 ## Thay đổi bên ngoài workspace (để gỡ/khôi phục)
 | Ngày | Vị trí | Thay đổi | Khôi phục |
 |---|---|---|---|
@@ -198,6 +207,7 @@ obotcad` khi khởi động. Workbench vẫn nạp
 | 2026-10-21 | Claude Desktop `%LOCALAPPDATA%\Claude-Data\claude_pzs8sxrjxfjjc\claude_desktop_config.json` | **chưa đổi**; `dong-bo-claude-desktop.bat` sẽ thêm blender, lightcraft và thay freecad (`uvx freecad-mcp` không ghim) bằng bản ghim | chép đè từ file `.bak-*` cạnh nó |
 | 2026-10-21 | `%USERPROFILE%\Pictures\stlab-studio\` | thư mục PhotoCraft được đọc/ghi qua MCP | xóa thư mục |
 | 2026-10-21 | `~/.claude/skills/lightcraft` | symlink → artcraft-skills/lightcraft (`aa35c24`) | `update-community.sh unlink` |
+| 2026-10-24 | `~/.claude/skills/remotion-best-practices` | symlink → remotion-dev/skills (`6c67adc`) | `update-community.sh unlink` |
 
 Các bản clone có `__pycache__/`, `*.pyc`, `build/`, `*.egg-info/` trong `.git/info/exclude`
 (lệnh `exclude`), vì FreeCAD/Blender/uv sinh các file này khi chạy trực tiếp từ bản ghim.
@@ -227,6 +237,7 @@ Khi chuyển sang thương mại, rà bảng này trước (và cột License �
 | anthropics/skills docx/pdf/pptx/xlsx | Source-available | stlab |
 | theosib/FreeCAD-MCP-Server | Không có license | Chưa dùng |
 | chaofengc/IQA-PyTorch (pyiqa) | NTU S-Lab + CC BY-NC-SA 4.0 | Ứng viên chấm điểm thẩm mỹ ảnh |
+| remotion-dev/skills + Remotion | Repo skill không có license; Remotion License: free cá nhân/công ty ≤ 3 NV/phi lợi nhuận, trên đó cần Company License | `~/.claude/skills/remotion-best-practices` |
 | briaai/RMBG-1.4, RMBG-2.0 (mặc định của rembg) | BRIA: thương mại phải trả phí | Ứng viên tách nền (chất lượng tốt nhất của rembg) |
 | upscayl (fork ncnn) | AGPL-3.0 | Chưa dùng |
 | Pololu Micro Metal Gearmotor STEP (N20) | Không ghi license; hãng phát hành công khai | maker/robotics-cad |

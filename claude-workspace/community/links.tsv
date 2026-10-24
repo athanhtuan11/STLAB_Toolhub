@@ -10,6 +10,7 @@
 ~/.claude/skills/filmcraft	community/midasmatterhorn-artcraft-skills/filmcraft
 ~/.claude/skills/lightcraft	community/midasmatterhorn-artcraft-skills/lightcraft
 ~/.claude/skills/video-ai	custom/skills/video-ai
+~/.claude/skills/remotion-best-practices	community/remotion-dev-skills/skills/remotion-best-practices
 # --- stlab ---
 stlab/.claude/skills/docx	community/anthropics-skills/skills/docx
 stlab/.claude/skills/pptx	community/anthropics-skills/skills/pptx
