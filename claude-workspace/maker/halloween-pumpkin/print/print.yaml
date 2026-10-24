@@ -1,0 +1,11 @@
+# halloween-pumpkin - dao cu quay video #17 (robot cam bi ngo). STL sinh bang freecad/scripts/build_pumpkin.py
+# (khong co FCStd: luoi tham so, khong lap rap). Cat lop: python ../robotics-cad/scripts/slice.py print/print.yaml
+machine: Bambu Lab A1 0.4 nozzle
+filament: Bambu PETG Basic @BBL A1      # TODO: doi sang cuon cam that khi Tuan chon (danh sach cuon chua co)
+stl: stl
+plates_dir: plates
+common: {sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
+plates:
+  A_round8: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "2", sparse_infill_density: "10%"}, stl: ["A_round8.stl"]}
+  B_tall10: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "2", sparse_infill_density: "10%"}, stl: ["B_tall10.stl"]}
+  C_wide12: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "2", sparse_infill_density: "10%"}, stl: ["C_wide12.stl"]}
