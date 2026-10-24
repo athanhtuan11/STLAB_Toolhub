@@ -344,12 +344,15 @@ def mf_ct(ct, ng):
             if mf.status() == manifold3d.Error.NoError and not mf.is_empty():
                 _MF[khoa] = mf
             elif ct.get("linh_kien"):
-                # STEP linh kien loi (vd. N20: 1 solid 3 shell tu cat) -> bao loi tung manh: hoi "beo" hon that,
-                # co the bao cham thua nhung khong bo sot. Chi tiet IN thi khong lam the (phai sua o CAD).
-                manh = [np.array([(p.x, p.y, p.z) for p in c.Topology[0]]) for c in m.getSeparateComponents()]
-                _MF[khoa] = manifold3d.Manifold.batch_boolean(
-                    [manifold3d.Manifold.hull_points(p) for p in manh if len(p) >= 4], manifold3d.OpType.Add)
-                _BAO_LOI.add(khoa)
+                # STEP linh kien loi -> chia luoi TUNG SOLID (solid kin dung dung hinh), chi solid ho moi bao loi
+                # (fast_collide._manifold - dung chung voi quet khop). 2026-10-24: bao loi ca cum hop so 030 bao
+                # chong gia 154 mm3. Chi tiet IN thi khong lam the (phai sua o CAD).
+                import fast_collide
+                ms = ng["mesh"]
+                mf, hull = fast_collide._manifold(s, ms["linear_mm"], ms["angular_rad"])
+                _MF[khoa] = mf
+                if hull:
+                    _BAO_LOI.add(khoa)
     ct["mf"] = _MF[khoa]
     ct["bao_loi"] = khoa in _BAO_LOI
     return ct["mf"]

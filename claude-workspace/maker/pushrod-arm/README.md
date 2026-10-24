@@ -1,7 +1,7 @@
 # pushrod-arm – cánh tay robot xi-lanh đẩy
 
 Cánh tay 4 bậc dùng bộ điều khiển **CyberBrick** (Bambu Lab): xoay đế (servo 360°), nâng vai và gập khuỷu bằng
-2 xi-lanh **thanh răng – bánh vít – trục vít** chạy động cơ N20, kẹp 2 hàm ăn khớp răng (servo 180°).
+2 xi-lanh **thanh răng – bánh vít – trục vít** chạy động cơ **CyberBrick 030 + hộp giảm tốc 1 trục** (2026-10-24, thay N20), kẹp 2 hàm ăn khớp răng (servo 180°).
 In trên **Bambu Lab A1**, đầu phun 0,4 mm, PLA (+ đệm kẹp TPU 95A).
 
 Lắp ráp: **[ASSEMBLY.pdf](ASSEMBLY.pdf)** (15 trang, chữ + hình – để in/gửi) · nguồn [ASSEMBLY.md](ASSEMBLY.md).
@@ -9,17 +9,17 @@ Lắp ráp: **[ASSEMBLY.pdf](ASSEMBLY.pdf)** (15 trang, chữ + hình – để 
 ## An toàn
 - Pin: `Battery_bay` là khoang pin của bộ CyberBrick – loại pin, điện áp: **TODO** (xem datasheet XA003/XA004 trước khi cắm).
   Pin Li-ion: không sạc khi không có người trông, không để chập cực khi lắp dây.
-- Động cơ N20 + trục vít tự hãm: khi kẹt cơ khí dòng tăng, nhựa quanh động cơ có thể nóng – thử lần đầu ở tốc độ thấp.
+- Động cơ 030 (LA024, 5–9 V) + trục vít tự hãm: **không để kẹt trục khi cấp điện** (datasheet: nóng, nguy cơ cháy) – thử tay trước, lần đầu chạy chậm.
 
 ## Linh kiện mua (BOM) – đếm từ model 2026-10-23
 Bản tự sinh đầy đủ (vít, linh kiện, chi tiết in → bàn/nhựa): [BOM.md](BOM.md) / `BOM.csv` – cập nhật mỗi lần *Chuẩn bị in*.
 | Linh kiện | SL | Ghi chú |
 |---|---|---|
 | CyberBrick Multi-Function Controller Core XA003 | 1 | MCU |
-| CyberBrick Remote Control Receiver Shield XA004 | 1 | + socket 2×8 |
+| CyberBrick Remote Control Receiver Shield XA004 | 1 | ghép với XA003 (lõi cắm mặt dưới) |
 | CyberBrick servo 9g 360° | 1 | xoay đế |
 | CyberBrick servo 9g 180° | 1 | kẹp |
-| Động cơ N20 (bản CyberBrick, có trục vít) | 2 | vai, khuỷu |
+| CyberBrick 030 Micro DC Motor LA024 + Single-axis Reduction Gear Kit (LA012…LA022, mã TODO) | 2 | vai, khuỷu; vỏ hộp số in theo file hãng |
 | Khoang pin (`Battery_bay`) | 1 | TODO loại pin |
 | Vít M2.5 × 6 | 21 | gồm 6 vít khóa chốt in |
 | Vít M2.5 × 8 | 4 | bắt deck |

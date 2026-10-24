@@ -87,39 +87,39 @@
    ],
    "solids": 1
   },
-  "CB_N20_Elbow": {
-   "volume_mm3": 2326.9,
+  "CB_030_gearbox_Elbow": {
+   "volume_mm3": 10943.0,
    "bbox_mm": [
-    4.76,
-    -1.45,
-    157.5,
-    31.95,
-    15.81,
-    190.64
+    -0.51,
+    -1.6,
+    153.4,
+    27.9,
+    77.34,
+    182.44
    ],
    "com_mm": [
-    16.08,
-    9.37,
-    170.37
+    13.68,
+    27.6,
+    167.19
    ],
-   "solids": 1
+   "solids": 14
   },
-  "CB_N20_Shoulder": {
-   "volume_mm3": 2326.9,
+  "CB_030_gearbox_Shoulder": {
+   "volume_mm3": 10943.0,
    "bbox_mm": [
-    47.23,
-    -1.45,
-    65.82,
-    71.66,
-    15.81,
-    100.93
+    41.68,
+    -1.6,
+    62.59,
+    69.82,
+    77.34,
+    91.98
    ],
    "com_mm": [
-    57.8,
-    9.37,
-    79.37
+    55.73,
+    27.6,
+    75.95
    ],
-   "solids": 1
+   "solids": 14
   },
   "CB_Servo9g_180_gripper": {
    "volume_mm3": 4340.1,
@@ -155,39 +155,22 @@
    ],
    "solids": 1
   },
-  "CB_XA003_core": {
-   "volume_mm3": 950.4,
-   "bbox_mm": [
-    -11.0,
-    21.5,
-    19.4,
-    11.0,
-    48.5,
-    21.0
-   ],
-   "com_mm": [
-    -0.0,
-    35.0,
-    20.2
-   ],
-   "solids": 1
-  },
-  "CB_XA004_receiver": {
-   "volume_mm3": 1355.4,
+  "CB_XA003_XA004_receiver": {
+   "volume_mm3": 4234.9,
    "bbox_mm": [
     -14.5,
     20.0,
-    12.0,
+    9.95,
     14.5,
     50.0,
-    13.6
+    32.53
    ],
    "com_mm": [
     0.0,
-    35.0,
-    12.8
+    34.94,
+    19.45
    ],
-   "solids": 1
+   "solids": 13
   },
   "Forearm_plate_L": {
    "volume_mm3": 12863.5,
@@ -258,36 +241,36 @@
    "solids": 1
   },
   "Housing_Elbow": {
-   "volume_mm3": 13008.1,
+   "volume_mm3": 15009.1,
    "bbox_mm": [
-    2.34,
+    -3.73,
     -6.0,
     120.61,
     55.79,
-    17.2,
-    191.26
+    29.62,
+    193.38
    ],
    "com_mm": [
-    25.58,
-    0.97,
-    165.24
+    21.61,
+    4.24,
+    165.74
    ],
    "solids": 1
   },
   "Housing_Shoulder": {
-   "volume_mm3": 13008.1,
+   "volume_mm3": 15009.2,
    "bbox_mm": [
     14.0,
     -6.0,
     50.0,
-    72.08,
-    17.2,
+    74.13,
+    29.62,
     119.26
    ],
    "com_mm": [
-    49.53,
-    0.97,
-    86.29
+    51.46,
+    4.24,
+    82.79
    ],
    "solids": 1
   },
@@ -1022,6 +1005,40 @@
    ],
    "solids": 1
   },
+  "Pin_gearbox_Elbow": {
+   "volume_mm3": 307.0,
+   "bbox_mm": [
+    6.18,
+    21.57,
+    162.19,
+    30.99,
+    27.57,
+    184.66
+   ],
+   "com_mm": [
+    18.61,
+    24.57,
+    173.7
+   ],
+   "solids": 2
+  },
+  "Pin_gearbox_Shoulder": {
+   "volume_mm3": 307.0,
+   "bbox_mm": [
+    47.42,
+    21.57,
+    72.02,
+    72.64,
+    27.57,
+    93.14
+   ],
+   "com_mm": [
+    59.97,
+    24.57,
+    82.95
+   ],
+   "solids": 2
+  },
   "Pin_jaw2": {
    "volume_mm3": 434.6,
    "bbox_mm": [
@@ -1124,6 +1141,23 @@
    ],
    "solids": 1
   },
+  "Receiver_riser": {
+   "volume_mm3": 699.4,
+   "bbox_mm": [
+    -14.3,
+    20.2,
+    12.0,
+    14.3,
+    49.8,
+    21.7
+   ],
+   "com_mm": [
+    -0.0,
+    35.0,
+    16.85
+   ],
+   "solids": 4
+  },
   "Servo_horn": {
    "volume_mm3": 195.7,
    "bbox_mm": [
@@ -1155,23 +1189,6 @@
     -0.0,
     -0.0,
     39.75
-   ],
-   "solids": 1
-  },
-  "Socket_2x8": {
-   "volume_mm3": 1100.8,
-   "bbox_mm": [
-    -8.0,
-    27.0,
-    13.6,
-    8.0,
-    43.0,
-    17.9
-   ],
-   "com_mm": [
-    0.0,
-    35.0,
-    15.75
    ],
    "solids": 1
   },
@@ -1397,36 +1414,36 @@
    "solids": 1
   },
   "Worm_Elbow": {
-   "volume_mm3": 314.7,
+   "volume_mm3": 761.1,
    "bbox_mm": [
-    17.98,
+    15.72,
     1.21,
-    177.85,
+    171.91,
     36.37,
     17.59,
     195.56
    ],
    "com_mm": [
-    28.46,
-    9.59,
-    186.67
+    25.02,
+    9.48,
+    182.14
    ],
    "solids": 1
   },
   "Worm_Shoulder": {
-   "volume_mm3": 314.7,
+   "volume_mm3": 761.1,
    "bbox_mm": [
-    57.62,
+    56.71,
     0.51,
-    88.49,
+    81.61,
     76.73,
     16.74,
     105.12
    ],
    "com_mm": [
-    68.33,
-    9.58,
-    96.92
+    65.42,
+    9.48,
+    92.02
    ],
    "solids": 1
   },
@@ -1455,8 +1472,8 @@
    "support": false
   },
   "P2_Turret_Turntable__0.20_PETG": {
-   "time_s": 10409,
-   "grams": 75.5,
+   "time_s": 10566,
+   "grams": 76.3,
    "support": false
   },
   "P3_Forearm_Plates__0.20_PETG": {
@@ -1465,13 +1482,13 @@
    "support": false
   },
   "P4_Boom_Gripper_Housings__0.20_PETG": {
-   "time_s": 8966,
-   "grams": 74.6,
+   "time_s": 10446,
+   "grams": 82.5,
    "support": false
   },
   "P5_Gears_Racks_Pins__0.16_PETG": {
-   "time_s": 5639,
-   "grams": 23.1,
+   "time_s": 5906,
+   "grams": 23.8,
    "support": false
   },
   "P6_GripperPads__TPU95A": {
@@ -1480,8 +1497,8 @@
    "support": false
   },
   "P7_Worms__0.12_PETG_100pct": {
-   "time_s": 878,
-   "grams": 0.9,
+   "time_s": 2062,
+   "grams": 2.3,
    "support": false
   }
  }
