@@ -43,3 +43,6 @@ credentials*.json
 /photo-ai/.lab-state.json
 /photo-ai/tools/*
 !/photo-ai/tools/SHA256SUMS
+
+# Lop phu RobotCAD (junction toi community/, sinh bang custom/freecad/robotcad_overlay.py)
+/custom/freecad/robotcad-overlay/
