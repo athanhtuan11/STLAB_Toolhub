@@ -1,0 +1,48 @@
+/* SINH TU studio/design/tokens.json bang build_tokens.py - KHONG SUA TAY */
+:root {
+  --bg: #ECF1EF;
+  --card: #FBFCFB;
+  --text: #16231D;
+  --muted: #56655E;
+  --line: #D3DDD8;
+  --accent: #1E5A45;
+  --accent-soft: #DCEBE4;
+  --highlight: #E8B33A;
+  --on-highlight: #16231D;
+  --ok: #257A45;
+  --warn: #9A6400;
+  --err: #B3341F;
+  --off: #9AA7A1;
+  --on-accent: #FFFFFF;
+  --stage-0: #C2577E;
+  --stage-1: #3F6E9E;
+  --stage-2: #6E5BA6;
+  --stage-3: #1E5A45;
+  --stage-4: #B3341F;
+  --stage-5: #B87A00;
+  --stage-6: #4F6B3A;
+  --font-ui: "Be Vietnam Pro", system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, Consolas, monospace;
+  --r-control: 8px;
+  --r-card: 12px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #101714;
+    --card: #18211D;
+    --text: #E3EBE7;
+    --muted: #9BABA3;
+    --line: #2A3631;
+    --accent: #6CC19B;
+    --accent-soft: #1C3329;
+    --highlight: #F0C152;
+    --on-highlight: #16231D;
+    --ok: #5CCB86;
+    --warn: #E8B33A;
+    --err: #F07A63;
+    --off: #56635D;
+    --on-accent: #101714;
+    color-scheme: dark;
+  }
+}

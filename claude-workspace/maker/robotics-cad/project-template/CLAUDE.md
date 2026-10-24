@@ -2,6 +2,10 @@
 
 Tạo bằng `/new-project`. Cấu trúc chuẩn: `maker/robotics-cad/CLAUDE.md` mục "Dự án". Mẫu đầy đủ: `maker/pushrod-arm/`.
 
+## Bước 0 – Giao diện – `design/` (làm TRƯỚC, Tuan 2026-10-24)
+- `brief.md` → 3 concept + `cmf.png` + render + mockup UI (nếu có) → `contact-sheet.png` → Tuan chọn bằng ảnh.
+- Chưa chọn concept thì chưa dựng cơ khí. Hệ thiết kế: `studio/design/DESIGN.md`.
+
 ## FreeCAD – `freecad/`
 - `<model>.FCStd` (chỉ trên máy), `<model>_rest.json` (tư thế gốc, nếu có mô phỏng), `scripts/`, `images/`.
 - `check/`, `backup/`: file sinh / bản sao lưu (không lên git).

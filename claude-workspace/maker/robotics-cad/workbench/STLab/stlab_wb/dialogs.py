@@ -13,7 +13,17 @@ from PySide import QtCore, QtGui, QtWidgets
 from . import core
 
 MW = Gui.getMainWindow
-COLOR = {"FAIL": "#d9534f", "WARN": "#e0a020", "PASS": "#3a9a50", "INFO": "#6a7a8a"}
+
+
+def _colors():
+    """Mau trang thai tu studio/design/tokens.json, bo sang/toi theo giao dien FreeCAD dang dung."""
+    t = core.tokens()
+    win = QtWidgets.QApplication.palette().color(QtGui.QPalette.ColorRole.Window)
+    m = t["dark" if win.lightness() < 128 else "light"]
+    return {**{k: m[v] for k, v in t["status"].items()}, "TEXT": m["text"], "MUTED": m["muted"]}
+
+
+COLOR = _colors()
 
 
 def open_path(p):
@@ -324,7 +334,7 @@ class ComponentBrowser(QtWidgets.QDialog):
         if c.get("bbox_mm"):
             h.append(f"<p><b>Hộp bao (đo từ model):</b> {' × '.join(f'{v:g}' for v in c['bbox_mm'])} mm</p>")
         if c.get("dung_tu_ban_ve"):
-            h.append("<p style='color:#b07000'>Dựng từ bản vẽ: mặt bằng đúng, chiều cao cổng/header là ƯỚC TÍNH → "
+            h.append(f"<p style='color:{COLOR['WARN']}'>Dựng từ bản vẽ: mặt bằng đúng, chiều cao cổng/header là ƯỚC TÍNH → "
                      "chừa khe ≥ 1 mm, đo hàng thật trước khi in hộp.</p>")
         if c.get("thong_so"):
             h.append("<table border=0 cellspacing=2>" + "".join(
@@ -510,7 +520,7 @@ class CheckReport(QtWidgets.QDialog):
             self.head.setText("Chưa có kết quả – bấm Kiểm nhanh.")
             return
         kl = b.get("ket_luan", "?")
-        self.head.setText(f"<b style='color:{COLOR.get(kl, '#000')}'>{kl}</b> · {b.get('file')} · "
+        self.head.setText(f"<b style='color:{COLOR.get(kl, COLOR['TEXT'])}'>{kl}</b> · {b.get('file')} · "
                           f"{b.get('thoi_gian')} · "
                           f"{b.get('thoi_gian_chay_s')} s – kết quả trên file ĐÃ LƯU lúc kiểm")
         muc = ("FAIL", "WARN", "INFO") if self.info.isChecked() else ("FAIL", "WARN")
@@ -567,7 +577,7 @@ class PlatePicker(QtWidgets.QDialog):
             self.t.insertRow(r)
             self.t.setItem(r, 0, _item(f.stem, data=str(f)))
             tg = b.get("thoi_gian_s", 0)
-            self.t.setItem(r, 1, _item(b.get("trang_thai", "?"), COLOR.get(b.get("trang_thai"), "#888")))
+            self.t.setItem(r, 1, _item(b.get("trang_thai", "?"), COLOR.get(b.get("trang_thai"), COLOR["MUTED"])))
             self.t.setItem(r, 2, _item(f"{tg // 3600}h{tg % 3600 // 60:02d}" if tg else ""))
             self.t.setItem(r, 3, _item(b.get("gam", "")))
         self.t.setSortingEnabled(True)

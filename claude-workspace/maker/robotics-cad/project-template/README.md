@@ -2,6 +2,9 @@
 
 <Mục tiêu: làm gì, cho ai, chạy thế nào. Máy in, đầu phun, nhựa.>
 
+## Giao diện (bước 0)
+Concept đã chọn: TODO – xem `design/contact-sheet.png` và `design/brief.md`.
+
 ## An toàn
 - <Pin (loại, điện áp, BMS), động cơ (dòng kẹt), nhiệt – ghi TODO nếu chưa có datasheet.>
 
