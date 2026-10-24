@@ -24,6 +24,10 @@ Thiết kế cơ khí robot (khung, gá động cơ/cảm biến, hộp số) đ
     và đo hàng thật trước khi in hộp.
 - Skill (dùng chung, `~/.claude/skills` → symlink về workspace): `freecad-scripts` (viết script FreeCAD đúng API),
   `robotics-cad` (quy trình + danh mục). Dùng với Claude Code hoặc tab **Code** của Claude Desktop.
+- **Workbench STLab** (2026-10-24, `workbench/`, xem `workbench/README.md`): giao diện trong FreeCAD cho quy trình
+  bên dưới – 6 toolbar theo bước (Dự án · Linh kiện · Thiết kế · Kiểm tra · In 3D · Tài liệu) + bảng **STLab Workflow**.
+  Chỉ gọi lại `scripts/` (chạy nền, không treo FreeCAD). Cài: `python workbench/install.py` (junction vào `Mod/STLab`).
+  Sửa logic pipeline thì sửa trong `scripts/`, workbench tự theo.
 
 ## Quy trình
 1. Chọn linh kiện trong `library/components.yaml`; chèn STEP từ thư viện (không tự vẽ lại linh kiện chuẩn).
@@ -37,6 +41,7 @@ Thiết kế cơ khí robot (khung, gá động cơ/cảm biến, hộp số) đ
    Hướng in, tham số kiểm, bàn in khai trong `print/print.yaml` (mẫu `project-template/print/print.yaml`;
    bản đầy đủ: `maker/pushrod-arm/print/print.yaml`). Chỉ đọc file đã **Lưu**; có `rest_pose` thì tự về tư thế gốc.
    Toolhub → Dự án → nút **Chuẩn bị in** / **Tự chạy khi Lưu** (`scripts/watch.py`); in xong `/print-result`.
+   Trong FreeCAD: workbench STLab → **Chuẩn bị in** (Ctrl+Shift+P) hoặc ô "Tự chuẩn bị in mỗi khi Lưu".
    Kèm theo (chỉ cảnh báo, không FAIL):
    - `scripts/metrics.py`: thể tích/hộp bao/trọng tâm/số solid từng chi tiết + giờ/gam từng bàn → `freecad/metrics.json`
      (**lên git**, commit cùng lần sửa model), so với commit trước: chi tiết đổi ngoài ý muốn hiện ngay;
