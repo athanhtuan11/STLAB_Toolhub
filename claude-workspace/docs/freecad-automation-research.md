@@ -293,7 +293,14 @@ Tùy chọn khác (`FreeCADCmd --help`): `-l/--log-file`, `-u` user config, `-M/
 - `FreeCADGui.setupWithoutGUI()` (trong freecadcmd): tạo `Gui::Application(false)` + Coin3D, **không** có `getDocument`/
   ViewProvider → không giữ màu, không render được **[đã chạy + đọc mã `src/Gui/ApplicationPy.cpp`]**.
 
-### 7.6 Chưa kiểm / TODO
+### 7.6 Đối chiếu cộng đồng (2026-10-24)
+- Báo cáo `docs/reports/freecad-cong-dong-tu-dong-hoa.md` (ghi chú gốc: `docs/research_notes/freecad-cong-dong-tu-dong-hoa/`):
+  cả 9 phát hiện ở mục 7 được mã nguồn/tracker xác nhận, không cái nào bị bác bỏ. Thêm: bẫy ẩn object = bug #28555, sửa ở
+  **26.3** (không backport 1.1.x); exit 0 do `processFiles` nuốt exception và **chạy lại script lần 2** khi import lỗi;
+  BRepCheck trong boolean chỉ cảnh báo; Assembly chưa có interference check (#28165); joint tạo headless hỏng
+  ViewProvider khi mở GUI 1.1.4 (#33697).
+
+### 7.7 Chưa kiểm / TODO
 - Assembly Simulation (1.1) chạy headless để thay macro `rest.json` – import `CommandCreateSimulation` lỗi QtCore ở CLI;
   thử qua `gui_run.py`: TODO.
 - TechDraw xuất PDF qua `gui_run.py`: TODO. Ghi chú phát hành 26.3: TODO.
