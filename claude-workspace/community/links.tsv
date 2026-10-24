@@ -33,9 +33,9 @@ maker/solar-battery/.claude/agents/embedded-systems.md	community/voltagent-subag
 maker/pi4-dslr-control/.claude/agents/python-pro.md	community/voltagent-subagents/categories/02-language-specialists/python-pro.md
 maker/oss-toolkit/.claude/skills/pr	community/mattpocock-skills/skills/engineering/pr
 maker/in-3d/.claude/skills/bambu-a1	custom/skills/bambu-a1
-# --- Addon ung dung (theo diem ghim; FreeCAD 1.1, Blender 5.1) ---
+# --- Addon ung dung (theo diem ghim; FreeCAD 1.1, Blender 5.2) ---
 ~/AppData/Roaming/FreeCAD/v1-1/Mod/FreeCADMCP	community/neka-nat-freecad-mcp/addon/FreeCADMCP
-~/AppData/Roaming/Blender Foundation/Blender/5.1/scripts/addons/blender_mcp.py	community/ahujasid-mcp-for-blender/addon.py
+~/AppData/Roaming/Blender Foundation/Blender/5.2/scripts/addons/blender_mcp.py	community/ahujasid-mcp-for-blender/addon.py
 # --- FreeCAD robotics (2026-10-21) ---
 ~/AppData/Roaming/FreeCAD/v1-1/Mod/freecad.robotcad	custom/freecad/robotcad-overlay
 ~/AppData/Roaming/FreeCAD/v1-1/Mod/freecad.gears	community/looooo-freecad-gears

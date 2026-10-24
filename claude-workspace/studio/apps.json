@@ -27,8 +27,8 @@
     },
     {
       "id": "blender",
-      "name": "Blender 5.1",
-      "exe": "C:/Program Files/Blender Foundation/Blender 5.1/blender-launcher.exe",
+      "name": "Blender 5.2",
+      "exe": "C:/Program Files/Blender Foundation/Blender 5.2/blender-launcher.exe",
       "args": [],
       "image": "blender.exe",
       "port": 9876,
