@@ -36,6 +36,17 @@ def chay(lenh, log):
                             cwd=HERE.parent, creationflags=NO_WINDOW)
 
 
+def doc_moi(f, t0, log):
+    """Doc JSON ket qua cua tien trinh con - CHI khi file ghi SAU t0. freecadcmd loi van tra exit 0 (do 2026-10-24),
+    file cu cua lan truoc con nam do -> neu khong kiem, quy trinh chay tiep voi ket qua/STL CU ma khong bao."""
+    f = Path(f)
+    if not f.exists() or f.stat().st_mtime < t0 - 1:
+        log = Path(log)
+        tail = "".join(log.read_text(encoding="utf-8", errors="replace").splitlines(True)[-15:]) if log.exists() else ""
+        raise SystemExit(f"LOI: {f.name} khong duoc tao moi (script con loi?) - xem {log}\n{tail}")
+    return json.loads(f.read_text(encoding="utf-8"))
+
+
 def main():
     sys.stdout.reconfigure(encoding="utf-8")  # dong thay doi/BOM co tieng Viet
     t0 = time.time()
@@ -57,7 +68,7 @@ def main():
     p4 = chay([FCC, HERE / "metrics.py", "--pass", cfg_p], logs / "metrics.txt")
     p2.wait()
     t_xuat = time.time() - t0
-    xs = json.loads((goc / cfg["stl"] / "_export-stl.json").read_text(encoding="utf-8"))
+    xs = doc_moi(goc / cfg["stl"] / "_export-stl.json", t0, logs / "export-stl.txt")
     print(f"  xuat STL: {xs['so_stl']} file, {t_xuat:.0f} s"
           + (f"; QUY TAC KHONG KHOP: {xs['quy_tac_khong_khop']}" if xs["quy_tac_khong_khop"] else ""), flush=True)
     # 2) kha nang in tren STL theo huong in (trong luc check.py van chay)
@@ -79,7 +90,7 @@ def main():
     print(f"  kha nang in: {len(loi_in)} loi, {len(cb_in)} canh bao ({time.time() - t1:.1f} s)", flush=True)
     p1.wait()
     kq = []
-    b1 = json.loads((out_kt / "report.json").read_text(encoding="utf-8"))
+    b1 = doc_moi(out_kt / "report.json", t0, logs / "check.txt")
     loi1 = [f"{c['nhan']}: {k} {v['tom_tat']}" for c in b1["chi_tiet"] for k, v in c["ket_qua"].items()
             if v["trang_thai"] == "FAIL"]
     loi1 += [f"{x['a']} ~ {x['b']}: {x['tom_tat']}" for x in b1["va_cham"]["cap"] if x["trang_thai"] == "FAIL"]
@@ -95,7 +106,7 @@ def main():
         p3 = chay([sys.executable, HERE / "slice.py", cfg_p], logs / "slice.txt")
         p3.wait()
         t_cat = time.time() - t2
-        b2 = json.loads((ra / "print-report.json").read_text(encoding="utf-8"))
+        b2 = doc_moi(ra / "print-report.json", t2, logs / "slice.txt")
     else:
         kq.append(("Tang 2 cat lop", "INFO", "CHUA CAT - sua loi o tren truoc (file in cu trong plates/ KHONG con dung)",
                    [], ""))
@@ -112,7 +123,8 @@ def main():
     # hoi quy: metrics.json (+ gio/gam ban in) so voi git HEAD; BOM tu Label. Chi bao, khong FAIL.
     p4.wait()
     *_, f_m = metrics.cau_hinh(cfg_p)
-    if p4.returncode == 0 and f_m.exists():
+    # returncode freecadcmd luon 0; metrics.json KHONG ghi lai khi so lieu khong doi -> kiem dong xac nhan trong log
+    if f_m.exists() and "METRICS " in (logs / "metrics.txt").read_text(encoding="utf-8", errors="replace"):
         if b2 is not None:
             metrics.them_ban_in(cfg_p, b2)
         lk = next((x[11:].split(",") for x in cfg.get("check", []) if x.startswith("components=")), [])
