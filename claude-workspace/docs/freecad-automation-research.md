@@ -20,6 +20,8 @@ Số sao GitHub tra bằng GitHub API ngày **2026-10-23**.
    **file chỉ số hồi quy** (`metrics.json`) + **release cục bộ**.
 4. Code-CAD (build123d) mạnh cho chi tiết lặp/biến thể và diff trên git; dùng **song song** được qua STEP → FreeCAD
    Assembly. Không thay FreeCAD cho lắp ráp/linh kiện STEP.
+5. **(2026-10-24) Sửa model bằng CLI, GUI chỉ để xem** – nhưng CLI có 4 bẫy làm hỏng dữ liệu âm thầm (mất màu, ẩn hết chi
+   tiết, exit 0 khi lỗi, đọc kết quả cũ). Đã có công cụ chặn từng bẫy + test hồi quy – **đọc mục 8 trước khi viết script**.
 
 ## 1. FreeCAD 1.1 – tính năng đáng dùng
 
@@ -226,7 +228,79 @@ phải sửa lại sau lần in thử.
 - STEP xuất/đọc lại đúng thể tích; `cut([b], 0.01)` chạy được.
 - Không gửi lệnh nào vào FreeCAD đang mở (cổng 9875).
 
-## 7. Nguồn
+## 8. Chạy FreeCAD bằng dòng lệnh – kinh nghiệm đã kiểm (2026-10-24, FreeCAD 1.1.4)
+
+Bối cảnh: Tuan "mở FreeCAD dễ bị crash" → chuyển sang CLI; làm lại xi-lanh pushrod-arm (motor 030) hoàn toàn bằng CLI.
+Mọi số đo dưới đây chạy trên máy STLab (Windows 11), model `pushrod_arm.FCStd` 96 object, ~8 MB.
+
+### 8.1 Các cách chạy – dùng cái nào
+
+| Cách | Lệnh | Dùng khi | Ghi chú |
+|---|---|---|---|
+| CLI chuẩn | `FreeCADCmd.exe --safe-mode maker/robotics-cad/scripts/fc_cli.py --pass <script.py> [args]` | **mọi script sửa/đo model** | traceback đầy đủ + exit 1 khi lỗi **[đã chạy]** |
+| CLI trần | `FreeCADCmd.exe script.py --pass a b` | tránh | lỗi vẫn **exit 0** **[đã chạy]**; `sys.argv` giữ nguyên cả `--pass a b` |
+| Python thường | `"…/bin/python.exe" x.py` với `import FreeCAD` | điều phối (prepare-print), exit code đúng | nạp addon như GUI |
+| GUI riêng, tự thoát | `set FC_FILE/FC_SCRIPT` → `FreeCAD.exe --safe-mode maker/robotics-cad/scripts/gui_run.py` | **render ảnh** (`saveImage`), cần ViewObject | không đụng phiên GUI của Tuan; 26 ảnh lắp ráp 18 s **[đã chạy]** |
+| RPC vào GUI đang mở | cổng 9875 `execute_code` | chỉ lệnh **nhẹ** (mở file, hỏi trạng thái) | việc nặng → `GUI_DISPATCH_STUCK` sau 90 s, GUI treo > 2 phút **[đã chạy]** |
+| Bộ test | `FreeCADCmd.exe --safe-mode -P <thư mục test> -t <module>` | kiểm yêu cầu thiết kế | unittest; **exit 1 khi có test trượt** **[đã chạy]** |
+
+`--safe-mode`: không nạp addon (ROS, laser-cut, RobotCAD…) → khởi động 1,1 → 0,4 s **[đã chạy]**. Mở FCStd 8 MB: 1,4 s.
+Tùy chọn khác (`FreeCADCmd --help`): `-l/--log-file`, `-u` user config, `-M/-E/-P` thêm đường dẫn, `--disable-addon`,
+`-t/-r` chạy test (`-r` giữ UI mở). GUI hay crash → thử `FreeCAD.exe --safe-mode -l`: hết crash = lỗi do addon.
+
+### 8.2 Bẫy đã dính và cách chặn
+
+| # | Triệu chứng | Nguyên nhân | Chặn bằng |
+|---|---|---|---|
+| 1 | Script lỗi nhưng quy trình chạy tiếp; có lần thông báo lỗi **sai** (báo `guard` trong khi lỗi thật là `AttributeError`) | `freecadcmd` bắt exception, in 1 dòng, **exit 0** | `fc_cli.py`; điều phối không tin exit code |
+| 2 | Quy trình dùng **STL/kết quả cũ** khi script con hỏng | file JSON của lần trước vẫn còn | `prepare-print.py: doc_moi()` chỉ nhận file ghi sau lúc chạy; `metrics.json` không ghi lại khi không đổi → kiểm dòng `METRICS` trong log |
+| 3 | Mở trong GUI mất màu, ẩn/hiện, thumbnail | lưu từ CLI **bỏ** `GuiDocument.xml` + `*ColorArray*`, `ShapeAppearance*` (365 → 108 file trong zip; hình học nguyên) | `safe_edit.save(doc, gui_from=backup)` chép lại |
+| 4 | Cách chặn #3 không chép được gì | `doc.saveCopy()` trong CLI **cũng** bỏ GUI → backup rỗng phần hiển thị | `safe_edit.backup()` ở CLI = **chép file trên đĩa** (sau `guard`, UndoCount 0) |
+| 5 | BOM còn 6 vít thay 21, metrics báo "đã xóa" Pin_A…E, Boom… | file lưu CLI (không GuiDocument) mở trong GUI → **ẩn 85/85 chi tiết** (cả `obj.Visibility` App) **[đã chạy]**; GUI Lưu → ẩn ghi vào file; `check/metrics/bom/export` **bỏ qua chi tiết ẩn** | test `T0File.test_no_hidden_parts` + `test_gui_data_kept`; script `history/2026-10-24_unhide_parts.py` sửa cả App lẫn `GuiDocument.xml` |
+| 6 | Object lệch vị trí trong mô phỏng / guard báo "không ở tư thế gốc" | `shape.transformShape(M)` với ma trận cứng chỉ gán **Placement của shape**; gán `obj.Shape = s` → FreeCAD đẩy Placement đó sang `obj.Placement` | bọc `Part.makeCompound([s])` (giữ obj.Placement) hoặc `transformGeometry` (nướng hình, có thể ra BSpline) |
+| 7 | `isIdentity()` sai với Placement "bằng 0" | nhiễu số 2e-13 từ file | `pl.isSame(App.Placement(), 1e-6)` |
+| 8 | `AttributeError: 'Part.Vertex' object has no attribute 'x'` | Vertex dùng `.X/.Y/.Z`, Vector dùng `.x/.y/.z` | – |
+| 9 | Báo chồng giả 154 mm³ (trục vít ~ hộp số) | STEP linh kiện lưới hở → bao lồi **cả cụm** (bánh răng r6 + trục Ø5,3) phình to | chia lưới **từng solid**, chỉ solid hở mới bao lồi (`fast_collide._manifold`, dùng chung cho `check.py`) |
+| 10 | Kết quả đo mặt vát = bán kính (lỗ tròn trơn, không truyền mô-men) | đo cả gờ tròn 0,1 mm ở chân trục | đo từ 0,5 mm khỏi mặt; test `test_worm_socket_drives` |
+| 11 | `manifold3d.min_gap(…, 50)` trả sai / treo | bán kính tìm quá lớn | giữ ≤ 20 mm, xa hơn dùng `distToShape` |
+
+### 8.3 Hiệu năng (đo thật)
+
+| Thao tác | Thời gian | Ghi chú |
+|---|---|---|
+| `distToShape` B-rep | 0,2–12,2 s/cặp | STEP linh kiện chậm nhất; `tol` (= deflection `BRepExtrema_DistShapeShape`, **đã đa luồng** trong mã) nới ra **không nhanh hơn** (0,94 → 3,67 s) |
+| `common` B-rep | 0,08–3,2 s/cặp | mỗi boolean FreeCAD còn chạy `BRepCheck_Analyzer` cho **cả 2 khối**, `SetRunParallel(True)`, auto-fuzzy = 1,0 × đường chéo × `Precision::Confusion` **[đọc mã]** |
+| manifold3d (giao khối / min_gap) | 1–4 ms / 10–100 ms | sau khi chia lưới 1 lần (0,15–2 s/chi tiết) |
+| `Shape.proximity(s, tol)` (OCC BVH) | 6–170 ms sau `tessellate()` | **phải tessellate trước**; chỉ trả cặp mặt gần, không thể tích/khe; **ném lỗi khi không có cặp nào**, 1 lần 33 s → chỉ làm lọc thô |
+| Quét 24 tư thế + 6 góc kẹp | **16 s** (lưới) vs **395 s** (B-rep) | kết quả trùng 100 % |
+| Bộ test 12 yêu cầu pushrod-arm | 32 s | |
+| prepare-print (kiểm + xuất + cắt lớp 7 bàn) | 61 s | |
+
+### 8.4 Kiểm thử thiết kế bằng bộ test của FreeCAD (đề xuất mục 3.2 → đã làm)
+- Mỗi yêu cầu của Tuan = 1 test, ghi ngày + câu gốc trong docstring (`maker/pushrod-arm/freecad/tests/test_pushrod_arm.py`).
+- Viết test **trước** khi sửa model (đỏ) → sửa đến khi xanh; sửa sau này chạy lại → biết ngay hỏng yêu cầu nào.
+- Test hữu ích: khe ≥ 0,3 (lưới), không chồng, đồng trục (vector), "lỗ có mặt vát" (`isInside` theo vòng tròn), có
+  dấu khắc (thuộc tính `STLab_Marks`), kết quả mô phỏng **mới hơn** model (so `mtime`), file còn GUI, không chi tiết ẩn.
+- Test hỏng vì **test sai** cũng gặp (chiều cao bộ thu lấy từ STL 21,5 thay vì STEP 22,6) → sửa test kèm ghi lý do.
+
+### 8.5 API có sẵn trong 1.1.4 đáng nhớ **[đã chạy]**
+- `Part.Shape`: `check`, `fix`, `fixTolerance`, `cleaned`, `defeaturing`, `generalFuse`, `multiFuse`, `makeOffsetShape`,
+  `proximity`, `isInside(p, tol, onFaceIsInside)`, `slice/slices`, `tessellate`, `transformGeometry`, `removeSplitter`.
+- Khắc chữ/số: `Part.makeWireString(text, "C:/Windows/Fonts/arialbd.ttf", size, 0)` → mỗi ký tự là list wire (wire ngoài +
+  lỗ) → `Part.Face` → extrude → `cut`. Kiểm vùng đặt chữ phẳng/đặc trước (lưới `isInside`) – lần đầu đặt trúng bậc.
+- `MeshPart.meshFromShape(Shape, LinearDeflection, AngularDeflection)`; `Test.runTestsFromModule/Class`.
+- `App.ParamGet("User parameter:BaseApp/Preferences/Mod/Part/Boolean")` rỗng = dùng mặc định trong mã.
+- `FreeCADGui.setupWithoutGUI()` (trong freecadcmd): tạo `Gui::Application(false)` + Coin3D, **không** có `getDocument`/
+  ViewProvider → không giữ màu, không render được **[đã chạy + đọc mã `src/Gui/ApplicationPy.cpp`]**.
+
+### 8.6 Chưa kiểm / TODO
+- Assembly Simulation (1.1) chạy headless để thay macro `rest.json` – import `CommandCreateSimulation` lỗi QtCore ở CLI;
+  thử qua `gui_run.py`: TODO.
+- TechDraw xuất PDF qua `gui_run.py`: TODO. Ghi chú phát hành 26.3: TODO.
+- Vì sao chi tiết pushrod-arm bị ẩn trước 2026-10-24: giả thuyết = file từng được lưu từ script headless
+  (`history/2026-10-22_*`) rồi mở + Lưu trong GUI (khớp bẫy #5) – chưa tái hiện từng bước.
+
+## 9. Nguồn
 - FreeCAD releases (ngày phát hành, 1.1.4, 26.3rc2, asset AppImage): https://github.com/FreeCAD/FreeCAD/releases ·
   https://github.com/FreeCAD/FreeCAD/releases/tag/1.1.4 · https://github.com/FreeCAD/FreeCAD/releases/tag/26.3rc2
 - Release notes 1.0: https://wiki.freecad.org/Release_notes_1.0 (đọc qua bản sao https://github.com/FreeCAD/FreeCAD-documentation/blob/main/wiki/Release_notes_1.0.md)
@@ -253,4 +327,10 @@ phải sửa lại sau lần in thử.
   PyPI: https://pypi.org/project/cadquery/ · https://pypi.org/project/build123d/
 - Tự động hóa: https://github.com/asymworks/FCBot · https://github.com/bambulab/BambuStudio/wiki/Command-Line-Usage ·
   https://github.com/bambulab/BambuStudio/releases · https://github.com/OrcaSlicer/OrcaSlicer/releases
+- Mã nguồn FreeCAD (mục 8, đọc 2026-10-24): https://github.com/FreeCAD/FreeCAD/blob/main/src/Gui/ApplicationPy.cpp
+  (`sSetupWithoutGUI`) · https://github.com/FreeCAD/FreeCAD/blob/main/src/Mod/Part/App/TopoShapePyImp.cpp (`distToShape`) ·
+  https://github.com/FreeCAD/FreeCAD/blob/main/src/Mod/Part/App/FCBRepAlgoAPI_BooleanOperation.cpp (parallel, BRepCheck,
+  auto-fuzzy) · https://github.com/FreeCAD/FreeCAD/blob/main/src/Mod/Part/App/FuzzyHelper.cpp ·
+  bản cài `C:/Program Files/FreeCAD 1.1/Mod/Test/__init__.py` (runTestsFromModule)
+- Datasheet động cơ 030 (lực dọc trục do trục vít, không để kẹt khi cấp điện): `community/cyberbrick-official/pdf/030_Micro_DC_Motor_-LA024.pdf`
 - Số sao: GitHub REST API `api.github.com/repos/<owner>/<repo>` (`stargazers_count`), Codeberg API `codeberg.org/api/v1/repos/Zolko/Assembly4`, tra 2026-10-23.
