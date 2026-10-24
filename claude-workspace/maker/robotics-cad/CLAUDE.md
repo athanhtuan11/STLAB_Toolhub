@@ -110,6 +110,12 @@ maker/<project>/            tên tiếng Anh, kebab-case
     giám sát; **không** ép insert vào chi tiết đang lắp pin. Lỗ insert theo bảng Ruthex (M2.5/M3: Ø4,0, sâu ≥ 6,7).
   - Công tắc XA007 tối đa 3 A / 12,6 V.
   - Hốc servo SG90 / PG001 / MG90S **không dùng chung** (đáy→mặt dưới tai 17 / 16,3 / 18,5 mm) → ghi đúng loại servo.
+- **CLI trước, GUI chỉ để xem** (Tuan 2026-10-24: "mở FreeCAD dễ crash"): sửa model bằng
+  `"C:/Program Files/FreeCAD 1.1/bin/freecadcmd.exe" script.py` trên file đã Lưu, **GUI phải đóng file đó**
+  (hoặc xong thì File → Revert). Lưu từ CLI làm mất dữ liệu hiển thị (màu, ẩn hiện, thumbnail; hình học giữ nguyên)
+  → `se.save(doc, gui_from=<backup trước khi sửa>)` chép lại. Không gửi tính toán nặng (slice/distToShape/boolean
+  trên STEP linh kiện) qua RPC vào GUI: 2026-10-24 cắt lát treo GUI > 2 phút, cùng script chạy CLI 16 s.
+  CLI không làm được: màu/ViewProvider, chụp ảnh màn hình → render bằng matplotlib/Blender.
 - **Một phiên Claude giữ FreeCAD** (2026-10-23, Tuan): 2 phiên cùng sửa/chạy FreeCAD thì lệch nhau và chậm.
   Phiên khác chỉ chạy `freecadcmd` riêng trên file đã lưu (kiểm, xuất) – không gửi lệnh vào FreeCAD đang mở.
   Trước khi sửa model qua RPC/MCP: kiểm `doc.UndoCount == 0` (có thao tác chưa lưu – vd. đang mô phỏng – thì

@@ -153,7 +153,28 @@ def apply(obj, shape):
     obj.Shape = shape  # shape tu safe_cut/safe_fuse da mang Placement cu
 
 
-def save(doc):
+def save(doc, gui_from=None):
+    """Luu. Chay freecadcmd (khong GUI) thi FreeCAD BO du lieu hien thi (GuiDocument.xml, mau, thumbnail - do
+    2026-10-24: 365 -> 108 file trong FCStd, hinh hoc giu nguyen) -> truyen gui_from=<file backup truoc khi sua>
+    de chep lai: chi tiet cu giu mau/an hien, chi tiet moi nhan mau mac dinh."""
     doc.recompute()
     doc.save()
+    if gui_from and not App.GuiUp:
+        restore_gui(doc.FileName, gui_from)
     return doc.FileName
+
+
+def restore_gui(fcstd, gui_from):
+    """Chep file chi-hien-thi (co trong gui_from, khong co trong fcstd) vao fcstd. GUI phai DONG file nay."""
+    import shutil
+    import zipfile
+    src, dst = zipfile.ZipFile(gui_from), Path(fcstd)
+    have = set(zipfile.ZipFile(dst).namelist())
+    add = [n for n in src.namelist() if n not in have]
+    tmp = dst.with_suffix(".tmp.FCStd")
+    shutil.copy2(dst, tmp)
+    with zipfile.ZipFile(tmp, "a", zipfile.ZIP_DEFLATED) as z:
+        for n in add:
+            z.writestr(n, src.read(n))
+    tmp.replace(dst)
+    return add
