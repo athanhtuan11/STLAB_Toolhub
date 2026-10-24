@@ -5,7 +5,7 @@ P = r"D:\04_Stlab\04_STLAB_Toolhub\claude-workspace\maker\pushrod-arm\freecad"  
 OUT = os.path.join(P, "check")  # ket qua (file sinh, khong len git)
 os.makedirs(OUT, exist_ok=True)
 JOB = os.environ.get("FC_JOB_DIR", OUT)
-OUTJ = os.path.join(OUT, "kinematics-test.json")
+OUTJ = os.path.join(OUT, "kinematics-test%s.json" % ("-brep" if os.environ.get("KT_BREP") == "1" else ""))
 t0 = time.time()
 def log(*a):
     print(*a, flush=True)
@@ -21,7 +21,11 @@ try:
     src = src[:i0] + src[i1:]
     G = {"__name__": "sim", "Gui": types.SimpleNamespace(updateGui=lambda: None)}
     exec(compile(src, "pushrod_arm_sim.FCMacro", "exec"), G)
-    set_pose, check, OBJ, ST = G["set_pose"], G["check_collisions"], G["OBJ"], G["STATE"]
+    set_pose, check_c, OBJ, ST = G["set_pose"], G["check_collisions"], G["OBJ"], G["STATE"]
+    # luoi nhanh (robotics-cad/scripts/fast_collide.py); "brep=1" tren dong lenh/env -> boolean B-rep cu (doi chieu)
+    BREP = os.environ.get("KT_BREP") == "1" or "brep=1" in sys.argv
+    fast = None if BREP else G["fast_collider"]()
+    def check(): return check_c(fast)
     LMIN, LMAX, L1MAX, L1_0, L2_0 = G["LMIN"], G["LMAX"], G["L1MAX"], G["L1_0"], G["L2_0"]
     res = {"rest": {"L1": L1_0, "L2": L2_0}, "arm": [], "grip": [], "unreachable": []}
 
@@ -44,7 +48,12 @@ try:
     FIX = ["Gripper_frame", "Gripper_top_plate", "CB_Servo9g_180_gripper", "Forearm_plate_L", "Forearm_plate_R", "Wrist_spacer"]
     PIVOT2 = ["Pin_jaw2", "Spacer_jaw2", "Washer_pin", "M2_5x6_pin"]
     EXPECT = {("Servo_horn", "CB_Servo9g_180_gripper")}
+    gfast = None
+    if fast is not None:
+        import fast_collide
+        gfast = fast_collide.Collider({l: OBJ[l] for l in J1 + J2 + FIX + PIVOT2 if l in OBJ})
     def common(a, b):
+        if gfast is not None: return gfast.volume(a, b) or 0.0
         sa, sb = OBJ[a].Shape, OBJ[b].Shape
         bb = sa.BoundBox; bb.enlarge(0.5)
         if not bb.intersect(sb.BoundBox): return 0.0
@@ -63,10 +72,12 @@ try:
                 v = common(a, b)
                 if v > 0.5 or v < 0: hits.append("%s x %s: %.1f mm3" % (a, b, v))
         p1, p2 = OBJ["Jaw_1_driven_by_servo_TPU_pad"].Shape, OBJ["Jaw_2_idler_TPU_pad"].Shape
-        gap = p1.distToShape(p2)[0]
+        # min_gap cua manifold3d: ban kinh tim lon (50 mm) tra sai/treo -> tim trong 20 mm, xa hon thi B-rep
+        gap = gfast.gap("Jaw_1_driven_by_servo_TPU_pad", "Jaw_2_idler_TPU_pad", 20.0) if gfast else None
+        if gap is None: gap = p1.distToShape(p2)[0]
         res["grip"].append({"grip_deg": gdeg, "pad_gap_mm": round(gap, 2), "hits": hits})
         log("grip", gdeg, "gap %.2f" % gap, "->", hits or "OK", round(time.time() - t0))
-    res["time_s"] = round(time.time() - t0)
+    res["time_s"] = round(time.time() - t0); res["method"] = "brep" if BREP else "mesh"
     json.dump(res, open(OUTJ, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     log("DONE", res["time_s"])
 except Exception:

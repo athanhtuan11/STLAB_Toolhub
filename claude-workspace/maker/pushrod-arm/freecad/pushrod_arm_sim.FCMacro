@@ -126,26 +126,42 @@ def set_pose(yaw=None, L1=None, L2=None, grip=None, update=True):
 
 def reset(): set_pose(0, L1_0, L2_0, 0)
 
-def check_collisions():
-    sets = {"ROD1": ["Housing_Shoulder", "Rack_Shoulder", "CB_N20_Shoulder", "Worm_Shoulder", "Pinion_WormWheel_Shoulder", "Washer_shaft_Shoulder", "M2_5x6_shaft_Shoulder"],
-            "ROD2": ["Housing_Elbow", "Rack_Elbow", "CB_N20_Elbow", "Worm_Elbow", "Pinion_WormWheel_Elbow", "Washer_shaft_Elbow", "M2_5x6_shaft_Elbow"],
-            "BOOM": ["Boom001"],
-            "FORE": ["Forearm_plate_L", "Forearm_plate_R", "Gripper_frame", "CB_Servo9g_180_gripper", "Jaw_1_driven_by_servo", "Jaw_2_idler", "Gripper_top_plate", "Spacer_D", "Wrist_spacer"],
-            "TUR": ["Turret_one_piece", "Spacer_S", "Spacer_S001", "Spacer_A", "Spacer_A001"],
-            "BASE": ["Base_housing", "Base_deck", "Turntable"]}
-    pairs = [("ROD1", "BOOM"), ("ROD1", "TUR"), ("ROD1", "ROD2"), ("ROD1", "FORE"), ("ROD2", "BOOM"), ("ROD2", "FORE"),
-             ("FORE", "BOOM"), ("FORE", "TUR"), ("FORE", "BASE"), ("BOOM", "TUR"), ("BOOM", "BASE"), ("ROD2", "TUR")]
-    # giao khoi (boolean) - moi lan ~3 s
+COLL_SETS = {"ROD1": ["Housing_Shoulder", "Rack_Shoulder", "CB_N20_Shoulder", "Worm_Shoulder", "Pinion_WormWheel_Shoulder", "Washer_shaft_Shoulder", "M2_5x6_shaft_Shoulder"],
+             "ROD2": ["Housing_Elbow", "Rack_Elbow", "CB_N20_Elbow", "Worm_Elbow", "Pinion_WormWheel_Elbow", "Washer_shaft_Elbow", "M2_5x6_shaft_Elbow"],
+             "BOOM": ["Boom001"],
+             "FORE": ["Forearm_plate_L", "Forearm_plate_R", "Gripper_frame", "CB_Servo9g_180_gripper", "Jaw_1_driven_by_servo", "Jaw_2_idler", "Gripper_top_plate", "Spacer_D", "Wrist_spacer"],
+             "TUR": ["Turret_one_piece", "Spacer_S", "Spacer_S001", "Spacer_A", "Spacer_A001"],
+             "BASE": ["Base_housing", "Base_deck", "Turntable"]}
+COLL_PAIRS = [("ROD1", "BOOM"), ("ROD1", "TUR"), ("ROD1", "ROD2"), ("ROD1", "FORE"), ("ROD2", "BOOM"), ("ROD2", "FORE"),
+              ("FORE", "BOOM"), ("FORE", "TUR"), ("FORE", "BASE"), ("BOOM", "TUR"), ("BOOM", "BASE"), ("ROD2", "TUR")]
+def coll_pairs():
+    return [(na, nb) for a, b in COLL_PAIRS for na in COLL_SETS[a] for nb in COLL_SETS[b] if na in OBJ and nb in OBJ]
+
+FAST = {}
+def fast_collider():
+    # chia luoi 1 lan moi phien macro (sua model -> chay lai macro); thieu manifold3d -> None (dung B-rep)
+    if "c" not in FAST:
+        try:
+            import sys
+            sys.path.insert(0, os.path.join(os.path.dirname(REST_FILE), "..", "..", "robotics-cad", "scripts"))
+            import fast_collide
+            FAST["c"] = fast_collide.Collider({l: OBJ[l] for p in coll_pairs() for l in p})
+        except Exception as e:
+            App.Console.PrintWarning("fast_collide khong dung duoc (%s) -> B-rep\n" % e); FAST["c"] = None
+    return FAST["c"]
+
+def check_collisions(fast=None):
+    # fast = robotics-cad/scripts/fast_collide.Collider (luoi, ~ms/cap); khong co -> boolean B-rep (~3 s/tu the)
+    if fast is not None:
+        return fast.hits(coll_pairs())
     hits = []
-    for a, b in pairs:
-        for na in sets[a]:
-            for nb in sets[b]:
-                sa, sb = OBJ[na].Shape, OBJ[nb].Shape
-                bb = sa.BoundBox; bb.enlarge(0.5)
-                if not bb.intersect(sb.BoundBox): continue
-                try: v = sa.common(sb).Volume
-                except Exception: continue
-                if v > 0.5: hits.append("%s x %s: %.1f mm3" % (na, nb, v))
+    for na, nb in coll_pairs():
+        sa, sb = OBJ[na].Shape, OBJ[nb].Shape
+        bb = sa.BoundBox; bb.enlarge(0.5)
+        if not bb.intersect(sb.BoundBox): continue
+        try: v = sa.common(sb).Volume
+        except Exception: continue
+        if v > 0.5: hits.append("%s x %s: %.1f mm3" % (na, nb, v))
     return hits
 
 class Panel(QtW.QWidget):
@@ -194,7 +210,7 @@ class Panel(QtW.QWidget):
         if self.t > 50*12: self.timer.stop()
     def check(self):
         self.out.setText("Dang kiem tra..."); Gui.updateGui()
-        h = check_collisions()
+        h = check_collisions(fast_collider())
         self.out.setText("Khong va cham" if not h else "VA CHAM:\n" + "\n".join(h))
 
 mw = Gui.getMainWindow()
