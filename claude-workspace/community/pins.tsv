@@ -20,3 +20,4 @@ cedeber-hald-clut	https://github.com/cedeber/hald-clut.git	sha	-	3b3180f82d4dcea
 peva3-lightroom-presets	https://github.com/peva3/Lightroom-Presets.git	sha	-	f22f4d8057aaaada6df3f0ed7fbe6b952a30db77	-	no	off	MIT
 arduino-docs-content	https://github.com/arduino/docs-content.git	sha	-	b12ffb3a317c900b1c9d1b00ec1e5f94a978891f	-	no	off	CC-BY-SA-4.0 (chi STEP board, sparse)
 espressif-kicad-libraries	https://github.com/espressif/kicad-libraries.git	tag	3.2.1	1dfc3110895c9cd62daf332f49c49ee0ee200831	-	no	off	CC-BY-SA-4.0 + mien tru thiet ke (nhu KiCad)
+shaise-freecad-fasteners	https://github.com/shaise/FreeCAD_FastenersWB.git	tag	V0.5.67-beta	fddd07af422b7d3a69098b32333711c5eeae184c	-	no	off	GPL-2.0-or-later

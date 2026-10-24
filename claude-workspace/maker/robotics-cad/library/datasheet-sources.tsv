@@ -1,0 +1,8 @@
+nguon	file	url	sha256	bytes
+# Datasheet/ban ve kich thuoc linh kien (ghim 2026-10-24, xem docs/component-dimension-sources.md). Luu tai community/datasheets/ (khong len git).
+# Tai lai: curl -L -o community/datasheets/<file> <url> roi kiem sha256sum; lech SHA -> KHONG dung, bao Tuan.
+raspberrypi	raspberry-pi-4-mechanical-drawing.pdf	https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-mechanical-drawing.pdf	a5c88057563016631ebca26666fd672614fc9aaa1c59128a541612c7798e9809	22819
+arduino	abx00087-uno-r4-wifi-datasheet.pdf	https://docs.arduino.cc/resources/datasheets/ABX00087-datasheet.pdf	4c59ecec0a9a9f5d0029b8e11cdda23e917ce9262fe6ecddb1933182ff84f6bd	3455270
+handsontec	handsontec-17hs4401s.pdf	https://www.handsontec.com/dataspecs/17HS4401S.pdf	57daaff02e4eb2b62c16762f73875036ad79dd02050569e663a87e0042bc468f	136062
+towerpro	towerpro-servo-dim-a-f.jpg	http://torqpro.com/wp-content/uploads/2014/07/%E5%B0%8F%E9%A6%AC%E9%81%94%E5%B0%BA%E5%AF%B8%E6%A8%99%E7%A4%BA%E5%9C%96B.jpg	239562be5f25bb06d03900741d7388dcb30ab004a294155a060c10875b151f8c	146730
+raspberrypi	pico-datasheet.pdf	https://datasheets.raspberrypi.com/pico/pico-datasheet.pdf	757ff485227493b9fcc0c2c96c4dea9de020e1d8b2b11e2aa4f9ee8b25aa89eb	18176869

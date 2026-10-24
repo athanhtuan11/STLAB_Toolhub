@@ -11,7 +11,7 @@
 #     (dung_tu_ban_ve: true, library/boards_param.py): mat bang dung ban ve, chieu cao linh kien la UOC -> do hang that.
 #   - thu_vien: espressif -> STEP module ESP32 chinh hang (espressif/kicad-libraries 3.2.1, CC-BY-SA-4.0).
 version: 1
-cap_nhat: 2026-10-22
+cap_nhat: 2026-10-24
 library_root: community/freecad-library
 library_roots:
   cyberbrick: community/cyberbrick-official/models
@@ -27,7 +27,7 @@ components:
     model_khac: [Electrical Parts/Servos/SG-90/SG90-1-arm-horn.step, Electrical Parts/Servos/SG-90/SG90-2-arms-horn.step]
     bbox_mm: [11.8, 32.4, 29.9]
     thong_so:
-      kich_thuoc_mm: "23 × 12,2 × 29 (trang TowerPro); 22,2 × 11,8 × 31 (datasheet phổ biến) – đo lại hàng thật"
+      kich_thuoc_mm: "A 30,3 (đáy→đỉnh trục), B 22,7 (dài thân), C 27 (đáy→đỉnh vỏ), D 12,2 (rộng), E 32,3 (cả tai), F 17 (đáy→mặt dưới tai) – trang TowerPro + hình A–F"
       khoi_luong_g: 9
       dien_ap_v: 4.8
       momen_stall_kgf_cm: "1,8 @ 4,8 V (TowerPro); nhiều hàng nhái chỉ ~1,2"
@@ -35,7 +35,8 @@ components:
     nguon:
       - https://towerpro.com.tw/product/sg90-7/
       - https://towerpro.com.tw/product/sg90-analog/
-    todo: [góc quay thực tế, dòng stall (A)]
+      - "Hình A–F: community/datasheets/towerpro-servo-dim-a-f.jpg"
+    todo: [góc quay thực tế, dòng stall (A), khoảng cách + Ø lỗ tai và spline (TowerPro không công bố)]
 
   - id: nema17-17hs4401
     ten: Động cơ bước NEMA 17 (17HS4401, thân 40 mm)
@@ -50,10 +51,15 @@ components:
       dong_dinh_muc_a: "1,7/pha (phổ biến); có bản 1,5 A cùng mã – xem nhãn động cơ"
       momen_giu_n_cm: "40–43 (tùy nhà bán)"
       dien_tro_pha_ohm: 1.5
-      truc_mm: 5
+      truc_mm: "Φ5,0 (−0,012) dài 23 ± 0,5, vát D 4,5 ± 0,1"
+      lo_bat: "4-M3 sâu ≥ 4,5, cách 31,0 ± 0,1"
+      go_dinh_tam_mm: "Φ22,0 (−0,05) cao 2,0"
+      dien_cam_mh: 2.8
+      khoi_luong_g: 280
     nguon:
       - https://www.handsontec.com/dataspecs/17HS4401S.pdf
-    todo: [khoảng cách lỗ bắt M3 (cần datasheet hãng), điện cảm pha]
+      - "Bản ghim: community/datasheets/handsontec-17hs4401s.pdf (đại lý, không phải hãng)"
+    todo: []
 
   - id: dc-motor-encoder-mabuchi
     ten: Động cơ DC có encoder (Mabuchi)
@@ -77,7 +83,7 @@ components:
       - bo-cam-jst-sh-phia-sau/, bo-cam-jst-sh-canh/ (bo đầu cắm JST-SH)
     bbox_mm: [12.0, 10.0, 35.8]
     thong_so:
-      kich_thuoc_mm: "12 × 10; hộp số 9 (bản 1000:1 dài hơn); trục Φ3 vát D, dài ≈ 9,3 (Pololu); lỗ M1.6"
+      kich_thuoc_mm: "12 × 10; hộp số 9 (1000:1: 12,5); trục Φ3 dài 10 TÍNH TỪ MẶT HỘP SỐ (gờ Φ4 × 0,7 + 9,3), vát D; 2 × M1.6 cách tâm trục 4,5"
       khoi_luong_g: "≈ 10 (Pololu)"
       ghi_chu: "Điện áp/tốc độ/mô-men khác nhau theo hãng và tỉ số – xem datasheet đúng mã đang dùng"
     nguon:
@@ -104,19 +110,25 @@ components:
     bbox_mm: [92.9, 19.9, 58.5]
     thong_so:
       bo_mach_mm: "85 × 56"
-      lo_bat: "4 lỗ M2.5, tâm lỗ 58 × 49 mm, cách 2 cạnh 3,5 mm"
+      lo_bat: "4 lỗ Ø2,7 (vít M2.5), tâm 58 × 49, cách mép 3,5, đệm Ø6; góc R3"
+      chieu_cao_mm: "USB-A 16,0; Ethernet 13,5; header 8,5; USB-C 3,2; micro-HDMI 3,0"
     nguon:
-      - https://kapycad.com/en/academy/standards/raspberry-pi
-      - https://github.com/raspberrypi/documentation/issues/1262
-    todo: [đối chiếu bản vẽ cơ khí chính thức (PDF raspberrypi.com), nguồn cấp 5 V – dòng tối thiểu]
+      - https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-mechanical-drawing.pdf
+      - "Bản ghim: community/datasheets/raspberry-pi-4-mechanical-drawing.pdf"
+    todo: [nguồn cấp 5 V – dòng tối thiểu]
 
   - id: raspberry-pi-pico
     ten: Raspberry Pi Pico
     loai: vi-dieu-khien
     model: Computing/SingleBoardComputers/Raspberry/Raspberry Pi Pico/Pico-R3.step
     bbox_mm: [21.0, 3.7, 52.3]
-    thong_so: {}
-    todo: [lỗ bắt, mức logic – lấy từ datasheet Pico]
+    thong_so:
+      bo_mach_mm: "51 × 21, PCB 1"
+      lo_bat: "4 lỗ Ø2,1 ± 0,05"
+    nguon:
+      - https://datasheets.raspberrypi.com/pico/pico-datasheet.pdf
+      - "Bản ghim: community/datasheets/pico-datasheet.pdf"
+    todo: [tọa độ 4 lỗ (mục Mechanical specification), mức logic]
 
   - id: hc-sr04
     ten: Cảm biến siêu âm HC-SR04
@@ -155,8 +167,12 @@ components:
       trong_mm: 8
       ngoai_mm: 22
       day_mm: 7
+      vai_truc_da_min_mm: 10
+      vai_lo_Da_max_mm: 20
+      khoi_luong_g: 12.5
     nguon:
       - "ISO 15 (ký hiệu 608: d = 8, D = 22, B = 7); khớp hộp bao đo từ model"
+      - "SKF 608-2Z TDS (vai trục/lỗ, khối lượng) – qua Electrokit (thứ cấp)"
     todo: []
 
   # ---------- CyberBrick (Bambu Lab) – model chính thức từ cửa hàng Bambu, 2026-10-21 ----------
@@ -217,18 +233,21 @@ components:
     model_khac: [cross-arm, half-arm1, line-arm (.step/.stl cùng thư mục)]
     bbox_mm: [46.9, 12.0, 30.8]
     thong_so:
-      kich_thuoc_mm: "32,5 × 12 × 23 thân (bản vẽ PG001); lỗ bắt Φ2,2 cách 27,8"
-      khoi_luong_g: "9 ± 0,5"
+      kich_thuoc_mm: "thân 23,0 × 12,00; tai dài 32,50; lỗ Φ2,20 cách 27,80; đáy→mặt dưới tai 16,30, →đỉnh vỏ 23,20, →đỉnh trục 27,30 (bản vẽ PG001)"
+      spline: "40T / Φ4,85; vít horn Φ2,3 × 4,5"
+      khoi_luong_g: "PG001 9 ± 0,5; PG002 12,4 ± 0,5"
       dien_ap_v: "4,8–6"
       momen_stall_kgf_cm: "≥ 1,0 @ 4,8 V; ≥ 1,2 @ 6 V (PG001)"
       toc_do: "≤ 0,14 s/60° @ 4,8 V; ≤ 0,12 s/60° @ 6 V"
       dong_stall_ma: "≤ 550 @ 4,8 V; ≤ 650 @ 6 V"
       goc: "PG001: 180° ± 10° (500–2500 µs); PG002: quay liên tục 360°"
-      ly_hop: "trượt ở ≥ 0,9 kgf·cm @ 4,8 V; ngắt khi kẹt 5 s"
+      ly_hop: "trượt ở ≥ 0,9 kgf·cm @ 4,8 V; ngắt khi kẹt 5 s (PG001)"
+      ghi_chu_pg002: "B-PG002 ghi KHÔNG có bảo vệ kẹt/nhiệt/áp/dòng – tránh kẹt lâu khi đang cấp điện; 80 ± 15 vòng/phút @ 6 V; không tải ≤ 200 mA; kẹt ≤ 550 mA"
     nguon:
       - "Datasheet B-PG001 (pdf/9g Servo Motor 180° - PG001.pdf)"
+      - "Datasheet B-PG002 (pdf/9g Servo Motor 360° - PG002.pdf)"
       - https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list
-    todo: [thông số riêng PG002 (xem pdf/9g Servo Motor 360° - PG002.pdf)]
+    todo: [mốc của số 8,56 trên bản vẽ PG001]
 
   - id: cb-la024-motor-030
     ten: CyberBrick – Động cơ DC 030 có SH1.0 (LA024) + hộp giảm tốc
@@ -259,7 +278,7 @@ components:
     model_khac: [bo-cam-jst-sh-phia-sau/ (bo SH phia sau, gan giong ban CyberBrick)]
     bbox_mm: [12.0, 10.0, 35.8]
     thong_so:
-      kich_thuoc_mm: "12 × 10; hộp số 9,0; thân 15,1; bo sau 1,2 + đầu cắm 2,4; trục Φ3 vát D dài 10; lỗ 2 × M1.6 cách 9,0 (LA002)"
+      kich_thuoc_mm: "12,0 ± 0,2 × 10,0 ± 0,2; hộp số 9,0 ± 0,3; thân 15,1 ± 0,2; bo sau 1,2 + đầu cắm 2,4; trục Φ3,0 (+0/−0,05) dài 10,0 ± 0,3 tính từ mặt hộp số (gồm gờ Φ4,0 × 0,8), vát D dài 6,0 ± 0,2; 2 × M1.6 cách 9,0 ± 0,1 (LA002)"
       dien_ap_v: "6 định mức; 3–7 dải dùng (LA002)"
       toc_do: "150 ± 10 % (LA002), 400 (LA003), 1000 (LA004) vòng/phút không tải"
       dong_khong_tai_ma: "≤ 40 (LA002)"
@@ -268,7 +287,8 @@ components:
     nguon:
       - "Datasheet B-LA002 (community/cyberbrick-official/pdf/B-LA002.pdf, 2024-03-08)"
       - https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list
-    todo: [model Pololu dài 35,8 mm so với ≈ 36,1 mm của LA002 (trục 9,3 so với 10) – đo hàng thật trước khi làm khớp chặt, thông số LA003/LA004 (xem PDF)]
+    # Truc: Pololu va LA002 deu do 10 tu MAT HOP SO (go 0,7 + 9,3 / 0,8 + 9,2) -> chi lech moc do, khong lech hang
+    todo: ["thông số LA003/LA004 (xem PDF)", "nghĩa số 2,5 ± 0,05 trên bản vẽ (bề dày qua mặt vát?)"]
 
   - id: cb-la026-differential
     ten: CyberBrick – Bộ vi sai nhựa LA026
@@ -299,8 +319,8 @@ components:
     bbox_mm: [28.4, 158.9, 18.5]
     thong_so:
       dien_ap_v: "7,4 danh định (2S Li-ion)"
-      dung_luong_mah: 800
-    nguon: ["Tên linh kiện trong bộ CAD chính thức"]
+      dung_luong_mah: "800 (tên CAD) / 700 (Accessories Specification) – đọc nhãn pin thật"
+    nguon: ["Tên linh kiện trong bộ CAD chính thức", "pdf/Accessories Specification.pdf"]
     todo: [hộp bao gồm cả dây – đo lại thân pin, dòng xả tối đa (A), mạch bảo vệ]
 
   - id: cb-xa012-aaa-case
@@ -322,8 +342,9 @@ components:
     model: xa007-power-switch-board-with-2pin-xh2-54-connector/power-switch-board-with-2pin-xh2-54-connector.step
     stl: xa007-power-switch-board-with-2pin-xh2-54-connector/power-switch-board-with-2pin-xh2-54-connector.stl
     bbox_mm: [20.5, 19.8, 32.0]
-    nguon: [https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list]
-    todo: [dòng tối đa qua công tắc (A)]
+    thong_so: {dong_toi_da_a: 3, dien_ap_toi_da_v: 12.6, khoi_luong_g: 4.1}
+    nguon: [https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list, "pdf/Accessories Specification.pdf mục 1.5"]
+    todo: []
 
   - id: cb-xa009-joystick-1axis
     ten: CyberBrick – Joystick 1 trục (XA009)
@@ -403,8 +424,16 @@ components:
     thu_vien: boards
     model: arduino-uno-r4-wifi/arduino-uno-r4-wifi.step
     bbox_mm: [70.5, 53.3, 14.5]
-    nguon: [https://docs.arduino.cc/hardware/uno-r4-wifi/]
-    todo: ["mức logic", "lỗ bắt – lấy từ datasheet ABX00087"]
+    thong_so:
+      bo_mach_mm: "68,58 × 53,34, PCB 1"
+      lo_bat: "4 lỗ Ø3,2 (R1,6) – tọa độ xem datasheet mục 13"
+      muc_logic_v: "5 (RA4M1); ESP32-S3 3,3 – không nối chéo"
+      gpio_ma: 8
+    nguon:
+      - https://docs.arduino.cc/hardware/uno-r4-wifi/
+      - https://docs.arduino.cc/resources/datasheets/ABX00087-datasheet.pdf
+      - "Bản ghim: community/datasheets/abx00087-uno-r4-wifi-datasheet.pdf"
+    todo: ["chép tọa độ 4 lỗ từ mục 13 datasheet"]
 
   - id: arduino-uno-q
     ten: Arduino UNO Q (ABX00162)
