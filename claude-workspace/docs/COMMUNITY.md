@@ -21,6 +21,8 @@ Sau mỗi lần `apply`/`rollback`, cập nhật cột "Ghim" và "Kiểm tra".
 | [drfenixion/freecad.robotcad](https://github.com/drfenixion/freecad.robotcad) | `v12.10.3` (`80c483bcccca`) | LGPL-2.1 | Cộng đồng, 454★ | 2026-10-21 | Workbench RobotCAD (URDF, khớp, quán tính) → FreeCAD Mod |
 | [looooo/freecad.gears](https://github.com/looooo/freecad.gears) | `83ec154b1925` | GPL-3.0 | Cộng đồng, 363★ | 2026-10-21 | Workbench bánh răng → FreeCAD Mod |
 | [shaise/FreeCAD_SheetMetal](https://github.com/shaise/FreeCAD_SheetMetal) | `cbf6595b68ad` (0.8.26) | LGPL-2.1 | Cộng đồng, 349★ | 2026-10-21 | Workbench tấm/bracket → FreeCAD Mod |
+| [shaise/FreeCAD_FastenersWB](https://github.com/shaise/FreeCAD_FastenersWB) | `V0.5.67-beta` (`fddd07af422b`) | GPL-2.0-or-later | Cộng đồng | 2026-10-24 (trước đó cài bằng Addon Manager, không ghim) | Workbench vít/đai ốc/insert; **bảng kích thước ISO** dùng cho lỗ vít → FreeCAD Mod |
+| Datasheet/bản vẽ kích thước linh kiện (5 file) | SHA-256 trong `maker/robotics-cad/library/datasheet-sources.tsv` → `community/datasheets/` | Theo từng hãng (Raspberry Pi, Arduino CC-BY-SA-4.0 `TODO` xác nhận cho PDF, Handsontec/TowerPro không ghi) | Chính hãng, trừ Handsontec (đại lý) | 2026-10-24 | Kích thước lắp ghép trong `components.yaml` (xem `docs/component-dimension-sources.md`) |
 | [FreeCAD/FreeCAD-library](https://github.com/FreeCAD/FreeCAD-library) | `f5ca01cdcaa2` (sparse, `freecad-library.sparse`) | **CC-BY 3.0** (ghi công) | Chính thức (tổ chức FreeCAD), 2k★ | 2026-10-21 | Thư viện linh kiện robotics (~950 MB) + macro PartsLibrary |
 | [arduino/docs-content](https://github.com/arduino/docs-content) | `b12ffb3a317c` (sparse: chỉ `*-step.zip` của 5 board + 14 Modulino, `arduino-docs-content.sparse`, ~9 MB) | **CC-BY-SA-4.0** | **Chính hãng** (tổ chức Arduino) | 2026-10-22 | STEP UNO R4 WiFi, UNO Q, Nano ESP32, Nano R4, GIGA R1, Modulino → giải nén bằng `maker/robotics-cad/library/boards.py` |
 | [espressif/kicad-libraries](https://github.com/espressif/kicad-libraries) | `3.2.1` (`1dfc3110895c`, sparse: `3dmodels/`) | **CC-BY-SA-4.0** + miễn trừ cho thiết kế (như thư viện KiCad) | **Chính hãng** (Espressif), 1,4k★ | 2026-10-22 | 29 STEP module ESP32/S2/S3/C3/C5/C6/H2 (không có board DevKit) |
@@ -148,6 +150,13 @@ obotcad` khi khởi động. Workbench vẫn nạp
 - Không ghi license kèm file → bảng "Xem lại khi làm thương mại".
 - Mã nguồn lõi: [CyberBrick-Official/CyberBrick_Controller_Core](https://github.com/CyberBrick-Official/CyberBrick_Controller_Core) (234★, chưa ghim).
 
+### Datasheet / bản vẽ kích thước linh kiện (ghim 2026-10-24)
+- Nghiên cứu nơi chứa kích thước chính thức: `docs/component-dimension-sources.md`. Số đã đưa vào `components.yaml`
+  (PG001/PG002, SG90, N20, NEMA17, Pi 4, Pico, UNO R4 WiFi, XA007, PC003, 608ZZ), mỗi số kèm nguồn.
+- File tĩnh (PDF/JPG), không chạy gì. Tải lại theo `datasheet-sources.tsv`, kiểm SHA-256; lệch → không dùng.
+- Fasteners WB: đọc mã 2026-10-24 – không gọi mạng; `subprocess` chỉ trong `Resources/translations/compile_translations.py`
+  (script dịch cho dev). Bản ghim trùng 100 % nội dung bản Addon Manager đã cài (khác mỗi CRLF).
+
 ### LUT / preset cộng đồng cho ảnh (duyệt 2026-10-21)
 - LightCraft ≈ Lightroom, PhotoCraft ≈ Photoshop → dùng lại tài nguyên định dạng Adobe. Chỉ là **dữ liệu**
   (`.xmp`, `.cube`, `.png`), không có mã chạy; không gọi mạng.
@@ -172,6 +181,7 @@ obotcad` khi khởi động. Workbench vẫn nạp
 | 2026-10-21 | Biến môi trường người dùng | `BLENDERMCP_NO_UPDATE_CHECK=1` | `reg delete HKCU\Environment /v BLENDERMCP_NO_UPDATE_CHECK` |
 | 2026-10-21 | Windows | Bật Developer Mode (cho symlink) | Settings → For developers |
 | 2026-10-21 | `%APPDATA%\FreeCAD\v1-1\Mod\{freecad.robotcad, freecad.gears, SheetMetal}`, `Macro\PartsLibrary.FCMacro` | symlink → bản ghim | `update-community.sh unlink` |
+| 2026-10-24 | `%APPDATA%\FreeCAD\v1-1\Mod\fasteners` | bản Addon Manager 0.5.67 chuyển sang `Mod-backup\fasteners-0.5.67-2026-10-24`; thay bằng symlink → bản ghim `V0.5.67-beta` | `update-community.sh unlink`, rồi chuyển thư mục backup về `Mod\fasteners` |
 | 2026-10-21 | `~\.local\share\FreeCAD\AdditionalPythonPackages\py311` | thư viện Python ghim cho RobotCAD (16 gói, xem lock) | xóa thư mục |
 | 2026-10-21 | `%LOCALAPPDATA%\stlab-video-ai\models` | model faster-whisper large-v3-turbo (~1,6 GB) | xóa thư mục |
 | 2026-10-21 | FreeCAD tham số `Plugins/parts_library/destination` | trỏ tới `community/freecad-library` | macro PartsLibrary → Settings |
