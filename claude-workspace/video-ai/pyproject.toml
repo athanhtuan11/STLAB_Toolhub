@@ -9,6 +9,7 @@ dependencies = [
   # PyAV 19 bo tham so metadata_errors ma faster-whisper 1.2.1 con dung -> giu < 19
   "av>=11,<19",
   "pyyaml>=6.0,<7",
+  "pillow>=13.0.0",
 ]
 
 [project.optional-dependencies]
