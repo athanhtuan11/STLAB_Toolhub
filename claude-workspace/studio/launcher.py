@@ -69,17 +69,24 @@ def process_running(image):
     return image.lower() in out.lower()
 
 
+def running_images():
+    """Ten exe dang chay (chu thuong) - 1 lan goi tasklist cho moi ung dung, thay vi 1 lan / ung dung."""
+    if not WIN:
+        return set()
+    out = subprocess.run(["tasklist", "/NH", "/FO", "CSV"], capture_output=True, text=True,
+                         creationflags=NO_WINDOW).stdout
+    return {ln.split('","')[0].strip('"').lower() for ln in out.splitlines() if ln}
+
+
 def status():
-    rows = []
-    for a in load_config()["apps"]:
-        rows.append({
-            "id": a["id"], "name": a["name"], "port": a["port"], "mcp": a.get("mcp"),
-            "note": a.get("note", ""),
-            "installed": Path(a["exe"]).exists(),
-            "running": process_running(a["image"]),
-            "listening": port_open(a["port"]),
-        })
-    return rows
+    from concurrent.futures import ThreadPoolExecutor
+    apps = load_config()["apps"]
+    imgs = running_images()
+    with ThreadPoolExecutor(len(apps) or 1) as ex:  # cong dong -> cho timeout song song
+        nghe = list(ex.map(lambda a: port_open(a["port"]), apps))
+    return [{"id": a["id"], "name": a["name"], "port": a["port"], "mcp": a.get("mcp"), "note": a.get("note", ""),
+             "installed": Path(a["exe"]).exists(), "running": a["image"].lower() in imgs, "listening": n}
+            for a, n in zip(apps, nghe)]
 
 
 def start(app_id, wait=90, pair=None):

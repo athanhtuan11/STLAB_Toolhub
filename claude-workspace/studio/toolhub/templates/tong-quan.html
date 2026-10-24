@@ -1,44 +1,67 @@
 {% extends "base.html" %}
-{% block title %}Tổng quan{% endblock %}
+{% block title %}Trang chính{% endblock %}
 {% block content %}
 <div class="head">
-  <div>
-    <h1>STLAB Toolhub</h1>
-    <p class="sub">Workspace Claude Code của STLab: ứng dụng có MCP, nguồn cộng đồng đã ghim, skill/agent và các dự án.</p>
-  </div>
-  <div class="actions">
-    <button data-post="/api/start/freecad /api/start/blender /api/start/lightcraft /api/start/photocraft" data-busy="Đang mở…">Mở tất cả ứng dụng</button>
-    <button class="primary" data-post="/api/claude">Mở Claude Code (studio)</button>
-  </div>
+  <h1>STLAB Toolhub</h1>
+  <button class="primary" data-post="/api/claude">Mở Claude Code</button>
 </div>
 
-<section class="stats">
-  <a class="stat" href="{{ url_for('hub.ung_dung') }}"><div class="num">{{ stats.apps[0] }}/{{ stats.apps[1] }}</div><div class="lbl">Ứng dụng sẵn sàng MCP</div></a>
-  <a class="stat" href="{{ url_for('hub.cong_dong') }}"><div class="num">{{ stats.pins[0] }}/{{ stats.pins[1] }}</div><div class="lbl">Repo cộng đồng đúng điểm ghim</div></a>
-  <a class="stat" href="{{ url_for('hub.skills') }}"><div class="num">{{ stats.links[0] }}/{{ stats.links[1] }}</div><div class="lbl">Skill / agent / addon liên kết tốt</div></a>
-  <a class="stat" href="{{ url_for('hub.du_an') }}"><div class="num">{{ stats.projects }}</div><div class="lbl">Dự án có CLAUDE.md</div></a>
-  <a class="stat" href="{{ url_for('hub.du_an') }}"><div class="num">{{ stats.todo }}</div><div class="lbl">TODO cần điền</div></a>
-  <a class="stat" href="{{ url_for('hub.cong_dong') }}"><div class="num" style="font-size:18px;padding:5px 0">{{ stats.report }}</div><div class="lbl">Báo cáo cập nhật gần nhất</div></a>
-</section>
+<div id="health" class="sub">Đang kiểm tra hệ thống…</div>
 
-<h2>Ứng dụng</h2>
-<section class="grid">
+<section class="apps">
   {% for a in apps %}
-  <div class="card" data-app="{{ a.id }}">
-    <div class="row"><span class="dot"></span><h3 class="grow">{{ a.name }}</h3><span class="badge plain">:{{ a.port }}</span></div>
-    <div class="state muted">…</div>
+  <div class="app" data-app="{{ a.id }}">
+    <span class="dot"></span><span class="grow">{{ a.name.split(' ')[0] }}</span>
+    <span class="state" hidden></span>
+    <button class="small" data-post="/api/start/{{ a.id }}" data-busy="…" title="Mở {{ a.name }} kèm MCP">Mở</button>
   </div>
   {% endfor %}
 </section>
 
-<h2>Dự án</h2>
-<section class="grid">
-  {% for p in projects %}
-  <a class="card" href="{{ url_for('hub.du_an_chi_tiet', slug=p.slug) }}" style="color:inherit;text-decoration:none">
-    <div class="row"><h3 class="grow">{{ p.rel }}</h3>{% if p.todo %}<span class="badge">{{ p.todo }} TODO</span>{% endif %}</div>
-    <div class="muted">{{ p.title }}</div>
-    <div class="muted">{{ p.links|length }} skill/agent{% if p.mcp %} · MCP: {{ p.mcp|join(', ') }}{% endif %}</div>
-  </a>
+<h2>Đang làm</h2>
+<section class="grid wide">
+  {% for p in active %}
+  <article class="card">
+    <div class="row">
+      <h3 class="grow"><a href="{{ url_for('hub.du_an_chi_tiet', slug=p.slug) }}">{{ p.rel.split('/')[-1] }}</a></h3>
+      {% if p.print.chay %}<span class="badge">đang chạy…</span>
+      {% elif p.print.ket_luan %}<span class="badge {{ {'PASS': 'ok', 'FAIL': 'bad'}.get(p.print.ket_luan, 'warn') }}">{{ p.print.ket_luan }}</span>{% endif %}
+    </div>
+    <div class="muted">{{ p.title.split('–', 1)[-1].strip() }}</div>
+    <div class="muted">
+      {% if p.print.luc %}Chuẩn bị in {{ p.print.luc }}{% if p.print.tom_tat %} · {{ p.print.tom_tat }}{% endif %}
+      {% else %}Chưa chuẩn bị in{% endif %}
+    </div>
+    <div class="actions" style="margin-top:auto">
+      <button class="primary" data-post="/api/print/{{ p.slug }}/run/on">Chuẩn bị in</button>
+      <a class="btn" href="{{ url_for('hub.du_an_chi_tiet', slug=p.slug) }}">Chi tiết</a>
+    </div>
+  </article>
+  {% else %}
+  <p class="muted">Chưa có dự án in 3D (cần <code>print/print.yaml</code>). Tạo trong FreeCAD: workbench STLab › Tạo dự án mới.</p>
   {% endfor %}
 </section>
+
+{% if other %}
+<details class="others">
+  <summary>Dự án khác ({{ other|length }})</summary>
+  <div class="chips">
+    {% for p in other %}<a class="chip" href="{{ url_for('hub.du_an_chi_tiet', slug=p.slug) }}" title="{{ p.title }}">{{ p.rel.split('/')[-1] }}</a>{% endfor %}
+  </div>
+</details>
+{% endif %}
+
+<script>
+// "Can chu y": chi hien loi; nap sau de trang khong phai cho kiem git (~2-3 s)
+fetch("/api/health").then(r => r.json()).then(xs => {
+  const el = document.getElementById("health");
+  if (!xs.length) { el.textContent = "✓ Ứng dụng, nguồn cộng đồng và skill đều ổn."; return; }
+  el.className = "note-box";
+  el.innerHTML = "<b>Cần chú ý:</b> ";
+  xs.forEach((x, i) => {
+    const a = document.createElement("a"); a.href = x.url; a.textContent = x.text;
+    el.append(a, i < xs.length - 1 ? " · " : "");
+  });
+}).catch(() => { document.getElementById("health").textContent = ""; });
+</script>
 {% endblock %}
