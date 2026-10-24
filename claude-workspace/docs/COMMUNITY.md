@@ -184,6 +184,7 @@ obotcad` khi khởi động. Workbench vẫn nạp
 | 2026-10-21 | `~/.claude/skills/{grill-me,handoff,diagnosing-bugs,research,robotics-cad,freecad-scripts}` | symlink → workspace (nguồn duy nhất) | `update-community.sh unlink` |
 | 2026-10-21 | `~/.claude/CLAUDE.md` | tạo mới (trước đó không có) | xóa file |
 | 2026-10-21 | `%APPDATA%\FreeCAD\v1-1\Mod\FreeCADMCP` | symlink → freecad-mcp v0.1.27 | `unlink`, rồi chuyển `Mod-backup\FreeCADMCP-0.1.26-2026-10-21` về `Mod\FreeCADMCP` |
+| 2026-10-24 | Blender 5.1 đã gỡ, máy có **5.2.2 LTS**: `studio/apps.json` trỏ 5.2; symlink addon chuyển sang `%APPDATA%\Blender Foundation\Blender\5.2\scripts\addons\blender_mcp.py` (đã thử: addon nạp OK trên 5.2, factory-startup). Addon **chưa bật** trong cài đặt 5.2: lần đầu mở 5.2 chọn chép cài đặt 5.1 (đã bật MCP) hoặc Edit → Preferences → Add-ons bật "Blender MCP" | sửa lại `apps.json`, `links.tsv` |
 | 2026-10-21 | `%APPDATA%\Blender Foundation\Blender\5.1\scripts\addons\blender_mcp.py` | symlink → mcp-for-blender | `unlink` |
 | 2026-10-21 | Blender 5.1 `config\userpref.blend` | bật addon "MCP for Blender" | chép đè từ `userpref.blend.bak-2026-10-21` |
 | 2026-10-21 | Biến môi trường người dùng | `BLENDERMCP_NO_UPDATE_CHECK=1` | `reg delete HKCU\Environment /v BLENDERMCP_NO_UPDATE_CHECK` |
