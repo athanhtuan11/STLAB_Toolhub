@@ -84,7 +84,7 @@ Sinh tự động từ `freecad/pushrod_arm.FCStd` bằng `maker/robotics-cad/sc
 | P5_Gears_Racks_Pins__0.16_PETG | 1h38 | 23.8 | – |
 | P6_GripperPads__TPU95A | 0h05 | 0.6 | – |
 | P7_Worms__0.12_PETG_100pct | 0h34 | 2.3 | – |
-| **Tổng** | **11h17** | **299.7** | |
+| **Tổng** | **11h18** | **299.7** | |
 
 ## Chưa phân loại (TODO)
 Label không khớp quy ước vít / `components=` / `export.rules`:

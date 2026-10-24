@@ -1,0 +1,50 @@
+[
+ {
+  "pose": "1-rest",
+  "yaw": 0,
+  "L1": 99.8,
+  "L2": 121.6,
+  "grip": 0,
+  "hits": []
+ },
+ {
+  "pose": "2-shoulder-in-elbow-out",
+  "yaw": 0,
+  "L1": 92.0,
+  "L2": 128.0,
+  "grip": -26,
+  "hits": []
+ },
+ {
+  "pose": "3-shoulder-out-elbow-in",
+  "yaw": 0,
+  "L1": 118.0,
+  "L2": 92.0,
+  "grip": 0,
+  "hits": []
+ },
+ {
+  "pose": "4-both-out",
+  "yaw": 0,
+  "L1": 118.0,
+  "L2": 128.0,
+  "grip": -55,
+  "hits": []
+ },
+ {
+  "pose": "5-both-in",
+  "yaw": 0,
+  "L1": 92.0,
+  "L2": 92.0,
+  "grip": 3,
+  "hits": []
+ },
+ {
+  "pose": "6-yaw90-mid",
+  "yaw": 90,
+  "L1": 105.0,
+  "L2": 110.0,
+  "grip": -26,
+  "hits": []
+ }
+]
