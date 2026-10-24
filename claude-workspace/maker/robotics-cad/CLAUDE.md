@@ -110,7 +110,7 @@ maker/<project>/            tên tiếng Anh, kebab-case
     giám sát; **không** ép insert vào chi tiết đang lắp pin. Lỗ insert theo bảng Ruthex (M2.5/M3: Ø4,0, sâu ≥ 6,7).
   - Công tắc XA007 tối đa 3 A / 12,6 V.
   - Hốc servo SG90 / PG001 / MG90S **không dùng chung** (đáy→mặt dưới tai 17 / 16,3 / 18,5 mm) → ghi đúng loại servo.
-- **Đọc `docs/freecad-automation-research.md` mục 8 trước khi viết script FreeCAD** (11 bẫy CLI đã dính + cách chặn,
+- **Đọc `docs/freecad-automation-research.md` mục 7 trước khi viết script FreeCAD** (11 bẫy CLI đã dính + cách chặn,
   số đo hiệu năng, `fc_cli.py` / `gui_run.py` / bộ test `-t`).
 - **CLI trước, GUI chỉ để xem** (Tuan 2026-10-24: "mở FreeCAD dễ crash"): sửa model bằng
   `"C:/Program Files/FreeCAD 1.1/bin/freecadcmd.exe" script.py` trên file đã Lưu, **GUI phải đóng file đó**
