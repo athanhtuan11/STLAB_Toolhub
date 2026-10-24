@@ -22,6 +22,7 @@ __pycache__/
 /maker/*/freecad/check/
 /maker/*/print/stl/
 /maker/*/print/plates/
+/maker/*/print/plates-*/
 /maker/*/print/_*
 
 # Bi mat va cau hinh ca nhan

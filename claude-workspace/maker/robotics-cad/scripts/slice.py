@@ -242,6 +242,8 @@ def main():
                     and not any(fnmatch.fnmatch(f.name, g) for g in bo)]
     dem = {f.name: sum(f in v for v in xep.values()) for f in tat_ca}
     chua_xep = [n for n, c in dem.items() if c == 0]
+    if cfg.get("partial"):  # bo in lai 1 phan (vd. print-reprint-*.yaml): STL ngoai ban la co y, khong FAIL
+        chua_xep = []
     trung = [n for n, c in dem.items() if c > 1]
 
     # phan tich hinh hoc theo huong in: phan nho ra can support, chi tiet nho can brim
