@@ -116,6 +116,11 @@ maker/<project>/            tên tiếng Anh, kebab-case
   → `se.save(doc, gui_from=<backup trước khi sửa>)` chép lại. Không gửi tính toán nặng (slice/distToShape/boolean
   trên STEP linh kiện) qua RPC vào GUI: 2026-10-24 cắt lát treo GUI > 2 phút, cùng script chạy CLI 16 s.
   CLI không làm được: màu/ViewProvider, chụp ảnh màn hình → render bằng matplotlib/Blender.
+  Đã thử theo mã nguồn FreeCAD (2026-10-24, đừng thử lại): `FreeCADGui.setupWithoutGUI()` tạo `Gui::Application(false)`
+  → không có ViewProvider/`getDocument`, không giữ được màu; `distToShape(s, tol)` = deflection của
+  `BRepExtrema_DistShapeShape` (đã đa luồng), nới tol KHÔNG nhanh hơn (0,94 → 3,67 s) → dùng lưới.
+  `freecadcmd --safe-mode script.py`: không nạp addon (ROS, laser-cut, RobotCAD…), khởi động 1,1 → 0,4 s.
+  GUI crash: thử mở `FreeCAD.exe --safe-mode -l` – hết crash thì lỗi do addon; log ở thư mục người dùng FreeCAD.
 - **Một phiên Claude giữ FreeCAD** (2026-10-23, Tuan): 2 phiên cùng sửa/chạy FreeCAD thì lệch nhau và chậm.
   Phiên khác chỉ chạy `freecadcmd` riêng trên file đã lưu (kiểm, xuất) – không gửi lệnh vào FreeCAD đang mở.
   Trước khi sửa model qua RPC/MCP: kiểm `doc.UndoCount == 0` (có thao tác chưa lưu – vd. đang mô phỏng – thì
