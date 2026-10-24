@@ -58,6 +58,12 @@ Sau mỗi lần `apply`/`rollback`, cập nhật cột "Ghim" và "Kiểm tra".
     **Không** cài numpy/lxml/setuptools… ở đó vì sẽ đè bản của FreeCAD (numpy 1.26.4).
   - Biến môi trường `DEBUG` → mở `debugpy` trên **0.0.0.0:5678** (ai trong LAN cũng chạy được mã).
     Launcher gỡ `DEBUG` khi mở FreeCAD (`env_unset` trong `studio/apps.json`).
+  - **Lỗi package.xml (2026-10-24, còn ở v12.10.4 và `main`)**: khai `<subdirectory>freecad/robotcad</subdirectory>`
+    nhưng mã ở `freecad/cross` → FreeCAD 1.1 `os.add_dll_directory()` lỗi → "Error in InitApplications" → bỏ qua phần
+    cuối InitApplications: thư mục **Macro không vào `sys.path`**, `PATH` không thêm Mod (ảnh hưởng MỌI addon/macro).
+    Sửa **không đụng bản ghim**: `custom/freecad/robotcad_overlay.py` dựng `custom/freecad/robotcad-overlay/`
+    (junction tới từng mục bản clone + `freecad/robotcad` rỗng); `Mod/freecad.robotcad` trỏ vào đó (`links.tsv`).
+    Đổi bản ghim RobotCAD → chạy lại script. Upstream sửa xong → trả `links.tsv` về bản clone, xóa overlay.
   - Lệnh do người dùng bấm có gửi dữ liệu ra ngoài: "Transfer project to external code generator" (robotcad.ru),
     LLM provider (openrouter.ai, routerai.ru, Ollama local). **Không dùng.**
   - 4 git submodule (ros2_controllers, sdformat, robot_descriptions, Dynamic_World_Generator) **chưa tải**:
@@ -181,6 +187,7 @@ obotcad` khi khởi động. Workbench vẫn nạp
 | 2026-10-21 | Biến môi trường người dùng | `BLENDERMCP_NO_UPDATE_CHECK=1` | `reg delete HKCU\Environment /v BLENDERMCP_NO_UPDATE_CHECK` |
 | 2026-10-21 | Windows | Bật Developer Mode (cho symlink) | Settings → For developers |
 | 2026-10-21 | `%APPDATA%\FreeCAD\v1-1\Mod\{freecad.robotcad, freecad.gears, SheetMetal}`, `Macro\PartsLibrary.FCMacro` | symlink → bản ghim | `update-community.sh unlink` |
+| 2026-10-24 | `%APPDATA%\FreeCAD\v1-1\Mod\freecad.robotcad` | symlink đổi từ bản clone sang `custom/freecad/robotcad-overlay` (sửa lỗi package.xml) | gỡ symlink, sửa `links.tsv` về `community/drfenixion-freecad-robotcad`, `update-community.sh link` |
 | 2026-10-24 | `%APPDATA%\FreeCAD\v1-1\Mod\fasteners` | bản Addon Manager 0.5.67 chuyển sang `Mod-backup\fasteners-0.5.67-2026-10-24`; thay bằng symlink → bản ghim `V0.5.67-beta` | `update-community.sh unlink`, rồi chuyển thư mục backup về `Mod\fasteners` |
 | 2026-10-21 | `~\.local\share\FreeCAD\AdditionalPythonPackages\py311` | thư viện Python ghim cho RobotCAD (16 gói, xem lock) | xóa thư mục |
 | 2026-10-21 | `%LOCALAPPDATA%\stlab-video-ai\models` | model faster-whisper large-v3-turbo (~1,6 GB) | xóa thư mục |

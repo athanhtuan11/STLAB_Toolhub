@@ -36,7 +36,7 @@ maker/in-3d/.claude/skills/bambu-a1	custom/skills/bambu-a1
 ~/AppData/Roaming/FreeCAD/v1-1/Mod/FreeCADMCP	community/neka-nat-freecad-mcp/addon/FreeCADMCP
 ~/AppData/Roaming/Blender Foundation/Blender/5.1/scripts/addons/blender_mcp.py	community/ahujasid-mcp-for-blender/addon.py
 # --- FreeCAD robotics (2026-10-21) ---
-~/AppData/Roaming/FreeCAD/v1-1/Mod/freecad.robotcad	community/drfenixion-freecad-robotcad
+~/AppData/Roaming/FreeCAD/v1-1/Mod/freecad.robotcad	custom/freecad/robotcad-overlay
 ~/AppData/Roaming/FreeCAD/v1-1/Mod/freecad.gears	community/looooo-freecad-gears
 ~/AppData/Roaming/FreeCAD/v1-1/Mod/SheetMetal	community/shaise-freecad-sheetmetal
 ~/AppData/Roaming/FreeCAD/v1-1/Mod/fasteners	community/shaise-freecad-fasteners

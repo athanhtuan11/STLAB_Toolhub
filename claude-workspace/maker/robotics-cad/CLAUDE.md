@@ -93,6 +93,16 @@ maker/<project>/            tên tiếng Anh, kebab-case
   → glob trong `print.yaml` dùng chung, khỏi khai từng dự án.
 
 ## Quy ước
+- **Lưu ý BẮT BUỘC khi viết ASSEMBLY.md / hướng dẫn lắp** (Tuan 2026-10-24): đưa vào bước liên quan, kèm nguồn
+  (`docs/component-dimension-sources.md`, `components.yaml`):
+  - **PG002 (servo 360°) KHÔNG có bảo vệ kẹt/nhiệt/quá dòng** (datasheet B-PG002) → không để kẹt lâu khi đang cấp
+    điện; thử tay trước khi cấp nguồn. PG001 có ly hợp (ngắt khi kẹt 5 s).
+  - **Pin PC003 (Li-ion 2S 7,4 V)**: dung lượng mâu thuẫn 800 / 700 mAh → đọc nhãn pin thật; nhắc an toàn Li-ion
+    (không đâm/ép/làm nóng, sạc đúng bộ sạc, không để học sinh sạc không giám sát).
+  - **Ép heat-set insert**: mỏ hàn > 250 °C (PETG thử 255–265 °C, chưa có số hãng) → giá đỡ mỏ hàn, kìm, người lớn
+    giám sát; **không** ép insert vào chi tiết đang lắp pin. Lỗ insert theo bảng Ruthex (M2.5/M3: Ø4,0, sâu ≥ 6,7).
+  - Công tắc XA007 tối đa 3 A / 12,6 V.
+  - Hốc servo SG90 / PG001 / MG90S **không dùng chung** (đáy→mặt dưới tai 17 / 16,3 / 18,5 mm) → ghi đúng loại servo.
 - **Một phiên Claude giữ FreeCAD** (2026-10-23, Tuan): 2 phiên cùng sửa/chạy FreeCAD thì lệch nhau và chậm.
   Phiên khác chỉ chạy `freecadcmd` riêng trên file đã lưu (kiểm, xuất) – không gửi lệnh vào FreeCAD đang mở.
   Trước khi sửa model qua RPC/MCP: kiểm `doc.UndoCount == 0` (có thao tác chưa lưu – vd. đang mô phỏng – thì
