@@ -1,4 +1,6 @@
-from flask import Blueprint, abort, jsonify, render_template, request, send_file
+from pathlib import Path
+
+from flask import Blueprint, abort, jsonify, render_template, request, send_file, url_for
 
 import launcher
 
@@ -11,11 +13,13 @@ bp = Blueprint("hub", __name__)
 
 @bp.app_context_processor
 def nav():
-    return {"nav": [
-        ("hub.tong_quan", "Tổng quan"), ("hub.ung_dung", "Ứng dụng & MCP"),
-        ("hub.cong_dong", "Nguồn cộng đồng"), ("hub.skills", "Skills & agents"),
-        ("hub.du_an", "Dự án"), ("hub.anh", "Sửa ảnh"), ("hub.thu_vien", "Thư viện linh kiện"), ("hub.prompt", "Prompt library"),
-    ]}
+    # Menu gon: viec hang ngay o ngoai, trang he thong gom vao "Them"
+    main = [("hub.tong_quan", "Trang chính"), ("hub.du_an", "Dự án"), ("hub.thu_vien", "Linh kiện"), ("hub.anh", "Sửa ảnh")]
+    more = [("hub.ung_dung", "Ứng dụng & MCP"), ("hub.cong_dong", "Nguồn cộng đồng"), ("hub.skills", "Skills & agents"),
+            ("hub.prompt", "Prompt library")]
+    ep = request.endpoint or ""
+    on = next((e for e, _ in main + more if ep == e or ep.startswith(e + "_")), None)
+    return {"nav": main, "nav_more": more, "nav_on": on, "more_on": next((lb for e, lb in more if e == on), None)}
 
 
 @bp.get("/thu-vien")
@@ -26,17 +30,34 @@ def thu_vien():
 # ---------- Trang ----------
 @bp.get("/")
 def tong_quan():
-    apps, pins, links, projects = launcher.status(), ws.pins(), ws.links(), ws.projects()
-    reps = ws.reports()
-    stats = {
-        "apps": (sum(a["listening"] for a in apps), len(apps)),
-        "pins": (sum(p["ok"] for p in pins), len(pins)),
-        "links": (sum(x["ok"] for x in links), len(links)),
-        "projects": len(projects),
-        "todo": sum(p["todo"] for p in projects),
-        "report": reps[0].removesuffix(".md") if reps else "chưa có",
-    }
-    return render_template("tong-quan.html", stats=stats, apps=apps, projects=projects)
+    # Trang chinh phai hien ngay: trang thai app (den) va "Can chu y" (git 21 repo ~2 s) nap sau bang JS
+    apps = [a for a in launcher.load_config()["apps"] if Path(a["exe"]).exists()]
+    projects = ws.projects()
+    active, other = [], []
+    for p in projects:
+        st = printprep.trang_thai(p["rel"])
+        if st is None:
+            other.append(p)
+            continue
+        kq = st["ket_qua"] or {}
+        tt = [t["ket_luan"] for t in kq.get("tang", [])]
+        p["print"] = {"chay": st["chay"], "luc": kq.get("thoi_gian"),
+                      "ket_luan": "FAIL" if "FAIL" in tt else "WARN" if "WARN" in tt else "PASS" if tt else None,
+                      "tom_tat": next((t["chi_tiet"] for t in kq.get("tang", []) if t["ten"].startswith("Tang 2")), "")}
+        active.append(p)
+    return render_template("tong-quan.html", apps=apps, active=active, other=other)
+
+
+@bp.get("/api/health")
+def api_health():
+    """Chi nhung dieu can chu y (rong = on) cho dong "Can chu y" o trang chinh."""
+    issues = [(f"{a['name']} chưa cài trên máy", "hub.ung_dung") for a in launcher.load_config()["apps"]
+              if not Path(a["exe"]).exists()]
+    if n := sum(not p["ok"] for p in ws.pins()):
+        issues.append((f"{n} repo cộng đồng lệch điểm ghim", "hub.cong_dong"))
+    if n := sum(not x["ok"] for x in ws.links()):
+        issues.append((f"{n} skill/agent liên kết lỗi", "hub.skills"))
+    return jsonify([{"text": t, "url": url_for(ep)} for t, ep in issues])
 
 
 @bp.get("/ung-dung")

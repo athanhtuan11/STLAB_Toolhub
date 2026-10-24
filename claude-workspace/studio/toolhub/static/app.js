@@ -47,10 +47,17 @@ async function refreshApps() {
     document.querySelectorAll(`[data-app="${s.id}"]`).forEach(el => {
       const dot = el.querySelector(".dot"), st = el.querySelector(".state");
       if (dot) dot.className = "dot " + (!s.installed ? "missing" : s.listening ? "ready" : s.running ? "half" : "");
-      if (st) st.textContent = !s.installed ? "Chưa cài trên máy" : s.listening ? "Sẵn sàng cho MCP"
+      const text = !s.installed ? "Chưa cài trên máy" : s.listening ? "Sẵn sàng cho MCP"
         : s.running ? "Đang mở, cổng MCP chưa bật" : "Đang tắt";
+      if (st) st.textContent = text;
+      if (el.classList.contains("app")) el.title = `${s.name}: ${text}`;
     });
   }
 }
 refreshApps();
 setInterval(refreshApps, 5000);
+
+// Menu "Them": dong khi bam ra ngoai
+document.addEventListener("click", (e) => {
+  document.querySelectorAll("details.more[open]").forEach(d => { if (!d.contains(e.target)) d.open = false; });
+});

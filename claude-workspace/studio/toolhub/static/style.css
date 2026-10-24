@@ -126,3 +126,26 @@ kbd { border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; font-si
   .lab-main { order: -1; }
   .compare { grid-template-columns: 1fr; }
 }
+
+/* ---------- Menu "Them" + trang chinh gon ---------- */
+nav details.more { position: relative; }
+nav details.more summary { list-style: none; cursor: pointer; padding: 14px 10px; color: var(--muted); border-bottom: 2px solid transparent; }
+nav details.more summary::-webkit-details-marker { display: none; }
+nav details.more summary:hover { color: var(--text); }
+nav details.more summary.on { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+nav details.more .menu { position: absolute; right: 0; top: 100%; min-width: 200px; background: var(--card); border: 1px solid var(--line);
+  border-radius: 10px; padding: 6px; box-shadow: 0 8px 24px rgba(0,0,0,.12); display: flex; flex-direction: column; z-index: 6; }
+nav details.more .menu a { padding: 8px 10px; border-radius: 6px; color: var(--text); border: none; }
+nav details.more .menu a:hover { background: var(--bg); text-decoration: none; }
+
+.apps { display: flex; flex-wrap: wrap; gap: 8px; }
+.app { display: flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--line); border-radius: 999px;
+  padding: 4px 4px 4px 12px; font-size: 14px; }
+button.small { padding: 3px 12px; font-size: 13px; border-radius: 999px; }
+.grid.wide { grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); }
+.badge.warn { background: transparent; color: var(--warn); border: 1px solid var(--warn); }
+details.others { margin-top: 26px; }
+details.others summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chip { font-size: 13px; padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--text); }
+.chip:hover { border-color: var(--accent); text-decoration: none; }

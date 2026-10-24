@@ -11,9 +11,11 @@
   <div class="inner">
     <a class="brand" href="{{ url_for('hub.tong_quan') }}">STLAB <span>Toolhub</span></a>
     <nav>
-      {% for ep, label in nav %}
-      <a href="{{ url_for(ep) }}" class="{{ 'on' if request.endpoint == ep or (request.endpoint or '').startswith(ep + '_') else '' }}">{{ label }}</a>
-      {% endfor %}
+      {% for ep, label in nav %}<a href="{{ url_for(ep) }}" class="{{ 'on' if nav_on == ep else '' }}">{{ label }}</a>{% endfor %}
+      <details class="more">
+        <summary class="{{ 'on' if more_on else '' }}">{{ more_on or 'Thêm' }} ▾</summary>
+        <div class="menu">{% for ep, label in nav_more %}<a href="{{ url_for(ep) }}">{{ label }}</a>{% endfor %}</div>
+      </details>
     </nav>
   </div>
 </header>
