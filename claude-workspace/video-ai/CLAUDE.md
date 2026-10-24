@@ -16,6 +16,15 @@ Tuan đưa clip tự quay + vài dòng mong muốn → Claude phân tích, lập
 3. `uv run python scripts/build.py projects/<ten>` – dựng trong FilmCraft (chạy nền), xuất video.
 4. Claude xem `build/kiem-tra-*.png`, sửa plan nếu cần, dựng lại. Tuan mở `.fcproj` để chỉnh tay nếu muốn.
 
+## Reel từ ẢNH CÓ SẴN của dự án – `scripts/make_reel.py` (2026-10-24, không cần clip quay)
+- Kịch bản YAML đặt trong dự án: `maker/<project>/marketing/<ten>.yaml` (lên git); video ra `video-ai/projects/<ten>/out/`
+  (KHÔNG lên git). Chạy: `uv run python scripts/make_reel.py ../maker/<project>/marketing/<ten>.yaml` (~2 phút / 27 s).
+- Cảnh: `title` (câu mở đầu) · `step` (số bước to + tên + thanh tiến độ) · `end` (CTA nút vàng). `zoom` cho ảnh nhiều
+  khoảng trắng. Màu/font: `studio/design/tokens.json` + Be Vietnam Pro (`studio/design/fonts/`).
+- Chừa vùng an toàn Reels/TikTok: trên 160 px, dưới 420 px. Xuất 1080×1920 H.264 + AAC 48 kHz **im lặng, không nhạc**
+  (tài khoản cá nhân → Tuan chọn nhạc trend trong app). Kèm `<ten>-contact.png` để duyệt bằng ảnh. Không tự đăng.
+- Mẫu: `maker/pushrod-arm/marketing/reel-13-steps.yaml` (video #1 trong `docs/trend-content-ideas.md`).
+
 ## Template (`templates/<id>/cau-hinh.yaml`)
 - `reel-9x16`: TikTok/Reels/Shorts – khung dọc bám chủ thể, bỏ từ đệm + khoảng lặng > 0,35 s, phụ đề
   in cứng, chữ mở đầu/CTA, −14 LUFS. TODO: màu/logo/nhạc STLab.
