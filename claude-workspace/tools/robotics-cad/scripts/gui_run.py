@@ -28,4 +28,11 @@ def run():
     QtCore.QTimer.singleShot(500, Gui.getMainWindow().close)
 
 
+try:  # Tuan dung man hinh chinh viec khac -> cua so FreeCAD sang man hinh phu (2026-10-25)
+    import sys
+    sys.path.insert(0, "D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/tools/robotics-cad/scripts")  # FreeCAD exec: co the khong co __file__
+    from second_screen import move_to_second_screen
+    move_to_second_screen()
+except Exception:
+    pass
 QtCore.QTimer.singleShot(1500, run)
