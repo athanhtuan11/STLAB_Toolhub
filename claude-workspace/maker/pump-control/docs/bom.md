@@ -8,7 +8,7 @@ nhà khách (Tuan bỏ qua kiểm). Wi-Fi tại chỗ đặt tủ: có. Thông s
 | # | Món | Thông số cần | SL |
 |---|---|---|---|
 | 1 | Contactor | **AC-3 ≥ 18 A**, cuộn hút **220 VAC**, có ≥ 1 tiếp điểm phụ NO (báo chạy) | 1 |
-| 2 | Relay nhiệt | Lắp được với contactor #1, **dải chỉnh ~9–13 A** (chứa 12,5 A), có tiếp điểm NC (+ NO báo lỗi nếu có) | 1 |
+| 2 | Relay nhiệt | Lắp được với contactor #1, **dải chỉnh ~9–13 A** (chứa 12,5 A), có tiếp điểm NC (+ NO báo lỗi nếu có). Bảo vệ MOTOR khi kẹt/hỏng tụ/áp yếu (1,2–2× dòng, MCB không nhảy) – kể cả chế độ TAY. Bỏ được nếu nhãn motor có bảo vệ nhiệt tích hợp (TP) – đánh đổi: loại tích hợp thường tự đóng lại khi nguội | 1 |
 | 3 | Dây động lực | Cu **2,5 mm²** (L, N, PE) tới motor | theo khoảng cách |
 
 ## Mạch điều khiển (220 VAC cuộn hút)
@@ -25,7 +25,7 @@ nhà khách (Tuan bỏ qua kiểm). Wi-Fi tại chỗ đặt tủ: có. Thông s
 |---|---|---|---|
 | 9 | Bo ESP32 | **ESP32-DevKitC WROOM-32D** (cấp 5 V vào chân 5V) | 1 (+1 dự phòng) |
 | 10 | Nguồn AC-DC cách ly | 220 VAC → **5 V ≥ 1 A**, loại module đóng kín | 1 |
-| 11 | Module relay | 1 kênh, **opto, kích mức cao, chạy được với logic 3,3 V**, tiếp điểm 220 VAC (chỉ đóng cuộn hút) | 1 |
+| 11 | Module relay | Opto 1–2 kênh 5 V, jumper H/L → **đặt H (kích mức cao)**; mức L với GPIO 3,3 V có thể không nhả relay. Thử bật/tắt khi nhận hàng. Kênh 2: dự phòng / còi báo lỗi | 1 |
 | 12 | Đo điện năng | **PZEM-004T v3 bản 100 A có CT kẹp** (bản 10 A không đủ) | 1 |
 | 13 | Chuyển mức / chia áp UART | cho TX của PZEM → RX ESP32 (`TODO` mức TX PZEM) | 1 |
 
