@@ -44,7 +44,7 @@ Nguồn 220 V ─ CB (≥ 1,25 × dòng định mức) ─ RCD 30 mA ─ Contact
   PZEM-004T + CT kẹp dây pha ─UART─► ESP32 (V, A, W, kWh → biết bơm chạy thật, chạy khô, kẹt)
 ```
 Ước tính dòng (chưa có nhãn, `TODO`): 2 kW là công suất vào, 1 pha, hệ số công suất 0,8 → ≈ 11 A; 2 kW là công suất trục
-(hiệu suất ~75 %) → ≈ 15 A; lúc khởi động gấp 5–7 lần trong < 1 s. CB/RCD/contactor/dây do thợ điện chọn lần cuối.
+(hiệu suất ~75 %) → ≈ 15 A; lúc khởi động gấp 5–7 lần trong < 1 s. CB/RCD/contactor/dây chốt lại theo dòng trên nhãn motor.
 Tủ: nhựa IP65 mua sẵn, ray DIN (không in PETG làm vỏ tủ điện – PETG không chống cháy).
 
 ## Nguồn

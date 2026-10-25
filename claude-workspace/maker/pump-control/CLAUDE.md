@@ -1,14 +1,14 @@
 # pump-control – điều khiển máy bơm 2 kW từ xa bằng ESP32-WROOM-32D (công trình cho khách)
 
 ## Bối cảnh
-- **Công trình cho khách** (2026-10-25): khách chưa có gì (chưa tủ điện, chưa máy chủ). Đây là việc **thương mại** →
-  kiểm license thư viện/điều khoản cloud trước khi giao (khác các dự án phi thương mại khác của STLab).
-- Điều khiển: **ESP RainMaker** + Wi-Fi của khách (Tuan chọn 2026-10-25). RainMaker public chỉ để đánh giá → dùng cho
-  bản thử; bàn giao khách cần RainMaker **private** (liên hệ Espressif) hoặc đổi lớp kết nối (Telegram) – **Tuan quyết ở GĐ4**.
+- **Công trình cho khách** (2026-10-25): khách chưa có gì (chưa tủ điện, chưa máy chủ).
+- **Tuan tự lắp điện và tự lập trình.** Claude: tra thông số (có nguồn), review sơ đồ/BOM/code khi Tuan hỏi, ghi tài liệu.
+- Điều khiển: **ESP RainMaker** + Wi-Fi của khách (Tuan chọn 2026-10-25). License/điều khoản cloud (RainMaker public ghi
+  "để đánh giá"): **Tuan chấp nhận rủi ro, tự giải quyết** – chỉ ghi chú, không chặn việc.
 
 ## An toàn (bắt buộc, đọc trước mọi việc)
-- 220 V AC + nước. Phần điện lực (CB, RCD, contactor, relay nhiệt, motor) do **thợ điện có nghề** lắp và đóng điện.
-  Claude/STLab chỉ thiết kế + làm phần điều khiển điện áp thấp. Học sinh không đụng tủ đang có điện.
+- 220 V AC + nước. Tuan tự lắp tủ: cắt nguồn + treo biển/khóa, **thử không điện bằng bút/đồng hồ** trước khi chạm, nối đất
+  PE cho tủ và motor, bấm nút TEST của RCD sau khi lắp. Học sinh không đụng tủ đang có điện.
 - ESP32 **chỉ đóng cuộn hút contactor**, không đóng dòng motor. Không dùng module relay 10 A hay SSR để chạy motor.
 - Bảo vệ bằng **phần cứng** (không phụ thuộc ESP32): RCD 30 mA, relay nhiệt, nút dừng khẩn NC, công tắc TAY/TẮT/TỰ ĐỘNG,
   chống chạy khô (phao/áp) nối thẳng vào mạch cuộn hút.
