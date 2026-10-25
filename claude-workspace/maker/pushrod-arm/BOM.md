@@ -6,6 +6,7 @@ Sinh tự động từ `freecad/pushrod_arm.FCStd` bằng `maker/robotics-cad/sc
 | Vít | SL | Dùng ở |
 |---|---|---|
 | M2.5 × 10 | 2 | gear 2 |
+| M2.5 × 16 | 4 | receiver 4 |
 | M2.5 × 6 | 21 | Pin_A 1, Pin_B 1, Pin_C 1, Pin_D 1, Pin_E 1, Pin_S 1, pin 1, shaft_Elbow 1, shaft_Shoulder 1, top 2, turret 4, wrist 4, wrist_spacer 2 |
 | M2.5 × 8 | 4 | deck 4 |
 

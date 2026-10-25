@@ -19,7 +19,7 @@ STEPS = [  # (ma buoc, [glob Label chi tiet MOI]) - buoc khong co chi tiet moi: 
     ("01", ["Base_foot", "Base_housing"]),
     ("02", ["Battery_bay"]),
     ("03", ["Receiver_riser"]),
-    ("04", ["CB_XA003_XA004_receiver"]),
+    ("04", ["CB_XA003_XA004_receiver", "M2_5x16_receiver*"]),
     ("05", ["CB_Servo9g_360_turntable"]),
     ("06", ["Pinion_m1_z10_turntable"]),
     ("07", ["Base_deck", "Slide_ring"]),

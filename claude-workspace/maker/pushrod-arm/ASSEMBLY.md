@@ -21,8 +21,10 @@ Dành cho học sinh từ lớp 6, làm cùng thầy/cô. Viết lại 2026-10-2
 - Gỡ chi tiết PETG khỏi bàn in khi **bàn đã nguội** (PETG dính chặt).
 
 **Dụng cụ**
-- Tua vít / lục giác vừa vít **M2.5** (`TODO`: thầy/cô kiểm loại đầu vít trong bộ vít mua).
+- **Lục giác 2 mm** – mọi vít là **M2.5 đầu trụ lục giác chìm** (ISO 4762 / DIN 912, mũ Ø4,5 mm như trong model).
+  Vít tự ren vào lỗ nhựa Ø2,2 mm: vặn chậm, **vừa tay**, siết quá sẽ toét ren nhựa.
 - Kìm mũi nhọn, giấy nhám mịn, thước kẹp (hoặc thước kẻ), hộp nhỏ để chia vít.
+- **Băng dính xốp 2 mặt** (loại dày ~1 mm), **keo 502** (chỉ người lớn dùng), dây rút nhỏ.
 
 **Vít cần** (xếp riêng từng loại vào hộp, ghi nhãn):
 | Vít | Số lượng |
@@ -30,7 +32,7 @@ Dành cho học sinh từ lớp 6, làm cùng thầy/cô. Viết lại 2026-10-2
 | M2.5 × 6 | 21 |
 | M2.5 × 8 | 4 |
 | M2.5 × 10 | 2 |
-| M2.5 dài cho bộ thu (bước 4) | 4 – chiều dài `TODO` (≈ 16 mm) |
+| M2.5 × 16 | 4 |
 
 **Số khớp – chốt cùng số lắp với nhau**
 | Số | Chốt | Nối | Bước |
@@ -56,14 +58,18 @@ không đóng, không ép mạnh.
 1. Đặt chân đế xuống bàn.
 2. Đặt vỏ đế lên trên chân đế, khớp vành tròn.
 
-**Kiểm tra:** vỏ đế nằm phẳng, không lệch. (Cách giữ chân đế với vỏ: `TODO` – model chưa có vít.)
+3. Chân đế và vỏ không có vít: dán **4 miếng băng dính xốp 2 mặt** (khoảng 15 × 15 mm) ở 4 góc mặt trên chân đế rồi ấn
+   vỏ xuống. Muốn dính chắc hẳn: thầy/cô dán bằng keo 502.
+
+**Kiểm tra:** vỏ đế nằm phẳng, không lệch; nhấc vỏ thì chân đế lên theo.
 
 ## Bước 2 – Đặt khối pin
 **Cụm A – Đế**
-**Cần lấy:** khối pin (`Battery_bay`) ×1 – **mua**, loại pin `TODO` (xem nhãn).
+**Cần lấy:** khối pin (`Battery_bay`) ×1 – **mua**: pin CyberBrick **PC003** (Li-ion 2S 7,4 V; mạch XA004 nhận 7,4–12,6 V).
 ![](freecad/images/assembly/step-02-a.png)
-1. Đặt khối pin vào ngăn trong vỏ đế, như ảnh.
-2. **Chưa** nối dây pin.
+1. Dán 1 miếng băng dính xốp 2 mặt dưới đáy khối pin.
+2. Đặt khối pin vào ngăn trong vỏ đế như ảnh, ấn xuống cho dính (phía trên ngăn pin còn trống, không có gì chặn).
+3. **Chưa** nối dây pin.
 
 **Kiểm tra:** khối pin nằm gọn, không cấn thành vỏ.
 
@@ -77,11 +83,12 @@ không đóng, không ép mạnh.
 
 ## Bước 4 – Bộ thu CyberBrick [Cần người lớn]
 **Cụm A – Đế**
-**Cần lấy:** bộ thu XA003 + mạch XA004 ghép sẵn ×1 (**mua**), vít M2.5 dài ×4.
+**Cần lấy:** bộ thu XA003 + mạch XA004 ghép sẵn ×1 (**mua**), vít **M2.5 × 16** ×4.
 ![](freecad/images/assembly/step-04-a.png)
 1. Lõi XA003 cắm ở **mặt dưới** mạch XA004; hàng chân cắm servo **hướng lên**.
 2. Đặt bộ thu lên 4 ống nâng – lõi XA003 lọt vào giữa 4 ống.
-3. Bắt 4 vít dài qua mạch, qua ống, vào trụ. Vặn vừa tay, không siết mạnh (nứt mạch).
+3. Bắt 4 vít M2.5 × 16 qua lỗ mạch, qua ống, vào trụ. Vặn vừa tay, không siết mạnh (nứt mạch).
+   (Vít ăn vào trụ 4,6 mm; vít ngắn hơn ×14 chỉ ăn 2,6 mm – lỏng.)
 
 **Kiểm tra:** không đặt mạch thẳng lên trụ (lõi sẽ cấn đáy vỏ); cắm được dây servo từ phía trên.
 
@@ -92,7 +99,10 @@ không đóng, không ép mạnh.
 1. Đặt servo vào hốc trong vỏ đế, trục servo hướng lên.
 2. **Lưu ý:** servo 360° PG002 **không có bảo vệ khi bị kẹt** – sau này không để nó kẹt lâu khi đang có điện.
 
-**Kiểm tra:** servo nằm đúng hốc, không lắc. (Cách giữ servo: `TODO` – model chưa có vít/kẹp.)
+3. Servo **không cần vít**: hốc giữ 4 phía, tấm đậy (bước 10) chặn phía trên (hở 1,4 mm) – giống cách CyberBrick giữ servo
+   trong cánh tay L-ONE. Còn lắc thì dán 1 miếng băng dính xốp mỏng dưới đáy servo.
+
+**Kiểm tra:** servo nằm đúng hốc, không lắc.
 
 ## Bước 6 – Bánh răng nhỏ 10 răng
 **Cụm A – Đế**
@@ -307,7 +317,7 @@ trục vít `Worm_Shoulder` ×1 (bàn P7), chốt hộp số `Pin_gearbox_Should
 
 ## Bước 29 – Servo kẹp vào khung kẹp
 **Cụm I – Kẹp** (làm riêng trên bàn)
-**Cần lấy:** khung kẹp `Gripper_frame` ×1 (bàn P4), servo 180° CyberBrick ×1 (**mua**, `TODO` kiểm mã servo trên nhãn).
+**Cần lấy:** khung kẹp `Gripper_frame` ×1 (bàn P4), servo 180° CyberBrick **PG001** ×1 (**mua**).
 ![](freecad/images/assembly/step-29-a.png)
 1. Ấn servo vào hốc của khung kẹp (hốc vừa khít, hở 0,2 mm).
 
@@ -315,10 +325,12 @@ trục vít `Worm_Shoulder` ×1 (bàn P7), chốt hộp số `Pin_gearbox_Should
 
 ## Bước 30 – Tay quay servo và hàm kẹp 1
 **Cụm I – Kẹp**
-**Cần lấy:** tay quay servo (horn – **đi kèm servo**), hàm kẹp 1 `Jaw_1_driven_by_servo` ×1 (bàn P5).
+**Cần lấy:** tay quay servo + **vít tay quay** (trong túi phụ kiện đi kèm servo), hàm kẹp 1 `Jaw_1_driven_by_servo` ×1 (bàn P5).
 ![](freecad/images/assembly/step-30-a.png)
-1. **[Cần người lớn]** đưa servo về **vị trí giữa** (dùng bộ điều khiển) rồi mới lắp tay quay.
-2. Ấn tay quay vào trục servo, gắn hàm kẹp 1 lên tay quay (vít tay quay: thường đi kèm servo, `TODO`).
+1. **[Cần người lớn]** đưa servo về **vị trí giữa** trước khi lắp tay quay: cắm dây servo vào cổng **S3** của mạch
+   XA004, cấp điện, trong app CyberBrick đặt PWM3 = **90°** (hoặc bấm nút trên tay cầm cho tới khi servo kêu "tách" –
+   cách hướng dẫn L-ONE của hãng). Rút điện.
+2. Đặt tay quay vào hàm kẹp 1, ấn tay quay vào trục servo, bắt **vít tay quay** vào giữa trục. Vừa tay.
 
 **Kiểm tra:** hàm 1 quay theo trục servo, không lỏng.
 
@@ -344,7 +356,8 @@ trục vít `Worm_Shoulder` ×1 (bàn P7), chốt hộp số `Pin_gearbox_Should
 **Cụm I – Kẹp**
 **Cần lấy:** đệm kẹp TPU ×2 (bàn P6, nhựa dẻo).
 ![](freecad/images/assembly/step-33-a.png)
-1. Gắn 2 đệm dẻo vào mặt trong 2 hàm kẹp (dán hay ép: `TODO` – hỏi thầy/cô).
+1. **[Cần người lớn]** đệm chỉ áp vào mặt hàm, không có ngàm giữ → dán bằng **keo 502**: chấm 3–4 giọt nhỏ lên mặt hàm,
+   ấn đệm giữ 30 giây. Thử trước trên mẩu nhựa dẻo thừa xem keo có bám không. Không dùng băng dính 2 mặt (đệm trượt khi kẹp).
 
 **Kiểm tra:** khép hàm, 2 đệm chạm nhau đều.
 
@@ -359,8 +372,16 @@ trục vít `Worm_Shoulder` ×1 (bàn P7), chốt hộp số `Pin_gearbox_Should
 
 ## Sau khi lắp xong [Cần người lớn]
 - Chỉ xoay bằng tay **đế** (nhẹ tay) và **kẹp**. **Không bẻ vai, khuỷu bằng tay** – trục vít tự khóa, bẻ sẽ gãy răng.
-- Đấu dây: động cơ 030 ×2 (đầu SH1.0 2 chân, cổng motor XA004, ≤ 1 A/cổng); servo ×2 (đầu 3 chân). Cổng nào cho khớp
-  nào: `TODO`.
+- Đấu dây vào mạch XA004 theo bảng dưới (giống cấu hình cánh tay robot chính hãng CyberBrick). Dây servo: **nâu – đỏ –
+  vàng** đúng chân như in trên mạch. Cổng động cơ tối đa 1 A; servo bên trái / phải tối đa 2 A mỗi bên, tổng 3 A.
+
+| Cổng XA004 | Nối với | Đặt trong app CyberBrick |
+|---|---|---|
+| **M1** | động cơ xi-lanh **vai** | MOTOR1 – cần điều khiển dọc, tốc độ ~50 % |
+| **M2** | động cơ xi-lanh **khuỷu** | MOTOR2 – cần điều khiển dọc thứ 2 |
+| **S1** | servo đế 360° (PG002) | PWM1 kiểu **speed** (tốc độ) |
+| **S3** | servo kẹp 180° (PG001) | PWM3 kiểu **angle** (góc), nút bấm đóng/mở |
+
 - Cấp điện lần đầu: chạy **chậm**, sờ thử động cơ có nóng không. Không để động cơ hay servo **kẹt** khi đang có điện.
 
 ## Ghi chú cho thầy/cô
@@ -376,5 +397,12 @@ trục vít `Worm_Shoulder` ×1 (bàn P7), chốt hộp số `Pin_gearbox_Should
 - **Chốt khớp:** thân Ø4,8 mm (hở 0,3 mm/bên với lỗ Ø5,4), in **đặc 100 %**, in nằm (bàn P8); Ø4,8 đã thử vừa 2026-10-25.
 - **Support:** in bằng support tô tay trong Bambu Studio – giữ trống rãnh thanh răng, rãnh chữ U, hốc bánh vít, lỗ chốt.
 - Tỉ số: hộp số hãng ≈ 45,5:1 × trục vít 16:1 – mã kit bánh răng thật: `TODO`.
-- Các `TODO` còn mở: giữ chân đế/servo/mạch trong vỏ, chiều dài 4 vít bộ thu, loại đầu vít, vít tay quay servo, cách gắn
-  đệm TPU, cổng đấu dây.
+- Đã chốt 2026-10-25 (đo model + tài liệu hãng trong `community/cyberbrick-official/`):
+  - Vít M2.5 ISO 4762 (mũ Ø4,5 khớp model), lục giác 2 mm. Bộ thu: **M2.5 × 16** (mạch 1,7 + ống 9,7 = 11,4; lỗ trụ sâu 5,0
+    → ăn 4,6 mm, cách đáy 0,4 mm) – đã thêm 4 vít vào model.
+  - Chân đế, khối pin, đệm TPU chỉ chạm mặt (không ngàm) → băng dính xốp / keo 502. Servo đế: hốc + tấm đậy chặn (hở 1,4 mm).
+  - Vít tay quay: đi kèm servo ("Servo arm screw included in the servo horn kit" – hướng dẫn L-ONE).
+  - Cổng: XA004 có M1, M2 (SH1.0 2P, ≤ 1 A, điện áp = pin), S1–S4 (5 V), nguồn 7,4–12,6 V tối đa 3 A (thông số XA004,
+    Accessories Specification). Phân cổng theo `Robotic arm (official remote control).json`: MOTOR1, PWM1–2 speed, PWM3 angle.
+  - Servo kẹp: CyberBrick 180° **PG001** (có ly hợp chống kẹt) – Tuan xác nhận.
+- `TODO` còn mở: cấu hình app thật (file .json cho pushrod-arm) – thử khi lắp xong; dòng động cơ 030 khi kẹt so với 1 A/cổng.
