@@ -120,6 +120,18 @@ P8 đặc 100 %, bộ chốt thử `print/print-pin-gauge.yaml`, test `T7Pins`.
 4. **Kiểm bằng hình học, đưa vào test:** với mỗi chốt, đo đường kính thân + mọi lỗ đồng trục trên chi tiết lắp → khe ≥ ngưỡng
    theo kiểu lắp; báo chốt in đứng / chốt < 5 mm / thân bị khoét dọc (`WARN`).
 
+## Hướng dẫn lắp cho học sinh (Tuan 2026-10-25: "học sinh lớp 6 lắp sẽ khó lắm. chi tiết từng bộ phận")
+Mẫu: `maker/pushrod-arm/ASSEMBLY.md` (34 bước) + `freecad/scripts/render_assembly_steps.py` + `robotics-cad/scripts/assembly-pdf.py`.
+- **Mỗi bước 1 việc**, gom theo cụm (Đế, Mâm, Tháp, …); lắp cụm con trên bàn rồi mới gắn lên máy.
+- Mỗi bước: **Cụm** · **Cần lấy** (tên dễ hiểu + `Label` × SL + "bàn Px" / "mua") · 3 ảnh · các bước đánh số (câu ngắn) ·
+  **Kiểm tra** (làm đúng mới sang bước sau) · **[Cần người lớn]** ở tiêu đề khi có mạch/động cơ/pin/đo tư thế.
+- Ảnh: `c` = chỉ chi tiết cần lấy (chi tiết màu sáng tạm tô cam), `a` = toàn cảnh (đã lắp mờ, mới tô xanh), `b` = phóng to.
+  Render qua `gui_run.py`; **tự kiểm ảnh trắng và chụp lại** (fitAll chạy trước khi kịp vẽ → ảnh trắng ngẫu nhiên).
+  `steps.json` báo chi tiết chưa thuộc bước nào → phải rỗng.
+- Phần kỹ thuật (tự hãm, tỉ số, TODO) để mục **Ghi chú cho thầy/cô** cuối file. Lưu ý BẮT BUỘC (pin, servo không bảo vệ
+  kẹt, mỏ hàn…) – xem `maker/robotics-cad/CLAUDE.md`.
+- Thứ tự lắp phải xét **hành vi cơ cấu** (tự hãm, chỉ vào được 1 hướng) – quét đường lắp từng cụm trên model, không chỉ tiếp xúc.
+
 ## Điện (nhắc khi ghép linh kiện)
 - ESP32/Pico là logic 3.3 V: HC-SR04 Echo (5 V) cần chia áp; servo/động cơ cấp nguồn riêng, chung GND.
 

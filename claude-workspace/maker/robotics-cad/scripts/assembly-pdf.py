@@ -38,6 +38,12 @@ th, td { border: 1px solid #bbb; padding: 1mm 2mm; text-align: left; }
 th { background: #f3f3f3; }
 code { font-family: Consolas, monospace; font-size: 9pt; background: #f2f2f2; padding: 0 1mm; }
 ul { margin: 1mm 0 2mm 5mm; padding-left: 4mm; }
+.imgs { flex-wrap: wrap; }
+.imgs figure { flex: 0 0 48%; box-sizing: border-box; }  /* 2 anh / hang: to hon cho hoc sinh (3 anh / hang qua nho) */
+ol { margin: 1mm 0 2mm 5mm; padding-left: 5mm; font-size: 11.5pt; }
+ol li { margin-bottom: 1.2mm; }
+p.check { background: #eaf6ea; border-left: 4px solid #2e8b3e; padding: 1.5mm 3mm; font-size: 11pt; }
+.adult { color: #fff; background: #c0392b; border-radius: 2mm; padding: 0 2mm; font-size: 10pt; }
 li { margin: 1mm 0; }
 .todo { background: #fff3cd; }
 .footer-note { color: #888; font-size: 8.5pt; margin-top: 6mm; }
@@ -48,6 +54,7 @@ def inline(s, goc):
     s = html.escape(s, quote=False)
     s = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", s)
     s = re.sub(r"`([^`]+)`", r"<code>\1</code>", s)
+    s = s.replace("[Cần người lớn]", '<span class="adult">Cần người lớn</span>')
     s = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", lambda m: f'<a href="{(goc / m.group(2)).as_uri()}">{m.group(1)}</a>'
                if not m.group(2).startswith("http") else f'<a href="{m.group(2)}">{m.group(1)}</a>', s)
     return s.replace("TODO", '<span class="todo">TODO</span>')
@@ -56,10 +63,11 @@ def inline(s, goc):
 def anh(rel, goc):
     p = (goc / rel).resolve()
     ds = [(p, "Toàn cảnh – chi tiết mới tô xanh")]
-    m = re.match(r"(.*step-\d+)-([ab])\.png$", str(p))
-    if m:  # luon kem ca 2 goc: a (toan canh) + b (phong to)
-        ds = [(Path(m.group(1) + "-a.png"), "Toàn cảnh – chi tiết mới tô xanh"),
-              (Path(m.group(1) + "-b.png"), "Phóng to chi tiết mới")]
+    m = re.match(r"(.*step-\d+)-([abc])\.png$", str(p))
+    if m:  # c (chi tiet can lay - neu co) + a (toan canh) + b (phong to) - render_assembly_steps.py 2026-10-25
+        ds = [(Path(m.group(1) + "-c.png"), "Chuẩn bị – lấy các chi tiết này"),
+              (Path(m.group(1) + "-a.png"), "Lắp xong – chi tiết mới tô xanh"),
+              (Path(m.group(1) + "-b.png"), "Phóng to chỗ lắp")]
     the = "".join(f'<figure><img src="{q.as_uri()}"><figcaption>{c}</figcaption></figure>'
                   for q, c in ds if q.exists())
     return f'<div class="imgs">{the}</div>'
@@ -107,12 +115,26 @@ def md_html(md, goc):
                 i += 1
             out.append("<ul>" + "".join(f"<li>{inline(x, goc)}</li>" for x in items) + "</ul>")
             continue
+        elif re.match(r"^\d+\. ", d):  # danh sach danh so (huong dan hoc sinh 2026-10-25: moi buoc 1 viec)
+            items = []
+            while i < len(dong) and (re.match(r"^\d+\. ", dong[i]) or (dong[i].startswith("   ") and dong[i].strip())):
+                if re.match(r"^\d+\. ", dong[i]):
+                    items.append(re.sub(r"^\d+\. ", "", dong[i]).strip())
+                else:
+                    items[-1] += " " + dong[i].strip()
+                i += 1
+            out.append("<ol>" + "".join(f"<li>{inline(x, goc)}</li>" for x in items) + "</ol>")
+            continue
         elif d.strip():
             para = [d.strip()]
-            while i + 1 < len(dong) and dong[i + 1].strip() and not re.match(r"^(#|- |\||!\[)", dong[i + 1]):
+            # dong bat dau bang chu dam (**Can lay:**, **Cum A**...) = doan rieng, khong gop dong ke tiep
+            while (i + 1 < len(dong) and dong[i + 1].strip() and not d.startswith("**")
+                   and not re.match(r"^(#|- |\||!\[|\d+\. |\*\*)", dong[i + 1])):
                 i += 1
                 para.append(dong[i].strip())
-            out.append(f"<p>{inline(' '.join(para), goc)}</p>")
+            txt = " ".join(para)
+            lop = ' class="check"' if txt.startswith("**Kiểm tra") else ""
+            out.append(f"<p{lop}>{inline(txt, goc)}</p>")
         i += 1
     if trong_step:
         out.append("</section>")

@@ -76,6 +76,7 @@ thì sấy trước (máy sấy/tủ sấy có quạt, không dùng lò vi sóng
 
 ## Lịch sử in
 <!-- /print-result ghi vào đây: ngày | plate | PASS/FAIL | mô tả | ảnh -->
+- 2026-10-25 | G1 bộ chốt thử | PASS | Ø4,8 vừa (Tuan thử) → giữ chốt Ø4,8, in bàn R5/P8.
 - 2026-10-25 | P8/R5 chốt | FAIL | chốt Ø5,0 không nhét vào lỗ Ø5,4 (Boom001/Turret); ruột rỗng (infill 40 %) → sửa Ø4,8 + 100 %.
 - 2026-10-25 | R1 Housings | FAIL | support tự vẽ lấp rãnh thanh răng → Rack_Elbow không luồn qua → bỏ support tự vẽ, in lại R1.
 - 2026-10-23 | (bàn chưa ghi rõ) | FAIL | phần treo/nhô ra in không support → lỗi; chi tiết nhỏ cần brim (Tuan báo).

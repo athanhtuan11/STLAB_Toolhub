@@ -1,139 +1,380 @@
-# Hướng dẫn lắp ráp – pushrod-arm
+# Hướng dẫn lắp ráp – Cánh tay robot xi-lanh đẩy (pushrod-arm)
 
-Viết 2026-10-23, cập nhật 2026-10-24 (động cơ 030 + hộp số, bộ thu có shield, số khớp), 2026-10-25 (thứ tự lắp xi-lanh:
-lắp động cơ + trục vít SAU CÙNG ở Bước 11b vì trục vít tự hãm – kiểm bằng quét va chạm trên model) từ model hiện tại (`freecad/pushrod_arm.FCStd`). Thứ tự, vít, chốt lấy từ đo tiếp xúc giữa các chi tiết
-trong model; chỗ model không thể hiện ghi **TODO**. Ảnh: `freecad/images/assembly/step-XX-a.png` (toàn cảnh) và
-`-b.png` (phóng to) – phần đã lắp làm mờ, **chi tiết mới tô xanh**. Render lại khi sửa model:
-gửi `freecad/scripts/render_assembly.py` qua RPC FreeCAD (xem đầu file). Bản PDF (chữ + hình): `ASSEMBLY.pdf` –
-tạo lại bằng `python maker/robotics-cad/scripts/assembly-pdf.py maker/pushrod-arm/ASSEMBLY.md`.
+Dành cho học sinh từ lớp 6, làm cùng thầy/cô. Viết lại 2026-10-25 từ model hiện tại (`freecad/pushrod_arm.FCStd`):
+34 bước, mỗi bước **một việc**. Ảnh: `freecad/images/assembly/step-XX-{c,a,b}.png` – tạo lại bằng
+`freecad/scripts/render_assembly_steps.py` (chạy qua `maker/robotics-cad/scripts/gui_run.py`). PDF:
+`python maker/robotics-cad/scripts/assembly-pdf.py maker/pushrod-arm/ASSEMBLY.md`.
 
-## Trước khi lắp
-- In đủ 7 bàn (`print/plates/`, PETG Basic + TPU). Gỡ chi tiết khi **bàn đã nguội** (PETG bám chặt PEI).
-- Bàn P4 có support: gỡ sạch support ở Boom, khung kẹp và tai chốt 2 Housing.
-- Thử lắp trước: mọi chốt in (`Pin_*`) phải xoay tự do trong lỗ (khe thiết kế 0,19 mm). Chặt thì làm sạch lỗ, không ép mạnh.
-- **An toàn:** chưa cắm pin trong lúc lắp. Loại pin/điện áp khoang `Battery_bay`: TODO (xem datasheet CyberBrick XA003/XA004).
+## Trước khi bắt đầu
 
-## Vít và linh kiện (tổng)
-| Vít | SL | Dùng ở |
-|---|---|---|
-| M2.5 × 6 | 21 | turret 4, wrist spacer 2, nắp kẹp 2, chốt hàm 1, khung kẹp 4, trục bánh vít 2, khóa 6 chốt in 6 |
-| M2.5 × 8 | 4 | deck → vỏ đế |
-| M2.5 × 10 | 2 | bánh răng z60 → mâm xoay |
-Linh kiện mua: CyberBrick bộ thu XA003 + XA004 (ghép sẵn), servo 9g 360° và 180°, **2 động cơ 030 (LA024) + 2 bộ bánh
-răng giảm tốc 1 trục** (CyberBrick; vỏ hộp số in theo file của hãng) – xem `README.md`.
-Vít thêm (2026-10-24): 4 vít M2.5 dài hơn cho bộ thu qua ống nâng – chiều dài **TODO** (≥ tấm mạch 1,6 + ống 9,7 + ăn ren 5 ≈ 16 mm).
+**Cách đọc mỗi bước**
+- **Cần lấy**: chi tiết và số lượng. "Bàn P2" = chi tiết in ở bàn in P2. "Mua" = linh kiện mua sẵn.
+- 3 ảnh: **Chuẩn bị** (chỉ các chi tiết cần lấy) → **Lắp xong** (chi tiết mới màu xanh, phần đã lắp mờ) → **Phóng to**.
+- **Kiểm tra**: làm đúng thì mới sang bước sau.
+- **[Cần người lớn]**: gọi thầy/cô cùng làm.
 
-## Số khớp – cùng số thì lắp với nhau
-| Số | Chốt | Lắp | Khắc trên |
+**An toàn**
+- **Chưa cắm pin, chưa cấp điện** cho đến khi lắp xong và thầy/cô kiểm tra.
+- Pin Li-ion (pin CyberBrick PC003, 7,4 V): **không đâm, ép, làm nóng**; chỉ sạc bằng bộ sạc đúng loại, có người lớn trông.
+  Dung lượng ghi khác nhau (800 / 700 mAh) – đọc nhãn trên pin thật.
+- Không dùng dao rọc giấy một mình. Gỡ support/ba-via bằng kìm, hướng lưỡi ra xa tay.
+- Gỡ chi tiết PETG khỏi bàn in khi **bàn đã nguội** (PETG dính chặt).
+
+**Dụng cụ**
+- Tua vít / lục giác vừa vít **M2.5** (`TODO`: thầy/cô kiểm loại đầu vít trong bộ vít mua).
+- Kìm mũi nhọn, giấy nhám mịn, thước kẹp (hoặc thước kẻ), hộp nhỏ để chia vít.
+
+**Vít cần** (xếp riêng từng loại vào hộp, ghi nhãn):
+| Vít | Số lượng |
+|---|---|
+| M2.5 × 6 | 21 |
+| M2.5 × 8 | 4 |
+| M2.5 × 10 | 2 |
+| M2.5 dài cho bộ thu (bước 4) | 4 – chiều dài `TODO` (≈ 16 mm) |
+
+**Số khớp – chốt cùng số lắp với nhau**
+| Số | Chốt | Nối | Bước |
 |---|---|---|---|
-| 1 | S | Turret ↔ Boom | – (ghi bằng bút) |
-| 2 | A | Turret ↔ `Housing_Shoulder` | vỏ vai, mặt dưới cạnh tai chốt |
-| 3 | B | Boom ↔ `Rack_Shoulder` | – (ghi bằng bút) |
-| 4 | E | Boom ↔ Forearm | – (ghi bằng bút) |
-| 5 | C | Boom ↔ `Housing_Elbow` | vỏ khuỷu, mặt dưới cạnh tai chốt |
-| 6 | D | Forearm ↔ `Rack_Elbow` | – (ghi bằng bút) |
+| 1 | S | Tháp (turret) ↔ Cần chính (Boom) | 18 |
+| 2 | A | Tháp ↔ Xi-lanh vai | 19 |
+| 3 | B | Cần chính ↔ Thanh răng vai | 20 |
+| 4 | E | Cần chính ↔ Cẳng tay | 23 |
+| 5 | C | Cần chính ↔ Xi-lanh khuỷu | 24 |
+| 6 | D | Cẳng tay ↔ Thanh răng khuỷu | 25 |
+Chi tiết in trước 2026-10-24 chưa có số khắc → dùng bút lông ghi số cạnh lỗ chốt theo bảng.
 
-Chi tiết đã in trước 2026-10-24 không có số: ghi số bằng bút lông cạnh lỗ chốt theo bảng trên.
+**Thử chốt trước**: mỗi chốt (bàn P8, thân Ø4,8 mm) phải **xoay trơn bằng tay** trong lỗ. Chặt thì chà nhẹ giấy nhám –
+không đóng, không ép mạnh.
 
-## Bước 1 – Đế
+**Thứ tự**: A. Đế (1–6) → B. Mâm xoay (7–10) → C. Tháp (11) → D. Xi-lanh vai (12–14) → E. Xi-lanh khuỷu (15–17)
+→ F. Cần chính (18–20) → G. Cẳng tay (21–25) → H. Động cơ (26–28) → I. Kẹp (29–34).
+
+## Bước 1 – Chân đế và vỏ đế
+**Cụm A – Đế**
+**Cần lấy:** vỏ đế `Base_housing` ×1, chân đế `Base_foot` ×1 (bàn P1).
 ![](freecad/images/assembly/step-01-a.png)
-- Đặt `Base_housing` lên `Base_foot`. Cách cố định chân đế: **TODO** (model không có vít).
+1. Đặt chân đế xuống bàn.
+2. Đặt vỏ đế lên trên chân đế, khớp vành tròn.
 
-## Bước 2 – Điện tử và servo xoay đế (bên trong vỏ đế)
+**Kiểm tra:** vỏ đế nằm phẳng, không lệch. (Cách giữ chân đế với vỏ: `TODO` – model chưa có vít.)
+
+## Bước 2 – Đặt khối pin
+**Cụm A – Đế**
+**Cần lấy:** khối pin (`Battery_bay`) ×1 – **mua**, loại pin `TODO` (xem nhãn).
 ![](freecad/images/assembly/step-02-a.png)
-- Đặt `Battery_bay` vào vỏ đế. Đặt 4 `Receiver_riser` (ống nâng in, cao 9,7 mm) lên 4 trụ trong vỏ đế.
-- Bộ thu `CB_XA003_XA004_receiver`: lõi XA003 cắm **mặt dưới** shield XA004, header servo **hướng lên** (cắm dây được).
-  Đặt lên 4 ống nâng, bắt 4 vít M2.5 dài (TODO chiều dài) xuyên shield + ống vào trụ. Lõi XA003 lọt giữa 4 ống.
-- **Không** đặt shield trực tiếp lên trụ cũ: lõi XA003 sẽ cấn đáy vỏ (model cũ vẽ thiếu chiều cao shield).
-- Đặt `CB_Servo9g_360_turntable` vào hốc trong vỏ đế; ép `Pinion_m1_z10_turntable` (bánh răng 10 răng) lên trục servo.
-- Cách giữ servo và mạch trong vỏ: **TODO** (model không có vít/kẹp).
+1. Đặt khối pin vào ngăn trong vỏ đế, như ảnh.
+2. **Chưa** nối dây pin.
 
-## Bước 3 – Cụm mâm xoay (làm NGOÀI vỏ đế)
+**Kiểm tra:** khối pin nằm gọn, không cấn thành vỏ.
+
+## Bước 3 – Bốn ống nâng bộ thu
+**Cụm A – Đế**
+**Cần lấy:** ống nâng `Receiver_riser` ×4 (bàn P2, cao 9,7 mm).
 ![](freecad/images/assembly/step-03-a.png)
-- Đặt `Slide_ring` lên `Base_deck`, đặt `Turntable` lên vòng trượt.
-- **Từ dưới deck**, áp `Turntable_gear_m1_z60` vào mâm xoay và bắt **2 vít M2.5 × 10 từ dưới lên**.
-  Bánh răng và mâm kẹp deck ở giữa – phải làm bước này trước khi bắt deck vào vỏ (sau đó không với tới mặt dưới).
+1. Đặt 4 ống nâng lên 4 trụ nhỏ trong vỏ đế.
 
-## Bước 4 – Gắn cụm mâm xoay lên đế
-![](freecad/images/assembly/step-04-b.png)
-- Hạ cụm bước 3 xuống vỏ đế sao cho **bánh răng z60 ăn khớp bánh răng 10 răng** của servo.
-- Bắt **4 vít M2.5 × 8 từ trên xuống** qua deck vào 4 vấu trong vỏ đế. Xoay thử mâm bằng tay: phải êm, không kẹt.
+**Kiểm tra:** cả 4 ống đứng thẳng, lỗ ống trùng lỗ trụ.
 
-## Bước 5 – Turret
+## Bước 4 – Bộ thu CyberBrick [Cần người lớn]
+**Cụm A – Đế**
+**Cần lấy:** bộ thu XA003 + mạch XA004 ghép sẵn ×1 (**mua**), vít M2.5 dài ×4.
+![](freecad/images/assembly/step-04-a.png)
+1. Lõi XA003 cắm ở **mặt dưới** mạch XA004; hàng chân cắm servo **hướng lên**.
+2. Đặt bộ thu lên 4 ống nâng – lõi XA003 lọt vào giữa 4 ống.
+3. Bắt 4 vít dài qua mạch, qua ống, vào trụ. Vặn vừa tay, không siết mạnh (nứt mạch).
+
+**Kiểm tra:** không đặt mạch thẳng lên trụ (lõi sẽ cấn đáy vỏ); cắm được dây servo từ phía trên.
+
+## Bước 5 – Servo xoay đế
+**Cụm A – Đế**
+**Cần lấy:** servo 360° CyberBrick (PG002) ×1 – **mua**.
 ![](freecad/images/assembly/step-05-a.png)
-- Đặt `Turret_one_piece` lên mâm xoay; bắt **4 vít M2.5 × 6 từ trong turret xuống** mâm.
+1. Đặt servo vào hốc trong vỏ đế, trục servo hướng lên.
+2. **Lưu ý:** servo 360° PG002 **không có bảo vệ khi bị kẹt** – sau này không để nó kẹt lâu khi đang có điện.
 
-## Bước 6 – Hai xi-lanh: phần cơ, CHƯA lắp động cơ (vai và khuỷu, làm giống nhau)
-![](freecad/images/assembly/step-06-b.png)
-> **Vì sao chưa lắp động cơ (sửa 2026-10-25):** trục vít **tự hãm** – lắp trục vít vào rồi thì thanh răng **không đẩy
-> tay được nữa** (bánh vít không quay ngược được trục vít), cố đẩy sẽ gãy răng. Nên lắp phần cơ, gắn lên tay, chỉnh
-> tư thế bằng tay xong mới đẩy cụm động cơ + trục vít vào (Bước 11b). Ảnh bước này vẽ sẵn cả hộp số – bỏ qua phần đó.
-- Đặt `Pinion_WormWheel_*` (bánh vít + bánh răng) vào vỏ **từ phía miệng rãnh chữ U** (phía động cơ sẽ chĩa ra);
-  từ phía ngoài lắp `Washer_shaft_*` rồi **vít M2.5 × 6** vào tâm bánh vít. Washer cố ý hở 0,1–0,2 mm – bánh vít
-  phải quay tự do. (Model: bánh vít chỉ ra/vào được theo hướng này; lắp trục vít trước thì bánh vít bị chặn.)
-- Luồn thanh răng `Rack_*` qua vỏ (rãnh hở 0,3 mm), ăn khớp bánh răng. **Lúc này** đẩy kéo tay thử hết hành trình:
-  êm, không kẹt (bánh vít quay theo).
+**Kiểm tra:** servo nằm đúng hốc, không lắc. (Cách giữ servo: `TODO` – model chưa có vít/kẹp.)
 
-## Bước 6b – Chuẩn bị cụm động cơ (để riêng, lắp ở Bước 11b)
-- **An toàn động cơ 030 (datasheet LA024):** 5–9 V; **không để kẹt trục khi đang cấp điện** (nóng, có thể cháy).
-  Lực dọc trục (trục vít) hại động cơ → gối chặn cuối trục vít phải có.
-- Lắp hộp số 030 theo hướng dẫn của hãng (`Assembly_Guide_of_Single_Axis_030_Reduction_Motor.pdf`), bôi mỡ bánh răng
-  hộp số. **Không bôi mỡ trục vít/bánh vít in** khi chưa thử: mỡ giảm ma sát có thể làm mất tự hãm (tay tự trôi khi tắt
-  điện) – xem `docs/cad-mechanisms-teaching-research.md`.
-- Cắm `Worm_*` (trục vít, đầu có lỗ vát 2 mặt) **vào trục ra hộp số** (xoay cho mặt vát khớp, không ép mạnh).
-- Tỉ số: STEP hãng ≈ 45,5:1 (gần kit LA016 1:48) × trục vít 16:1 – mã kit thật: **TODO** (tốc độ/lực xi-lanh đổi theo).
+## Bước 6 – Bánh răng nhỏ 10 răng
+**Cụm A – Đế**
+**Cần lấy:** bánh răng nhỏ `Pinion_m1_z10_turntable` ×1 (bàn P5).
+![](freecad/images/assembly/step-06-a.png)
+1. Ấn bánh răng nhỏ vào trục servo, ấn thẳng tay đến hết.
 
-## Bước 7 – Cần chính (Boom) lên turret – chốt S
-![](freecad/images/assembly/step-07-b.png)
-- **Khớp số 1.** Đặt `Boom001` vào giữa 2 tai turret, mỗi bên một `Spacer_S`.
-- Luồn `Pin_S` xuyên qua tai turret – đệm – Boom – đệm – tai turret; đầu kia lắp `Pin_S_washer` + **vít M2.5 × 6**.
+**Kiểm tra:** bánh răng không lỏng, xoay theo trục servo.
 
-## Bước 8 – Xi-lanh vai – chốt A và B
-![](freecad/images/assembly/step-08-b.png)
-- **Chốt A – số 2 (khắc trên vỏ):** tai `Housing_Shoulder` vào giữa 2 tai turret, mỗi bên một `Spacer_A`; luồn `Pin_A`, khóa washer + vít M2.5 × 6.
-- **Chốt B – số 3:** đầu thanh răng `Rack_Shoulder` vào Boom; luồn `Pin_B`, khóa washer + vít M2.5 × 6.
+## Bước 7 – Vòng trượt lên tấm đậy
+**Cụm B – Mâm xoay** (làm **bên ngoài** vỏ đế)
+**Cần lấy:** tấm đậy `Base_deck` ×1 (bàn P1), vòng trượt `Slide_ring` ×1 (bàn P2).
+![](freecad/images/assembly/step-07-a.png)
+1. Đặt tấm đậy lên bàn, mặt có rãnh tròn hướng lên.
+2. Đặt vòng trượt vào rãnh tròn.
 
-## Bước 9 – Cụm cẳng tay (Forearm)
+**Kiểm tra:** vòng nằm trọn trong rãnh.
+
+## Bước 8 – Mâm xoay
+**Cụm B – Mâm xoay**
+**Cần lấy:** mâm xoay `Turntable` ×1 (bàn P2).
+![](freecad/images/assembly/step-08-a.png)
+1. Đặt mâm xoay lên vòng trượt, lỗ giữa mâm trùng lỗ giữa tấm đậy.
+
+**Kiểm tra:** lấy tay xoay mâm – êm, không vấp.
+
+## Bước 9 – Bánh răng lớn 60 răng [Cần người lớn]
+**Cụm B – Mâm xoay**
+**Cần lấy:** bánh răng lớn `Turntable_gear_m1_z60` ×1 (bàn P2), vít **M2.5 × 10** ×2.
 ![](freecad/images/assembly/step-09-a.png)
-- Ghép `Forearm_plate_L` và `Forearm_plate_R` với `Wrist_spacer` ở giữa: **2 vít M2.5 × 6**, mỗi tấm một vít từ ngoài vào.
-- Đặt sẵn `Spacer_D` và `Spacer_E` (mỗi cái gồm 2 miếng) vào lỗ chốt D và E giữa 2 tấm.
+1. Lật úp cụm (giữ mâm không rơi). Áp bánh răng lớn vào **mặt dưới** tấm đậy.
+2. Bắt 2 vít M2.5 × 10 **từ dưới lên**, qua bánh răng, vào mâm xoay. Tấm đậy kẹp ở giữa.
+3. Lật lại.
 
-## Bước 10 – Cẳng tay lên Boom – chốt E (khuỷu)
-![](freecad/images/assembly/step-10-b.png)
-- **Khớp số 4.** Kẹp đầu Boom vào giữa 2 tấm cẳng tay (đệm `Spacer_E`); luồn `Pin_E`, khóa washer + vít M2.5 × 6.
+**Kiểm tra:** xoay mâm thì bánh răng lớn quay theo. Phải làm bước này **trước** bước 10 (sau đó không với tới mặt dưới).
 
-## Bước 11 – Xi-lanh khuỷu – chốt C và D
-![](freecad/images/assembly/step-11-b.png)
-- **Chốt C – số 5 (khắc trên vỏ):** tai `Housing_Elbow` vào Boom; luồn `Pin_C`, khóa washer + vít M2.5 × 6.
-- **Chốt D – số 6:** đầu thanh răng `Rack_Elbow` vào giữa 2 tấm cẳng tay (đệm `Spacer_D`); luồn `Pin_D`, khóa washer + vít.
+## Bước 10 – Gắn cụm mâm xoay vào đế
+**Cụm B – Mâm xoay**
+**Cần lấy:** cụm bước 9, vít **M2.5 × 8** ×4.
+![](freecad/images/assembly/step-10-a.png)
+1. Hạ cụm mâm xoay xuống vỏ đế sao cho **bánh răng lớn ăn khớp bánh răng nhỏ** của servo.
+2. Bắt 4 vít M2.5 × 8 **từ trên xuống**, qua tấm đậy, vào 4 vấu trong vỏ đế.
 
-## Bước 11b – Đẩy cụm động cơ + trục vít vào 2 xi-lanh (sửa 2026-10-25)
-- Trước tiên xoay tay vai và khuỷu bằng tay (lúc này còn tự do): không kẹt, không cạ. Rồi đưa về **tư thế gốc**:
-  tâm chốt A–B = **99,8 mm** (vai), tâm chốt C–D = **121,6 mm** (khuỷu) – đo từ model; tầm cho phép vai 92–118 mm,
-  khuỷu 92–128 mm. Sau bước này 2 khớp bị khóa, không chỉnh tay được nữa.
-- Đẩy **cả cụm hộp số + trục vít** (Bước 6b) vào ổ trên vỏ **từ phía động cơ chĩa ra**: moay-ơ trục vít trượt theo
-  rãnh chữ U, răng trục vít trượt dọc vào răng bánh vít (kiểm trên model: đường đẩy vào không vướng Boom/turret).
-  Đầu trục vít tì nhẹ vào gối chặn (hở 0,3 mm).
-- Khoá hộp số: 2 chốt `Pin_gearbox_*` đẩy **từ phía trục vít về phía động cơ** (đầu to ở phía trục vít) qua 2 lỗ trên
-  thành vỏ vào 2 lỗ Ø4 của nắp hộp số.
+**Kiểm tra:** lấy tay xoay mâm thật chậm – êm, không kẹt; servo quay theo.
 
-## Bước 12 – Cụm kẹp (làm riêng)
-![](freecad/images/assembly/step-12-b.png)
-- Đặt `CB_Servo9g_180_gripper` vào hốc `Gripper_frame` (khe 0,2 mm).
-- Đưa servo về **vị trí giữa** trước khi gắn horn (khuyến nghị chung khi lắp servo), ép `Servo_horn` lên trục, gắn
-  `Jaw_1_driven_by_servo` lên horn. Vít horn: TODO (thường đi kèm servo).
-- Cắm `Pin_jaw2` vào khung, lồng `Spacer_jaw2` rồi `Jaw_2_idler`; răng của 2 hàm phải ăn khớp (khe răng 0,14 mm).
-- Đậy `Gripper_top_plate`: **2 vít M2.5 × 6** vào khung; khóa đầu chốt hàm bằng `Washer_pin` + **vít M2.5 × 6**.
-- Gắn 2 đệm TPU (`*_TPU_pad`) vào mặt kẹp của 2 hàm. Cách gắn: **TODO** (dán / ép).
+## Bước 11 – Tháp (turret)
+**Cụm C – Tháp**
+**Cần lấy:** tháp `Turret_one_piece` ×1 (bàn P2), vít **M2.5 × 6** ×4.
+![](freecad/images/assembly/step-11-a.png)
+1. Đặt tháp lên mâm xoay, 4 lỗ vít trùng nhau.
+2. Bắt 4 vít M2.5 × 6 **từ trong tháp xuống** mâm.
 
-## Bước 13 – Kẹp lên cẳng tay
+**Kiểm tra:** tháp chắc, xoay cả đế thấy tháp quay theo mâm.
+
+## Bước 12 – Xi-lanh vai: bánh vít vào vỏ
+**Cụm D – Xi-lanh vai** (làm riêng trên bàn)
+**Cần lấy:** vỏ xi-lanh vai `Housing_Shoulder` ×1 (bàn P4, có số **2**), bánh vít `Pinion_WormWheel_Shoulder` ×1 (bàn P5).
+![](freecad/images/assembly/step-12-a.png)
+1. Tìm phía **miệng rãnh chữ U** của vỏ (phía động cơ sau này chĩa ra).
+2. Đưa bánh vít vào vỏ **từ phía miệng rãnh chữ U**, cho trục bánh vít lọt vào lỗ trên thành vỏ.
+
+**Kiểm tra:** lấy tay xoay bánh vít – quay được. Chưa lắp động cơ ở bước này.
+
+## Bước 13 – Xi-lanh vai: giữ bánh vít
+**Cụm D – Xi-lanh vai**
+**Cần lấy:** vòng đệm `Washer_shaft_Shoulder` ×1 (bàn P2), vít **M2.5 × 6** ×1.
 ![](freecad/images/assembly/step-13-a.png)
-- Đưa khung kẹp vào giữa 2 tấm cẳng tay; **4 vít M2.5 × 6**, mỗi bên 2 vít.
+1. Từ **phía ngoài** vỏ, đặt vòng đệm lên đầu trục bánh vít.
+2. Vặn vít M2.5 × 6 vào tâm bánh vít. Vừa tay.
 
-## Sau khi lắp
-- Chỉ xoay tay được **đế** (nhẹ tay – có bánh răng servo) và **kẹp**. **Không bẻ vai/khuỷu bằng tay**: trục vít tự hãm,
-  bẻ sẽ gãy răng; muốn chỉnh thì cấp điện chạy chậm. Tầm hoạt động thiết kế: xem macro
-  `freecad/pushrod_arm_sim.FCMacro` (xi-lanh vai 92–118 mm, khuỷu 92–128 mm, kẹp −55…+3°, đế ±170°).
-- Đấu dây động cơ 030 ×2 (SH1.0 2P, cổng motor XA004, ≤ 1 A/cổng), servo ×2 (header 3 chân): cổng nào cho khớp nào **TODO**.
-- Cấp điện lần đầu: chạy chậm, theo dõi nhiệt động cơ 030 (trục vít tự hãm – kẹt cơ khí sẽ tăng dòng, không để kẹt).
-- In xong và lắp xong: ghi kết quả bằng `/print-result pushrod-arm <plate> pass|fail`.
+**Kiểm tra:** bánh vít **vẫn quay tự do** (vòng đệm cố ý hở 0,1–0,2 mm). Kẹt thì nới vít.
+
+## Bước 14 – Xi-lanh vai: thanh răng
+**Cụm D – Xi-lanh vai**
+**Cần lấy:** thanh răng `Rack_Shoulder` ×1 (bàn P5).
+![](freecad/images/assembly/step-14-a.png)
+1. Luồn thanh răng qua rãnh của vỏ, răng hướng vào bánh răng.
+2. Kéo đẩy thanh răng đi hết đường – bánh vít quay theo.
+
+**Kiểm tra:** kéo đẩy **êm** cả đoạn. Bây giờ đẩy tay được – sau bước 27 thì **không đẩy tay được nữa**.
+
+## Bước 15 – Xi-lanh khuỷu: bánh vít vào vỏ
+**Cụm E – Xi-lanh khuỷu** (giống bước 12)
+**Cần lấy:** vỏ xi-lanh khuỷu `Housing_Elbow` ×1 (bàn P4, có số **5**), bánh vít `Pinion_WormWheel_Elbow` ×1 (bàn P5).
+![](freecad/images/assembly/step-15-a.png)
+1. Đưa bánh vít vào vỏ **từ phía miệng rãnh chữ U**, trục lọt vào lỗ trên thành vỏ.
+
+**Kiểm tra:** bánh vít quay được.
+
+## Bước 16 – Xi-lanh khuỷu: giữ bánh vít
+**Cụm E – Xi-lanh khuỷu** (giống bước 13)
+**Cần lấy:** vòng đệm `Washer_shaft_Elbow` ×1 (bàn P2), vít **M2.5 × 6** ×1.
+![](freecad/images/assembly/step-16-a.png)
+1. Đặt vòng đệm từ phía ngoài, vặn vít M2.5 × 6 vào tâm bánh vít.
+
+**Kiểm tra:** bánh vít vẫn quay tự do.
+
+## Bước 17 – Xi-lanh khuỷu: thanh răng
+**Cụm E – Xi-lanh khuỷu** (giống bước 14)
+**Cần lấy:** thanh răng `Rack_Elbow` ×1 (bàn P5).
+![](freecad/images/assembly/step-17-a.png)
+1. Luồn thanh răng qua rãnh của vỏ, kéo đẩy thử hết đường.
+
+**Kiểm tra:** kéo đẩy êm. Rãnh bị nhựa/support lấp thì báo thầy/cô (không cố đẩy).
+
+## Bước 18 – Cần chính lên tháp – chốt S (khớp số 1)
+**Cụm F – Cần chính**
+**Cần lấy:** cần chính `Boom001` ×1 (bàn P4), đệm `Spacer_S` ×2 (bàn P2), chốt `Pin_S` ×1 + vòng đệm chốt ×1 (bàn P8),
+vít **M2.5 × 6** ×1.
+![](freecad/images/assembly/step-18-a.png)
+1. Đặt đầu cần chính vào **giữa 2 tai** của tháp. Mỗi bên chèn 1 đệm.
+2. Luồn chốt S theo thứ tự: tai tháp → đệm → cần chính → đệm → tai tháp.
+3. Đầu kia: đặt vòng đệm chốt, vặn vít M2.5 × 6 vào lỗ ở đầu chốt.
+
+**Kiểm tra:** cần chính **lên xuống được bằng tay**, không lắc ngang nhiều.
+
+## Bước 19 – Xi-lanh vai lên tháp – chốt A (khớp số 2)
+**Cụm F – Cần chính**
+**Cần lấy:** cụm xi-lanh vai (bước 12–14), đệm `Spacer_A` ×2 (bàn P2), chốt `Pin_A` ×1 + vòng đệm chốt ×1 (bàn P8),
+vít **M2.5 × 6** ×1.
+![](freecad/images/assembly/step-19-a.png)
+1. Đặt tai của vỏ xi-lanh vai (có số **2**) vào giữa 2 tai tháp, mỗi bên 1 đệm.
+2. Luồn chốt A, khóa đầu kia bằng vòng đệm chốt + vít.
+
+**Kiểm tra:** xi-lanh vai xoay lên xuống được quanh chốt A.
+
+## Bước 20 – Thanh răng vai vào cần chính – chốt B (khớp số 3)
+**Cụm F – Cần chính**
+**Cần lấy:** chốt `Pin_B` ×1 + vòng đệm chốt ×1 (bàn P8), vít **M2.5 × 6** ×1.
+![](freecad/images/assembly/step-20-a.png)
+1. Kéo/đẩy thanh răng vai và nâng/hạ cần chính cho **lỗ đầu thanh răng trùng lỗ trên cần chính**.
+2. Luồn chốt B, khóa vòng đệm + vít.
+
+**Kiểm tra:** nâng hạ cần chính bằng tay thì thanh răng trượt theo, bánh vít quay.
+
+## Bước 21 – Hai tấm cẳng tay
+**Cụm G – Cẳng tay** (làm riêng trên bàn)
+**Cần lấy:** tấm cẳng tay trái `Forearm_plate_L` ×1, phải `Forearm_plate_R` ×1 (bàn P3), khối giữa cổ tay `Wrist_spacer`
+×1 (bàn P2), vít **M2.5 × 6** ×2.
+![](freecad/images/assembly/step-21-a.png)
+1. Đặt khối giữa cổ tay ở giữa 2 tấm (đầu nhỏ của cẳng tay).
+2. Bắt mỗi tấm 1 vít M2.5 × 6 **từ ngoài vào** khối giữa.
+
+**Kiểm tra:** 2 tấm song song, không vênh.
+
+## Bước 22 – Đệm D và đệm E
+**Cụm G – Cẳng tay**
+**Cần lấy:** đệm `Spacer_D` (2 miếng) và `Spacer_E` (2 miếng) (bàn P2).
+![](freecad/images/assembly/step-22-a.png)
+1. Đặt sẵn đệm D vào lỗ chốt D, đệm E vào lỗ chốt E, giữa 2 tấm cẳng tay (xem ảnh phóng to).
+
+**Kiểm tra:** đệm nằm đúng lỗ, không rơi khi nghiêng cẳng tay.
+
+## Bước 23 – Cẳng tay lên cần chính – chốt E (khớp số 4)
+**Cụm G – Cẳng tay**
+**Cần lấy:** chốt `Pin_E` ×1 + vòng đệm chốt ×1 (bàn P8), vít **M2.5 × 6** ×1.
+![](freecad/images/assembly/step-23-a.png)
+1. Kẹp đầu cần chính vào giữa 2 tấm cẳng tay (có đệm E).
+2. Luồn chốt E, khóa vòng đệm + vít.
+
+**Kiểm tra:** cẳng tay gập lên xuống được quanh chốt E.
+
+## Bước 24 – Xi-lanh khuỷu lên cần chính – chốt C (khớp số 5)
+**Cụm G – Cẳng tay**
+**Cần lấy:** cụm xi-lanh khuỷu (bước 15–17), chốt `Pin_C` ×1 + vòng đệm chốt ×1 (bàn P8), vít **M2.5 × 6** ×1.
+![](freecad/images/assembly/step-24-a.png)
+1. Đặt tai vỏ xi-lanh khuỷu (có số **5**) vào cần chính, trùng lỗ.
+2. Luồn chốt C, khóa vòng đệm + vít.
+
+**Kiểm tra:** xi-lanh khuỷu xoay được quanh chốt C.
+
+## Bước 25 – Thanh răng khuỷu vào cẳng tay – chốt D (khớp số 6)
+**Cụm G – Cẳng tay**
+**Cần lấy:** chốt `Pin_D` ×1 + vòng đệm chốt ×1 (bàn P8), vít **M2.5 × 6** ×1.
+![](freecad/images/assembly/step-25-a.png)
+1. Kéo/đẩy thanh răng khuỷu cho lỗ đầu thanh răng trùng lỗ chốt D giữa 2 tấm cẳng tay (có đệm D).
+2. Luồn chốt D, khóa vòng đệm + vít.
+
+**Kiểm tra:** gập cẳng tay bằng tay thì thanh răng khuỷu trượt theo.
+
+## Bước 26 – Thử tay và đặt tư thế gốc [Cần người lớn]
+**Cụm H – Động cơ** (chưa lắp động cơ)
+**Cần lấy:** thước kẹp hoặc thước kẻ.
+![](freecad/images/assembly/step-26-a.png)
+1. Nâng hạ cần chính, gập cẳng tay vài lần: **không kẹt, không cạ**.
+2. Đặt tay về **tư thế gốc** như ảnh: khoảng cách tâm chốt A đến tâm chốt B = **99,8 mm**; tâm chốt C đến tâm chốt D =
+   **121,6 mm**.
+
+**Kiểm tra:** đo đúng 2 khoảng cách. Sau bước 27–28, vai và khuỷu **bị khóa**, không chỉnh bằng tay được nữa.
+
+## Bước 27 – Động cơ xi-lanh vai [Cần người lớn]
+**Cụm H – Động cơ**
+**Cần lấy:** động cơ CyberBrick 030 + hộp số 1 trục (**mua**, đã lắp theo hướng dẫn của hãng – xem Ghi chú cho thầy/cô),
+trục vít `Worm_Shoulder` ×1 (bàn P7), chốt hộp số `Pin_gearbox_Shoulder` ×2 (bàn P8).
+![](freecad/images/assembly/step-27-a.png)
+1. Cắm trục vít vào trục ra của hộp số: xoay cho **2 mặt phẳng** của trục khớp lỗ, ấn nhẹ, không đóng.
+2. Giữ tay ở tư thế gốc. Đẩy **cả cụm động cơ + trục vít** vào vỏ xi-lanh vai **từ phía miệng rãnh chữ U**: đầu tròn trục
+   vít trượt theo rãnh, răng trục vít trượt vào răng bánh vít.
+3. Đẩy 2 chốt hộp số **từ phía trục vít về phía động cơ** (đầu to ở phía trục vít), qua 2 lỗ trên thành vỏ, vào 2 lỗ trên
+   nắp hộp số.
+
+**Kiểm tra:** cụm động cơ không lắc; **không thử đẩy thanh răng bằng tay nữa** (trục vít tự khóa – đẩy sẽ gãy răng).
+
+## Bước 28 – Động cơ xi-lanh khuỷu [Cần người lớn]
+**Cụm H – Động cơ** (giống bước 27)
+**Cần lấy:** động cơ 030 + hộp số ×1 (**mua**), trục vít `Worm_Elbow` ×1 (bàn P7), chốt hộp số `Pin_gearbox_Elbow` ×2 (bàn P8).
+![](freecad/images/assembly/step-28-a.png)
+1. Cắm trục vít vào hộp số, đẩy cả cụm vào vỏ xi-lanh khuỷu từ phía miệng rãnh chữ U.
+2. Đẩy 2 chốt hộp số từ phía trục vít vào.
+
+**Kiểm tra:** như bước 27.
+
+## Bước 29 – Servo kẹp vào khung kẹp
+**Cụm I – Kẹp** (làm riêng trên bàn)
+**Cần lấy:** khung kẹp `Gripper_frame` ×1 (bàn P4), servo 180° CyberBrick ×1 (**mua**, `TODO` kiểm mã servo trên nhãn).
+![](freecad/images/assembly/step-29-a.png)
+1. Ấn servo vào hốc của khung kẹp (hốc vừa khít, hở 0,2 mm).
+
+**Kiểm tra:** servo nằm gọn, trục servo ở đúng chỗ như ảnh.
+
+## Bước 30 – Tay quay servo và hàm kẹp 1
+**Cụm I – Kẹp**
+**Cần lấy:** tay quay servo (horn – **đi kèm servo**), hàm kẹp 1 `Jaw_1_driven_by_servo` ×1 (bàn P5).
+![](freecad/images/assembly/step-30-a.png)
+1. **[Cần người lớn]** đưa servo về **vị trí giữa** (dùng bộ điều khiển) rồi mới lắp tay quay.
+2. Ấn tay quay vào trục servo, gắn hàm kẹp 1 lên tay quay (vít tay quay: thường đi kèm servo, `TODO`).
+
+**Kiểm tra:** hàm 1 quay theo trục servo, không lỏng.
+
+## Bước 31 – Hàm kẹp 2
+**Cụm I – Kẹp**
+**Cần lấy:** chốt `Pin_jaw2` ×1 (bàn P8), đệm `Spacer_jaw2` ×1 (bàn P5), hàm kẹp 2 `Jaw_2_idler` ×1 (bàn P5).
+![](freecad/images/assembly/step-31-a.png)
+1. Cắm chốt hàm 2 vào khung, lồng đệm vào chốt.
+2. Lồng hàm kẹp 2 vào chốt sao cho **răng 2 hàm ăn khớp** nhau.
+
+**Kiểm tra:** mở hàm 1 bằng tay thì hàm 2 mở theo.
+
+## Bước 32 – Nắp kẹp
+**Cụm I – Kẹp**
+**Cần lấy:** nắp kẹp `Gripper_top_plate` ×1 (bàn P3), vòng đệm `Washer_pin` ×1 (bàn P5), vít **M2.5 × 6** ×3.
+![](freecad/images/assembly/step-32-a.png)
+1. Đậy nắp kẹp, bắt 2 vít M2.5 × 6 vào khung.
+2. Đầu chốt hàm 2 lòi ra nắp: đặt vòng đệm, vặn 1 vít M2.5 × 6 khóa lại.
+
+**Kiểm tra:** 2 hàm vẫn mở đóng êm.
+
+## Bước 33 – Đệm cao su kẹp
+**Cụm I – Kẹp**
+**Cần lấy:** đệm kẹp TPU ×2 (bàn P6, nhựa dẻo).
+![](freecad/images/assembly/step-33-a.png)
+1. Gắn 2 đệm dẻo vào mặt trong 2 hàm kẹp (dán hay ép: `TODO` – hỏi thầy/cô).
+
+**Kiểm tra:** khép hàm, 2 đệm chạm nhau đều.
+
+## Bước 34 – Kẹp lên cẳng tay
+**Cụm I – Kẹp**
+**Cần lấy:** cụm kẹp (bước 29–33), vít **M2.5 × 6** ×4.
+![](freecad/images/assembly/step-34-a.png)
+1. Đưa khung kẹp vào giữa 2 tấm cẳng tay (đầu có khối giữa cổ tay).
+2. Bắt 4 vít M2.5 × 6, **mỗi bên 2 vít**.
+
+**Kiểm tra:** kẹp chắc, không lắc. **Xong phần lắp!** Báo thầy/cô kiểm tra trước khi cắm pin.
+
+## Sau khi lắp xong [Cần người lớn]
+- Chỉ xoay bằng tay **đế** (nhẹ tay) và **kẹp**. **Không bẻ vai, khuỷu bằng tay** – trục vít tự khóa, bẻ sẽ gãy răng.
+- Đấu dây: động cơ 030 ×2 (đầu SH1.0 2 chân, cổng motor XA004, ≤ 1 A/cổng); servo ×2 (đầu 3 chân). Cổng nào cho khớp
+  nào: `TODO`.
+- Cấp điện lần đầu: chạy **chậm**, sờ thử động cơ có nóng không. Không để động cơ hay servo **kẹt** khi đang có điện.
+
+## Ghi chú cho thầy/cô
+- **Động cơ CyberBrick 030 (LA024):** 5–9 V; không để kẹt trục khi đang cấp điện (nóng, có thể cháy). Lắp hộp số 1 trục theo
+  `Assembly_Guide_of_Single_Axis_030_Reduction_Motor.pdf` của hãng, **bôi mỡ bánh răng hộp số**. **Không bôi mỡ trục vít /
+  bánh vít in** khi chưa thử: mỡ giảm ma sát có thể làm mất tự hãm (tay tự trôi khi tắt điện) – xem
+  `docs/cad-mechanisms-teaching-research.md`.
+- **Vì sao lắp động cơ sau cùng (bước 27–28):** trục vít tự hãm – bánh vít không quay ngược được trục vít, nên sau khi lắp
+  thanh răng bị khóa. Tư thế gốc (bước 26) đo từ model: A–B 99,8 mm, C–D 121,6 mm; tầm cho phép vai 92–118 mm, khuỷu
+  92–128 mm. Kiểm trên model: cụm hộp số chỉ vào được theo 1 hướng (miệng rãnh chữ U) và đường vào không vướng Boom/tháp.
+- **Servo 360° PG002 không có bảo vệ kẹt/nhiệt/quá dòng** (datasheet B-PG002) – thử tay trước khi cấp nguồn.
+- **Pin PC003** (Li-ion 2S 7,4 V): đọc nhãn dung lượng; học sinh không sạc khi không có người lớn.
+- **Chốt khớp:** thân Ø4,8 mm (hở 0,3 mm/bên với lỗ Ø5,4), in **đặc 100 %**, in nằm (bàn P8); Ø4,8 đã thử vừa 2026-10-25.
+- **Support:** in bằng support tô tay trong Bambu Studio – giữ trống rãnh thanh răng, rãnh chữ U, hốc bánh vít, lỗ chốt.
+- Tỉ số: hộp số hãng ≈ 45,5:1 × trục vít 16:1 – mã kit bánh răng thật: `TODO`.
+- Các `TODO` còn mở: giữ chân đế/servo/mạch trong vỏ, chiều dài 4 vít bộ thu, loại đầu vít, vít tay quay servo, cách gắn
+  đệm TPU, cổng đấu dây.
