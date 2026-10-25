@@ -13,7 +13,7 @@ Motor 220 V 1 pha 2 HP (≈ 1,5 kW), dòng chạy ≈ 12,5 A, khởi động ~60
 | 4 | Module relay | Opto 1–2 kênh 5 V, jumper H/L → **đặt H**. Thử bật/tắt khi nhận hàng | 1 | Đóng cuộn hút contactor |
 | 5 | Dây | Cu **2,5 mm²** động lực (L, N, PE); 1 mm² điều khiển | – | |
 | 6 | Tủ nhựa | IP65 (nếu ngoài trời), ray DIN, cầu đấu, ốc siết cáp | 1 | |
-| 7 | Công tắc xoay | **3 vị trí giữ nguyên TAY – TẮT – TỰ ĐỘNG**, lỗ **Ø22 mm**, **2NO**, ≥ 220 VAC. Tìm: "công tắc xoay 3 vị trí phi 22 2NO" (vd. Schneider XB7ND33 – `TODO` kiểm mô tả khi mua; Hanyoung/Idec/Chint tương đương) | 1 | Mất Wi-Fi / hỏng ESP32 vẫn bật bơm tay; TẮT tại tủ |
+| 7 | Công tắc xoay | **3 vị trí giữ nguyên TAY – TẮT – TỰ ĐỘNG**, lỗ **Ø22 mm**, **2NO (Tuan chốt 2026-10-25)**, ≥ 220 VAC. Tìm: "công tắc xoay 3 vị trí phi 22 2NO" (vd. Schneider XB7ND33 – `TODO` kiểm mô tả khi mua; Hanyoung/Idec/Chint tương đương) | 1 | Mất Wi-Fi / hỏng ESP32 vẫn bật bơm tay; TẮT tại tủ |
 
 Bỏ (Tuan 2026-10-25): cầu chì mạch điều khiển, bảo vệ motor.
 
