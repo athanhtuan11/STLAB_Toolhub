@@ -20,6 +20,13 @@ Tự tắt do hết giờ → app nhận thông báo "May bom da tu tat…".
 ## Nối dây
 GPIO26 → IN1 module relay (jumper **H**); 5V/GND chung. Nút BOOT (GPIO0): giữ **3 s** = xóa Wi-Fi, **10 s** = reset nhà máy.
 
+## Nạp nhanh
+- **Bấm đúp `flash.bat`** (COM5) hoặc `flash.bat COM7`: build → nạp → mở monitor (Ctrl+] thoát).
+- `powershell -ExecutionPolicy Bypass -File flash.ps1 -Erase` – xóa sạch flash trước (mất Wi-Fi + liên kết app).
+- Đã nạp thật 2026-10-25 vào ESP32-D0WD-V3 (COM5, flash 4 MB Boya): relay TẮT lúc khởi động, provisioning BLE chạy.
+- Log có cảnh báo `Detected boya flash chip but using generic driver` – vô hại; muốn tắt: thêm
+  `CONFIG_SPI_FLASH_SUPPORT_BOYA_CHIP=y` vào `sdkconfig.defaults` (`TODO` chưa thử).
+
 ## Build / nạp (PowerShell)
 ```powershell
 . C:\Espressif\Initialize-Idf.ps1 -IdfId esp-idf-20ee62e792ea89630ac6a777ab3ebc57
@@ -31,7 +38,7 @@ idf.py -p COM5 flash monitor     # COM5: đổi theo cổng thật (Device Manag
 
 ## Kết nối lần đầu
 1. Cài app **ESP RainMaker**, đăng nhập tài khoản (tài khoản của STLab hoặc của khách – thiết bị gắn vào tài khoản đó).
-2. Bật nguồn ESP32 → log Serial in **mã QR** + tên `PROV_xxxx` và mã PoP.
+2. Bật nguồn ESP32 → log Serial in **mã QR** + tên `PROV_xxxx` và mã PoP (chờ kết nối **30 phút**, quá thì bấm EN để chạy lại).
 3. App → Add Device → quét QR (hoặc chọn Bluetooth) → chọn Wi-Fi 2,4 GHz nhà khách → xong.
 4. Thử: Bật trên app → relay đóng → contactor hút. Đổi "Chạy tối đa" = 5 phút → chờ tự tắt.
 
