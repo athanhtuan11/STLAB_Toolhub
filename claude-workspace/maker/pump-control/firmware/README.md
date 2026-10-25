@@ -15,7 +15,18 @@ ESP-IDF **5.5.4** (`C:\Espressif`), `esp_rainmaker` ~1.17.0, `rmaker_app_network
 | Chạy tối đa (phút) | thanh kéo 5–240, bước 5 | mặc định 30, lưu qua mất điện |
 | Còn lại (phút) | chỉ đọc | cập nhật mỗi phút khi đang chạy |
 | Giờ thiết bị | chỉ đọc, mỗi phút | kiểm múi giờ: phải trùng giờ Việt Nam |
+| Phiên bản / Bản mới / nút Cập nhật | chỉ đọc + nút | xem mục Cập nhật firmware từ xa |
 | Lịch (Schedules) | có sẵn trong app | bật theo lịch vẫn bị giới hạn "Chạy tối đa" |
+## Cập nhật firmware từ xa (khách bấm nút)
+Tuan sửa code ở nhà → `powershell -ExecutionPolicy Bypass -File release.ps1 -Version 1.2.0 -Notes "mô tả"`
+(tự tăng phiên bản, build, đưa `.bin` + `releases/manifest.json` lên GitHub repo public). ESP32 kiểm 6 giờ/lần và 90 s
+sau khởi động → app hiện "Ban moi: Co ban …" → khách (bơm đang TẮT) bấm **Cap nhat** → tải ~20–40 s → khởi động lại.
+- Đang bơm: từ chối cập nhật. Đang cập nhật: không cho bật bơm.
+- Bản mới không lên được cloud trong 90 s → bootloader quay về bản cũ (rollback – cần nạp USB 1 lần cho mỗi ESP32 mới).
+- Đã thử thật 2026-10-25: 1.1.0 → 1.1.1 → 1.1.2 qua nút trên app, "verified successfully".
+- Lỗi đã sửa: stack `Tmr Svc` 2048 tràn ở lần khởi động đầu sau OTA → `CONFIG_FREERTOS_TIMER_TASK_STACK_DEPTH=4096`.
+- Không cần tài khoản RainMaker của khách. Firmware công khai trên GitHub, không chứa mật khẩu/khóa.
+
 ## Hẹn giờ tưới (vd. 6h sáng + 6h chiều)
 App → tab **Schedules** → **Add Schedule** → chọn thiết bị "May bom" → hành động **Power = On** → giờ **06:00** → lặp
 **mỗi ngày** → lưu. Tạo thêm 1 lịch **18:00**. Bơm tự tắt sau "Chạy tối đa (phút)" = thời gian tưới.
