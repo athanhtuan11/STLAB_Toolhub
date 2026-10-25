@@ -9,6 +9,10 @@ Mang theo: điện thoại (chụp ảnh, đo sóng Wi-Fi), thước, bút thử
 - [ ] Hiện bật tắt bằng gì (cầu dao, CB, phao điện…)? Ảnh chỗ đấu hiện tại
 - [ ] Khoảng cách từ nguồn điện đến máy bơm (m), tiết diện dây đang dùng (mm²) nếu ghi trên vỏ dây
 
+## Tủ điện nhà khách (quyết định có cần MCB/RCD riêng không)
+- [ ] Nhánh cấp cho máy bơm có **MCB riêng** không? Bao nhiêu A (ghi trên CB)? Nếu chỉ có CB tổng: ghi số A của CB tổng
+- [ ] Có **RCD/ELCB (chống giật)** không? Ghi **mA** (cần 30 mA) – bấm nút **TEST** xem có nhảy không (báo khách trước: mất điện cả nhà vài giây)
+
 ## Nước
 - [ ] Có nguy cơ chạy khô không (giếng cạn, bồn hết nước)? → cần phao / cảm biến áp / ngưỡng công suất
 - [ ] Muốn tự động theo mực nước hay hẹn giờ không, hay chỉ bật/tắt từ xa?

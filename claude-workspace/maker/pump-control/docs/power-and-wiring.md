@@ -52,10 +52,12 @@ Nguồn 220 V ─ CB (≥ 1,25 × dòng định mức) ─ RCD 30 mA ─ Contact
 | Dòng khởi động | ≈ 5–7 × → **~60–90 A**, < 1 s | ước tính chung cho motor 1 pha có tụ – `TODO` đo bằng PZEM/ampe kìm lần chạy đầu |
 
 ### Chọn thiết bị (quy tắc → giá trị đề xuất; chốt lại theo dòng nhãn)
+Tuan 2026-10-25: tủ điện nhà khách đã có MCB/RCD → **tủ bơm chỉ lo phần điều khiển** (contactor, relay nhiệt, E-stop,
+công tắc TAY/TẮT/TỰ ĐỘNG, chống chạy khô, ESP32). MCB/RCD chỉ thêm khi tủ nhà không đạt (2 dòng đầu bảng).
 | Thiết bị | Quy tắc | Đề xuất |
 |---|---|---|
-| MCB (2 cực) | ≥ 1,25 × dòng định mức; **đường cong D** (hoặc C) để không nhảy lúc khởi động | **20 A curve D** (C 20 A nếu chỉ có C – theo dõi nhảy lúc khởi động) |
-| RCD/RCCB chống giật | 30 mA, dòng định mức ≥ MCB | **2P 25 A 30 mA** |
+| MCB (2 cực) | **Dùng MCB nhánh của tủ điện nhà nếu có** (16–25 A cho riêng nhánh bơm). Chỉ có CB tổng 40–63 A → thêm MCB nhánh (dây 2,5 mm² không được CB tổng bảo vệ) | nếu thiếu: **20 A curve D** |
+| RCD/RCCB chống giật | **Dùng RCD tổng của nhà nếu là 30 mA và nút TEST nhảy** (đánh đổi: bơm rò → cả nhà mất điện). 100 mA hoặc không có → thêm | nếu thiếu: **2P 25 A 30 mA** |
 | Contactor | AC-3 ≥ dòng định mức (cho cả L và N qua 2 cực) | **AC-3 18 A**, cuộn hút **220 VAC** |
 | Relay nhiệt | Dải chỉnh chứa dòng nhãn | dải **≈ 9–13 A** hoặc 12–18 A, chỉnh = dòng nhãn |
 | Dây động lực | theo dòng 20 A + chiều dài (sụt áp lúc khởi động) | **2,5 mm² Cu** nếu ngắn; dài > ~20 m: `TODO` tính sụt áp, có thể 4 mm² |
