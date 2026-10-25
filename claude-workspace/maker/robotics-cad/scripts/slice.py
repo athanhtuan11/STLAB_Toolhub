@@ -293,7 +293,7 @@ def main():
         if co_sp and not slicer_sp:
             nho_ra[ten] = ["ban dung support TU DONG cua slicer (print.yaml enable_support) - nen sua thiet ke / ve Support_*"]
         if treo_all and not slicer_sp:
-            nho_ra[ten] = [f"{f.name}: nho ra khong do " + ", ".join(f"{c['mm2']} mm2 rong {c['rong_mm']} mm o z {c['z_mm']}"
+            nho_ra[ten] = [f"{f.name}: CAN SUPPORT - Tuan to trong Bambu Studio " + ", ".join(f"{c['mm2']} mm2 rong {c['rong_mm']} mm o z {c['z_mm']}"
                                                                 for c in pt[f.name]["cum_nho"][:2]) for f in treo_all]
         treo = treo_all if slicer_sp else []
         nho = [f for f in stl_ban if pt[f.name]["can_brim"]]
@@ -320,24 +320,23 @@ def main():
     print(f"Cat lop {len(chay)} ban song song ...", flush=True)
     doi(chay)
     bans = [doc_ket_qua(td, ten) for ten, (_, _, td, _) in chay.items()]
-    # support TU VE (export support: true, khe Z 0.2): slicer khong biet do la support -> bao "floating" o lop ngay tren
-    # khe (giong top_z_distance cua support slicer). printability da kiem moi mat nho ra deu co do -> doi thanh ghi chu.
-    fx = stl_dir / "_export-stl.json"
-    tu_ve = set(json.loads(fx.read_text(encoding="utf-8")).get("support_tu_ve", {})) if fx.exists() else set()
+    # Tuan 2026-10-25: KHONG ve support vao STL, Tuan to support trong Bambu Studio -> slicer bao "floating cantilever /
+    # enable support" o chi tiet ma printability da bao CAN SUPPORT = du kien -> ghi chu (WARN di kem), khong FAIL.
+    # Chi tiet KHONG duoc printability bao ma slicer van bao lo lung = loi that -> FAIL.
+    can_sp = {n for n, r in pt.items() if r.get("can_support")}
 
     def bo_khe(b):
         giu = []
         for x in b.get("loi", []):
-            if any(f"object {n} has" in x for n in tu_ve) and not pt.get(next(n for n in tu_ve if f"object {n} has" in x),
-                                                                        {}).get("can_support"):
-                b.setdefault("ghi_chu", []).append("support tu ve (khe 0.2 mm): " + x.split("It seems object ")[-1]
-                                                   .split(" has")[0])
+            n = next((n for n in can_sp if f"object {n} has" in x), None)
+            if n:
+                b.setdefault("ghi_chu", []).append(f"can to support trong Bambu Studio: {n}")
             else:
                 giu.append(x)
         b["loi"] = giu
         b["trang_thai"] = "FAIL" if giu else ("WARN" if b.get("canh_bao") else "PASS")
 
-    for b in bans:  # nho ra khong co support (chinh sach modeled) -> WARN de sua thiet ke
+    for b in bans:  # nho ra chua co support -> WARN: Tuan to support trong Bambu Studio (2026-10-25, khong ve support)
         if nho_ra.get(b["ban"]):
             b["canh_bao"] = b.get("canh_bao", []) + nho_ra[b["ban"]]
             if b["trang_thai"] == "PASS":

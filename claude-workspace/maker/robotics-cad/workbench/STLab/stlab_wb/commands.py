@@ -246,7 +246,7 @@ def printability_summary(job):
               + ("" if sup else " – không cần support"))
     for r in sup:
         panel.log(f"   - {r['stl']}: " + ", ".join(f"{c['mm2']} mm² ở z {c['z_mm']}" for c in r["cum_nho"][:3])
-                  + " → sửa thiết kế (vát 45°, đổi hướng) / `support: true`")
+                  + " → tô support trong Bambu Studio (hoặc sửa thiết kế: vát 45°, đổi hướng)")
     if brim:
         panel.log("   brim: " + ", ".join(r["stl"].removesuffix(".stl") for r in brim[:12])
                   + (f" … (+{len(brim) - 12})" if len(brim) > 12 else ""))

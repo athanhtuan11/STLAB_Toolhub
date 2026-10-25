@@ -60,7 +60,6 @@ export:
     group: 03_Boom
     rotate:
       x: 90
-    support: true
   - names:
     - Spacer_D
     - Spacer_E
@@ -81,7 +80,6 @@ export:
     rotate:
       x: 90
     frame: Rack_Shoulder
-    support: true
   - names:
     - Rack_Shoulder
     - Washer_shaft_Shoulder
@@ -95,21 +93,18 @@ export:
     rotate:
       x: -90
     frame: Rack_Shoulder
-    support: true
   - names:
     - Worm_Shoulder
     group: 05_PushRod_Shoulder
     rotate:
       y: -90
     frame: Rack_Shoulder
-    support: true
   - names:
     - Housing_Elbow
     group: 05_PushRod_Elbow
     rotate:
       x: 90
     frame: Rack_Elbow
-    support: true
   - names:
     - Rack_Elbow
     - Washer_shaft_Elbow
@@ -123,14 +118,12 @@ export:
     rotate:
       x: -90
     frame: Rack_Elbow
-    support: true
   - names:
     - Worm_Elbow
     group: 05_PushRod_Elbow
     rotate:
       y: -90
     frame: Rack_Elbow
-    support: true
   - names:
     - Jaw_1_driven_by_servo
     group: 06_Gripper
@@ -164,7 +157,6 @@ export:
     group: 06_Gripper
     rotate:
       x: 90
-    support: true
     frame:
     - 209.00144394797778
     - 0

@@ -17,9 +17,9 @@ print.yaml:
     - frame: Label doi tuong (lay Placement cua no) hoac placement [x,y,z, truc x,y,z, goc do]: dua chi tiet
       ve he toa do khung truoc khi xoay (vd. xi-lanh nghieng theo thanh rang).
     - rotate: quay quanh truc x, y, z (do) theo thu tu khai bao.
-    - support: true -> SUPPORT TU VE (printability.tao_support): lang tru duoi moi mat nho ra chua co gi do, khe Z 0.2 mm,
-      gop chung STL voi chi tiet. Chinh sach Tuan 2026-10-23: uu tien sua thiet ke; bat buoc moi support, va support do
-      minh ve (khong de slicer tu sinh). Support ve tay trong CAD: Label Support_* (xuat chung quy tac voi chi tiet).
+    - support: true -> CHI GHI CHU "Tuan them support trong slicer" (danh sach `support_trong_slicer` trong ket qua).
+      KHONG dung support vao STL nua (Tuan 2026-10-25: support tu ve lap lo truc Worm + ranh thanh rang Housing
+      -> "support in toi se tu them trong phan mem slice. tu gio tro di khong can them support vo").
 Ra: <stl>/<group>__<Label>[_<k>]<suffix>.stl, dat tam giua ban in, day Z = 0. Xoa STL cu khong con trong danh sach.
 """
 
@@ -31,11 +31,7 @@ from pathlib import Path
 
 import FreeCAD as App
 import MeshPart
-import numpy as np
 import yaml
-
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-import printability  # noqa: E402
 
 V = App.Vector
 
@@ -73,7 +69,7 @@ def main():
                 o.Placement = App.Placement(V(*b), App.Rotation(*q))
     OBJ = {o.Label: o for o in doc.Objects if o.isDerivedFrom("Part::Feature")}
     luoi = x.get("mesh", {})
-    ghi, chua, sp = set(), [], {}
+    ghi, chua, sp = set(), [], []
     for o in OBJ.values():
         qt = next((q for q in x["rules"] if any(fnmatch.fnmatch(o.Label, g) for g in q["names"])), None)
         if qt is None:
@@ -90,14 +86,8 @@ def main():
                                        AngularDeflection=luoi.get("angular_rad", 0.2618), Relative=False)
             fn = f"{qt['group']}__{ten}{qt.get('suffix', '')}.stl"
             if qt.get("support"):
-                pts, fac = m.Topology
-                tri = np.array([[tuple(pts[i]) for i in f] for f in fac], dtype=np.float64)
-                tri[:, :, 2] -= tri[:, :, 2].min()
-                s_tri = printability.tao_support(tri)
-                printability.ghi_stl(stl_dir / fn, np.concatenate([tri, s_tri]) if len(s_tri) else tri)
-                sp[fn] = int(len(s_tri) // 8)
-            else:
-                m.write(str(stl_dir / fn))
+                sp.append(fn)  # Tuan to support trong Bambu Studio (khong dung vao STL)
+            m.write(str(stl_dir / fn))
             ghi.add(fn)
     for q in x["rules"]:  # quy tac khong khop doi tuong nao -> bao (de sot do doi ten)
         if not any(fnmatch.fnmatch(lb, g) for lb in OBJ for g in q["names"]):
@@ -105,7 +95,7 @@ def main():
     cu = [f.name for f in stl_dir.glob("*.stl") if f.name not in ghi]
     for f in cu:
         (stl_dir / f).unlink()  # STL sinh tu lan truoc, khong con trong danh sach -> xoa de khong cat lop nham
-    kq = {"so_stl": len(ghi), "quy_tac_khong_khop": chua, "xoa_stl_cu": cu, "support_tu_ve": sp,
+    kq = {"so_stl": len(ghi), "quy_tac_khong_khop": chua, "xoa_stl_cu": cu, "support_tu_ve": {}, "support_trong_slicer": sp,
           "s": round(time.time() - t0, 1)}
     (stl_dir / "_export-stl.json").write_text(json.dumps(kq, ensure_ascii=False, indent=1), encoding="utf-8")
     print("XUAT-STL", json.dumps(kq, ensure_ascii=False), flush=True)

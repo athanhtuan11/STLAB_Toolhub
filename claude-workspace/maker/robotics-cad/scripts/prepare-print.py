@@ -1,8 +1,8 @@
 """Chuan bi in bang 1 lenh: KIEM HET TRUOC, SACH MOI CAT LOP (Tuan 2026-10-23: "xong xuoi tat ca roi hay ra file in").
 
   1) song song: kiem nhanh tang 1 (check.py) | xuat STL theo huong in (export-stl.py) | metrics.py
-  2) kha nang in tren STL (printability: mat nho ra khong do + KIEM THEO LOP: cum roi) - vai giay
-  3) CHI KHI 1) khong FAIL va 2) khong co nho ra/cum roi -> cat lop Bambu (slice.py) ra file in .3mf
+  2) kha nang in tren STL (printability: mat nho ra -> WARN "to support trong Bambu Studio" + KIEM THEO LOP: cum roi) - vai giay
+  3) CHI KHI 1) khong FAIL va 2) khong co cum roi -> cat lop Bambu (slice.py) ra file in .3mf
      (co loi -> dung, khong cat: tiet kiem thoi gian, khong de lai file in sai). Ep cat: them `force` sau print.yaml.
 
 Chay (Python di kem FreeCAD):
@@ -79,9 +79,9 @@ def main():
     loi_in, cb_in = [], []
     for f in sorted((goc / cfg["stl"]).glob("*.stl")):
         r = printability.phan_tich(f, ngp)
-        if r["can_support"]:
-            loi_in.append(f"{f.name}: nho ra khong do " + ", ".join(
-                f"{c['mm2']} mm2 o z {c['z_mm']}" for c in r["cum_nho"][:2]) + " -> sua thiet ke / `support: true`")
+        if r["can_support"]:  # Tuan 2026-10-25: Tuan tu to support trong Bambu Studio -> WARN, khong chan cat lop
+            cb_in.append(f"{f.name}: CAN SUPPORT (to trong Bambu Studio) " + ", ".join(
+                f"{c['mm2']} mm2 o z {c['z_mm']}" for c in r["cum_nho"][:2]))
         for x in printability.kiem_lop(f):
             if x["loai"].startswith("roi"):
                 loi_in.append(f"{f.name}: cum ROI {x['mm2']} mm2 o z {x['z_mm']} (xy {x['bao_xy']})")

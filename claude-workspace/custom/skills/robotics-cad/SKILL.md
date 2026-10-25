@@ -76,6 +76,10 @@ description: Thiet ke co khi robot trong FreeCAD cho STLab - chon linh kien tu d
 3. Tham số hóa: Spreadsheet `params` (độ dày thành, dung sai, đường kính lỗ).
 4. Kiểm tra: in được không cần support không? thành ≥ 2 đường in? lỗ M3 chừa dung sai (giá trị trong
    chưa có số đo in thử → TODO)?
+   **Support (Tuan 2026-10-25): KHÔNG vẽ/dựng support vào model hay STL** (không `Support_*`, `support: true` chỉ là
+   ghi chú) – Tuan tự tô support trong Bambu Studio. Support tự vẽ từng lấp lỗ trục Worm và rãnh thanh răng Housing của
+   pushrod-arm. Việc của mình: báo rõ chi tiết/vùng nào CẦN support (printability WARN: mm², z) và **lỗ/khe/rãnh chức
+   năng nào phải giữ trống** (để Tuan không tô support vào đó). Ưu tiên vẽ để khỏi cần support (vát 45°, giọt nước).
 5. Báo lại: kích thước chính (mm), khối lượng ước tính (vật liệu PLA/PETG), các giả định.
 
 ## Điện (nhắc khi ghép linh kiện)

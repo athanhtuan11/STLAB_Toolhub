@@ -49,16 +49,15 @@ Thiết kế cơ khí robot (khung, gá động cơ/cảm biến, hộp số) đ
      `git diff freecad/metrics.json` = nhật ký thay đổi hình học. Tay: `python scripts/metrics.py diff <print.yaml>`.
    - `scripts/bom.py`: `BOM.csv` + `BOM.md` (vít đếm theo cỡ, linh kiện mua, chi tiết in → bàn/nhựa) từ Label;
      so SL vít với bảng trong `ASSEMBLY.md` (lệch → WARN, không tự sửa file viết tay).
-   **Support – chính sách Tuan (2026-10-23, sau in thử lỗi):** vẽ tối ưu để KHÔNG cần support (vát 45°, lỗ giọt nước,
-   chia chi tiết, đổi hướng in); bắt buộc mới support, và support do **mình vẽ** – KHÔNG để Bambu/slicer tự sinh:
-   - `scripts/printability.py` phân tích STL theo hướng in trước khi cắt: mặt úp xuống < 43°, rộng > 5 mm (không bắc cầu
-     được), dải > 2,5 mm (ren/vành răng/vát nhỏ tự in được), cao > 1 mm → "nhô ra không đỡ" = **WARN** (slicer KHÔNG báo
-     loại này vì vẫn dính chi tiết – lý do lần in thử hỏng).
-   - Sửa: ưu tiên sửa model; bắt buộc thì `support: true` ở quy tắc xuất trong print.yaml → `export-stl.py` dựng trụ dưới
-     đúng các vùng đó (khe Z 0,2 mm, gộp chung STL), hoặc vẽ tay `Support_*` trong CAD. Slicer báo "floating" do khe 0,2
-     của support tự vẽ → ghi chú, không FAIL.
-   - Lơ lửng thật (cụm rời) = FAIL → sửa thiết kế. `support_policy: slicer` trong print.yaml = hành vi cũ (tự xoay /
-     tree support) – chỉ khi Tuan cho phép.
+   **Support – chính sách Tuan (cập nhật 2026-10-25):** vẽ tối ưu để ít cần support (vát 45°, lỗ giọt nước, chia chi
+   tiết, đổi hướng in). **KHÔNG vẽ/dựng support vào model hay STL nữa – Tuan tự tô support trong Bambu Studio.**
+   Lý do: support tự vẽ (`support: true` cũ) lấp kín lỗ trục Worm và rãnh thanh răng Housing của pushrod-arm (bản in hỏng).
+   - `scripts/printability.py` phân tích STL theo hướng in: mặt úp xuống < 43°, rộng > 5 mm (mái lỗ kín ≤ 8 mm bắc cầu
+     được), dải > 2,5 mm, cao > 1 mm → **WARN "CẦN SUPPORT – tô trong Bambu Studio"** kèm vị trí (mm², z) – không chặn cắt lớp.
+     Báo rõ cho Tuan chi tiết nào/vùng nào cần tô, và **lỗ/khe chức năng nào KHÔNG được để support lọt vào**.
+   - `support: true` trong quy tắc xuất print.yaml giờ chỉ là ghi chú (danh sách `support_trong_slicer` trong
+     `_export-stl.json`), không dựng gì. Không vẽ `Support_*` trong CAD.
+   - Lơ lửng thật (cụm rời) = FAIL → sửa thiết kế. `support_policy: slicer` (slicer tự sinh support) – chỉ khi Tuan cho phép.
    - **Chi tiết nhỏ** (chân chạm bàn < 120 mm² hoặc cao/mảnh) → bàn đó bật brim 5 mm (ghi đè `auto_brim`).
    Ngưỡng: `thresholds.yaml` mục `print:`. Tay: `python scripts/printability.py <thư mục stl>`.
    Chi tiết từng tầng:
