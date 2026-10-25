@@ -1,0 +1,6 @@
+# Bi mat thiet bi (Wi-Fi, token, khoa RainMaker) - KHONG len git
+secrets*
+*.key
+*.pem
+build/
+.pio/
