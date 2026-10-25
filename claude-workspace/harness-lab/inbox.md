@@ -12,3 +12,9 @@
 - [ ] 2026-10-23 | Tuan không thấy tiến độ vì việc chạy ở phiên khác | Bài học: kết quả phải hiện ở phiên Tuan đang xem | Đề xuất: CLAUDE.md
 - [ ] 2026-10-23 | pushrod_arm: job dựng xi-lanh v3 ghi hình mới theo toạ độ thế giới nhưng chỉ reset placement cho một phần chi tiết → Jaw_2 + 2 đệm TPU bị dời 2 lần, STL in nghiêng 30° | Bài học: script thay `Shape` phải đặt lại `Placement` cho MỌI chi tiết bị thay và cập nhật file tư thế gốc (rest.json); kiểm bằng ảnh toàn cảnh sau mỗi job | Đề xuất: EXPERIENCE robotics-cad
 - [ ] 2026-10-23 | Đo thành mỏng lấy 2×2 điểm/mặt bỏ sót chỗ mỏng (báo 0,81 mm, thực có cạnh 0,12 mm); góc nhọn của rãnh khoét bị báo là "thành mỏng" | Bài học: đo ≥ 3×3 điểm; điểm mỏng phải xem mặt cắt trước khi kết luận lỗi | Đề xuất: EXPERIENCE robotics-cad
+
+## 2026-10-25
+- [ ] 2026-10-25 | Worm thiếu lỗ trục trong file in: model đúng, support tự vẽ lấp lỗ (kiểm chỉ chạy trên model) | Bài học: kiểm phải chạy trên artifact cuối (STL/G-code), không chỉ model | Đề xuất: test (đã thêm T6PrintFile) + kiểm G-code (docs/ai-agent-project-optimization-research.md T2)
+- [ ] 2026-10-25 | ASSEMBLY.md bảo "đẩy kéo thanh răng thử tay" sau khi lắp trục vít tự hãm; "xoay tay từng khớp" | Bài học: hướng dẫn lắp sinh từ tiếp xúc hình học bỏ sót HÀNH VI cơ cấu (tự hãm, một chiều); phải quét đường lắp từng chi tiết + xét cơ cấu khóa trước khi viết thứ tự | Đề xuất: EXPERIENCE robotics-cad + test thứ tự lắp
+- [ ] 2026-10-25 | FCStd Lưu từ GUI 2 lần làm ẩn chi tiết; check.py/metrics.py âm thầm bỏ chi tiết ẩn | Bài học: công cụ bỏ qua thứ gì phải báo FAIL, không im lặng | Đề xuất: check.py/metrics.py (T1)
+- [ ] 2026-10-25 | Tuan hỏi "nghiên cứu xem cần cải thiện gì" → mình tự sửa (vát lỗ) trong khi Tuan muốn báo cáo tham khảo; Tuan đã in bản chưa vát | Bài học: nghiên cứu ≠ sửa; sửa model đang chờ in phải hỏi | Đề xuất: memory (đã ghi nghien-cuu-truoc-cai-tien-sau)
