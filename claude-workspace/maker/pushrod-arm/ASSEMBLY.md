@@ -1,6 +1,7 @@
 # Hướng dẫn lắp ráp – pushrod-arm
 
-Viết 2026-10-23, cập nhật 2026-10-24 (động cơ 030 + hộp số, bộ thu có shield, số khớp) từ model hiện tại (`freecad/pushrod_arm.FCStd`). Thứ tự, vít, chốt lấy từ đo tiếp xúc giữa các chi tiết
+Viết 2026-10-23, cập nhật 2026-10-24 (động cơ 030 + hộp số, bộ thu có shield, số khớp), 2026-10-25 (thứ tự lắp xi-lanh:
+lắp động cơ + trục vít SAU CÙNG ở Bước 11b vì trục vít tự hãm – kiểm bằng quét va chạm trên model) từ model hiện tại (`freecad/pushrod_arm.FCStd`). Thứ tự, vít, chốt lấy từ đo tiếp xúc giữa các chi tiết
 trong model; chỗ model không thể hiện ghi **TODO**. Ảnh: `freecad/images/assembly/step-XX-a.png` (toàn cảnh) và
 `-b.png` (phóng to) – phần đã lắp làm mờ, **chi tiết mới tô xanh**. Render lại khi sửa model:
 gửi `freecad/scripts/render_assembly.py` qua RPC FreeCAD (xem đầu file). Bản PDF (chữ + hình): `ASSEMBLY.pdf` –
@@ -62,18 +63,24 @@ Chi tiết đã in trước 2026-10-24 không có số: ghi số bằng bút lô
 ![](freecad/images/assembly/step-05-a.png)
 - Đặt `Turret_one_piece` lên mâm xoay; bắt **4 vít M2.5 × 6 từ trong turret xuống** mâm.
 
-## Bước 6 – Hai cụm xi-lanh (vai và khuỷu, làm giống nhau)
+## Bước 6 – Hai xi-lanh: phần cơ, CHƯA lắp động cơ (vai và khuỷu, làm giống nhau)
 ![](freecad/images/assembly/step-06-b.png)
-- **An toàn động cơ 030 (datasheet LA024):** 5–9 V; **không để kẹt trục khi đang cấp điện** (nóng, có thể cháy);
-  thử tay toàn hành trình trước khi cấp nguồn. Lực dọc trục (trục vít) hại động cơ → gối chặn cuối trục vít phải có.
-- Lắp hộp số 030 theo hướng dẫn của hãng (`Assembly_Guide_of_Single_Axis_030_Reduction_Motor.pdf`), bôi mỡ bánh răng.
-- Đặt `Pinion_WormWheel_*` (bánh vít + bánh răng) vào vỏ; từ phía ngoài lắp `Washer_shaft_*` rồi **vít M2.5 × 6**
-  vào tâm bánh vít. Washer cố ý hở 0,1–0,2 mm – bánh vít phải quay tự do.
+> **Vì sao chưa lắp động cơ (sửa 2026-10-25):** trục vít **tự hãm** – lắp trục vít vào rồi thì thanh răng **không đẩy
+> tay được nữa** (bánh vít không quay ngược được trục vít), cố đẩy sẽ gãy răng. Nên lắp phần cơ, gắn lên tay, chỉnh
+> tư thế bằng tay xong mới đẩy cụm động cơ + trục vít vào (Bước 11b). Ảnh bước này vẽ sẵn cả hộp số – bỏ qua phần đó.
+- Đặt `Pinion_WormWheel_*` (bánh vít + bánh răng) vào vỏ **từ phía miệng rãnh chữ U** (phía động cơ sẽ chĩa ra);
+  từ phía ngoài lắp `Washer_shaft_*` rồi **vít M2.5 × 6** vào tâm bánh vít. Washer cố ý hở 0,1–0,2 mm – bánh vít
+  phải quay tự do. (Model: bánh vít chỉ ra/vào được theo hướng này; lắp trục vít trước thì bánh vít bị chặn.)
+- Luồn thanh răng `Rack_*` qua vỏ (rãnh hở 0,3 mm), ăn khớp bánh răng. **Lúc này** đẩy kéo tay thử hết hành trình:
+  êm, không kẹt (bánh vít quay theo).
+
+## Bước 6b – Chuẩn bị cụm động cơ (để riêng, lắp ở Bước 11b)
+- **An toàn động cơ 030 (datasheet LA024):** 5–9 V; **không để kẹt trục khi đang cấp điện** (nóng, có thể cháy).
+  Lực dọc trục (trục vít) hại động cơ → gối chặn cuối trục vít phải có.
+- Lắp hộp số 030 theo hướng dẫn của hãng (`Assembly_Guide_of_Single_Axis_030_Reduction_Motor.pdf`), bôi mỡ bánh răng
+  hộp số. **Không bôi mỡ trục vít/bánh vít in** khi chưa thử: mỡ giảm ma sát có thể làm mất tự hãm (tay tự trôi khi tắt
+  điện) – xem `docs/cad-mechanisms-teaching-research.md`.
 - Cắm `Worm_*` (trục vít, đầu có lỗ vát 2 mặt) **vào trục ra hộp số** (xoay cho mặt vát khớp, không ép mạnh).
-- Đẩy **cả cụm hộp số + trục vít từ bên hông** (phía động cơ chĩa ra) vào ổ trên vỏ: moay-ơ trục vít trượt theo
-  rãnh chữ U, răng trục vít trượt vào răng bánh vít. Đầu trục vít tì nhẹ vào gối chặn (hở 0,3 mm).
-- Khoá hộp số: đẩy 2 chốt `Pin_gearbox_*` (đầu to ra ngoài) qua 2 lỗ trên thành vỏ vào 2 lỗ Ø4 của nắp hộp số.
-- Luồn thanh răng `Rack_*` qua vỏ (rãnh hở 0,3 mm), ăn khớp bánh răng. Đẩy kéo tay thử: hết hành trình không kẹt.
 - Tỉ số: STEP hãng ≈ 45,5:1 (gần kit LA016 1:48) × trục vít 16:1 – mã kit thật: **TODO** (tốc độ/lực xi-lanh đổi theo).
 
 ## Bước 7 – Cần chính (Boom) lên turret – chốt S
@@ -100,6 +107,16 @@ Chi tiết đã in trước 2026-10-24 không có số: ghi số bằng bút lô
 - **Chốt C – số 5 (khắc trên vỏ):** tai `Housing_Elbow` vào Boom; luồn `Pin_C`, khóa washer + vít M2.5 × 6.
 - **Chốt D – số 6:** đầu thanh răng `Rack_Elbow` vào giữa 2 tấm cẳng tay (đệm `Spacer_D`); luồn `Pin_D`, khóa washer + vít.
 
+## Bước 11b – Đẩy cụm động cơ + trục vít vào 2 xi-lanh (sửa 2026-10-25)
+- Trước tiên xoay tay vai và khuỷu bằng tay (lúc này còn tự do): không kẹt, không cạ. Rồi đưa về **tư thế gốc**:
+  tâm chốt A–B = **99,8 mm** (vai), tâm chốt C–D = **121,6 mm** (khuỷu) – đo từ model; tầm cho phép vai 92–118 mm,
+  khuỷu 92–128 mm. Sau bước này 2 khớp bị khóa, không chỉnh tay được nữa.
+- Đẩy **cả cụm hộp số + trục vít** (Bước 6b) vào ổ trên vỏ **từ phía động cơ chĩa ra**: moay-ơ trục vít trượt theo
+  rãnh chữ U, răng trục vít trượt dọc vào răng bánh vít (kiểm trên model: đường đẩy vào không vướng Boom/turret).
+  Đầu trục vít tì nhẹ vào gối chặn (hở 0,3 mm).
+- Khoá hộp số: 2 chốt `Pin_gearbox_*` đẩy **từ phía trục vít về phía động cơ** (đầu to ở phía trục vít) qua 2 lỗ trên
+  thành vỏ vào 2 lỗ Ø4 của nắp hộp số.
+
 ## Bước 12 – Cụm kẹp (làm riêng)
 ![](freecad/images/assembly/step-12-b.png)
 - Đặt `CB_Servo9g_180_gripper` vào hốc `Gripper_frame` (khe 0,2 mm).
@@ -114,7 +131,8 @@ Chi tiết đã in trước 2026-10-24 không có số: ghi số bằng bút lô
 - Đưa khung kẹp vào giữa 2 tấm cẳng tay; **4 vít M2.5 × 6**, mỗi bên 2 vít.
 
 ## Sau khi lắp
-- Xoay tay từng khớp bằng tay (chưa cấp điện): không kẹt, không cạ. Tầm hoạt động thiết kế: xem macro
+- Chỉ xoay tay được **đế** (nhẹ tay – có bánh răng servo) và **kẹp**. **Không bẻ vai/khuỷu bằng tay**: trục vít tự hãm,
+  bẻ sẽ gãy răng; muốn chỉnh thì cấp điện chạy chậm. Tầm hoạt động thiết kế: xem macro
   `freecad/pushrod_arm_sim.FCMacro` (xi-lanh vai 92–118 mm, khuỷu 92–128 mm, kẹp −55…+3°, đế ±170°).
 - Đấu dây động cơ 030 ×2 (SH1.0 2P, cổng motor XA004, ≤ 1 A/cổng), servo ×2 (header 3 chân): cổng nào cho khớp nào **TODO**.
 - Cấp điện lần đầu: chạy chậm, theo dõi nhiệt động cơ 030 (trục vít tự hãm – kẹt cơ khí sẽ tăng dòng, không để kẹt).
