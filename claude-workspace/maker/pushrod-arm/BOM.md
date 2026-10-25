@@ -7,7 +7,7 @@ Sinh tự động từ `freecad/pushrod_arm.FCStd` bằng `tools/robotics-cad/sc
 |---|---|---|
 | M2.5 × 10 | 2 | gear 2 |
 | M2.5 × 16 | 4 | receiver 4 |
-| M2.5 × 6 | 21 | Pin_A 1, Pin_B 1, Pin_C 1, Pin_D 1, Pin_E 1, Pin_S 1, pin 1, shaft_Elbow 1, shaft_Shoulder 1, top 2, turret 4, wrist 4, wrist_spacer 2 |
+| M2.5 × 6 | 19 | Pin_A 1, Pin_B 1, Pin_C 1, Pin_D 1, Pin_E 1, Pin_S 1, pin 1, top 2, turret 4, wrist 4, wrist_spacer 2 |
 | M2.5 × 8 | 4 | deck 4 |
 
 ## Linh kiện mua
@@ -18,6 +18,12 @@ Sinh tự động từ `freecad/pushrod_arm.FCStd` bằng `tools/robotics-cad/sc
 | `CB_Servo9g_180_gripper` | 1 |
 | `CB_Servo9g_360_turntable` | 1 |
 | `CB_XA003_XA004_receiver` | 1 |
+| `LK_Nut_M3_gear_Elbow` | 1 |
+| `LK_Nut_M3_gear_Shoulder` | 1 |
+| `LK_Nut_M3_piston_Elbow` | 1 |
+| `LK_Nut_M3_piston_Shoulder` | 1 |
+| `LK_Threaded_rod_M3_L45_Shoulder` | 1 |
+| `LK_Threaded_rod_M3_L55_Elbow` | 1 |
 
 ## Chi tiết in 3D
 | Chi tiết | Bàn in | Nhựa | Thể tích (cm³) |
@@ -36,29 +42,27 @@ Sinh tự động từ `freecad/pushrod_arm.FCStd` bằng `tools/robotics-cad/sc
 | `Turntable` | P2_Turret_Turntable__0.20_PETG | Bambu PETG Basic @BBL A1 | 33.20 |
 | `Turntable_gear_m1_z60` | P2_Turret_Turntable__0.20_PETG | Bambu PETG Basic @BBL A1 | 10.38 |
 | `Turret_one_piece` | P2_Turret_Turntable__0.20_PETG | Bambu PETG Basic @BBL A1 | 54.94 |
-| `Washer_shaft_Elbow` | P2_Turret_Turntable__0.20_PETG | Bambu PETG Basic @BBL A1 | 0.06 |
-| `Washer_shaft_Shoulder` | P2_Turret_Turntable__0.20_PETG | Bambu PETG Basic @BBL A1 | 0.06 |
 | `Wrist_spacer` | P2_Turret_Turntable__0.20_PETG | Bambu PETG Basic @BBL A1 | 1.68 |
 | `Forearm_plate_L` | P3_Forearm_Plates__0.20_PETG | Bambu PETG Basic @BBL A1 | 12.86 |
 | `Forearm_plate_R` | P3_Forearm_Plates__0.20_PETG | Bambu PETG Basic @BBL A1 | 12.84 |
 | `Gripper_top_plate` | P3_Forearm_Plates__0.20_PETG | Bambu PETG Basic @BBL A1 | 1.69 |
 | `Boom001` | P4_Boom_Gripper_Housings__0.20_PETG | Bambu PETG Basic @BBL A1 | 74.01 |
 | `Gripper_frame` | P4_Boom_Gripper_Housings__0.20_PETG | Bambu PETG Basic @BBL A1 | 12.70 |
-| `Housing_Elbow` | P4_Boom_Gripper_Housings__0.20_PETG | Bambu PETG Basic @BBL A1 | 15.01 |
-| `Housing_Shoulder` | P4_Boom_Gripper_Housings__0.20_PETG | Bambu PETG Basic @BBL A1 | 15.01 |
+| `Housing_Elbow` | P4_Boom_Gripper_Housings__0.20_PETG | Bambu PETG Basic @BBL A1 | 11.23 |
+| `Housing_Shoulder` | P4_Boom_Gripper_Housings__0.20_PETG | Bambu PETG Basic @BBL A1 | 6.50 |
 | `Jaw_1_driven_by_servo` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 2.34 |
 | `Jaw_2_idler` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 2.57 |
-| `Pinion_WormWheel_Elbow` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 1.80 |
-| `Pinion_WormWheel_Shoulder` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 1.80 |
 | `Pinion_m1_z10_turntable` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.33 |
-| `Rack_Elbow` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 3.34 |
-| `Rack_Shoulder` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 3.34 |
+| `Piston_rod_Elbow` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 2.92 |
+| `Piston_rod_Shoulder` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 3.27 |
 | `Spacer_jaw2` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.27 |
 | `Washer_pin` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.07 |
 | `Jaw_1_driven_by_servo_TPU_pad` | P6_GripperPads__TPU95A | Bambu TPU 95A @BBL A1 | 0.18 |
 | `Jaw_2_idler_TPU_pad` | P6_GripperPads__TPU95A | Bambu TPU 95A @BBL A1 | 0.18 |
-| `Worm_Elbow` | P7_Worms__0.12_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.76 |
-| `Worm_Shoulder` | P7_Worms__0.12_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.76 |
+| `Gear_z12_Elbow` | P7_Gears__0.12_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.39 |
+| `Gear_z12_Shoulder` | P7_Gears__0.12_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.39 |
+| `Gear_z28_Elbow` | P7_Gears__0.12_PETG_100pct | Bambu PETG Basic @BBL A1 | 2.58 |
+| `Gear_z28_Shoulder` | P7_Gears__0.12_PETG_100pct | Bambu PETG Basic @BBL A1 | 2.58 |
 | `Pin_A` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.93 |
 | `Pin_A_washer` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.07 |
 | `Pin_B` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.44 |
@@ -71,22 +75,22 @@ Sinh tự động từ `freecad/pushrod_arm.FCStd` bằng `tools/robotics-cad/sc
 | `Pin_E_washer` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.07 |
 | `Pin_S` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.93 |
 | `Pin_S_washer` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.07 |
-| `Pin_gearbox_Elbow` (2 miếng) | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.31 |
-| `Pin_gearbox_Shoulder` (2 miếng) | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.31 |
+| `Pin_gearbox_Elbow` (2 miếng) | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.27 |
+| `Pin_gearbox_Shoulder` (2 miếng) | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.27 |
 | `Pin_jaw2` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.37 |
 
 ## Bàn in (số liệu slicer)
 | Bàn | Thời gian | Nhựa (g) | Support |
 |---|---|---|---|
 | P1_Base__0.24Draft_PETG | 2h27 | 92.9 | – |
-| P2_Turret_Turntable__0.20_PETG | 2h56 | 76.3 | – |
+| P2_Turret_Turntable__0.20_PETG | 2h55 | 76.1 | – |
 | P3_Forearm_Plates__0.20_PETG | 0h41 | 21.3 | – |
-| P4_Boom_Gripper_Housings__0.20_PETG | 2h29 | 71.5 | – |
-| P5_Gears_Racks_Pins__0.16_PETG | 1h13 | 16.9 | – |
+| P4_Boom_Gripper_Housings__0.20_PETG | 2h02 | 59.0 | – |
+| P5_Gears_Racks_Pins__0.16_PETG | 0h43 | 13.1 | – |
 | P6_GripperPads__TPU95A | 0h05 | 0.6 | – |
-| P7_Worms__0.12_PETG_100pct | 0h34 | 1.9 | – |
-| P8_Pins__0.16_PETG_100pct | 0h29 | 6.8 | – |
-| **Tổng** | **10h58** | **288.2** | |
+| P7_Gears__0.12_PETG_100pct | 0h36 | 7.3 | – |
+| P8_Pins__0.16_PETG_100pct | 0h28 | 6.7 | – |
+| **Tổng** | **10h00** | **277.0** | |
 
 ## Chưa phân loại (TODO)
 Label không khớp quy ước vít / `components=` / `export.rules`:

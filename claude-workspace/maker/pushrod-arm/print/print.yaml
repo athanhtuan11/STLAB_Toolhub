@@ -13,18 +13,18 @@ plates_dir: plates                             # file sinh: <plate>/<plate>.3mf 
 # Tang 1 - tham so check.py (key=value)
 check:
   - out=../freecad/check
-  - components=CB_*,M2_5x*
+  - components=CB_*,M2_5x*,LK_*
   - ignore-pair=Servo_horn|CB_Servo9g_180_gripper
   - ignore-pair=Pinion_m1_z10_turntable|CB_Servo9g_360_turntable
   - ignore-pair=M2_5x*|*
   - ignore-pair=Pin_*|Pin_*
   - mesh-pair=Turntable_gear_m1_z60|Pinion_m1_z10_turntable
-  - mesh-pair=Pinion_WormWheel_*|Worm_*
-  - mesh-pair=Pinion_WormWheel_*|Rack_*
+  - mesh-pair=Gear_z28_*|Gear_z12_*                # xi-lanh piston (2026-10-25): z28 truc hop so -> z12 ty ren
+  - mesh-pair=Gear_z28_*|CB_030_gearbox_*          # lo 2 mat vat O5,3 tren truc ra (khe 0,32 nhu Worm cu)
+  - ignore-pair=LK_*|*                             # ty ren M3 + dai oc M3 mua: nam trong hoc kep co chu dich
   - mesh-pair=Jaw_1_driven_by_servo|Jaw_2_idler     # 2 ham kep an khop rang quanh 2 chot
-  - mesh-pair=Washer_shaft_*|Housing_*              # washer chan doc truc ngoai vach, tu do 0.1 mm (khong phai lap ghep)
   - multi-solid=Spacer_D,Spacer_E,Receiver_riser,Pin_gearbox_*
-  - ignore-pair=Pin_gearbox_*|CB_030_gearbox_*   # chot Ø3,9 trong lo Ø4 nap hop so: lap chat co chu dich (2026-10-24)
+  - ignore-pair=Pin_gearbox_*|CB_030_gearbox_*   # chot O3,9 trong lo O4 nap hop so: lap chat co chu dich (2026-10-24)
 
 # Huong in tung chi tiet (khop quy tac DAU TIEN; names = Label, glob)
 export:
@@ -38,14 +38,11 @@ export:
     - {names: [Boom001], group: 03_Boom, rotate: {x: 90}}
     - {names: [Spacer_D, Spacer_E], group: 04_Forearm, rotate: {x: 90}, split_solids: true}
     - {names: [Forearm_plate_L, Forearm_plate_R, Wrist_spacer], group: 04_Forearm, rotate: {x: 90}}
-    - {names: [Housing_Shoulder], group: 05_PushRod_Shoulder, rotate: {x: 90}, frame: Rack_Shoulder}
-    - {names: [Rack_Shoulder, Washer_shaft_Shoulder], group: 05_PushRod_Shoulder, rotate: {x: 90}, frame: Rack_Shoulder}
-    - {names: [Pinion_WormWheel_Shoulder], group: 05_PushRod_Shoulder, rotate: {x: -90}, frame: Rack_Shoulder}
-    - {names: [Worm_Shoulder], group: 05_PushRod_Shoulder, rotate: {y: -90}, frame: Rack_Shoulder}   # dung = lo lung (dau ren)
-    - {names: [Housing_Elbow], group: 05_PushRod_Elbow, rotate: {x: 90}, frame: Rack_Elbow}
-    - {names: [Rack_Elbow, Washer_shaft_Elbow], group: 05_PushRod_Elbow, rotate: {x: 90}, frame: Rack_Elbow}
-    - {names: [Pinion_WormWheel_Elbow], group: 05_PushRod_Elbow, rotate: {x: -90}, frame: Rack_Elbow}
-    - {names: [Worm_Elbow], group: 05_PushRod_Elbow, rotate: {y: -90}, frame: Rack_Elbow}   # dung = lo lung (dau ren)
+    # xi-lanh PISTON (2026-10-25): vo + ty in NAM tren mat -y (vo cat phang day, piston day 6 = ty); banh rang nam phang
+    - {names: [Housing_Shoulder, Piston_rod_Shoulder], group: 05_PushRod_Shoulder, rotate: {x: 90}, frame: Piston_rod_Shoulder}
+    - {names: [Gear_z28_Shoulder, Gear_z12_Shoulder], group: 05_PushRod_Shoulder, rotate: {y: -90}, frame: Piston_rod_Shoulder}
+    - {names: [Housing_Elbow, Piston_rod_Elbow], group: 05_PushRod_Elbow, rotate: {x: 90}, frame: Piston_rod_Elbow}
+    - {names: [Gear_z28_Elbow, Gear_z12_Elbow], group: 05_PushRod_Elbow, rotate: {y: -90}, frame: Piston_rod_Elbow}
     # khung kep: tu the goc cua kep (E0 + 130 mm theo -30 do, nghieng 30 do quanh Y)
     - {names: [Jaw_1_driven_by_servo], group: 06_Gripper, rotate: {x: -90}, frame: [209.00144394797778, 0, 133.90666646784498, 0, 1, 0, 30]}
     - {names: [Jaw_1_driven_by_servo_TPU_pad, Jaw_2_idler_TPU_pad], group: 06_Gripper, rotate: {x: 90}, suffix: _TPU,
@@ -56,8 +53,8 @@ export:
        frame: [209.00144394797778, 0, 133.90666646784498, 0, 1, 0, 30]}
     # Chot khop in NAM (huong the gioi, mat phang day cach truc 2,0) - Pin_jaw2 truoc in dung (gay ngang lop) -> 2026-10-25
     - {names: [Pin_S, Pin_A, Pin_B, Pin_C, Pin_D, Pin_E, Pin_jaw2], group: 07_Pins}
-    - {names: [Pin_gearbox_Shoulder], group: 07_Pins, rotate: {y: 90}, frame: Rack_Shoulder, split_solids: true}  # dau chot xuong ban
-    - {names: [Pin_gearbox_Elbow], group: 07_Pins, rotate: {y: 90}, frame: Rack_Elbow, split_solids: true}
+    - {names: [Pin_gearbox_Shoulder], group: 07_Pins, rotate: {y: 90}, frame: Piston_rod_Shoulder, split_solids: true}  # mu xuong ban
+    - {names: [Pin_gearbox_Elbow], group: 07_Pins, rotate: {y: 90}, frame: Piston_rod_Elbow, split_solids: true}
     - {names: [Pin_S_washer, Pin_A_washer, Pin_B_washer, Pin_C_washer, Pin_D_washer, Pin_E_washer], group: 07_Pins, rotate: {x: 90}}
 
 common: {only_one_wall_top: "1", infill_combination: "1", sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
@@ -74,13 +71,13 @@ plates:
     process: 0.20mm Standard @BBL A1
     overrides: {wall_loops: "3", sparse_infill_density: "20%"}
     stl: ["*__Turret_one_piece.stl", "*__Turntable.stl", "*__Slide_ring.stl", "*__Spacer_S*.stl", "*__Spacer_A*.stl",
-          "*__Wrist_spacer.stl", "*__Spacer_D_*.stl", "*__Spacer_E_*.stl", "*__Washer_shaft_*.stl", "*__Turntable_gear_m1_z60.stl",
+          "*__Wrist_spacer.stl", "*__Spacer_D_*.stl", "*__Spacer_E_*.stl", "*__Turntable_gear_m1_z60.stl",
           "*__Receiver_riser*.stl"]
   P3_Forearm_Plates__0.20_PETG:
     process: 0.20mm Standard @BBL A1
     overrides: {wall_loops: "3", sparse_infill_density: "20%"}
     stl: ["*__Forearm_plate_*.stl", "*__Gripper_top_plate.stl"]
-  P4_Boom_Gripper_Housings__0.20_PETG:          # Tuan to support trong Bambu Studio (Boom, khung kep, tai chot Housing) - GIU TRONG ranh thanh rang
+  P4_Boom_Gripper_Housings__0.20_PETG:          # Tuan to support trong Bambu Studio (Boom, khung kep, tai chot Housing) - GIU TRONG long ong piston
     process: 0.20mm Standard @BBL A1
     overrides: {wall_loops: "3", sparse_infill_density: "20%"}
     stl: ["*__Boom001.stl", "*__Gripper_frame.stl", "*__Housing_Shoulder.stl", "*__Housing_Elbow.stl"]
@@ -88,7 +85,7 @@ plates:
     process: 0.16mm Optimal @BBL A1
     overrides: {wall_loops: "4", sparse_infill_density: "40%", wall_generator: arachne, top_shell_layers: "6",
                 bottom_shell_layers: "5", brim_type: auto_brim, infill_combination: "0"}
-    stl: ["*__Rack_*.stl", "*__Jaw_1_driven_by_servo*.stl", "*__Jaw_2_idler*.stl", "*__Pinion*.stl",
+    stl: ["*__Piston_rod_*.stl", "*__Jaw_1_driven_by_servo*.stl", "*__Jaw_2_idler*.stl", "*__Pinion*.stl",
           "*__Spacer_jaw2.stl", "*__Washer_pin.stl"]
     exclude: ["*_TPU.stl"]
   P6_GripperPads__TPU95A:
@@ -97,11 +94,11 @@ plates:
     overrides: {wall_loops: "3", sparse_infill_density: "100%", sparse_infill_pattern: zig-zag, infill_combination: "0",
                 only_one_wall_top: "0"}
     stl: ["*_TPU.stl"]
-  P7_Worms__0.12_PETG_100pct:
+  P7_Gears__0.12_PETG_100pct:                   # banh rang xi-lanh z28/z12 (truoc 2026-10-25: truc vit)
     process: 0.12mm Fine @BBL A1
     overrides: {wall_loops: "4", sparse_infill_density: "100%", sparse_infill_pattern: zig-zag, infill_combination: "0",
                 wall_generator: arachne, brim_type: outer_only, brim_width: "4", only_one_wall_top: "0"}
-    stl: ["*__Worm_*.stl"]
+    stl: ["*__Gear_z*.stl"]
   # Tuan 2026-10-25: chot in infill 40 % -> ruot rong, yeu. Chot chiu luc -> DAC 100 %.
   P8_Pins__0.16_PETG_100pct:
     process: 0.16mm Optimal @BBL A1

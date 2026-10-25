@@ -84,51 +84,60 @@ class T1Electronics(unittest.TestCase):
 
 
 class T2Motor030(unittest.TestCase):
-    """Tuan 2026-10-24: xi-lanh dung motor CyberBrick 030 + hop giam toc (khong phai N20), bo cuc B (motor chia ngang)."""
+    """Tuan 2026-10-24: xi-lanh dung motor CyberBrick 030 + hop giam toc (khong phai N20), motor chia ngang.
+    2026-10-25: xi-lanh PISTON - truc ra hop so quay z28 -> z12 dau ty ren M3 (thay truc vit + thanh rang)."""
+
+    def frame(self, t):
+        return O("Piston_rod_" + t).Placement, (-1 if t == "Shoulder" else 1)
 
     def test_no_n20(self):
         self.assertFalse([l for l in D["O"] if "N20" in l])
 
-    def test_gearbox_coaxial_with_worm(self):
+    def test_gearbox_coaxial_with_z28(self):
+        """Truc ra hop so nam dung tam lo z28: giua be rong banh rang, r 1,5 trong truc (mat vat 1,8), r 3,0 ngoai truc."""
         for t in TAGS:
-            gb, w = O("CB_030_gearbox_" + t), O("Worm_" + t)
-            ax_gb = gb.Placement.Rotation.multVec(App.Vector(0, 1, 0))           # truc ra = +Y cua STEP hang
-            p_gb = gb.Placement.multVec(App.Vector(0, 15.2, 11.15))              # tam truc ra tai mat hop so
-            r = O("Rack_" + t).Placement
-            ax_w = r.Rotation.multVec(App.Vector(1, 0, 0))
-            zs = -1 if t == "Shoulder" else 1
-            p_w = r.multVec(App.Vector(60, 9.4, zs * 20.25))
-            self.assertGreater(abs(ax_gb.dot(ax_w)), math.cos(math.radians(0.1)), t)
-            off = (p_gb - p_w) - ax_w * (p_gb - p_w).dot(ax_w)
-            self.assertLess(off.Length, 0.05, "%s lech truc %.3f mm" % (t, off.Length))
+            r, zs = self.frame(t)
+            gb = O("CB_030_gearbox_" + t).Shape
+            g = _local(O("Gear_z28_" + t).Shape, r).BoundBox
+            xm = (g.XMin + g.XMax) / 2
+            def ring(rad):
+                return [gb.isInside(r.multVec(App.Vector(xm, rad * math.cos(math.radians(k)),
+                                                         zs * 20.0 + rad * math.sin(math.radians(k)))), 1e-4, True)
+                        for k in range(0, 360, 15)]
+            self.assertTrue(all(ring(1.5)), "%s: truc ra khong o tam z28" % t)
+            self.assertFalse(any(ring(3.0)), "%s: truc ra lech / phinh" % t)
 
     def test_gearbox_fits_housing(self):
         for t in TAGS:
             self.assertLess(overlap("CB_030_gearbox_" + t, "Housing_" + t), 0.5, t)
-            self.assertLess(overlap("CB_030_gearbox_" + t, "Worm_" + t), 0.5, t)
+            self.assertLess(overlap("CB_030_gearbox_" + t, "Gear_z28_" + t), 0.5, t)
 
-    def test_worm_socket_drives(self):
-        """Lo truc vit phai co mat vat (truyen mo-men), khong duoc tron tron (2026-10-24 lan 2 do nham -> lo tron)."""
+    def test_z28_socket_drives(self):
+        """Lo z28 phai co mat vat (truyen mo-men), khong duoc tron (bai hoc Worm 2026-10-24)."""
         for t in TAGS:
-            r, zs = O("Rack_" + t).Placement, (-1 if t == "Shoulder" else 1)
-            w = O("Worm_" + t).Shape
-            inside = [k for k in range(0, 360, 5) if w.isInside(r.multVec(App.Vector(
-                49.0, 9.4 + 2.5 * math.cos(math.radians(k)), zs * 20.25 + 2.5 * math.sin(math.radians(k)))), 1e-4, True)]
+            r, zs = self.frame(t)
+            g = O("Gear_z28_" + t).Shape
+            xm = (lambda b: (b.XMin + b.XMax) / 2)(_local(g, r).BoundBox)
+            inside = [k for k in range(0, 360, 5) if g.isInside(r.multVec(App.Vector(
+                xm, 2.5 * math.cos(math.radians(k)), zs * 20.0 + 2.5 * math.sin(math.radians(k)))), 1e-4, True)]
             self.assertTrue(0 < len(inside) < 72, "%s: %d/72 diem r 2,5 trong vat lieu" % (t, len(inside)))
 
-    def test_worm_thrust_stop(self):
-        """Datasheet LA024: luc doc truc (truc vit) hai motor -> vo phai chan dau truc vit, khe nho."""
+    def test_screw_thrust_stop(self):
+        """Ty ren chiu luc doc truc -> banh rang z12 ke 2 vach vo, khe nho (khong de hop so nhua chiu)."""
         for t in TAGS:
-            g = gap("Worm_" + t, "Housing_" + t, 2.0)
+            g = gap("Gear_z12_" + t, "Housing_" + t, 2.0)
             self.assertIsNotNone(g, t)
             self.assertLessEqual(g, 0.5, t)
+
+
+def _local(shape, pl):
+    s = shape.copy(); s.transformShape(pl.inverse().toMatrix()); return s
 
 
 class T3Fits(unittest.TestCase):
     """Tuan 2026-10-24: 'Tang do rong khi gan co cau banh rang va truot' -> 0,3 mm."""
 
-    PAIRS = [("Housing_{t}", "Rack_{t}"), ("Housing_{t}", "Pinion_WormWheel_{t}"),
-             ("Housing_{t}", "Worm_{t}"), ("Worm_{t}", "CB_030_gearbox_{t}")]
+    PAIRS = [("Housing_{t}", "Piston_rod_{t}"), ("Housing_{t}", "Gear_z28_{t}")]
 
     def test_slide_and_gear_fits(self):
         for t in TAGS:
@@ -137,6 +146,23 @@ class T3Fits(unittest.TestCase):
                 g = gap(a, b)
                 self.assertIsNotNone(g, "%s~%s xa hon 5 mm?" % (a, b))
                 self.assertGreaterEqual(g, FIT_GAP - TOL, "%s~%s: %.3f mm" % (a, b, g))
+
+
+class T8Piston(unittest.TestCase):
+    """2026-10-25: Rack_Elbow lech khi len xuong -> xi-lanh piston kieu Cyberbrick Excavator. Hanh trinh du, ty ren
+    luon an dai oc, ty rong chua du ty ren khi rut het."""
+
+    L = {"Shoulder": (92.0, 99.7764836463904, 118.0), "Elbow": (92.0, 121.59676825402742, 128.0)}
+
+    def test_stroke_and_screw(self):
+        for t in TAGS:
+            lmin, l0, lmax = self.L[t]
+            r = O("Piston_rod_" + t).Placement
+            sc = _local(O([l for l in D["O"] if l.startswith("LK_Threaded_rod_M3") and l.endswith(t)][0]).Shape, r).BoundBox
+            nut = _local(O("LK_Nut_M3_piston_" + t).Shape, r).BoundBox
+            rod = _local(O("Piston_rod_" + t).Shape, r).BoundBox
+            self.assertLess(nut.XMax + (lmax - l0), sc.XMax - 1.0, "%s: duoi het, dai oc tuot ty ren" % t)
+            self.assertGreater(rod.XMin + (lmin - l0), sc.XMin + 5.0, "%s: rut het, piston dam banh rang" % t)
 
 
 class T4Marks(unittest.TestCase):
@@ -150,21 +176,25 @@ class T4Marks(unittest.TestCase):
 
 
 class T6PrintFile(unittest.TestCase):
-    """Tuan 2026-10-24 toi: 'Worm_Shoulder chua co lo gan truc hop so' - model co lo, nhung support tu ve (export
-    support: true) lap kin lo trong STL. Kiem FILE IN: lo truc o day con trong, khong co mau support nao."""
+    """Tuan 2026-10-24 toi: support tu ve lap kin lo truc Worm trong STL. Kiem FILE IN: lo truc z28 con trong;
+    2026-10-25 them: long ong piston khong bi lap."""
 
-    def test_worm_stl_socket_open(self):
+    def test_gear_stl_socket_open(self):
         import Mesh
         for t in TAGS:
-            p = os.path.join(HERE, "..", "..", "print", "stl", "05_PushRod_%s__Worm_%s.stl" % (t, t))
+            p = os.path.join(HERE, "..", "..", "print", "stl", "05_PushRod_%s__Gear_z28_%s.stl" % (t, t))
             m = Mesh.Mesh(p)
-            self.assertEqual(len(m.getSeparateComponents()), 1, "%s: co support roi" % t)
-            for z in (1.0, 4.0, 7.5):   # lo sau ~8,4 mm tu ban in
+            self.assertEqual(len(m.getSeparateComponents()), 1, "%s: co manh roi" % t)
+            for z in (1.0, 2.5, 4.0):
                 loops = m.crossSections([((0, 0, z), (0, 0, 1))])[0]
-                w = sorted(max(q.x for q in lp) - min(q.x for q in lp) for lp in loops)
-                self.assertEqual(len(w), 2, "%s z %.1f: %d vong (can vanh + lo)" % (t, z, len(w)))
-                self.assertGreater(w[0], 5.5, "%s z %.1f: lo hep %.2f" % (t, z, w[0]))
+                self.assertEqual(len(loops), 2, "%s z %.1f: %d vong (can vanh + lo)" % (t, z, len(loops)))
             self.assertGreaterEqual(os.path.getmtime(p), os.path.getmtime(FC), "%s: STL cu hon model -> xuat lai" % t)
+
+    def test_housing_stl_bore_open(self):
+        import Mesh
+        for t in TAGS:
+            m = Mesh.Mesh(os.path.join(HERE, "..", "..", "print", "stl", "05_PushRod_%s__Housing_%s.stl" % (t, t)))
+            self.assertEqual(len(m.getSeparateComponents()), 1, "%s: co manh roi / support" % t)
 
 
 class T7Pins(unittest.TestCase):

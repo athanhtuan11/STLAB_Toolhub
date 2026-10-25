@@ -33,12 +33,13 @@ RP = 5.0
 YAXIS = V(0, 1, 0); ZAXIS = V(0, 0, 1)
 def rot(center, axis, deg): return App.Placement(V(0, 0, 0), App.Rotation(axis, deg), center)
 def angxz(v): return math.degrees(math.atan2(v.z, v.x))
-PIN_C = {}
-WORM_C = {}; WORM_D = {}
+# xi-lanh piston (2026-10-25): he xi-lanh = Placement Piston_rod_<tag>; ty ren M3 (buoc 0,5) quay quanh truc x, z28 o z = zs*20
+SCREW_C = {}; G28_C = {}; AX_D = {}
 for tag, zs in (("Shoulder", -1), ("Elbow", 1)):
-    PIN_C[tag] = REST[OBJ["Rack_" + tag].Name].multVec(V(60, 0, zs*8.25))
-    WORM_C[tag] = REST[OBJ["Rack_" + tag].Name].multVec(V(60, 9.4, zs*20.25))
-    WORM_D[tag] = REST[OBJ["Rack_" + tag].Name].Rotation.multVec(V(1, 0, 0))
+    F_ = REST[OBJ["Piston_rod_" + tag].Name]
+    SCREW_C[tag] = F_.multVec(V(0, 0, 0)); G28_C[tag] = F_.multVec(V(0, 0, zs*20.0))
+    AX_D[tag] = F_.Rotation.multVec(V(1, 0, 0))
+def screw_deg(dL): return dL/0.5*360.0          # do quay ty ren theo do dai xi-lanh doi (mm)
 
 BASE_FIXED = {"Base_housing", "Base_foot", "Base_deck", "Slide_ring", "CB_Servo9g_360_turntable",
               "Pinion_m1_z10_turntable", "CB_XA003_XA004_receiver", "Receiver_riser", "Battery_bay"}
@@ -109,14 +110,14 @@ def set_pose(yaw=None, L1=None, L2=None, grip=None, update=True):
                 elif lbl in JAW2: M = Mf.multiply(rot(J2, YAXIS, -s["grip"]))
             elif lbl in ROD1:
                 M = Mr1
-                if lbl.startswith("Rack"): M = T1.multiply(Mr1)
-                elif lbl.startswith("Pinion"): M = Mr1.multiply(rot(PIN_C["Shoulder"], YAXIS, (s["L1"] - L1_0)/RP*180/math.pi))
-                elif lbl.startswith("Worm"): M = Mr1.multiply(rot(WORM_C["Shoulder"], WORM_D["Shoulder"], 16*(s["L1"] - L1_0)/RP*180/math.pi))
+                if lbl.startswith(("Piston_rod", "LK_Nut_M3_piston")): M = T1.multiply(Mr1)
+                elif lbl.startswith(("Gear_z12", "LK_Threaded_rod", "LK_Nut_M3_gear")): M = Mr1.multiply(rot(SCREW_C["Shoulder"], AX_D["Shoulder"], screw_deg(s["L1"] - L1_0)))
+                elif lbl.startswith("Gear_z28"): M = Mr1.multiply(rot(G28_C["Shoulder"], AX_D["Shoulder"], -12/28*screw_deg(s["L1"] - L1_0)))
             elif lbl in ROD2:
                 M = Mr2
-                if lbl.startswith("Rack"): M = T2.multiply(Mr2)
-                elif lbl.startswith("Pinion"): M = Mr2.multiply(rot(PIN_C["Elbow"], YAXIS, -(s["L2"] - L2_0)/RP*180/math.pi))
-                elif lbl.startswith("Worm"): M = Mr2.multiply(rot(WORM_C["Elbow"], WORM_D["Elbow"], 16*(s["L2"] - L2_0)/RP*180/math.pi))
+                if lbl.startswith(("Piston_rod", "LK_Nut_M3_piston")): M = T2.multiply(Mr2)
+                elif lbl.startswith(("Gear_z12", "LK_Threaded_rod", "LK_Nut_M3_gear")): M = Mr2.multiply(rot(SCREW_C["Elbow"], AX_D["Elbow"], screw_deg(s["L2"] - L2_0)))
+                elif lbl.startswith("Gear_z28"): M = Mr2.multiply(rot(G28_C["Elbow"], AX_D["Elbow"], -12/28*screw_deg(s["L2"] - L2_0)))
             else: M = App.Placement()
             M = Y.multiply(M)
         o.Placement = M.multiply(R)
@@ -126,16 +127,19 @@ def set_pose(yaw=None, L1=None, L2=None, grip=None, update=True):
 
 def reset(): set_pose(0, L1_0, L2_0, 0)
 
-COLL_SETS = {"ROD1": ["Housing_Shoulder", "Rack_Shoulder", "CB_030_gearbox_Shoulder", "Pin_gearbox_Shoulder", "Worm_Shoulder", "Pinion_WormWheel_Shoulder", "Washer_shaft_Shoulder", "M2_5x6_shaft_Shoulder"],
-             "ROD2": ["Housing_Elbow", "Rack_Elbow", "CB_030_gearbox_Elbow", "Pin_gearbox_Elbow", "Worm_Elbow", "Pinion_WormWheel_Elbow", "Washer_shaft_Elbow", "M2_5x6_shaft_Elbow"],
+COLL_SETS = {"ROD1": ["Housing_Shoulder", "Piston_rod_Shoulder", "CB_030_gearbox_Shoulder", "Gear_z28_Shoulder", "Gear_z12_Shoulder"],
+             "ROD2": ["Housing_Elbow", "Piston_rod_Elbow", "CB_030_gearbox_Elbow", "Gear_z28_Elbow", "Gear_z12_Elbow"],
              "BOOM": ["Boom001"],
              "FORE": ["Forearm_plate_L", "Forearm_plate_R", "Gripper_frame", "CB_Servo9g_180_gripper", "Jaw_1_driven_by_servo", "Jaw_2_idler", "Gripper_top_plate", "Spacer_D", "Wrist_spacer"],
              "TUR": ["Turret_one_piece", "Spacer_S", "Spacer_S001", "Spacer_A", "Spacer_A001"],
              "BASE": ["Base_housing", "Base_deck", "Turntable"]}
 COLL_PAIRS = [("ROD1", "BOOM"), ("ROD1", "TUR"), ("ROD1", "ROD2"), ("ROD1", "FORE"), ("ROD2", "BOOM"), ("ROD2", "FORE"),
               ("FORE", "BOOM"), ("FORE", "TUR"), ("FORE", "BASE"), ("BOOM", "TUR"), ("BOOM", "BASE"), ("ROD2", "TUR")]
+# trong xi-lanh piston: ty truot trong vo, khong cham banh rang/vo
+INNER = [("Piston_rod_%s", "Housing_%s"), ("Piston_rod_%s", "Gear_z12_%s"), ("Gear_z28_%s", "Housing_%s"), ("Gear_z12_%s", "Housing_%s")]
 def coll_pairs():
-    return [(na, nb) for a, b in COLL_PAIRS for na in COLL_SETS[a] for nb in COLL_SETS[b] if na in OBJ and nb in OBJ]
+    out = [(na, nb) for a, b in COLL_PAIRS for na in COLL_SETS[a] for nb in COLL_SETS[b] if na in OBJ and nb in OBJ]
+    return out + [(a % t, b % t) for t in ("Shoulder", "Elbow") for a, b in INNER if a % t in OBJ and b % t in OBJ]
 
 FAST = {}
 def fast_collider():

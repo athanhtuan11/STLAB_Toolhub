@@ -1,7 +1,9 @@
 # pushrod-arm – cánh tay robot xi-lanh đẩy
 
 Cánh tay 4 bậc dùng bộ điều khiển **CyberBrick** (Bambu Lab): xoay đế (servo 360°), nâng vai và gập khuỷu bằng
-2 xi-lanh **thanh răng – bánh vít – trục vít** chạy động cơ **CyberBrick 030 + hộp giảm tốc 1 trục** (2026-10-24, thay N20), kẹp 2 hàm ăn khớp răng (servo 180°).
+2 xi-lanh **piston** (2026-10-25, kiểu Cyberbrick Excavator: bánh răng z28/z12 → ty ren M3 → piston kẹp đai ốc M3 → ty rỗng)
+chạy động cơ **CyberBrick 030 + hộp giảm tốc 1 trục** (đặt cạnh ống), kẹp 2 hàm ăn khớp răng (servo 180°).
+Thay xi-lanh thanh răng cũ vì `Rack_Elbow` lệch khi lên xuống – phân tích: `docs/reports/pushrod-arm-actuator-alternatives.md`.
 In trên **Bambu Lab A1**, đầu phun 0,4 mm, PLA (+ đệm kẹp TPU 95A).
 
 Lắp ráp: **[ASSEMBLY.pdf](ASSEMBLY.pdf)** (15 trang, chữ + hình – để in/gửi) · nguồn [ASSEMBLY.md](ASSEMBLY.md).
@@ -20,6 +22,8 @@ Bản tự sinh đầy đủ (vít, linh kiện, chi tiết in → bàn/nhựa):
 | CyberBrick servo 9g 360° | 1 | xoay đế |
 | CyberBrick servo 9g 180° | 1 | kẹp |
 | CyberBrick 030 Micro DC Motor LA024 + Single-axis Reduction Gear Kit (LA012…LA022, mã TODO) | 2 | vai, khuỷu; vỏ hộp số in theo file hãng |
+| Ty ren M3 inox (cắt 55 mm + 45 mm) | 2 | xi-lanh khuỷu / vai (2026-10-25) |
+| Đai ốc lục giác M3 (DIN 934) | 4 | 2 kẹp trong bánh răng z12, 2 trong piston |
 | Khoang pin (`Battery_bay`) | 1 | TODO loại pin |
 | Vít M2.5 × 6 | 21 | gồm 6 vít khóa chốt in |
 | Vít M2.5 × 8 | 4 | bắt deck |
@@ -58,6 +62,13 @@ thì sấy trước (máy sấy/tủ sấy có quạt, không dùng lò vi sóng
 - Quy tắc: đổi/sai linh kiện thì **sửa chi tiết gốc**, không thêm miếng kê/đệm tạm (trừ khi đã in rồi và Tuan cho làm tạm).
 
 ## Lịch sử sửa
+- 2026-10-25 tối: **xi-lanh thanh răng → PISTON** (Tuan thử: `Rack_Elbow` lệch khi lên xuống). Giữ motor 030 + hộp số, chốt A–D,
+  Boom, cẳng tay. Bỏ Worm, bánh vít, thanh răng, vòng đệm trục. Mới: `Housing_*` (ống + buồng bánh răng + tấm gá), `Piston_rod_*`,
+  `Gear_z28_*`, `Gear_z12_*`, `Pin_gearbox_*` (mới), ty ren M3 + 4 đai ốc. 1,17 mm/vòng trục ra, ren M3 tự hãm.
+  Script `freecad/scripts/history/2026-10-25_piston_cylinder_030.py`; kiểm: động học 30/30, 18/18 test, prepare-print WARN.
+  In lại: `print/plates-reprint-piston-2026-10-25/` (R7 vỏ 50 ph, R8 ty 19 ph, R9 bánh răng + chốt 48 ph; ~31 g).
+  R7: vùng "cần support" z 9–11 mm là **trần lòng ống piston** – KHÔNG tô support ở đó; chỉ tô dưới tai chốt.
+  Ảnh duyệt: `freecad/images/review-piston/`. TODO: ASSEMBLY.md bước 11b–15 + ảnh lắp còn theo xi-lanh cũ.
 - 2026-10-25: **chốt khớp** S/A–E/jaw2 thân Ø5,0 → **Ø4,8** (khe 0,3 mm/bên với lỗ Ø5,4), đặc 100 % (bàn P8), in nằm cả
   Pin_jaw2, lỗ vít M2.5 sâu 5,5; bộ chốt thử; test `T7Pins` (`history/2026-10-25_pins_clearance_solid.py`).
 - 2026-10-25: bỏ support tự vẽ (Tuan tô trong slicer); vát miệng lỗ trục Worm 0,4 mm; luật mái lỗ kín bắc cầu ≤ 8 mm;
