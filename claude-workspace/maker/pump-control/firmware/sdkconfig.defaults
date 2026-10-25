@@ -21,3 +21,7 @@ CONFIG_ESP_RMAKER_DEF_TIMEZONE="Asia/Ho_Chi_Minh"
 # OTA tu xa an toan: ban moi khong ket noi duoc cloud trong ESP_RMAKER_OTA_ROLLBACK_WAIT_PERIOD (90 s) -> tu quay ve ban cu.
 # Nam trong BOOTLOADER -> KHONG doi duoc qua OTA, phai nap USB 1 lan (2026-10-25).
 CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y
+
+# Tac vu FreeRTOS "Tmr Svc" chay timer cua RainMaker OTA (ota_timeout, rollback). Mac dinh 2048 -> TRAN STACK lan
+# khoi dong dau sau OTA (do thuc te 2026-10-25, ban 1.1.1) -> 4096
+CONFIG_FREERTOS_TIMER_TASK_STACK_DEPTH=4096
