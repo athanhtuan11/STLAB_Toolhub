@@ -49,6 +49,13 @@ In lại riêng: `plates-reprint-2026-10-24/` (xi-lanh 030), `plates-reprint-pin
 Lưu ý PETG Basic (TDS chính hãng): PEI bám rất chặt → **đợi bàn nguội rồi mới gỡ**; cuộn để ngoài > 72 h ở độ ẩm > 50 %
 thì sấy trước (máy sấy/tủ sấy có quạt, không dùng lò vi sóng/lò bếp).
 
+## Nâng cấp lần sau (v2) – Tuan 2026-10-25
+- **Làm lại đế chuẩn (`Base_housing`)**: trụ bắt bộ thu phải đúng chiều cao chồng XA003 + XA004 chính hãng (cao 21,5 mm)
+  ngay trên vỏ – **bỏ 4 ống nâng `Receiver_riser`** (bản này chỉ kê tạm vì vẽ sai chiều cao bộ thu) và vít bộ thu về cỡ ngắn.
+- Cùng lúc sửa đế: ngàm/vít giữ chân đế với vỏ (hiện dán băng dính), chỗ giữ khối pin (hiện dán), máng đi dây, giữ servo đế
+  bằng ngàm thay vì chỉ dựa tấm đậy.
+- Quy tắc: đổi/sai linh kiện thì **sửa chi tiết gốc**, không thêm miếng kê/đệm tạm (trừ khi đã in rồi và Tuan cho làm tạm).
+
 ## Lịch sử sửa
 - 2026-10-25: **chốt khớp** S/A–E/jaw2 thân Ø5,0 → **Ø4,8** (khe 0,3 mm/bên với lỗ Ø5,4), đặc 100 % (bàn P8), in nằm cả
   Pin_jaw2, lỗ vít M2.5 sâu 5,5; bộ chốt thử; test `T7Pins` (`history/2026-10-25_pins_clearance_solid.py`).

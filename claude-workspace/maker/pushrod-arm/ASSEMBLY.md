@@ -76,6 +76,7 @@ không đóng, không ép mạnh.
 ## Bước 3 – Bốn ống nâng bộ thu
 **Cụm A – Đế**
 **Cần lấy:** ống nâng `Receiver_riser` ×4 (bàn P2, cao 9,7 mm).
+(Ống nâng là cách kê **tạm** của bản này – bản đế sau sẽ có trụ đúng chiều cao, không cần ống.)
 ![](freecad/images/assembly/step-03-a.png)
 1. Đặt 4 ống nâng lên 4 trụ nhỏ trong vỏ đế.
 
