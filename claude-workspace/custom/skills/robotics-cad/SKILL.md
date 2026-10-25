@@ -82,6 +82,30 @@ description: Thiet ke co khi robot trong FreeCAD cho STLab - chon linh kien tu d
    năng nào phải giữ trống** (để Tuan không tô support vào đó). Ưu tiên vẽ để khỏi cần support (vát 45°, giọt nước).
 5. Báo lại: kích thước chính (mm), khối lượng ước tính (vật liệu PLA/PETG), các giả định.
 
+## Chốt / trục khớp quay (cập nhật 2026-10-25 – Tuan: chốt pushrod-arm "quá khít", "rỗng sẽ yếu lực")
+Đo thật pushrod-arm: chốt in Ø5,0 trong lỗ Ø5,4 = khe **0,2 mm mỗi bên** → lắp ra quá khít; chốt S/A–E in nằm, `Pin_jaw2`
+in đứng; chốt không rỗng suốt (chỉ lỗ Ø2,2 sâu 5 mm cho vít M2.5 ở đầu).
+1. **Ưu tiên trục kim loại cho khớp chịu lực:** bu lông/chốt thép (vd. M5 hoặc chốt Ø5 xuyên lỗ in Ø5,4–5,6) + đai ốc
+   khóa nylon hoặc phe/vít đầu. Thép không gãy theo lớp, không mòn, không cần in lại khi hỏng. Cánh tay mở dùng ổ bi /
+   bạc ở khớp (BCN3D Moveo: 608ZZ, 62x, bạc tự bôi trơn – `docs/cad-mechanisms-teaching-research.md` mục 1).
+   Chỉ dùng chốt IN cho khớp nhẹ hoặc khi Tuan muốn toàn bộ in.
+2. **Chốt in (nếu dùng):**
+   - In **NẰM** (trục song song bàn) để lớp chạy dọc chốt: PETG Basic σ kéo XY 51 MPa, theo Z chỉ 35 MPa (TDS, −31 %) →
+     chốt in đứng gãy ngang theo lớp. Thêm **mặt phẳng D ~0,5 mm** ở đáy để nằm vững, không cần support.
+   - **Đặc 100 %** (infill 100 % hoặc đủ vòng tường); Ø ≥ 5 mm; không khoét lỗ dọc suốt thân (lỗ vít chỉ ở đầu, sâu tối thiểu).
+   - Vát 0,3–0,5 mm hai đầu chốt và miệng lỗ (dễ luồn, bù elephant foot).
+3. **Khe theo kiểu lắp** (ghi rõ trong script + test, không dùng một số chung):
+   | Kiểu | Khe mỗi bên | Ví dụ |
+   |---|---|---|
+   | Ép / cố định | 0–0,1 mm | chốt hộp số Ø3,9 / Ø4,0 |
+   | Trượt chặt (không quay) | 0,2 mm | — |
+   | **Quay / trượt nhiều** | **≥ 0,3 mm** (Prusa KB: chi tiết chuyển động ≥ 0,3 mm – `TODO` nguồn không nói rõ mỗi bên hay tổng → lấy mỗi bên cho chắc) | chốt khớp tay, bánh răng, rãnh trượt |
+   | Trục kim loại trong lỗ in | 0,2–0,3 mm | bu lông M5 trong lỗ Ø5,4–5,6 |
+   Lỗ in nhỏ hơn bản vẽ (nophead polyholes); lỗ NGANG (trục song song bàn) còn bị dẹt đỉnh → dùng lỗ giọt nước / vát đỉnh.
+   Số cuối cùng chốt bằng **mẫu thử khe** (coupon 0,1–0,4 mm) trên máy thật – `TODO` chưa có coupon chuẩn STLab.
+4. **Kiểm bằng hình học, đưa vào test:** với mỗi chốt, đo đường kính thân + mọi lỗ đồng trục trên chi tiết lắp → khe ≥ ngưỡng
+   theo kiểu lắp; báo chốt in đứng / chốt < 5 mm / thân bị khoét dọc (`WARN`).
+
 ## Điện (nhắc khi ghép linh kiện)
 - ESP32/Pico là logic 3.3 V: HC-SR04 Echo (5 V) cần chia áp; servo/động cơ cấp nguồn riêng, chung GND.
 
