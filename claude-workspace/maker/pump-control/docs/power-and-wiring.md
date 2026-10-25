@@ -43,8 +43,26 @@ Nguồn 220 V ─ CB (≥ 1,25 × dòng định mức) ─ RCD 30 mA ─ Contact
   Nguồn cách ly 220 V → 5 V ─► chân 5V ESP32, VCC relay, PZEM
   PZEM-004T + CT kẹp dây pha ─UART─► ESP32 (V, A, W, kWh → biết bơm chạy thật, chạy khô, kẹt)
 ```
-Ước tính dòng (chưa có nhãn, `TODO`): 2 kW là công suất vào, 1 pha, hệ số công suất 0,8 → ≈ 11 A; 2 kW là công suất trục
-(hiệu suất ~75 %) → ≈ 15 A; lúc khởi động gấp 5–7 lần trong < 1 s. CB/RCD/contactor/dây chốt lại theo dòng trên nhãn motor.
+### Motor của khách: **220 V, 1 pha, 2 HP** (Tuan báo 2026-10-25) = 2 × 745,7 W ≈ **1,5 kW công suất trục**
+(không phải 2 kW như mô tả ban đầu).
+
+| Đại lượng | Giá trị | Cách có |
+|---|---|---|
+| Dòng chạy định mức | **≈ 11–12,5 A** | (a) 1 491 W ÷ hiệu suất ~0,75 ÷ (220 V × cos φ ~0,8) ≈ 11,3 A; (b) bảng NEC 430.248 (Mỹ): 2 HP 1 pha 230 V = 12 A → quy về 220 V ≈ 12,5 A. **Chốt theo nhãn** (`TODO` dòng A trên nhãn) |
+| Dòng khởi động | ≈ 5–7 × → **~60–90 A**, < 1 s | ước tính chung cho motor 1 pha có tụ – `TODO` đo bằng PZEM/ampe kìm lần chạy đầu |
+
+### Chọn thiết bị (quy tắc → giá trị đề xuất; chốt lại theo dòng nhãn)
+| Thiết bị | Quy tắc | Đề xuất |
+|---|---|---|
+| MCB (2 cực) | ≥ 1,25 × dòng định mức; **đường cong D** (hoặc C) để không nhảy lúc khởi động | **20 A curve D** (C 20 A nếu chỉ có C – theo dõi nhảy lúc khởi động) |
+| RCD/RCCB chống giật | 30 mA, dòng định mức ≥ MCB | **2P 25 A 30 mA** |
+| Contactor | AC-3 ≥ dòng định mức (cho cả L và N qua 2 cực) | **AC-3 18 A**, cuộn hút **220 VAC** |
+| Relay nhiệt | Dải chỉnh chứa dòng nhãn | dải **≈ 9–13 A** hoặc 12–18 A, chỉnh = dòng nhãn |
+| Dây động lực | theo dòng 20 A + chiều dài (sụt áp lúc khởi động) | **2,5 mm² Cu** nếu ngắn; dài > ~20 m: `TODO` tính sụt áp, có thể 4 mm² |
+| Đo công suất | phải đo tới ≥ 90 A khởi động | **PZEM-004T bản 100 A có CT kẹp** (bản 10 A shunt KHÔNG đủ) |
+| Nguồn ESP32 | cách ly 220 V → 5 V | ≥ 1 A |
+
+Kiểm lại: tụ khởi động/tụ chạy của motor còn tốt không (motor 1 pha hỏng tụ → không quay, dòng cao, relay nhiệt cắt).
 Tủ: nhựa IP65 mua sẵn, ray DIN (không in PETG làm vỏ tủ điện – PETG không chống cháy).
 
 ## Nguồn

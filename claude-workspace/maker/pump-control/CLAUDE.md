@@ -1,4 +1,4 @@
-# pump-control – điều khiển máy bơm 2 kW từ xa bằng ESP32-WROOM-32D (công trình cho khách)
+# pump-control – điều khiển máy bơm 220 V 1 pha 2 HP (≈ 1,5 kW) từ xa bằng ESP32-WROOM-32D (công trình cho khách)
 
 ## Bối cảnh
 - **Công trình cho khách** (2026-10-25): khách chưa có gì (chưa tủ điện, chưa máy chủ).

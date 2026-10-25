@@ -1,6 +1,6 @@
 # Khảo sát tại chỗ khách (GĐ0)
 
-Mang theo: điện thoại (chụp ảnh, đo sóng Wi-Fi), thước, bút thử điện / đồng hồ vạn năng (chỉ đo khi có thợ điện).
+Mang theo: điện thoại (chụp ảnh, đo sóng Wi-Fi), thước, bút thử điện / đồng hồ vạn năng (đo khi đã cắt nguồn; đo có điện thì cẩn thận, 1 tay).
 **Không mở nắp hay chạm dây đang có điện.**
 
 ## Motor / máy bơm (chụp rõ nhãn)

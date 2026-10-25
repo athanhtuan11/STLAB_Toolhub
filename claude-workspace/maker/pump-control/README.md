@@ -1,6 +1,6 @@
 # pump-control
 
-Điều khiển máy bơm 2 kW từ xa bằng ESP32-WROOM-32D – công trình cho khách. Quy ước và an toàn: `CLAUDE.md`.
+Điều khiển máy bơm 220 V 1 pha 2 HP (≈ 1,5 kW) từ xa bằng ESP32-WROOM-32D – công trình cho khách. Quy ước và an toàn: `CLAUDE.md`.
 
 ## Quyết định
 | Ngày | Quyết định |
@@ -19,4 +19,4 @@
 | 4 | Thông báo cho khách (bật/tắt, lỗi) + hoàn thiện app | chưa |
 
 ## Khảo sát
-TODO (sau GĐ0).
+- Motor: **220 V, 1 pha, 2 HP** (Tuan, 2026-10-25). Còn thiếu: dòng A trên nhãn, loại bơm, sóng Wi-Fi tại chỗ đặt tủ.
