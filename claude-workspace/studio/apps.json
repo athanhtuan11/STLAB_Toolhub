@@ -72,5 +72,13 @@
       "single_instance": true,
       "note": "Có token (~/.photocraft); chỉ đọc/ghi file trong thư mục media"
     }
-  ]
+  ],
+  "openers": {
+    "bambu": {
+      "name": "Bambu Studio",
+      "exe": "C:/Program Files/Bambu Studio/bambu-studio.exe",
+      "image": "bambu-studio.exe",
+      "note": "Chi de mo file .3mf/.stl tu nut 'Mo bang phan mem goc' (khong co cong MCP)"
+    }
+  }
 }

@@ -22,6 +22,8 @@
     </div>
     <div class="actions" style="margin-top:auto">
       <a class="btn" href="{{ url_for('hub.du_an_chi_tiet', slug=p.slug) }}">Xem CLAUDE.md</a>
+      {% if p.main_file %}<button data-post="/api/open-file/{{ p.slug }}/{{ p.main_file.i }}" data-busy="Đang mở…"
+        title="{{ p.main_file.rel }}">Mở bằng {{ p.main_file.app_name }}</button>{% endif %}
       <button data-post="/api/open/{{ p.slug }}">Mở VS Code</button>
     </div>
   </article>

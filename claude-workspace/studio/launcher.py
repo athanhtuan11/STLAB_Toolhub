@@ -89,9 +89,10 @@ def status():
             for a, n in zip(apps, nghe)]
 
 
-def start(app_id, wait=90, pair=None):
-    """Mo ung dung (neu cong chua mo), cho cong san sang, roi xep canh Claude Desktop (neu bat layout)."""
-    r = _start(app_id, wait)
+def start(app_id, wait=90, pair=None, extra_args=()):
+    """Mo ung dung (neu cong chua mo), cho cong san sang, roi xep canh Claude Desktop (neu bat layout).
+    extra_args: them vao cuoi lenh (vd. file can mo - nut "mo bang phan mem goc", toolhub/opener.py)."""
+    r = _start(app_id, wait, extra_args)
     layout = load_config().get("layout", {})
     if r["ok"] and (layout.get("enabled") if pair is None else pair):
         lr = arrange(app_id)
@@ -99,7 +100,7 @@ def start(app_id, wait=90, pair=None):
     return r
 
 
-def _start(app_id, wait=90):
+def _start(app_id, wait=90, extra_args=()):
     """Mo ung dung neu cong chua mo, roi cho cong san sang. Tra ve {ok, msg}."""
     cfg = load_config()
     a = get_app(app_id)
@@ -117,7 +118,7 @@ def _start(app_id, wait=90):
         env.pop(k, None)
     flags = (subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP) if WIN else 0
     subprocess.Popen(
-        [a["exe"], *a["args"]], cwd=str(Path(a["exe"]).parent), env=env, creationflags=flags,
+        [a["exe"], *a["args"], *extra_args], cwd=str(Path(a["exe"]).parent), env=env, creationflags=flags,
         stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, close_fds=True,
     )
     deadline = time.time() + wait

@@ -4,6 +4,7 @@ from flask import Blueprint, abort, jsonify, render_template, request, send_file
 
 import launcher
 
+from . import opener
 from . import printprep
 from . import photolab
 from . import workspace as ws
@@ -92,7 +93,10 @@ def skills():
 
 @bp.get("/du-an")
 def du_an():
-    return render_template("du-an.html", projects=ws.projects())
+    ps = ws.projects()
+    for p in ps:
+        p["main_file"] = opener.primary(p["rel"])
+    return render_template("du-an.html", projects=ps)
 
 
 @bp.get("/du-an/<slug>")
@@ -100,7 +104,8 @@ def du_an_chi_tiet(slug):
     p = ws.project(slug)
     if p is None:
         abort(404)
-    return render_template("du-an-chi-tiet.html", p=p, in3d=printprep.cau_hinh(p["rel"]) is not None)
+    return render_template("du-an-chi-tiet.html", p=p, in3d=printprep.cau_hinh(p["rel"]) is not None,
+                           files=opener.files(p["rel"]))
 
 
 # ---------- Chuan bi in (maker/robotics-cad/scripts/prepare-print.py) ----------
@@ -190,6 +195,15 @@ def api_community_check(name=None):
 @bp.post("/api/open/<slug>")
 def api_open(slug):
     return jsonify(ws.open_in_vscode(slug))
+
+
+@bp.post("/api/open-file/<slug>/<int:i>")
+def api_open_file(slug, i):
+    """Mo file thu i (theo opener.files) bang phan mem tao ra no - web khong gui duong dan."""
+    p = ws.project(slug)
+    if p is None:
+        abort(404)
+    return jsonify(opener.open_file(p["rel"], i))
 
 
 # ---------- Sua anh (photo-ai) ----------

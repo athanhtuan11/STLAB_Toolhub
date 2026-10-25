@@ -7,8 +7,24 @@
     <h1>{{ p.rel }}</h1>
     <p class="sub">{{ p.title }} · {{ p.todo }} TODO</p>
   </div>
-  <button class="primary" data-post="/api/open/{{ p.slug }}">Mở trong VS Code</button>
+  <div class="actions">
+    {% if files %}<button class="primary" data-post="/api/open-file/{{ p.slug }}/{{ files[0].i }}" data-busy="Đang mở…"
+      title="{{ files[0].rel }}">Mở {{ files[0].name }} bằng {{ files[0].app_name }}</button>{% endif %}
+    <button {% if not files %}class="primary" {% endif %}data-post="/api/open/{{ p.slug }}">Mở trong VS Code</button>
+  </div>
 </div>
+
+{% if files|length > 1 %}
+<section class="card" style="margin-bottom:14px">
+  <h3>Mở bằng phần mềm gốc <span class="muted">({{ files|length }} file)</span></h3>
+  <table>
+    {% for f in files %}
+    <tr><td><code>{{ f.rel }}</code></td><td class="muted">{{ f.app_name }}</td>
+      <td><button data-post="/api/open-file/{{ p.slug }}/{{ f.i }}" data-busy="Đang mở…">Mở</button></td></tr>
+    {% endfor %}
+  </table>
+</section>
+{% endif %}
 
 {% if p.links or p.mcp %}
 <div class="actions" style="margin-bottom:14px">
