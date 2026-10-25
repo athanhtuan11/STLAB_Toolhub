@@ -25,6 +25,9 @@ L ─► chân chung công tắc ─┬─ TAY ───────────
 A2 ─► N.   Contactor đóng L và N tới motor; PE nối thẳng motor + tủ.
 GPIO26 → IN1 module relay (jumper H); 5V/GND chung với ESP32.
 ```
+Công tắc **1NO + 1NC** (thay vì 2NO): NC đóng cả ở vị trí giữa → vị trí TẮT vẫn để ESP32 bật bơm = chỉ còn 2 chế độ
+TAY / TỰ ĐỘNG (tắt tại tủ bằng CB nhà). Muốn TẮT thật: dùng 2NO hoặc thay khối NC bằng khối NO. Mua loại nào cũng **đo
+thông mạch 3 vị trí** trước khi đấu.
 Ở TAY: app không tắt được và không biết bơm chạy (ESP32 không đọc công tắc – thêm 1 GPIO đọc vị trí nếu cần sau).
 
 ## Firmware (Tuan tự lập trình – đã đồng ý 2026-10-25)
