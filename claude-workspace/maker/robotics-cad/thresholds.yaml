@@ -48,7 +48,6 @@ print:
   bed_near_mm: 0.6             # mat nho ra sat ban hon -> lop dau ep xuong ban, khong can do
   short_overhang_mm: 2.5       # TAM: dai nho ra hep hon (2*dien tich/chu vi, chieu XY) -> tu in duoc: ren dung, vanh
                                # rang, vat nho. Tuan in kiem ren truc vit dung (pushrod P7) roi chinh.
-  support_gap_mm: 0.2          # (khong con dung tu 2026-10-25) support tu ve: khe Z = 1 lop 0.2
   support_gap_max_mm: 0.6      # mat nho ra co mat ngua ben duoi trong khoang nay -> coi la da duoc do
 # CHINH SACH SUPPORT (Tuan 2026-10-25, thay ban 2026-10-23): ve toi uu de it can support; KHONG ve/dung support vao model/STL
 # (support tu ve lap lo truc Worm + ranh thanh rang Housing) - Tuan TU TO support trong Bambu Studio. printability chi bao WARN.

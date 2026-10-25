@@ -95,7 +95,7 @@ def main():
     cu = [f.name for f in stl_dir.glob("*.stl") if f.name not in ghi]
     for f in cu:
         (stl_dir / f).unlink()  # STL sinh tu lan truoc, khong con trong danh sach -> xoa de khong cat lop nham
-    kq = {"so_stl": len(ghi), "quy_tac_khong_khop": chua, "xoa_stl_cu": cu, "support_tu_ve": {}, "support_trong_slicer": sp,
+    kq = {"so_stl": len(ghi), "quy_tac_khong_khop": chua, "xoa_stl_cu": cu, "support_trong_slicer": sp,
           "s": round(time.time() - t0, 1)}
     (stl_dir / "_export-stl.json").write_text(json.dumps(kq, ensure_ascii=False, indent=1), encoding="utf-8")
     print("XUAT-STL", json.dumps(kq, ensure_ascii=False), flush=True)

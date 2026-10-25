@@ -20,7 +20,7 @@ import numpy as np
 MAC_DINH = {"overhang_deg": 45, "overhang_tol_deg": 2.0, "support_min_patch_mm2": 4.0, "min_patch_height_mm": 1.0, "bridge_max_mm": 5.0,
             "bridge_closed_max_mm": 8.0, "bed_tol_mm": 0.2,
             "brim_contact_max_mm2": 120.0, "brim_aspect_min": 2.5,
-            "support_gap_max_mm": 0.6, "support_gap_mm": 0.2,
+            "support_gap_max_mm": 0.6,
             "bed_near_mm": 0.6, "short_overhang_mm": 2.5}
 
 
@@ -127,13 +127,13 @@ def _hinh(tri):
 
 
 def vung_can_do(tri, ng):
-    """Cac cum mat nho ra CAN DO (chung cho phan_tich va tao_support) -> (thong tin cum, chi so tam giac)."""
+    """Cac cum mat nho ra CAN DO (phan_tich) -> (thong tin cum, chi so tam giac)."""
     ok, nz, dt, zmin, zmax = _hinh(tri)
     # mat up xuong, nghieng it hon (overhang_deg - tol) so voi phuong ngang; tol: vat dung 45 do van in duoc.
     # mat sat ban (zmax <= bed_near_mm): lop dau ep xuong ban in duoc
     goc = ng["overhang_deg"] - ng["overhang_tol_deg"]
     nho = ok & (zmax > ng["bed_near_mm"]) & (-nz > np.cos(np.radians(goc)))
-    # da co do ngay ben duoi (support tu ve Support_* / support sinh boi tao_support, khe <= support_gap_max_mm)
+    # da co do ngay ben duoi (khe <= support_gap_max_mm)
     nho[_co_do_duoi(tri, nz, np.nonzero(nho)[0], ng["support_gap_max_mm"])] = False
     cum, chon = [], []
     for c in _cum(tri, nho):
@@ -151,68 +151,6 @@ def vung_can_do(tri, ng):
                         "z_mm": round(float(zmin[c].min()), 1)})
             chon.append(c)
     return cum, (np.concatenate(chon) if chon else np.zeros(0, dtype=int)), nz
-
-
-def tao_support(tri, nguong=None):
-    """Support TU VE (khong de slicer sinh): duoi moi tam giac nho ra chua duoc do -> lang tru dung tu ban (hoac tu mat
-    chi tiet ngay ben duoi) len toi mat nho ra, chua khe Z `support_gap_mm` de be. tri: (n,3,3) theo HUONG IN, day z=0.
-    Tra (m,3,3) tam giac cac lang tru (moi lang tru 1 vo kin; slicer gop cac vo chong nhau)."""
-    ng = dict(MAC_DINH, **(nguong or {}))
-    tri = np.asarray(tri, dtype=np.float64)
-    _, idx, nz = vung_can_do(tri, ng)
-    if len(idx) == 0:
-        return np.zeros((0, 3, 3))
-    gap = ng["support_gap_mm"]
-    # day lang tru: mat NGUA cao nhat ben duoi tam tam giac (neu co) + gap, khong thi ban (z 0)
-    up = tri[nz > 0.3]
-    cen = tri[idx].mean(axis=1)
-    day = np.zeros(len(idx))
-    if len(up):
-        a = up[:, 0]
-        v0, v1 = (up[:, 1] - a)[:, :2], (up[:, 2] - a)[:, :2]
-        d00, d01, d11 = (v0 * v0).sum(1), (v0 * v1).sum(1), (v1 * v1).sum(1)
-        den = np.where(np.abs(d00 * d11 - d01 * d01) > 1e-12, d00 * d11 - d01 * d01, np.nan)
-        for s in range(0, len(idx), 2000):
-            c = cen[s:s + 2000]
-            v2 = c[:, None, :2] - a[None, :, :2]
-            d20, d21 = (v2 * v0[None]).sum(2), (v2 * v1[None]).sum(2)
-            v = (d11[None] * d20 - d01[None] * d21) / den[None]
-            w = (d00[None] * d21 - d01[None] * d20) / den[None]
-            u = 1 - v - w
-            z = u * up[None, :, 0, 2] + v * up[None, :, 1, 2] + w * up[None, :, 2, 2]
-            duoi = (u >= -1e-6) & (v >= -1e-6) & (w >= -1e-6) & (z < c[:, None, 2] - 1e-3)
-            zz = np.where(duoi, z, -np.inf).max(axis=1)
-            day[s:s + 2000] = np.where(np.isfinite(zz), zz + gap, 0.0)
-    out = []
-    for k, i in enumerate(idx):
-        t = tri[i].copy()
-        t[:, 2] -= gap
-        if t[:, 2].max() - day[k] < 0.05:  # khong con cho (mat ngay tren mat duoi) -> bo
-            continue
-        b = t.copy()
-        b[:, 2] = day[k]
-        # dinh: t (huong len = nguoc tam giac nho ra), day: b (huong xuong), 3 mat ben
-        pr = [[t[0], t[2], t[1]], [b[0], b[1], b[2]]]
-        for j in range(3):
-            p, q = j, (j + 1) % 3
-            pr += [[b[q], b[p], t[p]], [b[q], t[p], t[q]]]  # canh chung di nguoc chieu mat day/dinh
-        pr = np.array(pr)
-        if np.einsum("ij,ij->i", pr[:, 0], np.cross(pr[:, 1], pr[:, 2])).sum() < 0:  # vo kin, phap tuyen ra ngoai
-            pr = pr[:, ::-1]
-        out.append(pr)
-    return np.concatenate(out).astype(np.float64) if out else np.zeros((0, 3, 3))
-
-
-def ghi_stl(p, tri):
-    tri = np.asarray(tri, dtype=np.float32)
-    n = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
-    n /= np.maximum(np.linalg.norm(n, axis=1, keepdims=True), 1e-12)
-    rec = np.zeros(len(tri), dtype=np.dtype([("n", "<f4", 3), ("v", "<f4", (3, 3)), ("a", "<u2")]))
-    rec["n"], rec["v"] = n, tri
-    with open(p, "wb") as f:
-        f.write(b"STLab printability support".ljust(80, b" "))
-        f.write(np.uint32(len(tri)).tobytes())
-        f.write(rec.tobytes())
 
 
 def kiem_lop(stl, lop_mm=0.2, vuon_mm=0.3, dien_tich_min_mm2=0.5):

@@ -83,7 +83,9 @@ def main():
             cb_in.append(f"{f.name}: CAN SUPPORT (to trong Bambu Studio) " + ", ".join(
                 f"{c['mm2']} mm2 o z {c['z_mm']}" for c in r["cum_nho"][:2]))
         for x in printability.kiem_lop(f):
-            if x["loai"].startswith("roi"):
+            if x["loai"].startswith("roi") and r["can_support"]:  # cum roi o chi tiet da bao can support = Tuan to support
+                cb_in.append(f"{f.name}: cum ROI {x['mm2']} mm2 o z {x['z_mm']} -> to support tu ban (xy {x['bao_xy']})")
+            elif x["loai"].startswith("roi"):
                 loi_in.append(f"{f.name}: cum ROI {x['mm2']} mm2 o z {x['z_mm']} (xy {x['bao_xy']})")
             elif x["loai"] == "vuon ra" and x.get("mm2", 0) > 20:
                 cb_in.append(f"{f.name}: vuon ra {x['mm2']} mm2 o z {x['z_mm']} (bac cau? xy {x['bao_xy']})")

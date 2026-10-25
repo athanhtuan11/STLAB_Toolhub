@@ -80,11 +80,11 @@ Sinh tự động từ `freecad/pushrod_arm.FCStd` bằng `maker/robotics-cad/sc
 | P1_Base__0.24Draft_PETG | 2h27 | 92.9 | – |
 | P2_Turret_Turntable__0.20_PETG | 2h56 | 76.3 | – |
 | P3_Forearm_Plates__0.20_PETG | 0h41 | 21.3 | – |
-| P4_Boom_Gripper_Housings__0.20_PETG | 2h54 | 82.5 | – |
+| P4_Boom_Gripper_Housings__0.20_PETG | 2h29 | 71.5 | – |
 | P5_Gears_Racks_Pins__0.16_PETG | 1h38 | 23.8 | – |
 | P6_GripperPads__TPU95A | 0h05 | 0.6 | – |
-| P7_Worms__0.12_PETG_100pct | 0h34 | 2.3 | – |
-| **Tổng** | **11h18** | **299.7** | |
+| P7_Worms__0.12_PETG_100pct | 0h34 | 1.9 | – |
+| **Tổng** | **10h53** | **288.3** | |
 
 ## Chưa phân loại (TODO)
 Label không khớp quy ước vít / `components=` / `export.rules`:

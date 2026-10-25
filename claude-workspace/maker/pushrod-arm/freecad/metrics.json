@@ -1414,7 +1414,7 @@
    "solids": 1
   },
   "Worm_Elbow": {
-   "volume_mm3": 761.1,
+   "volume_mm3": 758.5,
    "bbox_mm": [
     15.72,
     1.21,
@@ -1424,14 +1424,14 @@
     195.56
    ],
    "com_mm": [
-    25.02,
+    25.03,
     9.48,
-    182.14
+    182.16
    ],
    "solids": 1
   },
   "Worm_Shoulder": {
-   "volume_mm3": 761.1,
+   "volume_mm3": 758.5,
    "bbox_mm": [
     56.71,
     0.51,
@@ -1441,9 +1441,9 @@
     105.12
    ],
    "com_mm": [
-    65.42,
+    65.44,
     9.48,
-    92.02
+    92.05
    ],
    "solids": 1
   },
@@ -1472,7 +1472,7 @@
    "support": false
   },
   "P2_Turret_Turntable__0.20_PETG": {
-   "time_s": 10567,
+   "time_s": 10565,
    "grams": 76.3,
    "support": false
   },
@@ -1482,8 +1482,8 @@
    "support": false
   },
   "P4_Boom_Gripper_Housings__0.20_PETG": {
-   "time_s": 10446,
-   "grams": 82.5,
+   "time_s": 8997,
+   "grams": 71.5,
    "support": false
   },
   "P5_Gears_Racks_Pins__0.16_PETG": {
@@ -1497,8 +1497,8 @@
    "support": false
   },
   "P7_Worms__0.12_PETG_100pct": {
-   "time_s": 2062,
-   "grams": 2.3,
+   "time_s": 2057,
+   "grams": 1.9,
    "support": false
   }
  }
