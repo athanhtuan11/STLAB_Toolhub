@@ -130,6 +130,9 @@ Mẫu: `maker/pushrod-arm/ASSEMBLY.md` (34 bước) + `freecad/scripts/render_as
   `steps.json` báo chi tiết chưa thuộc bước nào → phải rỗng.
 - Phần kỹ thuật (tự hãm, tỉ số, TODO) để mục **Ghi chú cho thầy/cô** cuối file. Lưu ý BẮT BUỘC (pin, servo không bảo vệ
   kẹt, mỏ hàn…) – xem `maker/robotics-cad/CLAUDE.md`.
+- **Sai kích thước linh kiện → sửa chi tiết gốc** (vd. trụ đế đúng chiều cao bộ thu), không thêm ống kê/đệm tạm. Chỉ kê tạm khi
+  chi tiết gốc đã in và Tuan đồng ý; khi đó ghi ngay việc "làm lại chuẩn" vào README mục nâng cấp (pushrod-arm
+  `Receiver_riser` 2026-10-25).
 - Thứ tự lắp phải xét **hành vi cơ cấu** (tự hãm, chỉ vào được 1 hướng) – quét đường lắp từng cụm trên model, không chỉ tiếp xúc.
 
 ## Điện (nhắc khi ghép linh kiện)
