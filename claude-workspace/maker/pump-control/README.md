@@ -12,11 +12,11 @@
 ## Giai đoạn
 | GĐ | Việc | Trạng thái |
 |---|---|---|
-| 0 | Khảo sát (`docs/survey-checklist.md`): nhãn motor, loại bơm, sóng Wi-Fi; vẽ trước app + bố trí tủ (`design/`) | chưa |
+| 0 | Khảo sát: motor 220 V 2 HP, Wi-Fi có, CB/RCD nhà bỏ qua; còn vẽ trước app + bố trí tủ (`design/`) | khảo sát xong |
 | 1 | Bản thử 12 V: ESP32 + relay + bơm mini + PZEM, firmware 2 lớp, RainMaker public, thử đủ tình huống lỗi | chưa |
-| 2 | Sơ đồ tủ + BOM theo dòng trên nhãn (`docs/power-and-wiring.md` mục 4) | chưa |
+| 2 | BOM tủ điều khiển (`docs/bom.md`); sơ đồ đấu dây chi tiết | BOM xong |
 | 3 | Tuan lắp tủ → thử không tải → có tải, đo dòng khởi động; bàn giao + hướng dẫn khách | chưa |
 | 4 | Thông báo cho khách (bật/tắt, lỗi) + hoàn thiện app | chưa |
 
 ## Khảo sát
-- Motor: **220 V, 1 pha, 2 HP** (Tuan, 2026-10-25). Còn thiếu: dòng A trên nhãn, loại bơm, sóng Wi-Fi tại chỗ đặt tủ.
+- Motor: **220 V, 1 pha, 2 HP**. Wi-Fi tại chỗ đặt tủ: **có**. CB/RCD nhà khách: Tuan bỏ qua kiểm. Loại bơm: chưa rõ (chống chạy khô bằng phần mềm trước).
