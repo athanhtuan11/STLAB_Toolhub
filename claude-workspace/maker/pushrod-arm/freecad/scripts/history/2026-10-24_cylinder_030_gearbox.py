@@ -6,7 +6,7 @@
 # truc vit y 9.4, z = zs*20.25; banh vit truc // y tai x 60, z = zs*8.25 (zs = -1 vai, +1 khuyu).
 import math
 import sys
-sys.path.insert(0, "D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/maker/robotics-cad/scripts")
+sys.path.insert(0, "D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/tools/robotics-cad/scripts")
 import FreeCAD as App, Part, safe_edit as se  # noqa: E401
 from FreeCAD import Vector as V
 

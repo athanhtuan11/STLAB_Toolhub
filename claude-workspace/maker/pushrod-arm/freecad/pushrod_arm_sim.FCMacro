@@ -143,7 +143,7 @@ def fast_collider():
     if "c" not in FAST:
         try:
             import sys
-            sys.path.insert(0, os.path.join(os.path.dirname(REST_FILE), "..", "..", "robotics-cad", "scripts"))
+            sys.path.insert(0, os.path.join(os.path.dirname(REST_FILE), "..", "..", "..", "tools", "robotics-cad", "scripts"))
             import fast_collide
             FAST["c"] = fast_collide.Collider({l: OBJ[l] for p in coll_pairs() for l in p})
         except Exception as e:

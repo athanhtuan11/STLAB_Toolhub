@@ -9,7 +9,7 @@ description: Thiet ke co khi robot trong FreeCAD cho STLab - chon linh kien tu d
 > Viết script FreeCAD thì theo skill `freecad-scripts` (cộng đồng).
 
 ## Nguồn dữ liệu
-- Danh mục linh kiện: `D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/maker/robotics-cad/library/components.yaml`
+- Danh mục linh kiện: `D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/tools/robotics-cad/library/components.yaml`
   (nguồn duy nhất – không có bản sao). Đọc **trước** khi dùng thông số linh kiện; không có trong danh mục
   → nói rõ là chưa có nguồn, ghi `TODO`.
 - Linh kiện có `thu_vien: cyberbrick` (CyberBrick của Bambu Lab): model nằm ở
@@ -64,9 +64,9 @@ description: Thiet ke co khi robot trong FreeCAD cho STLab - chon linh kien tu d
 - Chi tiết sinh bằng mô phỏng cắt (bánh vít "hob", ren…) toàn mặt B-spline: boolean chậm ~7 lần
   (đo 22/10: bánh vít z16 2.002 mặt → `common` 12,7 s; bản 354 mặt → 1,7 s). Giữ bản nặng chỉ để xuất STL;
   lắp ráp, kiểm va chạm, mô phỏng dùng bản nhẹ.
-- Sửa chi tiết bằng boolean (cắt hốc, thêm gân): dùng `maker/robotics-cad/scripts/safe_edit.py`
+- Sửa chi tiết bằng boolean (cắt hốc, thêm gân): dùng `tools/robotics-cad/scripts/safe_edit.py`
   (`guard` → `backup` → `safe_cut`/`safe_fuse` → `apply` → `save`), không gọi `shape.cut()` trần – STEP linh kiện
-  lỗi BOP làm cut "thành công" mà bỏ 0 mm³. Chi tiết: `maker/robotics-cad/CLAUDE.md` mục Quy ước.
+  lỗi BOP làm cut "thành công" mà bỏ 0 mm³. Chi tiết: `tools/robotics-cad/CLAUDE.md` mục Quy ước.
 - Trước lệnh dài: **lưu tài liệu** (`doc.save()`). Báo `GUI_DISPATCH_STUCK` → gọi `get_rpc_status`, không gửi thêm lệnh GUI.
 
 ## Khi thiết kế gá/khung
@@ -139,7 +139,7 @@ Mẫu: `maker/pushrod-arm/ASSEMBLY.md` (34 bước) + `freecad/scripts/render_as
   (bảng bước: bối cảnh, chi tiết mới + vector tách, cụm di chuyển cùng, hướng nhìn) + `crop_assembly_images.py`.
   Render qua `gui_run.py`; **tự kiểm ảnh trắng và chụp lại**; `steps.json` báo chi tiết chưa thuộc bước nào → phải rỗng.
 - Phần kỹ thuật (tự hãm, tỉ số, TODO) để mục **Ghi chú cho thầy/cô** cuối file. Lưu ý BẮT BUỘC (pin, servo không bảo vệ
-  kẹt, mỏ hàn…) – xem `maker/robotics-cad/CLAUDE.md`.
+  kẹt, mỏ hàn…) – xem `tools/robotics-cad/CLAUDE.md`.
 - **Sai kích thước linh kiện → sửa chi tiết gốc** (vd. trụ đế đúng chiều cao bộ thu), không thêm ống kê/đệm tạm. Chỉ kê tạm khi
   chi tiết gốc đã in và Tuan đồng ý; khi đó ghi ngay việc "làm lại chuẩn" vào README mục nâng cấp (pushrod-arm
   `Receiver_riser` 2026-10-25).

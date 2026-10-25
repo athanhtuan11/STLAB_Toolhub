@@ -5,8 +5,8 @@
 # (community/cyberbrick-official/models, xem README "Nguon so do"); cho nao chua co so do that -> TODO trong README.
 import json, math, os, shutil, sys, time
 import FreeCAD as App, Part
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "robotics-cad", "scripts"))
-import safe_edit as se  # noqa: E402  boolean co kiem (maker/robotics-cad/scripts/safe_edit.py)
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..", "tools", "robotics-cad", "scripts"))
+import safe_edit as se  # noqa: E402  boolean co kiem (tools/robotics-cad/scripts/safe_edit.py)
 
 V = App.Vector
 HERE = os.path.dirname(os.path.abspath(__file__))

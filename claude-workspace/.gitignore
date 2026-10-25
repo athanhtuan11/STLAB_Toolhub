@@ -8,13 +8,13 @@
 **/.claude/agents/
 
 # Du lieu ca nhan hoc vien: khong dua len GitHub
-/stlab/bao-cao-phu-huynh/
+/stlab/parent-reports/
 
 # Moi truong Python (uv tao lai tu uv.lock)
 .venv/
 __pycache__/
 # Thu vien cai rieng cho freecadcmd (pip --target), cai lai theo docs/COMMUNITY.md (manifold3d)
-/maker/robotics-cad/.pylib/
+/tools/robotics-cad/.pylib/
 # Du an CAD (maker/<project>/): file FreeCAD chi de tren may (Tuan chon 2026-10-23), ban sao luu + file sinh
 /maker/*/freecad/*.FCStd
 /maker/*/freecad/*.FCBak

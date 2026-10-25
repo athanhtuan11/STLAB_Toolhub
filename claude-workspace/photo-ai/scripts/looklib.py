@@ -25,7 +25,7 @@ from luts import COMMUNITY, OUT as LUTS, slug
 
 ROOT = Path(__file__).resolve().parent.parent
 LOOKS_FILE = ROOT / "presets" / "looks.json"
-BASE_FILE = ROOT / "presets" / "su-kien-ngoai-troi.json"
+BASE_FILE = ROOT / "presets" / "outdoor-event.json"
 LC_CLI = Path(r"C:\Program Files\LightCraft\lightcraft-cli.exe")
 PC_CLI = Path(r"C:\Program Files\PhotoCraft\photocraft-cli.exe")
 EXTS = {".jpg", ".jpeg", ".png", ".tif", ".tiff"}

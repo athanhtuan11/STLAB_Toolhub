@@ -4,7 +4,7 @@ Chi DOC anh nguon. Ket qua ghi vao --out:
   <nhom>/                       anh xem truoc (2048 px, khong EXIF) theo nhom: dat / xem-lai / loai / trung-lap.
                                 Tuan duyet bang cach keo anh giua cac thu muc; develop.py xuat nhung anh trong dat/.
   tong-quan-<nhom>.jpg          bang anh kem ly do (khung mat: xanh = dat, vang = nghi ngo, do = loi)
-  bao-cao.csv / bao-cao.json    moi anh: nhom, ly do, diem tung khuon mat
+  report.csv / report.json    moi anh: nhom, ly do, diem tung khuon mat
 
 Chay:  uv run scripts/cull.py <thu-muc-anh> --out <thu-muc-ket-qua>
 """
@@ -248,13 +248,13 @@ def main() -> None:
     classify(photos, a)
     mark_bursts(photos, a)
 
-    with open(a.out / "bao-cao.csv", "w", newline="", encoding="utf-8-sig") as fh:
+    with open(a.out / "report.csv", "w", newline="", encoding="utf-8-sig") as fh:
         w = csv.writer(fh)
         w.writerow(["file", "nhom", "ly_do", "so_mat", "loat", "mat_chinh: do_net / nham_trai / nham_phai"])
         for p in photos:
             faces = " | ".join(f"{f.sharp:.0f}/{f.blink_l}/{f.blink_r}" for f in p.faces if f.main)
             w.writerow([p.file, p.group, "; ".join(p.reasons), len(p.faces), p.burst, faces])
-    (a.out / "bao-cao.json").write_text(
+    (a.out / "report.json").write_text(
         json.dumps([asdict(p) for p in photos], ensure_ascii=False, indent=1), encoding="utf-8"
     )
     for g in GROUPS:

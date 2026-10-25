@@ -11,11 +11,11 @@ description: Tu dung video ngan (TikTok/Reels/Shorts) cho STLab tu clip tu quay 
 Thư mục làm việc: `D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/video-ai` (đọc `CLAUDE.md` ở đó trước).
 
 ## Các bước
-1. **Dự án**: `projects/<ten>/inbox/` có clip. Chưa có `brief.md` → hỏi Tuan theo `projects/_mau-brief.md`
+1. **Dự án**: `projects/<ten>/inbox/` có clip. Chưa có `brief.md` → hỏi Tuan theo `projects/_brief-template.md`
    (tối thiểu: mục tiêu, nơi đăng, thời lượng, CTA). Clip có học sinh → hỏi có cần ghi vào `rieng-tu.txt`.
 2. **Phân tích**: `uv run python scripts/analyze.py projects/<ten>` (chạy tại `video-ai/`).
    Đọc `analysis/tom-tat.md`; xem `analysis/<clip>/contact.jpg` (trừ clip riêng tư).
-   Tên riêng sai lặp lại → thêm vào `sua-loi.txt`/`tu-vung.txt` rồi chạy lại.
+   Tên riêng sai lặp lại → thêm vào `corrections.txt`/`vocabulary.txt` rồi chạy lại.
 3. **Kế hoạch** `plan.json` (cấu trúc ở đầu `scripts/build.py`):
    - Chọn đoạn theo **câu nói trọn vẹn** (mốc `tu`/`den` lấy từ tóm tắt, lề 0,1–0,2 s), đúng thứ tự kể.
    - Câu đầu phải "móc" người xem trong 3 s; bỏ đoạn lặp, nói vấp, ngoài lề; tổng thời lượng theo brief

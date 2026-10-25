@@ -3,7 +3,7 @@
 # Tuan 2026-10-24: "Model rx tx cua cyberbrick co shield..lúc ve can chu y". Khong in lai Base_housing: tam XA004 nang
 # len z 21,7 bang 4 ong nang in roi dat len 4 tru cu (lo shield 4 x Ø2,7 tai ±11,5/±12 trung tam tru).
 import sys
-sys.path.insert(0, "D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/maker/robotics-cad/scripts")
+sys.path.insert(0, "D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/tools/robotics-cad/scripts")
 import FreeCAD as App, Part, safe_edit as se  # noqa: E401
 from FreeCAD import Vector as V
 

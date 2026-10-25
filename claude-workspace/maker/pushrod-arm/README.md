@@ -24,7 +24,7 @@ Bản tự sinh đầy đủ (vít, linh kiện, chi tiết in → bàn/nhựa):
 | Vít M2.5 × 6 | 21 | gồm 6 vít khóa chốt in |
 | Vít M2.5 × 8 | 4 | bắt deck |
 | Vít M2.5 × 10 | 2 | |
-Nguồn model linh kiện: `community/cyberbrick-official` (xem `maker/robotics-cad/library/cyberbrick-sources.tsv`).
+Nguồn model linh kiện: `community/cyberbrick-official` (xem `tools/robotics-cad/library/cyberbrick-sources.tsv`).
 
 ## In (bản 2026-10-25 – Bambu PETG Basic, 8 bàn)
 Nhựa: cuộn **Bambu PETG Basic** – profile chính hãng `Bambu PETG Basic @BBL A1` (245 °C, bàn Textured PEI 70 °C, flow 0,94,

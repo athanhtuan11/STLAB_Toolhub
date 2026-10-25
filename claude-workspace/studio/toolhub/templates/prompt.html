@@ -4,9 +4,9 @@
 <div class="head">
   <div>
     <h1>Prompt library</h1>
-    <p class="sub">Prompt đã chạy thử cho FreeCAD và Blender, trong <code>maker/prompt-library/</code>, theo mẫu <code>_mau-prompt.md</code>.</p>
+    <p class="sub">Prompt đã chạy thử cho FreeCAD và Blender, trong <code>tools/prompt-library/</code>, theo mẫu <code>_prompt-template.md</code>.</p>
   </div>
-  <button data-post="/api/open/maker--prompt-library">Mở prompt-library trong VS Code</button>
+  <button data-post="/api/open/tools--prompt-library">Mở prompt-library trong VS Code</button>
 </div>
 
 {% if prompts %}
@@ -21,7 +21,7 @@
 </table>
 </div>
 {% else %}
-<div class="note-box">Chưa có prompt nào. Chạy thử một prompt trong Claude Code (thư mục <code>maker/prompt-library</code> hoặc
+<div class="note-box">Chưa có prompt nào. Chạy thử một prompt trong Claude Code (thư mục <code>tools/prompt-library</code> hoặc
 <code>studio</code>), thấy tốt thì lưu vào <code>freecad/</code> hoặc <code>blender/</code> theo mẫu.</div>
 {% endif %}
 {% endblock %}

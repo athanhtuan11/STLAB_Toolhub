@@ -58,7 +58,7 @@ Ký hiệu: (thứ cấp) = không phải nguồn hãng/repo chính · `TODO` = 
   - Chụp: `Gui.ActiveDocument.ActiveView.saveImage(path, w, h, "Current"|"White"|"Black"|"Transparent")` ([Std_ViewScreenShot](https://raw.githubusercontent.com/FreeCAD/FreeCAD-documentation/main/wiki/Std_ViewScreenShot.md)).
 - **Cách làm đề xuất (không đổi Tip → không recompute, không làm hỏng file):**
   ```python
-  # chạy qua maker/robotics-cad/scripts/gui_run.py (FC_FILE, FC_SCRIPT); KHÔNG lưu file
+  # chạy qua tools/robotics-cad/scripts/gui_run.py (FC_FILE, FC_SCRIPT); KHÔNG lưu file
   for i, f in enumerate(f for f in body.Group if f.isDerivedFrom("PartDesign::Feature")):
       for g in body.Group: g.ViewObject.Visibility = False
       f.ViewObject.Visibility = True          # f.Shape = khối tích lũy tới bước i
@@ -66,7 +66,7 @@ Ký hiệu: (thứ cấp) = không phải nguồn hãng/repo chính · `TODO` = 
       Gui.updateGui(); view.saveImage(f"{out}/step-{i:02d}.png", 1920, 1080, "White")
   ```
   Kèm `steps.json` (tên feature `f.Label`, loại `f.TypeId`, kích thước chính như `Length` của Pad) → Claude viết chú thích/phụ đề từng bước.
-  **Đã làm 2026-10-25: `maker/robotics-cad/scripts/build_replay.py`** (chạy qua `gui_run.py`). Thử thật:
+  **Đã làm 2026-10-25: `tools/robotics-cad/scripts/build_replay.py`** (chạy qua `gui_run.py`). Thử thật:
   - `pushrod_arm.FCStd` = 86 `Part::Feature`, **0 PartDesign Body** (model sinh/sửa bằng script) → không có lịch sử feature;
     chế độ `parts` hiện dần theo 9 nhóm cây (Base → … → Pins_printed). Thứ tự LẮP thật vẫn là `render_assembly.py` (13 bước).
     `TODO`: khung hình còn rộng (tay nhỏ, lệch góc) – tìm vật thể phụ làm `fitAll` rộng ra.
@@ -81,7 +81,7 @@ Ký hiệu: (thứ cấp) = không phải nguồn hãng/repo chính · `TODO` = 
 | Công cụ | Trạng thái (đã kiểm) | Khuyến nghị |
 |---|---|---|
 | **Assembly → Create Simulation** (lõi, 1.1) | RN 1.1: "Create Simulation tool was added making it possible to add motions to joints and create animations" ([RN 1.1](https://raw.githubusercontent.com/FreeCAD/FreeCAD-documentation/main/wiki/Release_notes_1.1.md)). Wiki: Motion Angular/Linear, `Formula` (vd. `1.0*time`), FPS mặc định 30, phát bằng player trong task panel; **không nhắc xuất ảnh/video** ([Assembly_CreateSimulation](https://raw.githubusercontent.com/FreeCAD/FreeCAD-documentation/main/wiki/Assembly_CreateSimulation.md)). Đã đối chiếu: `CommandCreateSimulation.py` trên máy (1.1) **không có** hàm xuất. | **Dùng** để tạo chuyển động; tự chụp khung (dưới). |
-| Xuất video Simulation (`main`/26.3) | `saveAnimation()`: chọn MP4/GIF/AVI(/WebM), lặp `self.assembly.updateForFrame(i)` → `Gui.updateGui()` → `view.saveImage(frame, w, h, "Current")`, ghép bằng PyAV + Pillow ([mã main](https://raw.githubusercontent.com/FreeCAD/FreeCAD/main/src/Mod/Assembly/CommandCreateSimulation.py)); RN 26.3 "Simulations now offer export to video format", 26.3 **chưa phát hành** ([RN 26.3](https://github.com/Reqrefusion/FreeCAD-Documentation-Project/blob/main/wiki/Release_notes_26.3.wikitext)). | **Chép mẫu** vào script STLab (chạy 1.1 qua `gui_run.py`, ghép bằng FFmpeg). Lưu ý: pushrod-arm đã chọn kinematics closed-form (`render_sim_poses.py`) – xem `docs/reports/freecad-cong-dong-tu-dong-hoa.md`. |
+| Xuất video Simulation (`main`/26.3) | `saveAnimation()`: chọn MP4/GIF/AVI(/WebM), lặp `self.assembly.updateForFrame(i)` → `Gui.updateGui()` → `view.saveImage(frame, w, h, "Current")`, ghép bằng PyAV + Pillow ([mã main](https://raw.githubusercontent.com/FreeCAD/FreeCAD/main/src/Mod/Assembly/CommandCreateSimulation.py)); RN 26.3 "Simulations now offer export to video format", 26.3 **chưa phát hành** ([RN 26.3](https://github.com/Reqrefusion/FreeCAD-Documentation-Project/blob/main/wiki/Release_notes_26.3.wikitext)). | **Chép mẫu** vào script STLab (chạy 1.1 qua `gui_run.py`, ghép bằng FFmpeg). Lưu ý: pushrod-arm đã chọn kinematics closed-form (`render_sim_poses.py`) – xem `docs/reports/freecad-community-automation.md`. |
 | **Animate** (`jirivalasek/animate`, 4★, LGPL) | Trajectory/Server/Control/CollisionDetector, "record… series of images and export as a video"; Camera tool còn là kế hoạch; phiên bản FreeCAD hỗ trợ không ghi ([repo](https://github.com/jirivalasek/animate)). | Không (ít người dùng, không rõ hỗ trợ 1.1). |
 | **Inbetweening / i10g** (PyPI `freecad-i10g`) | Theo mô tả tìm kiếm: lưu placement/visibility/màu thành bước, nội suy, xuất ảnh/video/gif (thứ cấp – trang PyPI không tải được). | `TODO` đọc repo; tiềm năng cho exploded animation. |
 | Animation Workbench (microelly2) | Wiki ghi "under construction" (thứ cấp qua tìm kiếm; wiki chặn bot). | Không. |

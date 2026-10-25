@@ -2,7 +2,7 @@
 
 Viết 2026-10-24. Mục đích: với mỗi linh kiện/vật tư STLab dùng, chỉ ra **nguồn gốc chứa kích thước lắp ghép**
 (bản vẽ, STEP, bảng tiêu chuẩn) để thiết kế hốc/lỗ/gá theo số có nguồn, không tự đo/đoán.
-Liên quan: [components.yaml](../maker/robotics-cad/library/components.yaml) ·
+Liên quan: [components.yaml](../tools/robotics-cad/library/components.yaml) ·
 [cad-community-gaps-research.md](cad-community-gaps-research.md) (mục 3: lỗ vít/insert) · [COMMUNITY.md](COMMUNITY.md).
 
 Nhãn: **[hãng]** tài liệu nhà sản xuất · **[chuẩn]** tiêu chuẩn ISO/DIN (qua bảng mở) · **[máy]** file đã cài/đã ghim,
@@ -223,7 +223,7 @@ Thêm mục mới (gợi ý): `mg90s` (TowerPro A–F ở mục 1.2, STEP GrabCA
 
 ## 4. Nguồn nên ghim thêm (chỉ đề xuất)
 
-Đề xuất tạo file `maker/robotics-cad/library/datasheet-sources.tsv` theo mẫu `n20-sources.tsv`, file lưu vào
+Đề xuất tạo file `tools/robotics-cad/library/datasheet-sources.tsv` theo mẫu `n20-sources.tsv`, file lưu vào
 `community/boards-official/drawings/` (board) hoặc `community/datasheets/` (mới). SHA-256 dưới đây tính trên bản tải
 ngày 2026-10-24 (thư mục tạm của Claude, không phải workspace). Khi tải lại, kiểm SHA-256 trước rồi mới ghim.
 

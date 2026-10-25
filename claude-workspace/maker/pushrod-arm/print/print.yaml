@@ -1,4 +1,4 @@
-# pushrod-arm - THONG TIN BAN IN (doc boi maker/robotics-cad/scripts/prepare-print.py)
+# pushrod-arm - THONG TIN BAN IN (doc boi tools/robotics-cad/scripts/prepare-print.py)
 # = check.py (tang 1) // export-stl.py -> slice.py (tang 2). Duong dan tuong doi theo thu muc nay (print/).
 fcstd: ../freecad/pushrod_arm.FCStd
 rest_pose: ../freecad/pushrod_arm_rest.json   # file Luu luc dang mo phong van xuat dung tu the goc

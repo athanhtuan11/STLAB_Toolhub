@@ -65,7 +65,7 @@ Radix và để `build_tokens.py` kiểm. ESP32: chép khối biến từ `token
 ## 2. Công cụ mockup/wireframe Claude dùng bằng file
 
 STLab đã có: HTML → PNG bằng **Edge headless** (`msedge --headless --screenshot=… --window-size=375,812`), dùng trong
-`maker/robotics-cad/scripts/assembly-pdf.py`; Edge 156 cài sẵn, Node v24, Python 3.13 [đo].
+`tools/robotics-cad/scripts/assembly-pdf.py`; Edge 156 cài sẵn, Node v24, Python 3.13 [đo].
 
 | Công cụ | ★ / push [API] | License | Định dạng Claude viết | Ra PNG headless? | Gửi dữ liệu ra ngoài? | Đánh giá |
 |---|---|---|---|---|---|---|
@@ -258,5 +258,5 @@ timeout cụ thể theo dự án). Không đưa mật khẩu Wi-Fi/khóa RainMak
 **(thứ cấp):** [Foxglove 2.0 – Open Robotics Discourse](https://discourse.openrobotics.org/t/foxglove-2-0-integrated-ui-new-pricing-and-open-source-changes/36583) ·
 [SquareLine licenses](https://docs.squareline.io/docs/1.2.0/introduction/licences) · [SquareLine Vision limitations](https://docs.vision.squareline.io/docs/licenses_limitations)
 
-**STLab:** `studio/design/{tokens.json,DESIGN.md,build_tokens.py}` · `studio/toolhub/static/style.css` · `maker/robotics-cad/scripts/assembly-pdf.py` ·
+**STLab:** `studio/design/{tokens.json,DESIGN.md,build_tokens.py}` · `studio/toolhub/static/style.css` · `tools/robotics-cad/scripts/assembly-pdf.py` ·
 `maker/pump-control/firmware/main` (dùng `ESP_RMAKER_UI_*`) · [design-first-research.md](design-first-research.md)

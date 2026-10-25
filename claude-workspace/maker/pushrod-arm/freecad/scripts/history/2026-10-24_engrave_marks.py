@@ -5,7 +5,7 @@
 # 4 E Boom-Forearm, 5 C Boom-Housing_Elbow, 6 D Forearm-Rack_Elbow. Chi khac tren chi tiet IN LAI (2 vo xi-lanh).
 # Mat ngoai phang y = -6 (he xi-lanh) cua ong truot = mat up xuong ban in (print.yaml rotate x 90) -> chu chim in ro.
 import sys
-sys.path.insert(0, "D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/maker/robotics-cad/scripts")
+sys.path.insert(0, "D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/tools/robotics-cad/scripts")
 import FreeCAD as App, Part, safe_edit as se  # noqa: E401
 from FreeCAD import Vector as V
 

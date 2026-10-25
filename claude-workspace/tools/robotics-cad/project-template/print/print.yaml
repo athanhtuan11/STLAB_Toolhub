@@ -1,0 +1,41 @@
+# <project-name> - THONG TIN BAN IN (doc boi tools/robotics-cad/scripts/prepare-print.py)
+# Mau day du: maker/pushrod-arm/print/print.yaml. Duong dan tuong doi theo thu muc nay (print/).
+fcstd: ../freecad/<model>.FCStd
+# rest_pose: ../freecad/<model>_rest.json   # neu co macro mo phong: {Name: [[x,y,z],[q0,q1,q2,q3]]}
+machine: Bambu Lab A1 0.4 nozzle             # profile may trong Bambu Studio
+# Nhua mac dinh (ban nao khong khai filament): cuon Bambu PETG Basic - profile chinh hang
+filament: Bambu PETG Basic @BBL A1
+# filament_overrides: {filament_max_volumetric_speed: ["8"]}   # ghi de khoa filament (gia tri dang list)
+stl: stl                                     # file sinh
+plates_dir: plates                           # file sinh: <plate>/<plate>.3mf + print-overview.png
+
+# Tang 1 - tham so check.py (key=value). Quy uoc ten Label: tools/robotics-cad/CLAUDE.md
+check:
+  - out=../freecad/check
+  - components=CB_*,LK_*,M2_5x*,M3x*      # linh kien mua: chi kiem hinh hoc + va cham
+  - ignore-pair=M2_5x*|*                   # vit trong lo: cho phep cham
+  # - mesh-pair=Gear_*|Pinion_*            # banh rang an khop / dem long: khe nho la dung
+  # - multi-solid=Spacer_*                 # object co y gom nhieu manh
+
+# Huong in: moi chi tiet khop quy tac DAU TIEN (names = Label, glob). Chi tiet khong khop -> khong xuat.
+export:
+  mesh: {linear_mm: 0.03, angular_rad: 0.2618}
+  rules:
+    - {names: [Body_*], group: 01_Body}                       # in nguyen huong trong file
+    - {names: [Cover_*], group: 01_Body, rotate: {x: 180}}    # lat up
+    - {names: ["*_TPU"], group: 09_Pads, rotate: {x: 90}, suffix: _TPU}
+    # frame: Label doi tuong hoac [x,y,z, truc x,y,z, goc] - dua ve he toa do khung truoc khi xoay
+    # split_solids: true - object nhieu manh -> moi manh 1 STL
+
+common: {sparse_infill_pattern: grid}      # ghi de cho moi ban
+
+plates:
+  P1_Body__0.20_PETG:
+    process: 0.20mm Standard @BBL A1       # profile chinh hang; filament lay mac dinh o tren
+    overrides: {wall_loops: "3", sparse_infill_density: "20%"}
+    stl: ["01_Body__*.stl"]
+  P2_Pads__TPU95A:
+    process: 0.20mm Standard @BBL A1
+    filament: Bambu TPU 95A @BBL A1
+    stl: ["*_TPU.stl"]
+    # exclude: ["*_old.stl"]

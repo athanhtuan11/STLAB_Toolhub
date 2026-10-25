@@ -6,7 +6,7 @@
 # Khong day hon duoc: Boom001 vao toi z 7,52 khi L1 = 118 (duoi het, x 28..70) - lan dau dap 1,8 -> kinematics_test cham
 # 313 mm3. Dap 0,7 -> mat ngoai 7,2, khe Boom 0,32 o tu the duoi het. He xi-lanh nhu 2026-10-24_cylinder_030_gearbox.py.
 import sys
-sys.path.insert(0, "D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/maker/robotics-cad/scripts")
+sys.path.insert(0, "D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/tools/robotics-cad/scripts")
 import FreeCAD as App, Part, safe_edit as se  # noqa: E401
 from FreeCAD import Vector as V
 

@@ -1,13 +1,13 @@
 # Nghiên cứu: cộng đồng làm CAD in 3D thế nào – STLab cần cải thiện gì
 
-Viết 2026-10-24 cho pipeline `maker/robotics-cad/` (dự án `pushrod-arm`, `cyberbrick-car`). Tuan sửa/bổ sung trực tiếp file này.
+Viết 2026-10-24 cho pipeline `tools/robotics-cad/` (dự án `pushrod-arm`, `cyberbrick-car`). Tuan sửa/bổ sung trực tiếp file này.
 
 **Phạm vi:** thiết kế cho in FDM ở mức chi tiết cơ khí robot nhỏ (dung sai, lỗ, ren/insert, hướng in, bánh răng),
 hiệu chuẩn Bambu A1, cách dự án robot mở tổ chức repo, hệ sinh thái Bambu, vòng phản hồi sau in.
 
 **Không lặp:** Assembly/VarSet/PartDesign/TopoNaming/TechDraw/headless/addon lắp ráp, code-CAD, CI, `metrics.json`, release
-đã có trong [freecad-automation-research.md](freecad-automation-research.md) và [quy-trinh-chuan-hoa-cad.md](quy-trinh-chuan-hoa-cad.md).
-FEM + số liệu TDS (E, σ theo X-Y/Z) đã có trong `maker/robotics-cad/kiem-tra-model.md` mục 4.
+đã có trong [freecad-automation-research.md](freecad-automation-research.md) và [cad-standard-workflow.md](cad-standard-workflow.md).
+FEM + số liệu TDS (E, σ theo X-Y/Z) đã có trong `tools/robotics-cad/model-checks.md` mục 4.
 
 Nhãn: **[nguồn gốc]** = tài liệu/mã nguồn của hãng hoặc dự án · **[máy]** = đọc file cài trên máy (Bambu Studio 02.07,
 Fasteners 0.5.67, Gears 1.4.0), không chạy gì · **(thứ cấp)** = blog/forum/đại lý · `TODO` = chưa xác nhận.
@@ -136,7 +136,7 @@ lỗ xuyên, hốc đai ốc hay insert. Trục vít (worm) của pushrod là re
 ## 4. Hướng in và độ bền
 
 **Cộng đồng/hãng làm gì**
-- TDS Bambu PETG Basic (đã trích trong `kiem-tra-model.md` 4.4): σ kéo **X-Y 51 ± 1 MPa, Z 35 ± 6 MPa**; E theo X-Y 2 780, theo Z 2 550 MPa.
+- TDS Bambu PETG Basic (đã trích trong `model-checks.md` 4.4): σ kéo **X-Y 51 ± 1 MPa, Z 35 ± 6 MPa**; E theo X-Y 2 780, theo Z 2 550 MPa.
 - Prusa KB: chi tiết FFF "như gỗ" (bền theo một phương), nên hướng in cho chi tiết chịu lực phải chọn theo độ bền.
 - Hubs, hãng dịch vụ in, bản hướng dẫn FDM của họ:
   - Chốt **< 5 mm** chỉ gồm đường viền nên yếu; thêm bo nhỏ ở chân chốt.
@@ -236,7 +236,7 @@ FCStd chỉ nằm trên máy. GĐ C (Release) chưa làm.
 
 **STLab hiện có:** `/print-result` → README + `harness-lab/inbox.md` (chữ). GĐ E: "lỗi lặp ≥ 2 lần thành quy tắc".
 
-**Khoảng trống:** chưa có **dữ liệu số**. Đề xuất file `maker/robotics-cad/measurements.yaml` (lên git):
+**Khoảng trống:** chưa có **dữ liệu số**. Đề xuất file `tools/robotics-cad/measurements.yaml` (lên git):
 - Mỗi dòng gồm: ngày, máy (A1 + đầu phun), nhựa (preset + lô cuộn), process, chi tiết/mẫu, kích thước thiết kế, kích thước đo
   (trung bình 3 lần), loại (lỗ đứng/lỗ nằm/trục/khe), kết quả lắp (lỏng/vừa/chặt).
 - Script tính đề xuất `filament_shrink` và `xy_hole_compensation`, rồi ghi **nguồn = id phép đo** vào `thresholds.yaml`.

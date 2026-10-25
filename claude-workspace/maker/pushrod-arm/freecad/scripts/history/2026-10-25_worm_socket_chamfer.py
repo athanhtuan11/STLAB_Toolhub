@@ -3,7 +3,7 @@
 # khe huong kinh lo chi 0,32 -> vat mieng de bu be + dan truc vao. Danh doi: mat vat khoa xoay ngan 0,4 / 8,4 mm.
 # He xi-lanh nhu 2026-10-24_cylinder_030_gearbox.py: truc vit // x tai y 9,4, z = zs*20,25; mat moay-o x = 44,9.
 import sys
-sys.path.insert(0, "D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/maker/robotics-cad/scripts")
+sys.path.insert(0, "D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/tools/robotics-cad/scripts")
 import FreeCAD as App, Part, safe_edit as se  # noqa: E401
 from FreeCAD import Vector as V
 

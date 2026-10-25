@@ -1,7 +1,7 @@
 """tokens.json -> CSS bien (Toolhub) + kiem do tuong phan WCAG. Chay: python studio/design/build_tokens.py
 
 Ra: studio/toolhub/static/tokens.css (sinh tu dong, KHONG sua tay).
-Workbench FreeCAD doc thang tokens.json (maker/robotics-cad/workbench/STLab/stlab_wb/core.py).
+Workbench FreeCAD doc thang tokens.json (tools/robotics-cad/workbench/STLab/stlab_wb/core.py).
 Exit 1 neu cap mau chu/nen nao duoi nguong (4,5:1 chu thuong, 3:1 vien/icon).
 """
 

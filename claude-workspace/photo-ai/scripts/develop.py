@@ -135,7 +135,7 @@ def main() -> None:
     ap.add_argument("src", type=Path, help="thu muc anh goc (chi doc)")
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--list", type=Path, help="chi xuat anh co trong thu muc nay (vd. cull/dat)")
-    ap.add_argument("--preset", type=Path, default=PRESETS / "su-kien-ngoai-troi.json")
+    ap.add_argument("--preset", type=Path, default=PRESETS / "outdoor-event.json")
     ap.add_argument("--size", type=int, default=2048, help="canh dai (px); Facebook: 2048")
     ap.add_argument("--quality", type=int, default=90)
     ap.add_argument(

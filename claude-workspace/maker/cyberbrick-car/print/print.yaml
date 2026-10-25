@@ -1,4 +1,4 @@
-# cyberbrick-car - THONG TIN BAN IN (doc boi maker/robotics-cad/scripts/prepare-print.py)
+# cyberbrick-car - THONG TIN BAN IN (doc boi tools/robotics-cad/scripts/prepare-print.py)
 # Model SINH tu freecad/scripts/build_car.py (tham so) -> sua tham so roi chay lai script, khong sua tay trong FreeCAD.
 fcstd: ../freecad/cyberbrick_car.FCStd
 machine: Bambu Lab A1 0.4 nozzle

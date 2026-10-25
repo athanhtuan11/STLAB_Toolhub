@@ -19,15 +19,15 @@ qua cả 4 MCP server trong `.mcp.json`.
   - Trang **Sửa ảnh** (photolab, LUT/preset) đã gỡ 2026-10-25 – Tuan: tập trung CAD + Blender, ảnh/video mảng robotics.
   - `toolhub/workspace.py`: đọc pins/links/reports/CLAUDE.md (chỉ đọc). `toolhub/views.py`: trang + API.
   - `toolhub/printprep.py` (trang Dự án, dự án có `print/print.yaml`): nút **Chuẩn bị in** và **Tự chạy khi Lưu**
-    gọi `maker/robotics-cad/scripts/prepare-print.py` / `watch.py` bằng Python của FreeCAD, chạy nền (PID ở
+    gọi `tools/robotics-cad/scripts/prepare-print.py` / `watch.py` bằng Python của FreeCAD, chạy nền (PID ở
     `print/_*.pid`). Chỉ đọc file FreeCAD đã lưu; ảnh chỉ trả `.png` mà `_prepare-print-result.json` trỏ tới. POST cần `X-Studio`.
 - **Hệ thiết kế** (2026-10-24): `design/tokens.json` là nguồn màu/chữ duy nhất cho Toolhub + workbench FreeCAD + trang ESP32; `python design/build_tokens.py` sinh `toolhub/static/tokens.css` và kiểm tương phản. Font Be Vietnam Pro (OFL) lưu tại `toolhub/static/fonts/`. Không đặt hex trong `style.css`/template. Xem `design/DESIGN.md`.
-- `bat/`: nhấp đúp để chạy (`mo-toolhub`, `mo-freecad`, `mo-blender`, `mo-lightcraft`, `mo-photocraft`,
-  `mo-tat-ca`, `mo-claude`, `kiem-tra-mcp`).
+- `bat/`: nhấp đúp để chạy (`open-toolhub`, `open-freecad`, `open-blender`, `open-lightcraft`, `open-photocraft`,
+  `open-all`, `open-claude`, `check-mcp`).
 - `scripts/freecad_start_rpc.py`: bật RPC server cho phiên FreeCAD do launcher mở.
 - MCP `freecad` chạy với `--freecadcmd "C:/Program Files/FreeCAD 1.1/bin/freecadcmd.exe"` (`freecadcmd` không có trong
   PATH → thiếu cờ này thì `execute_code_headless` không chạy). Việc nặng phải ra headless, xem skill `robotics-cad`
-  mục "Chống treo FreeCAD". Sửa `.mcp.json` xong: chạy lại `bat/dong-bo-claude-desktop.bat` cho Claude Desktop.
+  mục "Chống treo FreeCAD". Sửa `.mcp.json` xong: chạy lại `bat/sync-claude-desktop.bat` cho Claude Desktop.
 - `scripts/fc_job.py`: chạy script FreeCAD nặng trong `freecadcmd` riêng, chạy nền (giao việc + hỏi tiến độ, mỗi lệnh
   < 0,1 s). Dùng khi Claude web/app điều khiển máy từ xa (giới hạn 60 s/lệnh). Job lưu ở `%LOCALAPPDATA%\stlab-fc-jobs\`.
 

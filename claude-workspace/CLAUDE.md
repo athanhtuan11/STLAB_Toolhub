@@ -11,9 +11,21 @@ file này; mỗi dự án con có CLAUDE.md riêng và tự nạp file này theo
 - `studio/`: giao diện web **STLAB Toolhub** (Flask, `.flaskenv`) + mở FreeCAD/Blender/LightCraft/PhotoCraft
   kèm MCP (file .bat). Xem `studio/CLAUDE.md`. Thêm tính năng mới thì thêm trang vào Toolhub.
 - `video-ai/`: tự dựng video ngắn từ clip tự quay bằng FilmCraft (phân tích → plan → dựng), xem `video-ai/CLAUDE.md`.
-- `stlab/`: giáo án, báo cáo phụ huynh.
-- `maker/`: các dự án maker (mỗi thư mục là một dự án).
-- `docs/COMMUNITY.md`: bảng quản lý nguồn cộng đồng.
+- `stlab/`: giáo án (`lesson-plans/`), báo cáo phụ huynh (`parent-reports/`, dữ liệu cá nhân – không lên git).
+- `maker/`: **chỉ dự án** (mỗi thư mục một dự án, có `CLAUDE.md` + `README.md`). Dự án CAD: `design/` (bước 0),
+  `freecad/`, `print/`; điện tử: `firmware/`, `hardware/`, `docs/`.
+- `tools/`: công cụ dùng chung cho nhiều dự án – `robotics-cad/` (kiểm model, xuất STL, cắt lớp, workbench STLab,
+  `project-template/`), `prompt-library/` (prompt FreeCAD/Blender + MCP).
+- `photo-ai/`: sửa ảnh LightCraft – **tạm dừng** (chờ bản LightCraft tạo ảnh AI).
+- `harness-lab/`: sổ lỗi `inbox.md` + lệnh `/lesson` để cải thiện cách làm việc với Claude.
+- `docs/`: nghiên cứu (`*-research.md`), quy trình (`cad-standard-workflow.md`), `reports/`, `research-notes/`,
+  `COMMUNITY.md` (bảng quản lý nguồn cộng đồng).
+
+## Đặt tên (Tuan 2026-10-23, chuẩn hóa toàn repo 2026-10-25)
+- Thư mục, file, script, khóa YAML, tham số CLI, URL Toolhub, tên skill/lệnh: **tiếng Anh, kebab-case, không dấu**.
+  Ngoại lệ theo ngôn ngữ: module Python và file model dùng `_` (`safe_edit.py`, `pushrod_arm.FCStd`); file chuẩn viết
+  hoa (`CLAUDE.md`, `README.md`, `SKILL.md`, `ASSEMBLY.md`, `BOM.md`); tên riêng giữ nguyên (giọng `mai-anh.mp3`).
+- Nội dung tài liệu viết tiếng Việt. Tên cũ trong lịch sử git/memory là lịch sử, không sửa.
 
 ## Một nguồn duy nhất cho skill
 - Skill chỉ nằm trong workspace (`custom/skills/`, `community/...`); mọi nơi khác là **symlink** theo `links.tsv`.
@@ -36,4 +48,4 @@ file này; mỗi dự án con có CLAUDE.md riêng và tự nạp file này theo
 
 ## Git
 - Repo này định đưa lên GitHub. Không đưa bản clone cộng đồng và bí mật vào repo (xem `.gitignore`).
-- Chỉ commit/push khi Tuan yêu cầu.
+- Kiểm ổn (test/kiểm tra đạt) thì tự commit + push lên GitHub (Tuan 2026-10-23); thay đổi lớn làm trên nhánh rồi gộp.

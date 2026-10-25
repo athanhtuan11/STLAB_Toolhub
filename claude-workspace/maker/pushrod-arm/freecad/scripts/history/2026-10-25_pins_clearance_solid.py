@@ -6,7 +6,7 @@
 # Sua: than SHAFT_D (khe quay >= 0,3 mm/ben voi lo O5,4 da in), vat dau 0,4, mat phang day (in nam) cach tam 2,0 nhu cu,
 # lo vit O2,2 sau SCREW_DEPTH = 6 (vit M2.5x6) - 1,2 (washer) + 0,7 du. Chi in lai chot, giu nguyen chi tiet co lo.
 import sys
-sys.path.insert(0, "D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/maker/robotics-cad/scripts")
+sys.path.insert(0, "D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/tools/robotics-cad/scripts")
 import FreeCAD as App, Part, safe_edit as se  # noqa: E401
 from FreeCAD import Vector as V
 

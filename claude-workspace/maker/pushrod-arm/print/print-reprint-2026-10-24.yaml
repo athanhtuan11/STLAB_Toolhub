@@ -1,5 +1,5 @@
 # IN LAI 2026-10-24 (dong co 030 + hop so, bo thu co shield) - chi chi tiet doi so voi ban da in.
-# Sinh tu print.yaml (cung profile P4/P5/P7). Chay: python robotics-cad/scripts/slice.py <file nay>
+# Sinh tu print.yaml (cung profile P4/P5/P7). Chay: python ../../tools/robotics-cad/scripts/slice.py <file nay>
 # Ngoai ra in theo file CyberBrick: 2 bo vo hop giam toc 1 truc (030).
 partial: true   # chi 1 phan chi tiet -> slice.py khong bao STL chua xep ban
 fcstd: ../freecad/pushrod_arm.FCStd

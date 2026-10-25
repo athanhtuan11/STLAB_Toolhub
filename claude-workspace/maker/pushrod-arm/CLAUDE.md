@@ -1,7 +1,7 @@
 # pushrod-arm – cánh tay robot xi-lanh đẩy (CyberBrick)
 
 Mọi thứ của dự án nằm trong thư mục này (2026-10-23; trước đó ở `D:\06_FreeCAD\pushrod_arm` – không dùng nữa).
-Cấu trúc chuẩn: `maker/robotics-cad/CLAUDE.md` mục "Dự án".
+Cấu trúc chuẩn: `tools/robotics-cad/CLAUDE.md` mục "Dự án".
 
 ## FreeCAD – `freecad/`
 - `pushrod_arm.FCStd`: lắp ráp, ~7 MB, **chỉ trên máy** (không lên git; bản sao lưu ở `backup/`).
@@ -21,8 +21,8 @@ Cấu trúc chuẩn: `maker/robotics-cad/CLAUDE.md` mục "Dự án".
 
 ## Làm việc
 - Chuẩn bị in (~1–2 phút): Toolhub → Dự án → maker/pushrod-arm → **Chuẩn bị in** (hoặc **Tự chạy khi Lưu**), hay
-  `"C:/Program Files/FreeCAD 1.1/bin/python.exe" maker/robotics-cad/scripts/prepare-print.py maker/pushrod-arm/print/print.yaml`
-- Sửa model: theo quy ước `maker/robotics-cad/CLAUDE.md` (1 phiên giữ FreeCAD; `UndoCount == 0`; so `rest.json`;
+  `"C:/Program Files/FreeCAD 1.1/bin/python.exe" tools/robotics-cad/scripts/prepare-print.py maker/pushrod-arm/print/print.yaml`
+- Sửa model: theo quy ước `tools/robotics-cad/CLAUDE.md` (1 phiên giữ FreeCAD; `UndoCount == 0`; so `rest.json`;
   backup `freecad/backup/`; giữ `Placement`; sửa xong tự Lưu).
 - In xong: `/print-result pushrod-arm <plate> pass|fail [mô tả]`.
 

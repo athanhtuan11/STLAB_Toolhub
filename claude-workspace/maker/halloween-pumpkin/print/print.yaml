@@ -1,5 +1,5 @@
 # halloween-pumpkin - dao cu quay video #17 (robot cam bi ngo). STL sinh bang freecad/scripts/build_pumpkin.py
-# (khong co FCStd: luoi tham so, khong lap rap). Cat lop: python ../robotics-cad/scripts/slice.py print/print.yaml
+# (khong co FCStd: luoi tham so, khong lap rap). Cat lop: python ../../tools/robotics-cad/scripts/slice.py print/print.yaml
 machine: Bambu Lab A1 0.4 nozzle
 filament: Bambu PETG Basic @BBL A1      # TODO: doi sang cuon cam that khi Tuan chon (danh sach cuon chua co)
 stl: stl

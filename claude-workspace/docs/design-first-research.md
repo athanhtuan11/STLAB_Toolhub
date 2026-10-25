@@ -197,14 +197,14 @@ Giao diện phần mềm:
 | brief | Tuan nói 3–5 câu, Claude viết | `grill-me` (đã có) để hỏi ngược |
 | 3 concept bóng + khối thô | Claude | script Python/SVG; FreeCAD loft (headless `freecadcmd`) |
 | cmf | Tuan chụp cuộn nhựa 1 lần → Claude dựng `cmf.png` | ảnh thật |
-| render | Claude | Blender MCP + HDRI Poly Haven; script render chuẩn dùng chung (đề xuất `maker/robotics-cad/scripts/render-concept.py`) |
+| render | Claude | Blender MCP + HDRI Poly Haven; script render chuẩn dùng chung (đề xuất `tools/robotics-cad/scripts/render-concept.py`) |
 | mockup UI | Claude | `frontend-design` → HTML → PNG bằng Edge headless (như `assembly-pdf.py`); workbench: `widget.grab()` (đã dùng 2026-10-24) |
 | **chọn** | **Tuan** (có thể cho học sinh bình chọn) | `contact-sheet.png` |
 
 ### 4.5 Nối vào project-template và /new-project
 - `project-template/design/brief.md` (mẫu có chỗ trống) + `design/README` ngắn trong `project-template/CLAUDE.md` mục "Bước 0".
 - `/new-project` (`.claude/commands/new-project.md`): thêm bước "tạo `design/`, hỏi loại dự án (vỏ / UI / cơ khí) rồi đề nghị chạy bước 0
-  trước khi dựng CAD". `maker/robotics-cad/CLAUDE.md` mục Quy trình: thêm **0. Giao diện trước** đứng trước bước 1.
+  trước khi dựng CAD". `tools/robotics-cad/CLAUDE.md` mục Quy trình: thêm **0. Giao diện trước** đứng trước bước 1.
 - Toolhub › Dự án: thẻ dự án hiện `design/contact-sheet.png` (hoặc render đã chọn) thay ảnh FreeCAD.
 - Workbench: thêm bước "0 Giao diện" (mở `design/`, xem contact sheet) – sau khi Tuan duyệt quy trình.
 - Nếu lặp lại nhiều: viết skill riêng `custom/skills/design-first` (lý do: chưa có nguồn cộng đồng gộp ID + in FDM + Blender).

@@ -1,6 +1,6 @@
 # BO CHOT THU 2026-10-25: 4 chot ngan O4,6/4,7/4,8/4,9 (1-4 vach tren mu) - cam vao lo Turret_one_piece/Boom001 DA IN.
 # Chon co LON NHAT xoay tron tay ma khong lac -> chay lai: freecad/scripts/history/2026-10-25_pins_clearance_solid.py <D>
-# Sinh STL: freecad/scripts/make_pin_gauge.py. Cat: python robotics-cad/scripts/slice.py <file nay>
+# Sinh STL: freecad/scripts/make_pin_gauge.py. Cat: python ../../tools/robotics-cad/scripts/slice.py <file nay>
 partial: true
 fcstd: ../freecad/pushrod_arm.FCStd
 machine: Bambu Lab A1 0.4 nozzle

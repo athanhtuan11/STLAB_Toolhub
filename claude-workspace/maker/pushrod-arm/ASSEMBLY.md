@@ -2,9 +2,9 @@
 
 Dành cho học sinh từ lớp 6, làm cùng thầy/cô. Viết lại 2026-10-25 từ model hiện tại (`freecad/pushrod_arm.FCStd`):
 32 bước, mỗi bước **một việc**. Ảnh: `freecad/images/assembly/step-XX.png` – tạo lại bằng
-`freecad/scripts/render_assembly_steps.py` (qua `maker/robotics-cad/scripts/gui_run.py`) rồi `crop_assembly_images.py`;
+`freecad/scripts/render_assembly_steps.py` (qua `tools/robotics-cad/scripts/gui_run.py`) rồi `crop_assembly_images.py`;
 phong cách: `docs/assembly-instructions-style-research.md`. PDF:
-`python maker/robotics-cad/scripts/assembly-pdf.py maker/pushrod-arm/ASSEMBLY.md`.
+`python tools/robotics-cad/scripts/assembly-pdf.py maker/pushrod-arm/ASSEMBLY.md`.
 
 ## Trước khi bắt đầu
 

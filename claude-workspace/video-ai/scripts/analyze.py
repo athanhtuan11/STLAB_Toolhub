@@ -48,7 +48,7 @@ def probe(clip):
 
 
 def corrections():
-    f = ROOT / "sua-loi.txt"
+    f = ROOT / "corrections.txt"
     rules = []
     if f.exists():
         for ln in f.read_text(encoding="utf-8").splitlines():

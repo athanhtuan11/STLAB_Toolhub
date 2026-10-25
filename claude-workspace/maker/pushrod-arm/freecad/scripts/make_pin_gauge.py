@@ -1,7 +1,7 @@
 # Bo chot thu (pin gauge) - in ~5 phut, cam vao lo Turret/Boom DA IN de chon duong kinh chot truoc khi in ca bo
 # (Tuan 2026-10-25: chot O5,0 / lo O5,4 in ra khong nhet vao duoc). Cung kieu chot that: mu O9 x 1,6, vat dau 0,4,
 # mat phang day cach truc 2,0 (in nam), than dai 10. So vach khac tren mu = thu tu kich thuoc (1 vach = nho nhat).
-#   "C:/Program Files/FreeCAD 1.1/bin/FreeCADCmd.exe" maker/robotics-cad/scripts/fc_cli.py --pass maker/pushrod-arm/freecad/scripts/make_pin_gauge.py
+#   "C:/Program Files/FreeCAD 1.1/bin/FreeCADCmd.exe" tools/robotics-cad/scripts/fc_cli.py --pass maker/pushrod-arm/freecad/scripts/make_pin_gauge.py
 import Mesh
 import MeshPart
 import Part

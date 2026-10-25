@@ -3,7 +3,7 @@
 # 5,0 (z 7-12). M2.5x16: an vao nhua 4,6 mm, mui vit cach day lo 0,4 mm. x14 chi an 2,6 -> yeu.
 # Vit dau tru luc giac chim ISO 4762 / DIN 912 (mu O4,5 cao 2,5) - cung kieu cac vit khac trong model.
 import sys
-sys.path.insert(0, "D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/maker/robotics-cad/scripts")
+sys.path.insert(0, "D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/tools/robotics-cad/scripts")
 import FreeCAD as App, Part, safe_edit as se  # noqa: E401
 from FreeCAD import Vector as V
 

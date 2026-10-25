@@ -54,7 +54,7 @@ def main() -> None:
     ap.add_argument("photos", nargs="+", help="ten anh (bo duoi), vd. DSC_3043")
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--looks", type=Path, default=ROOT / "presets" / "looks.json")
-    ap.add_argument("--base", type=Path, default=ROOT / "presets" / "su-kien-ngoai-troi.json")
+    ap.add_argument("--base", type=Path, default=ROOT / "presets" / "outdoor-event.json")
     ap.add_argument("--only", nargs="*", help="chi lam cac id nay (base luon co)")
     ap.add_argument("--size", type=int, default=2048)
     ap.add_argument("--local", action="store_true", help="nang sang nguoi (PhotoCraft) truoc khi ap kieu")

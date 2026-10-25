@@ -5,7 +5,7 @@
 #   - chup 2400x1800 roi tu cat khung + thu nho 1200x900 (freecad/scripts/crop_assembly_images.py).
 # Chay trong FreeCAD GUI RIENG, KHONG Luu file:
 #   set FC_FILE=...\pushrod_arm.FCStd  set FC_SCRIPT=...\render_assembly_steps.py  set FC_OUT=<log>
-#   "C:/Program Files/FreeCAD 1.1/bin/FreeCAD.exe" --safe-mode maker/robotics-cad/scripts/gui_run.py
+#   "C:/Program Files/FreeCAD 1.1/bin/FreeCAD.exe" --safe-mode tools/robotics-cad/scripts/gui_run.py
 # Ra: freecad/images/assembly/raw/step-XX.png (2400x1800, khong len git) + steps.json
 import json
 import os

@@ -4,12 +4,12 @@
 Soạn tài liệu giảng dạy và báo cáo cho trung tâm STEAM STLab.
 
 ## Thư mục
-- `giao-an/`: giáo án theo khóa/buổi. Tên file gợi ý: `khoa-<ten>-buoi-<nn>.docx`.
-- `bao-cao-phu-huynh/`: báo cáo theo kỳ. **Chứa dữ liệu cá nhân học viên**:
+- `lesson-plans/`: giáo án theo khóa/buổi. Tên file gợi ý: `khoa-<ten>-buoi-<nn>.docx`.
+- `parent-reports/`: báo cáo theo kỳ. **Chứa dữ liệu cá nhân học viên**:
   không đưa lên GitHub công khai (TODO: quyết định chính sách lưu trữ).
 
 ## Skill dùng ở đây
-- Tự viết: `giao-an-steam`, `bao-cao-phu-huynh` (trong `custom/skills/`).
+- Tự viết: `steam-lesson-plan`, `parent-report` (trong `custom/skills/`).
 - Anthropic: `docx`, `pptx`, `xlsx` (source-available: chỉ dùng qua Claude, không phân phối lại).
   Cần LibreOffice (`soffice`) cho một số thao tác chuyển đổi.
 - Cộng đồng: `lesson-builder`, `lab-forge` (MIT, viết cho đại học, chỉ tham khảo khung);

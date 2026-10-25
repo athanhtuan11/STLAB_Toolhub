@@ -11,8 +11,8 @@ Tuan quyết có cải tiến hay không. File này không sửa code hay model 
 
 **Không lặp lại:** những phần dưới đây đã có, ở đây chỉ trỏ link:
 - dung sai Prusa/Bambu, bù lỗ, insert Ruthex, hướng sợi và TDS PETG, bánh răng in (Gears WB), cách SO-ARM100/Thor tổ chức repo và `Gauge_0`, ngưỡng brim, vòng đo thước kẹp: [cad-community-gaps-research.md](cad-community-gaps-research.md);
-- FreeCAD CLI, test, CI: [freecad-automation-research.md](freecad-automation-research.md), [reports/freecad-cong-dong-tu-dong-hoa.md](reports/freecad-cong-dong-tu-dong-hoa.md);
-- quy trình, release: [quy-trinh-chuan-hoa-cad.md](quy-trinh-chuan-hoa-cad.md);
+- FreeCAD CLI, test, CI: [freecad-automation-research.md](freecad-automation-research.md), [reports/freecad-community-automation.md](reports/freecad-community-automation.md);
+- quy trình, release: [cad-standard-workflow.md](cad-standard-workflow.md);
 - bước 0 hình dáng: [design-first-research.md](design-first-research.md).
 
 **Nhãn nguồn:**
@@ -167,7 +167,7 @@ và license của EEZYbotARM là `TODO`. easyEEZYbotARM (120★) chỉ ghi licen
   - filament tribo iglidur mòn ít hơn "tới 50 lần" vật liệu in thường. Số này đo trên tấm trượt, bạc và đai ốc, **không phải bánh răng**;
   - thử hành trình dài: i180 (FDM) mòn ít hơn **15 lần** so với ABS;
   - igus nêu trục vít là ứng dụng được, nhưng không có số đo cho trục vít.
-- **Nhiệt:** HDT ở 0,45 MPa: PLA Basic 57 °C, PETG Basic 71 °C (TDS Bambu, đã chép ở `maker/robotics-cad/kiem-tra-model.md` 4.4).
+- **Nhiệt:** HDT ở 0,45 MPa: PLA Basic 57 °C, PETG Basic 71 °C (TDS Bambu, đã chép ở `tools/robotics-cad/model-checks.md` 4.4).
   Hệ số ma sát và tốc độ mòn của PETG/PETG: `TODO`.
 - **Mỡ** [nguồn gốc]:
   - MOLYKOTE EM-30L: "Compatible with most plastics", dùng cho "Gears, gear boxes", PAO + lithium + PTFE, −45…150 °C, NLGI 1.

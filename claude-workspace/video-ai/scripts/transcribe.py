@@ -42,7 +42,7 @@ def load_model(name, device):
     return WhisperModel(name, device="cpu", compute_type="int8", download_root=str(MODEL_DIR)), "cpu"
 
 
-VOCAB_FILE = Path(__file__).resolve().parent.parent / "tu-vung.txt"
+VOCAB_FILE = Path(__file__).resolve().parent.parent / "vocabulary.txt"
 
 
 def vocab():

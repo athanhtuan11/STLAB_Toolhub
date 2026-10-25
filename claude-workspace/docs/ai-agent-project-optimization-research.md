@@ -8,8 +8,8 @@ OpenAI, GitHub tổ chức **file hướng dẫn agent, kiểm thử, môi trư�
 dự án chạy trơn → STLab đang có gì, thiếu gì.
 
 **Không lặp:** CI/GitHub Actions cho FreeCAD, test hồi quy model, release → [freecad-automation-research.md](freecad-automation-research.md)
-(mục 3, 7). Bẫy freecadcmd → mục 7 file đó + [reports/freecad-cong-dong-tu-dong-hoa.md](reports/freecad-cong-dong-tu-dong-hoa.md).
-Quy trình CAD → [quy-trinh-chuan-hoa-cad.md](quy-trinh-chuan-hoa-cad.md). Mảng robotics → [robotics-github-landscape-research.md](robotics-github-landscape-research.md).
+(mục 3, 7). Bẫy freecadcmd → mục 7 file đó + [reports/freecad-community-automation.md](reports/freecad-community-automation.md).
+Quy trình CAD → [cad-standard-workflow.md](cad-standard-workflow.md). Mảng robotics → [robotics-github-landscape-research.md](robotics-github-landscape-research.md).
 Dung sai/in → [cad-community-gaps-research.md](cad-community-gaps-research.md). Cơ cấu/dạy CAD → [cad-mechanisms-teaching-research.md](cad-mechanisms-teaching-research.md).
 
 **Nhãn:** **[nguồn gốc]** = file trong repo / docs chính thức / paper · **[API]** = GitHub API 2026-10-25 (★ = sao, push = `pushed_at`)
@@ -31,7 +31,7 @@ Dung sai/in → [cad-community-gaps-research.md](cad-community-gaps-research.md)
    từ chối ghi đè file đã đổi trên đĩa): công cụ phải **FAIL to tiếng** khi bỏ qua thứ gì (chi tiết ẩn, exception,
    file bị đổi ngoài phiên). STLab đã vá từng ca (fc_cli.py, `test_no_hidden_parts`), chưa thành nguyên tắc chung.
 5. **CLAUDE.md gọn, chi tiết đẩy sang skill / rule theo đường dẫn.** Docs: *"target under 200 lines per CLAUDE.md"*;
-   PX4 chỉ 20 dòng + 7 skill + 11 file rule `applyTo`. `maker/robotics-cad/CLAUDE.md` của STLab 156 dòng, trộn lệnh,
+   PX4 chỉ 20 dòng + 7 skill + 11 file rule `applyTo`. `tools/robotics-cad/CLAUDE.md` của STLab 156 dòng, trộn lệnh,
    chính sách support, an toàn lắp, lịch sử thử nghiệm → nên tách.
 6. **Bài học → bài kiểm.** Anthropic khuyên bắt đầu eval với *"20-50 simple tasks drawn from real failures"* –
    đúng thứ `harness-lab/inbox.md` đang gom (8 mục chưa xử lý). Không cần làm GĐ2 ngay, nhưng mỗi sự cố nên kết thúc
@@ -80,7 +80,7 @@ lệnh build/test, code style, testing, bảo mật, quy ước commit/PR.
 
 ### 1.2 STLab đang có
 
-- `CLAUDE.md` gốc 39 dòng (cấu trúc, quy tắc cộng đồng, git) + 12 CLAUDE.md dự án (13–57 dòng) + `maker/robotics-cad/CLAUDE.md`
+- `CLAUDE.md` gốc 39 dòng (cấu trúc, quy tắc cộng đồng, git) + 12 CLAUDE.md dự án (13–57 dòng) + `tools/robotics-cad/CLAUDE.md`
   **156 dòng**. Global `~/.claude/CLAUDE.md` (cách trả lời, đơn vị, an toàn). Memory 22 dòng chỉ mục + 22 file (dưới ngưỡng 200 dòng/25 KB).
 - Chưa có mục "Lệnh kiểm" kiểu chép-dán ở đầu file dự án; lệnh nằm rải trong đoạn văn mục 4 của robotics-cad.
 
@@ -211,7 +211,7 @@ CHỈ ĐỀ XUẤT – Tuan duyệt từng mục (quy tắc harness-lab). Lợi/
 | C1 | CLAUDE.md gốc thêm 3 dòng: (a) báo "đã kiểm gì / chưa kiểm / cần in thử", không nói PASS khi chưa chạy; (b) không nới ngưỡng/xóa test để qua kiểm; (c) không sửa file sinh tự động (STL, .3mf, BOM.csv, metrics.json) bằng tay | Cao | Thấp | Thêm 3 dòng ngữ cảnh mỗi phiên | CLAUDE.md |
 | H2 | PostToolUse hook trên Bash: lệnh `freecadcmd` mà output có `Traceback`/`Exception` → exit 2 kèm dòng lỗi | Vừa | Thấp | Có thể báo nhầm khi script in exception có chủ đích | hook |
 | P1 | `permissions.deny` cho `Edit`/`Write` vào `claude-workspace/community/**` (TODO: kiểm cú pháp đường dẫn trong [permissions docs](https://code.claude.com/docs/en/permissions)) | Vừa | Thấp | `update-community.sh` chạy qua Bash nên không bị chặn – đúng ý | settings |
-| C2 | Tách `maker/robotics-cad/CLAUDE.md` (156 dòng): giữ ~40 dòng lệnh + mục lục; chuyển quy ước FreeCAD CLI sang `.claude/rules/freecad-cli.md` (`paths: **/freecad/**, **/*.FCStd, maker/robotics-cad/scripts/**`); an toàn lắp → trỏ memory/ASSEMBLY; lịch sử thử → link research mục 7 | Vừa | Vừa | Mất 1 lần rà; rule `paths:` cần test xem có nạp đúng không | CLAUDE.md / rules |
+| C2 | Tách `tools/robotics-cad/CLAUDE.md` (156 dòng): giữ ~40 dòng lệnh + mục lục; chuyển quy ước FreeCAD CLI sang `.claude/rules/freecad-cli.md` (`paths: **/freecad/**, **/*.FCStd, tools/robotics-cad/scripts/**`); an toàn lắp → trỏ memory/ASSEMBLY; lịch sử thử → link research mục 7 | Vừa | Vừa | Mất 1 lần rà; rule `paths:` cần test xem có nạp đúng không | CLAUDE.md / rules |
 | C3 | Mỗi CLAUDE.md dự án có khối "Lệnh kiểm" chép-dán + bảng "sửa X → chạy Y" (mẫu xiaozhi); thêm vào `project-template/CLAUDE.md` | Vừa | Thấp | – | CLAUDE.md / template |
 | C4 | Mục "Claude hay làm sai ở STLab" (≤ 10 dòng) gom từ inbox đã duyệt, thay cho quy tắc rải rác | Vừa | Thấp | Phải duy trì khi duyệt inbox hàng tuần | CLAUDE.md |
 | H3 | SessionStart hook in 3–5 dòng: FreeCAD đang mở? khóa thuộc phiên nào? `git status` ngắn, số mục inbox chưa xử lý | Vừa | Thấp | Tốn vài trăm token mỗi phiên | hook |
@@ -273,6 +273,6 @@ CHỈ ĐỀ XUẤT – Tuan duyệt từng mục (quy tắc harness-lab). Lợi/
 [KiBot](https://github.com/INTI-CMNB/KiBot) · [pixi](https://github.com/prefix-dev/pixi) · [RoboStack ros-humble](https://github.com/RoboStack/ros-humble) ·
 [claude-code-action](https://github.com/anthropics/claude-code-action) (9 636★, MIT) · [ADR](https://adr.github.io/)
 
-**Đối chiếu nội bộ STLab:** `CLAUDE.md`, `maker/robotics-cad/CLAUDE.md`, `harness-lab/README.md`, `harness-lab/inbox.md`,
+**Đối chiếu nội bộ STLab:** `CLAUDE.md`, `tools/robotics-cad/CLAUDE.md`, `harness-lab/README.md`, `harness-lab/inbox.md`,
 `~/.claude/settings.json`, memory `kiem-tra-2-tang`, `tu-dong-luu-va-push`, `freecad-cli-truoc`,
-`maker/pushrod-arm/freecad/tests/test_pushrod_arm.py`, `maker/robotics-cad/scripts/check.py` (dòng 106), `metrics.py` (dòng 48).
+`maker/pushrod-arm/freecad/tests/test_pushrod_arm.py`, `tools/robotics-cad/scripts/check.py` (dòng 106), `metrics.py` (dòng 48).

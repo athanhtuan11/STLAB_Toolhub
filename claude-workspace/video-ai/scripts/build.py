@@ -74,9 +74,9 @@ def measure_lufs(path):
 
 
 def compounds():
-    """Cum tu khong duoc ngat giua (cum-tu.txt + tu-vung.txt): tap cac cap (am tiet truoc, am tiet sau)."""
+    """Cum tu khong duoc ngat giua (phrases.txt + vocabulary.txt): tap cac cap (am tiet truoc, am tiet sau)."""
     pairs = set()
-    for f in (ROOT / "cum-tu.txt", ROOT / "tu-vung.txt"):
+    for f in (ROOT / "phrases.txt", ROOT / "vocabulary.txt"):
         if f.exists():
             for ln in f.read_text(encoding="utf-8").splitlines():
                 ws = [norm(x) for x in ln.split()] if not ln.startswith("#") else []
@@ -145,7 +145,7 @@ def make_cues(timed_words, max_chars, max_dur, upper):
 def build(project, export=True):
     project = Path(project).resolve()
     plan = json.loads((project / "plan.json").read_text(encoding="utf-8"))
-    tpl = yaml.safe_load((ROOT / "templates" / plan["template"] / "cau-hinh.yaml").read_text(encoding="utf-8"))
+    tpl = yaml.safe_load((ROOT / "templates" / plan["template"] / "config.yaml").read_text(encoding="utf-8"))
     name = plan["ten"]
     bdir, odir = project / "build", project / "out"
     bdir.mkdir(exist_ok=True)

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Nguồn cộng đồng{% endblock %}
+{% block content %}
+<div class="head">
+  <div>
+    <h1>Nguồn cộng đồng</h1>
+    <p class="sub">Repo đã ghim tag/SHA trong <code>community/pins.tsv</code>. Kiểm tra cập nhật chỉ <b>báo cáo</b>, không đổi điểm ghim.</p>
+  </div>
+  <button class="primary" data-post="/api/community-check" data-busy="Đang kiểm tra (có thể vài phút)…" data-reload="1">Kiểm tra cập nhật tất cả</button>
+</div>
+
+<div class="table-wrap">
+<table>
+  <thead><tr><th></th><th>Repo</th><th>Ghim</th><th>License</th><th>Allowlist / auto</th><th></th></tr></thead>
+  <tbody>
+  {% for p in pins %}
+  <tr>
+    <td><span class="dot {{ 'ok' if p.ok else 'bad' }}" title="{{ 'Đúng điểm ghim, sạch' if p.ok else 'Lệch điểm ghim hoặc bị sửa' }}"></span></td>
+    <td><a href="{{ p.web }}" target="_blank" rel="noopener">{{ p.name }}</a>
+      {% if not p.clean and p.cloned %}<br><span class="badge bad">bị sửa</span>{% endif %}
+      {% if not p.cloned %}<br><span class="badge bad">chưa clone</span>{% endif %}</td>
+    <td class="mono">{% if p.ref != '-' %}<span class="badge">{{ p.ref }}</span> {% endif %}{{ p.sha[:12] }}
+      {% if p.prev_sha != '-' %}<br><span class="muted">trước: {{ p.prev_sha[:12] }}</span>{% endif %}</td>
+    <td>{{ p.license }}</td>
+    <td>{{ p.allowlist }} / {{ p.auto }}</td>
+    <td><button data-post="/api/community-check/{{ p.name }}" data-busy="Đang kiểm tra…" data-reload="1">Kiểm tra</button></td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<div class="note-box">
+  Chuyển điểm ghim hoặc rollback phải do bạn tự chạy sau khi đọc báo cáo (giao diện không làm thay):
+  <div class="cmd" style="margin-top:8px"><code>bash community/update-community.sh apply &lt;tên&gt; &lt;tag|sha&gt;</code>
+    <button data-copy="bash community/update-community.sh apply ">Chép</button></div>
+  <div class="cmd" style="margin-top:6px"><code>bash community/update-community.sh rollback &lt;tên&gt;</code>
+    <button data-copy="bash community/update-community.sh rollback ">Chép</button></div>
+</div>
+
+<h2>Báo cáo</h2>
+{% if reports %}
+<div class="actions">
+  {% for r in reports %}<a class="btn" href="{{ url_for('hub.community_report', name=r) }}">{{ r[:-3] }}</a>{% endfor %}
+</div>
+{% else %}<p class="muted">Chưa có báo cáo.</p>{% endif %}
+{% endblock %}

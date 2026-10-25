@@ -1,6 +1,6 @@
 # BOM – cyberbrick-car
 
-Sinh tự động từ `freecad/cyberbrick_car.FCStd` bằng `maker/robotics-cad/scripts/bom.py` – **không sửa tay** (sửa Label trong model rồi chạy lại *Chuẩn bị in*).
+Sinh tự động từ `freecad/cyberbrick_car.FCStd` bằng `tools/robotics-cad/scripts/bom.py` – **không sửa tay** (sửa Label trong model rồi chạy lại *Chuẩn bị in*).
 
 ## Vít
 | Vít | SL | Dùng ở |

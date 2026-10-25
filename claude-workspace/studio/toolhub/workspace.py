@@ -1,7 +1,7 @@
 """Doc trang thai workspace cho giao dien Toolhub (chi thu vien chuan).
 
 Nguon du lieu: community/pins.tsv, community/links.tsv, community/reports/, cac CLAUDE.md,
-maker/prompt-library. Chi DOC, tru run_check (chay update-community.sh check: chi bao cao).
+tools/prompt-library. Chi DOC, tru run_check (chay update-community.sh check: chi bao cao).
 """
 import os
 import re
@@ -73,6 +73,7 @@ def links():
 def _project_dirs():
     dirs = [ROOT / "stlab", ROOT / "studio"]
     dirs += sorted(d for d in (ROOT / "maker").iterdir() if d.is_dir())
+    dirs += sorted(d for d in (ROOT / "tools").iterdir() if d.is_dir())  # cong cu dung chung (robotics-cad, prompt-library)
     return [d for d in dirs if (d / "CLAUDE.md").exists()]
 
 
@@ -137,7 +138,7 @@ def run_check(name=None):
 
 
 def prompts():
-    base = ROOT / "maker" / "prompt-library"
+    base = ROOT / "tools" / "prompt-library"
     rows = []
     for app in ("freecad", "blender"):
         for p in sorted((base / app).glob("*.md")):
@@ -145,7 +146,7 @@ def prompts():
     return rows
 
 
-LIBRARY_YAML = ROOT / "maker" / "robotics-cad" / "library" / "components.yaml"
+LIBRARY_YAML = ROOT / "tools" / "robotics-cad" / "library" / "components.yaml"
 
 
 def library():

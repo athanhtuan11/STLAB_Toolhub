@@ -1,6 +1,6 @@
 # BOM – pushrod-arm
 
-Sinh tự động từ `freecad/pushrod_arm.FCStd` bằng `maker/robotics-cad/scripts/bom.py` – **không sửa tay** (sửa Label trong model rồi chạy lại *Chuẩn bị in*).
+Sinh tự động từ `freecad/pushrod_arm.FCStd` bằng `tools/robotics-cad/scripts/bom.py` – **không sửa tay** (sửa Label trong model rồi chạy lại *Chuẩn bị in*).
 
 ## Vít
 | Vít | SL | Dùng ở |

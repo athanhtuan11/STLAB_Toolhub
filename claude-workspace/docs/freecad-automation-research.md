@@ -1,6 +1,6 @@
 # Nghiên cứu: FreeCAD 1.1 chuyên sâu, code-CAD và tự động hóa (STLab)
 
-Viết 2026-10-23 cho pipeline `maker/robotics-cad/` (dự án mẫu `maker/pushrod-arm/`). Tuan sửa/bổ sung trực tiếp file này.
+Viết 2026-10-23 cho pipeline `tools/robotics-cad/` (dự án mẫu `maker/pushrod-arm/`). Tuan sửa/bổ sung trực tiếp file này.
 Nhãn: **[đã chạy]** = Claude đã chạy `freecadcmd` 1.1.4 trên file thử trong thư mục tạm (không đụng FreeCAD đang mở) ·
 **[đọc mã]** = đọc mã nguồn bản cài `C:/Program Files/FreeCAD 1.1/Mod/...` · **[chưa kiểm]** = chỉ theo tài liệu.
 Số sao GitHub tra bằng GitHub API ngày **2026-10-23**.
@@ -35,7 +35,7 @@ việc thật ([26.3rc2](https://github.com/FreeCAD/FreeCAD/releases/tag/26.3rc2
 | Tính năng | Từ bản | Ghi chú cho STLab | Trạng thái |
 |---|---|---|---|
 | Workbench tích hợp, solver mã nguồn mở Ondsel | 1.0 | [RN 1.0](https://wiki.freecad.org/Release_notes_1.0), [OndselSolver](https://github.com/Ondsel-Development/OndselSolver) | – |
-| Joint: Fixed, Revolute, Cylindrical, Slider, Ball, Distance, Parallel, Perpendicular, Angle, RackPinion, Screw, Gears, Belt; Revolute có `AngleMin/Max`, Slider `LengthMin/Max` | 1.0–1.1 | đủ cho servo, thanh răng–bánh răng, trục vít của pushrod-arm | [đọc mã] `JointObject.py` (xem `kiem-tra-model.md` 3.1) |
+| Joint: Fixed, Revolute, Cylindrical, Slider, Ball, Distance, Parallel, Perpendicular, Angle, RackPinion, Screw, Gears, Belt; Revolute có `AngleMin/Max`, Slider `LengthMin/Max` | 1.0–1.1 | đủ cho servo, thanh răng–bánh răng, trục vít của pushrod-arm | [đọc mã] `JointObject.py` (xem `model-checks.md` 3.1) |
 | Sub-assembly cứng / mềm (flexible) | 1.0 | chia cụm (Base, Turret, Gripper…) | [chưa kiểm] [RN 1.0](https://wiki.freecad.org/Release_notes_1.0) |
 | **Simulation** (Motion theo `time`) | 1.1 | động học, không có lực | [đọc mã] [PR #16414](https://github.com/FreeCAD/FreeCAD/pull/16414) |
 | Simulation lưu tư thế đầu và **trả lại khi đóng task panel** (`saveAssemblyPartsPlacements` → `restoreAssemblyPartsPlacements`) | 1.1 | thay macro `_sim.FCMacro` + `rest.json` | [đọc mã] `CommandCreateSimulation.py` dòng 779, 862 |
@@ -43,12 +43,12 @@ việc thật ([26.3rc2](https://github.com/FreeCAD/FreeCAD/releases/tag/26.3rc2
 | Insert New Part | 1.1 | tạo chi tiết mới ngay trong lắp ráp | [chưa kiểm] [PR #17922](https://github.com/FreeCAD/FreeCAD/pull/17922) |
 | **BOM** (`Assembly::BomObject`, là Spreadsheet) | 1.0; 1.1 thêm cột thuộc tính | đếm Link theo chi tiết | **[đã chạy]** headless, xem 1.6 |
 | **Exploded View** (các Move, tham số, mở lại sửa được); TechDraw vẽ được từ exploded view | 1.0 | ảnh/bản vẽ hướng dẫn lắp | [chưa kiểm] [Assembly CreateView](https://wiki.freecad.org/Assembly_CreateView) |
-| Lệnh kiểm giao thoa/va chạm | – | **không có** → giữ `check.py` (manifold3d) | [đọc mã] (`kiem-tra-model.md` 3.1) |
+| Lệnh kiểm giao thoa/va chạm | – | **không có** → giữ `check.py` (manifold3d) | [đọc mã] (`model-checks.md` 3.1) |
 
 - Joint chỉ cần tham chiếu mặt/cạnh/đỉnh, **không làm boolean** → STEP linh kiện lỗi BOP (servo/N20 CyberBrick) vẫn
   lắp được. Chỉ boolean (khoét hốc) mới hỏng → dùng khối "dao cắt" đơn giản (đã là quy ước).
 - Tư thế gốc trong Assembly = giá trị joint (`Offset`, góc). Mở file → `asm.solve()` là về đúng tư thế, không cần
-  `rest.json`. Quét khớp headless qua `j.Offset2` + `asm.solve()` đã chạy được (`kiem-tra-model.md` 3.2).
+  `rest.json`. Quét khớp headless qua `j.Offset2` + `asm.solve()` đã chạy được (`model-checks.md` 3.2).
 - `AssemblyObject` có sẵn `generateSimulation`, `numberOfFrames`, `updateForFrame`, `undoSolve`, `exportAsASMT` **[đã chạy:
   có trong `dir()`]** → có thể chạy mô phỏng không cần GUI, nhưng lớp Python tạo đối tượng Simulation nằm trong
   `CommandCreateSimulation.py` cần Qt (import lỗi `QtCore` trong freecadcmd) → **chạy headless: chưa kiểm**.
@@ -126,7 +126,7 @@ doc.recompute()   # A2..D2 = 1 | Body | 2 | <đường dẫn FCStd>
 | [ExplodedAssembly](https://github.com/JMG1/ExplodedAssembly) | 141★, 2024-02 | Bỏ – Exploded View tích hợp |
 | [Render](https://github.com/FreeCAD/FreeCAD-render) | 239★; **tác giả ngừng bảo trì từ 2025-11-12** (README), cần renderer ngoài | Bỏ – render bằng Blender (đã có hướng FreeCAD → Blender) |
 | [Cables](https://github.com/sargo-devel/Cables) | 103★, 2026-10-23 | **Đáng thử** cho đấu dây (đi dây, chiều dài dây) – chưa thử |
-| [RobotCAD](https://github.com/drfenixion/freecad.robotcad) | 455★, 2026-10-06 | giữ (URDF); đọc được joint Assembly (`kiem-tra-model.md` 3.3) |
+| [RobotCAD](https://github.com/drfenixion/freecad.robotcad) | 455★, 2026-10-06 | giữ (URDF); đọc được joint Assembly (`model-checks.md` 3.3) |
 
 Danh mục addon: [FreeCAD/FreeCAD-addons `.gitmodules`](https://github.com/FreeCAD/FreeCAD-addons/blob/master/.gitmodules);
 Addon Manager tách repo riêng [FreeCAD/AddonManager](https://github.com/FreeCAD/AddonManager).
@@ -160,7 +160,7 @@ Addon Manager tách repo riêng [FreeCAD/AddonManager](https://github.com/FreeCA
   (a) self-hosted runner = máy này, hoặc (b) phần sinh từ mã (build123d) nằm trong git.
 - FreeCAD có AppImage Linux x86_64 (782 MB) ở mỗi release ([1.1.4 assets](https://github.com/FreeCAD/FreeCAD/releases/tag/1.1.4)); chạy
   `freecadcmd` từ AppImage trên runner: **chưa kiểm**. Bambu Studio có AppImage Ubuntu 22/24 ([v02.08.04.57](https://github.com/bambulab/BambuStudio/releases)) –
-  slicer CLI trên Linux headless có thể cần `xvfb` (đã ghi ở `quy-trinh-chuan-hoa-cad.md`), **chưa kiểm**.
+  slicer CLI trên Linux headless có thể cần `xvfb` (đã ghi ở `cad-standard-workflow.md`), **chưa kiểm**.
 - [FCBot](https://github.com/asymworks/FCBot): 3★, đẩy lần cuối 2025-03-09, chỉ hỗ trợ FreeCAD 1.0 (Debian, Python 3.13), xuất step/stl/screenshot/pdf
   theo YAML, có GitHub Action mẫu chạy theo tag `rev_*`. ⇒ **Chỉ lấy mẫu thiết kế**, không dùng (cũ, ít người dùng, STLab đã có `print.yaml` mạnh hơn).
 - Bambu Studio CLI: `--slice 0` (mọi bàn), `--export-3mf`, `--load-settings "máy;process"`, `--arrange`, `--orient`, `--outputdir`;
@@ -174,7 +174,7 @@ Addon Manager tách repo riêng [FreeCAD/AddonManager](https://github.com/FreeCA
   trọng tâm, số solid; + mỗi bàn in → thời gian, gam (từ `print-report.json`). Lần chạy sau so với bản HEAD:
   chi tiết **không được sửa** mà đổi thể tích/hộp bao → WARN (bắt boolean hỏng âm thầm, chi tiết bị dời khi Lưu lúc mô phỏng).
   `git diff metrics.json` = changelog hình học cho Release.
-- Bọc thành `unittest` chạy `freecadcmd -t` (exit code 1 khi FAIL – đã thử, `kiem-tra-model.md` 7.1).
+- Bọc thành `unittest` chạy `freecadcmd -t` (exit code 1 khi FAIL – đã thử, `model-checks.md` 7.1).
 
 ### 3.3 Release artifact (GĐ C)
 - Làm **cục bộ** (script `release.py`): khi `prepare-print` PASS và Tuan duyệt ảnh → tag `<project>-vX.Y`, đính 3MF từng bàn,
@@ -237,10 +237,10 @@ Mọi số đo dưới đây chạy trên máy STLab (Windows 11), model `pushro
 
 | Cách | Lệnh | Dùng khi | Ghi chú |
 |---|---|---|---|
-| CLI chuẩn | `FreeCADCmd.exe --safe-mode maker/robotics-cad/scripts/fc_cli.py --pass <script.py> [args]` | **mọi script sửa/đo model** | traceback đầy đủ + exit 1 khi lỗi **[đã chạy]** |
+| CLI chuẩn | `FreeCADCmd.exe --safe-mode tools/robotics-cad/scripts/fc_cli.py --pass <script.py> [args]` | **mọi script sửa/đo model** | traceback đầy đủ + exit 1 khi lỗi **[đã chạy]** |
 | CLI trần | `FreeCADCmd.exe script.py --pass a b` | tránh | lỗi vẫn **exit 0** **[đã chạy]**; `sys.argv` giữ nguyên cả `--pass a b` |
 | Python thường | `"…/bin/python.exe" x.py` với `import FreeCAD` | điều phối (prepare-print), exit code đúng | nạp addon như GUI |
-| GUI riêng, tự thoát | `set FC_FILE/FC_SCRIPT` → `FreeCAD.exe --safe-mode maker/robotics-cad/scripts/gui_run.py` | **render ảnh** (`saveImage`), cần ViewObject | không đụng phiên GUI của Tuan; 26 ảnh lắp ráp 18 s **[đã chạy]** |
+| GUI riêng, tự thoát | `set FC_FILE/FC_SCRIPT` → `FreeCAD.exe --safe-mode tools/robotics-cad/scripts/gui_run.py` | **render ảnh** (`saveImage`), cần ViewObject | không đụng phiên GUI của Tuan; 26 ảnh lắp ráp 18 s **[đã chạy]** |
 | RPC vào GUI đang mở | cổng 9875 `execute_code` | chỉ lệnh **nhẹ** (mở file, hỏi trạng thái) | việc nặng → `GUI_DISPATCH_STUCK` sau 90 s, GUI treo > 2 phút **[đã chạy]** |
 | Bộ test | `FreeCADCmd.exe --safe-mode -P <thư mục test> -t <module>` | kiểm yêu cầu thiết kế | unittest; **exit 1 khi có test trượt** **[đã chạy]** |
 
@@ -294,7 +294,7 @@ Tùy chọn khác (`FreeCADCmd --help`): `-l/--log-file`, `-u` user config, `-M/
   ViewProvider → không giữ màu, không render được **[đã chạy + đọc mã `src/Gui/ApplicationPy.cpp`]**.
 
 ### 7.6 Đối chiếu cộng đồng (2026-10-24)
-- Báo cáo `docs/reports/freecad-cong-dong-tu-dong-hoa.md` (ghi chú gốc: `docs/research_notes/freecad-cong-dong-tu-dong-hoa/`):
+- Báo cáo `docs/reports/freecad-community-automation.md` (ghi chú gốc: `docs/research-notes/freecad-community-automation/`):
   cả 9 phát hiện ở mục 7 được mã nguồn/tracker xác nhận, không cái nào bị bác bỏ. Thêm: bẫy ẩn object = bug #28555, sửa ở
   **26.3** (không backport 1.1.x); exit 0 do `processFiles` nuốt exception và **chạy lại script lần 2** khi import lỗi;
   BRepCheck trong boolean chỉ cảnh báo; Assembly chưa có interference check (#28165); joint tạo headless hỏng

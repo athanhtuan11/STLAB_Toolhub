@@ -5,7 +5,7 @@
 
 **Nguồn duy nhất:** `tokens.json` (thư mục này). Sửa màu ở đó, rồi chạy `python studio/design/build_tokens.py`. Script sinh
 `toolhub/static/tokens.css` và **kiểm tương phản** (lỗi → exit 1). Workbench đọc thẳng `tokens.json`, icon sinh lại bằng
-`python maker/robotics-cad/workbench/make_icons.py`. **Không đặt mã hex trong code giao diện** (trừ file sinh và lớp phủ 3D).
+`python tools/robotics-cad/workbench/make_icons.py`. **Không đặt mã hex trong code giao diện** (trừ file sinh và lớp phủ 3D).
 
 ## Chủ thể → lựa chọn
 STLab là trung tâm STEAM ở Đức Trọng, Lâm Đồng: cao nguyên, rừng thông, sương sớm. Học sinh làm robot in 3D.

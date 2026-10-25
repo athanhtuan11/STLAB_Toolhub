@@ -11,7 +11,7 @@
 <body>
 <header class="topbar">
   <div class="inner">
-    <a class="brand" href="{{ url_for('hub.tong_quan') }}">STLAB <span>Toolhub</span></a>
+    <a class="brand" href="{{ url_for('hub.overview') }}">STLAB <span>Toolhub</span></a>
     <nav>
       {% for ep, label in nav %}<a href="{{ url_for(ep) }}" class="{{ 'on' if nav_on == ep else '' }}">{{ label }}</a>{% endfor %}
       <details class="more">

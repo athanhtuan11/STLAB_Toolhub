@@ -1,6 +1,6 @@
 """Trang Du an: nut "Chuan bi in" va "Tu chay khi Luu" cho du an co print/print.yaml (GD D).
 
-Goi maker/robotics-cad/scripts/prepare-print.py / watch.py bang Python di kem FreeCAD (co yaml, matplotlib).
+Goi tools/robotics-cad/scripts/prepare-print.py / watch.py bang Python di kem FreeCAD (co yaml, matplotlib).
 Chi doc ket qua `_prepare-print-result.json` canh print.yaml; anh chi tra file .png ma ket qua tro toi.
 Tien trinh chay nen; PID ghi ra file de Toolhub khoi dong lai van biet / tat duoc.
 """
@@ -12,7 +12,7 @@ from pathlib import Path
 from .workspace import ROOT
 
 PY = Path(r"C:\Program Files\FreeCAD 1.1\bin\python.exe")
-SCRIPTS = ROOT / "maker" / "robotics-cad" / "scripts"
+SCRIPTS = ROOT / "tools" / "robotics-cad" / "scripts"
 NO_WINDOW = 0x08000000
 KIEU = {"run": "prepare-print.py", "watch": "watch.py"}
 

@@ -6,6 +6,7 @@
 ~/.claude/skills/research	community/mattpocock-skills/skills/engineering/research
 ~/.claude/skills/frontend-design	community/anthropics-skills/skills/frontend-design
 ~/.claude/skills/robotics-cad	custom/skills/robotics-cad
+~/.claude/skills/bambu-a1	custom/skills/bambu-a1
 ~/.claude/skills/freecad-scripts	community/github-awesome-copilot/skills/freecad-scripts
 ~/.claude/skills/filmcraft	community/midasmatterhorn-artcraft-skills/filmcraft
 ~/.claude/skills/lightcraft	community/midasmatterhorn-artcraft-skills/lightcraft
@@ -19,8 +20,8 @@ stlab/.claude/skills/lesson-builder	community/yujxzjcn-teaching-skills/lesson-bu
 stlab/.claude/skills/lab-forge	community/yujxzjcn-teaching-skills/lab-forge
 stlab/.claude/skills/backwards-design-unit-planner	community/garethmanning-education-agent-skills/skills/curriculum-assessment/backwards-design-unit-planner
 stlab/.claude/skills/criterion-referenced-rubric-generator	community/garethmanning-education-agent-skills/skills/curriculum-assessment/criterion-referenced-rubric-generator
-stlab/.claude/skills/giao-an-steam	custom/skills/giao-an-steam
-stlab/.claude/skills/bao-cao-phu-huynh	custom/skills/bao-cao-phu-huynh
+stlab/.claude/skills/steam-lesson-plan	custom/skills/steam-lesson-plan
+stlab/.claude/skills/parent-report	custom/skills/parent-report
 # --- maker ---
 maker/smart-home/.claude/skills/home-assistant-best-practices	community/homeassistant-ai-skills/skills/home-assistant-best-practices
 maker/smart-home/.claude/agents/iot-engineer.md	community/voltagent-subagents/categories/07-specialized-domains/iot-engineer.md
@@ -33,7 +34,6 @@ maker/diy-audio-amp/.claude/agents/embedded-systems.md	community/voltagent-subag
 maker/solar-battery/.claude/agents/embedded-systems.md	community/voltagent-subagents/categories/07-specialized-domains/embedded-systems.md
 maker/pi4-dslr-control/.claude/agents/python-pro.md	community/voltagent-subagents/categories/02-language-specialists/python-pro.md
 maker/oss-toolkit/.claude/skills/pr	community/mattpocock-skills/skills/engineering/pr
-maker/in-3d/.claude/skills/bambu-a1	custom/skills/bambu-a1
 # --- Addon ung dung (theo diem ghim; FreeCAD 1.1, Blender 5.2) ---
 ~/AppData/Roaming/FreeCAD/v1-1/Mod/FreeCADMCP	community/neka-nat-freecad-mcp/addon/FreeCADMCP
 ~/AppData/Roaming/Blender Foundation/Blender/5.2/scripts/addons/blender_mcp.py	community/ahujasid-mcp-for-blender/addon.py
@@ -42,4 +42,5 @@ maker/in-3d/.claude/skills/bambu-a1	custom/skills/bambu-a1
 ~/AppData/Roaming/FreeCAD/v1-1/Mod/freecad.gears	community/looooo-freecad-gears
 ~/AppData/Roaming/FreeCAD/v1-1/Mod/SheetMetal	community/shaise-freecad-sheetmetal
 ~/AppData/Roaming/FreeCAD/v1-1/Mod/fasteners	community/shaise-freecad-fasteners
+~/AppData/Roaming/FreeCAD/v1-1/Mod/STLab	tools/robotics-cad/workbench/STLab
 ~/AppData/Roaming/FreeCAD/v1-1/Macro/PartsLibrary.FCMacro	community/freecad-library/PartsLibrary.FCMacro

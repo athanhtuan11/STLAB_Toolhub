@@ -3,7 +3,7 @@ description: Tạo dự án CAD/in 3D mới theo mẫu chuẩn – mọi thứ t
 argument-hint: "<project-name-kebab-case> [mô tả 1 dòng]"
 ---
 
-Tạo dự án mới từ `maker/robotics-cad/project-template/` (cấu trúc: `maker/robotics-cad/CLAUDE.md` mục "Dự án").
+Tạo dự án mới từ `tools/robotics-cad/project-template/` (cấu trúc: `tools/robotics-cad/CLAUDE.md` mục "Dự án").
 
 1. Lấy tên từ `$ARGUMENTS` (từ đầu tiên). Bắt buộc **tiếng Anh**, không dấu, kebab-case (vd. `line-follower`);
    sai thì hỏi lại. Tên file model = tên đó đổi `-` thành `_` (vd. `line_follower.FCStd`).

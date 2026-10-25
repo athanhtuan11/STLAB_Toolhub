@@ -11,7 +11,7 @@ import FreeCAD as App
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FC = os.path.normpath(os.path.join(HERE, "..", "pushrod_arm.FCStd"))
-sys.path.insert(0, os.path.normpath(os.path.join(HERE, "..", "..", "..", "robotics-cad", "scripts")))
+sys.path.insert(0, os.path.normpath(os.path.join(HERE, "..", "..", "..", "..", "tools", "robotics-cad", "scripts")))
 import fast_collide  # noqa: E402
 
 TAGS = ("Shoulder", "Elbow")

@@ -22,9 +22,9 @@ Sau mỗi lần `apply`/`rollback`, cập nhật cột "Ghim" và "Kiểm tra".
 | [looooo/freecad.gears](https://github.com/looooo/freecad.gears) | `83ec154b1925` | GPL-3.0 | Cộng đồng, 363★ | 2026-10-21 | Workbench bánh răng → FreeCAD Mod |
 | [shaise/FreeCAD_SheetMetal](https://github.com/shaise/FreeCAD_SheetMetal) | `cbf6595b68ad` (0.8.26) | LGPL-2.1 | Cộng đồng, 349★ | 2026-10-21 | Workbench tấm/bracket → FreeCAD Mod |
 | [shaise/FreeCAD_FastenersWB](https://github.com/shaise/FreeCAD_FastenersWB) | `V0.5.67-beta` (`fddd07af422b`) | GPL-2.0-or-later | Cộng đồng | 2026-10-24 (trước đó cài bằng Addon Manager, không ghim) | Workbench vít/đai ốc/insert; **bảng kích thước ISO** dùng cho lỗ vít → FreeCAD Mod |
-| Datasheet/bản vẽ kích thước linh kiện (5 file) | SHA-256 trong `maker/robotics-cad/library/datasheet-sources.tsv` → `community/datasheets/` | Theo từng hãng (Raspberry Pi, Arduino CC-BY-SA-4.0 `TODO` xác nhận cho PDF, Handsontec/TowerPro không ghi) | Chính hãng, trừ Handsontec (đại lý) | 2026-10-24 | Kích thước lắp ghép trong `components.yaml` (xem `docs/component-dimension-sources.md`) |
+| Datasheet/bản vẽ kích thước linh kiện (5 file) | SHA-256 trong `tools/robotics-cad/library/datasheet-sources.tsv` → `community/datasheets/` | Theo từng hãng (Raspberry Pi, Arduino CC-BY-SA-4.0 `TODO` xác nhận cho PDF, Handsontec/TowerPro không ghi) | Chính hãng, trừ Handsontec (đại lý) | 2026-10-24 | Kích thước lắp ghép trong `components.yaml` (xem `docs/component-dimension-sources.md`) |
 | [FreeCAD/FreeCAD-library](https://github.com/FreeCAD/FreeCAD-library) | `f5ca01cdcaa2` (sparse, `freecad-library.sparse`) | **CC-BY 3.0** (ghi công) | Chính thức (tổ chức FreeCAD), 2k★ | 2026-10-21 | Thư viện linh kiện robotics (~950 MB) + macro PartsLibrary |
-| [arduino/docs-content](https://github.com/arduino/docs-content) | `b12ffb3a317c` (sparse: chỉ `*-step.zip` của 5 board + 14 Modulino, `arduino-docs-content.sparse`, ~9 MB) | **CC-BY-SA-4.0** | **Chính hãng** (tổ chức Arduino) | 2026-10-22 | STEP UNO R4 WiFi, UNO Q, Nano ESP32, Nano R4, GIGA R1, Modulino → giải nén bằng `maker/robotics-cad/library/boards.py` |
+| [arduino/docs-content](https://github.com/arduino/docs-content) | `b12ffb3a317c` (sparse: chỉ `*-step.zip` của 5 board + 14 Modulino, `arduino-docs-content.sparse`, ~9 MB) | **CC-BY-SA-4.0** | **Chính hãng** (tổ chức Arduino) | 2026-10-22 | STEP UNO R4 WiFi, UNO Q, Nano ESP32, Nano R4, GIGA R1, Modulino → giải nén bằng `tools/robotics-cad/library/boards.py` |
 | [espressif/kicad-libraries](https://github.com/espressif/kicad-libraries) | `3.2.1` (`1dfc3110895c`, sparse: `3dmodels/`) | **CC-BY-SA-4.0** + miễn trừ cho thiết kế (như thư viện KiCad) | **Chính hãng** (Espressif), 1,4k★ | 2026-10-22 | 29 STEP module ESP32/S2/S3/C3/C5/C6/H2 (không có board DevKit) |
 | [anthropics/skills](https://github.com/anthropics/skills) – `frontend-design` | cùng bản ghim `dbd4588f9e10` | Apache-2.0 | Chính thức (Anthropic) | 2026-10-24: chỉ là SKILL.md, không chạy mã | Skill thiết kế giao diện → `~/.claude/skills` (bước 0 "Giao diện") |
 | [Be Vietnam Pro](https://github.com/bettergui/BeVietnamPro) (Google Fonts v12) | 6 file woff2 (400/600/700 × latin/vietnamese) tải 2026-10-24 → `studio/toolhub/static/fonts/` | **OFL-1.1** (kèm `OFL.txt`) | Cộng đồng Việt, Google Fonts | 2026-10-24 | Font Toolhub, chạy offline |
@@ -79,19 +79,19 @@ Sau mỗi lần `apply`/`rollback`, cập nhật cột "Ghim" và "Kiểm tra".
 obotcad` khi khởi động. Workbench vẫn nạp
   (`import freecad.cross` OK) và RobotCAD là Mod nạp cuối nên không chặn Mod khác. Không sửa bản ghim; xem lại khi lên bản mới.
 - **manifold3d 3.5.4** (Tuan duyệt 2026-10-23) – thư viện boolean mesh [elalish/manifold](https://github.com/elalish/manifold),
-  **Apache-2.0**, cũng là solver boolean "Manifold" của OpenSCAD/Blender. Dùng trong `maker/robotics-cad/scripts/check.py`
+  **Apache-2.0**, cũng là solver boolean "Manifold" của OpenSCAD/Blender. Dùng trong `tools/robotics-cad/scripts/check.py`
   cho va chạm (giao khối `^` + `volume()`, khe hở `min_gap()`) thay boolean B-rep (1 cặp bánh răng mất ~700 s → < 1 s).
   - Wheel `manifold3d-3.5.4-cp311-cp311-win_amd64.whl`, SHA-256 `34ef0b1b70b6d153eb12a72706e128e9b629c562cd4ab103083afd17ca071fbd`
     (PyPI). Chỉ phụ thuộc numpy (dùng numpy 1.26.4 của FreeCAD).
   - Cài **riêng cho dự án**, không đụng bản cài FreeCAD: `"C:/Program Files/FreeCAD 1.1/bin/python.exe" -m pip install
-    --no-deps --target maker/robotics-cad/.pylib manifold3d==3.5.4` (thư mục `.pylib/` không lên git). Script tự thêm vào `sys.path`;
+    --no-deps --target tools/robotics-cad/.pylib manifold3d==3.5.4` (thư mục `.pylib/` không lên git). Script tự thêm vào `sys.path`;
     thiếu thư viện thì lùi về B-rep (chậm).
   - Là mã biên dịch (`.pyd` + `msvcp140` kèm theo), chỉ tính hình học: không mạng, không subprocess, không ghi file.
 
 ### Model board vi điều khiển (tìm 2026-10-22)
 - **Đã có** trong FreeCAD-library: Arduino UNO/Mega/Nano, ESP32 DOIT DevKit v1, Pi 4B, Pico.
 - **Thêm** (chính hãng, chỉ dữ liệu): Arduino docs-content, Espressif kicad-libraries (bảng trên).
-- **Không có STEP ghim được** → dựng từ bản vẽ cơ khí chính hãng bằng `maker/robotics-cad/library/boards_param.py`
+- **Không có STEP ghim được** → dựng từ bản vẽ cơ khí chính hãng bằng `tools/robotics-cad/library/boards_param.py`
   (mặt bằng đúng bản vẽ, chiều cao linh kiện ƯỚC – đo hàng thật): Pi 5, Pi Zero 2 W, ESP32-DevKitC V4,
   ESP32-S3-DevKitC-1 (đọc tọa độ từ DXF), STM32 Nucleo-64 (UM1724 Fig. 5, khớp chéo chuẩn Arduino UNO – xem
   `models/stm32-nucleo-64/doi-chieu-ban-ve.png`), LOLIN D1 mini v4, ESP32-CAM (datasheet AI-Thinker).
@@ -144,8 +144,8 @@ obotcad` khi khởi động. Workbench vẫn nạp
 - Nguồn: link "3D Model / Solid Model / Specification" trên trang sản phẩm Bambu Store (CDN `store.bblcdn.com`),
   danh sách trong wiki https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list. 48 file (215 MB):
   36 STL, 36 STEP, 45 PDF, 4 3MF, 10 JSON (cấu hình điều khiển). **Không có file chạy** (đã quét trước khi giải nén).
-- Lưu ở `community/cyberbrick-official/` (không lên git); danh sách + SHA-256: `maker/robotics-cad/library/cyberbrick-sources.tsv`;
-  tải/sắp lại: `maker/robotics-cad/library/cyberbrick.py`. FreeCAD 1.1 mở hợp lệ cả 26 STEP (2026-10-21).
+- Lưu ở `community/cyberbrick-official/` (không lên git); danh sách + SHA-256: `tools/robotics-cad/library/cyberbrick-sources.tsv`;
+  tải/sắp lại: `tools/robotics-cad/library/cyberbrick.py`. FreeCAD 1.1 mở hợp lệ cả 26 STEP (2026-10-21).
 - Không có license ghi kèm (tài liệu kỹ thuật do hãng phát hành công khai) → bảng "Xem lại khi làm thương mại".
 - Hãng không phát hành model N20 (LA002–LA004), chỉ datasheet → dùng model N20 chuẩn của Pololu (mục dưới).
 
@@ -153,7 +153,7 @@ obotcad` khi khởi động. Workbench vẫn nạp
 - N20 là khuôn chung nhiều hãng (12 × 10 mm, hộp số 9 mm, trục Φ3 vát D, lỗ M1.6). FreeCAD-library không có;
   GitHub chỉ có dự án dùng N20, không có model đáng tin. Chọn **Pololu** (hãng phát hành STEP chính thức):
   https://www.pololu.com/product/2364/resources → zip 26 STEP (278 MB giải nén) + PDF bản vẽ kích thước.
-- Đã quét: chỉ `.step` + README, không có file chạy. SHA-256 trong `maker/robotics-cad/library/n20-sources.tsv`.
+- Đã quét: chỉ `.step` + README, không có file chạy. SHA-256 trong `tools/robotics-cad/library/n20-sources.tsv`.
 - Sắp 8 biến thể vào `community/n20-motor/models/` (STEP + STL xuất bằng FreeCAD 1.1). So datasheet CyberBrick LA002:
   dài 35,8 so với ≈ 36,1 mm (trục 9,3 so với 10) – đủ để dựng gá, đo hàng thật trước khi làm khớp chặt.
 - Không ghi license kèm file → bảng "Xem lại khi làm thương mại".
@@ -204,7 +204,7 @@ obotcad` khi khởi động. Workbench vẫn nạp
 | 2026-10-21 | `~\.local\share\FreeCAD\AdditionalPythonPackages\py311` | thư viện Python ghim cho RobotCAD (16 gói, xem lock) | xóa thư mục |
 | 2026-10-21 | `%LOCALAPPDATA%\stlab-video-ai\models` | model faster-whisper large-v3-turbo (~1,6 GB) | xóa thư mục |
 | 2026-10-21 | FreeCAD tham số `Plugins/parts_library/destination` | trỏ tới `community/freecad-library` | macro PartsLibrary → Settings |
-| 2026-10-21 | Claude Desktop `%LOCALAPPDATA%\Claude-Data\claude_pzs8sxrjxfjjc\claude_desktop_config.json` | **chưa đổi**; `dong-bo-claude-desktop.bat` sẽ thêm blender, lightcraft và thay freecad (`uvx freecad-mcp` không ghim) bằng bản ghim | chép đè từ file `.bak-*` cạnh nó |
+| 2026-10-21 | Claude Desktop `%LOCALAPPDATA%\Claude-Data\claude_pzs8sxrjxfjjc\claude_desktop_config.json` | **chưa đổi**; `sync-claude-desktop.bat` sẽ thêm blender, lightcraft và thay freecad (`uvx freecad-mcp` không ghim) bằng bản ghim | chép đè từ file `.bak-*` cạnh nó |
 | 2026-10-21 | `%USERPROFILE%\Pictures\stlab-studio\` | thư mục PhotoCraft được đọc/ghi qua MCP | xóa thư mục |
 | 2026-10-21 | `~/.claude/skills/lightcraft` | symlink → artcraft-skills/lightcraft (`aa35c24`) | `update-community.sh unlink` |
 | 2026-10-24 | `~/.claude/skills/remotion-best-practices` | symlink → remotion-dev/skills (`6c67adc`) | `update-community.sh unlink` |
@@ -240,8 +240,8 @@ Khi chuyển sang thương mại, rà bảng này trước (và cột License �
 | remotion-dev/skills + Remotion | Repo skill không có license; Remotion License: free cá nhân/công ty ≤ 3 NV/phi lợi nhuận, trên đó cần Company License | `~/.claude/skills/remotion-best-practices` |
 | briaai/RMBG-1.4, RMBG-2.0 (mặc định của rembg) | BRIA: thương mại phải trả phí | Ứng viên tách nền (chất lượng tốt nhất của rembg) |
 | upscayl (fork ncnn) | AGPL-3.0 | Chưa dùng |
-| Pololu Micro Metal Gearmotor STEP (N20) | Không ghi license; hãng phát hành công khai | maker/robotics-cad |
-| CyberBrick model/datasheet (Bambu Lab) | Không ghi license; tài liệu hãng phát hành công khai | maker/robotics-cad, cyberbrick-car |
+| Pololu Micro Metal Gearmotor STEP (N20) | Không ghi license; hãng phát hành công khai | tools/robotics-cad |
+| CyberBrick model/datasheet (Bambu Lab) | Không ghi license; tài liệu hãng phát hành công khai | tools/robotics-cad, cyberbrick-car |
 | abpy/FujifilmCameraProfiles | Không có license (mặc định: giữ mọi quyền) | photo-ai LUT Classic/Nostalgic Neg |
 | RawTherapee Film Simulation (qua cedeber/hald-clut) | CC BY-SA 4.0 (ghi công Pat David và cộng sự; LUT phái sinh cùng license) | photo-ai `luts/*.cube` |
 | RawTherapee Film Simulation HaldCLUT | Không rõ (nhiều tác giả) | Ứng viên LUT cho PhotoCraft |

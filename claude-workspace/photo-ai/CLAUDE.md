@@ -1,5 +1,7 @@
 # photo-ai – tự sửa ảnh sự kiện cho Facebook
 
+**TẠM DỪNG (Tuan 2026-10-25):** tập trung CAD + Blender; dùng lại khi LightCraft có bản tạo ảnh AI. Không tự làm tiếp.
+
 Ảnh từ máy ảnh (Nikon D7100, JPEG) + điện thoại → lọc → LightCraft chỉnh màu → xuất Facebook.
 Nguồn và license: `docs/COMMUNITY.md` mục "Ảnh AI – LightCraft".
 
@@ -30,7 +32,7 @@ uv run scripts/cull.py <thu-muc-anh> --out <nguon>-edit/cull
 ```bash
 uv run scripts/develop.py <thu-muc-anh> --list <nguon>-edit/cull/dat --out <nguon>-edit/xuat
 ```
-- Mỗi ảnh: `lightcraft-cli render` (không cần thư viện), preset `presets/su-kien-ngoai-troi.json`
+- Mỗi ảnh: `lightcraft-cli render` (không cần thư viện), preset `presets/outdoor-event.json`
   (JSON phẳng) truyền bằng `--set k=v`. **`render --settings` không áp file này** (thử 2026-10-21: ảnh ra như gốc).
 - Xuất Facebook: cạnh dài 2048 px, sRGB, quality 90, `removeLocation=true`, `metadata=none` (xóa hết EXIF, vẫn giữ ICC sRGB – đã kiểm).
 - QA (`qa.csv`): cạnh dài, còn GPS, ICC sRGB, preset có áp (chênh với gốc ≥ 1/255), cháy sáng/bết đen

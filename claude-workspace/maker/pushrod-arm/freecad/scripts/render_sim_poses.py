@@ -1,6 +1,6 @@
 # Mo phong assembly -> anh tu the: dung CHINH logic macro pushrod_arm_sim (set_pose + check_collisions) trong GUI rieng.
 #   set FC_FILE=.../pushrod_arm.FCStd  set FC_SCRIPT=<file nay>
-#   "C:/Program Files/FreeCAD 1.1/bin/FreeCAD.exe" --safe-mode maker/robotics-cad/scripts/gui_run.py
+#   "C:/Program Files/FreeCAD 1.1/bin/FreeCAD.exe" --safe-mode tools/robotics-cad/scripts/gui_run.py
 # Ra: freecad/images/sim/<tu the>.png + _sim.json (va cham tung tu the). Khong Luu .FCStd.
 import json
 import os
