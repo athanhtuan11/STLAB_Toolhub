@@ -4,3 +4,8 @@ secrets*
 *.pem
 build/
 .pio/
+# File sinh khi build (ESP-IDF)
+managed_components/
+sdkconfig
+sdkconfig.old
+build.log
