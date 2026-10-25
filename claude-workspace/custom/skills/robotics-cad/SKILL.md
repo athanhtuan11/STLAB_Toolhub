@@ -125,9 +125,13 @@ Mẫu: `maker/pushrod-arm/ASSEMBLY.md` (34 bước) + `freecad/scripts/render_as
 - **Mỗi bước 1 việc**, gom theo cụm (Đế, Mâm, Tháp, …); lắp cụm con trên bàn rồi mới gắn lên máy.
 - Mỗi bước: **Cụm** · **Cần lấy** (tên dễ hiểu + `Label` × SL + "bàn Px" / "mua") · 3 ảnh · các bước đánh số (câu ngắn) ·
   **Kiểm tra** (làm đúng mới sang bước sau) · **[Cần người lớn]** ở tiêu đề khi có mạch/động cơ/pin/đo tư thế.
-- Ảnh: `c` = chỉ chi tiết cần lấy (chi tiết màu sáng tạm tô cam), `a` = toàn cảnh (đã lắp mờ, mới tô xanh), `b` = phóng to.
-  Render qua `gui_run.py`; **tự kiểm ảnh trắng và chụp lại** (fitAll chạy trước khi kịp vẽ → ảnh trắng ngẫu nhiên).
-  `steps.json` báo chi tiết chưa thuộc bước nào → phải rỗng.
+- **Ảnh (phong cách Tuan duyệt 2026-10-25, `docs/assembly-instructions-style-research.md`):** 1 ảnh "thao tác" / bước –
+  chi tiết **mới vàng STLab #E8B33A**, đã lắp **xám nhạt đặc #D3DDD8**, mọi chi tiết **viền #16231D** (FreeCAD `Flat Lines`);
+  chỉ hiện **cụm đang lắp**; **tách chi tiết mới theo hướng lắp + đường nét đứt** tới chỗ gắn; chụp 2400×1800 → tự cắt
+  khung → 1200×900; ảnh bìa màu thật. KHÔNG làm mờ (trong suốt) cả máy, KHÔNG dùng màu chọn xanh của FreeCAD.
+  Bước lặp (vd. xi-lanh thứ 2) gộp 1 bước "làm giống bước …". Mẫu: `pushrod-arm/freecad/scripts/render_assembly_steps.py`
+  (bảng bước: bối cảnh, chi tiết mới + vector tách, cụm di chuyển cùng, hướng nhìn) + `crop_assembly_images.py`.
+  Render qua `gui_run.py`; **tự kiểm ảnh trắng và chụp lại**; `steps.json` báo chi tiết chưa thuộc bước nào → phải rỗng.
 - Phần kỹ thuật (tự hãm, tỉ số, TODO) để mục **Ghi chú cho thầy/cô** cuối file. Lưu ý BẮT BUỘC (pin, servo không bảo vệ
   kẹt, mỏ hàn…) – xem `maker/robotics-cad/CLAUDE.md`.
 - **Sai kích thước linh kiện → sửa chi tiết gốc** (vd. trụ đế đúng chiều cao bộ thu), không thêm ống kê/đệm tạm. Chỉ kê tạm khi
