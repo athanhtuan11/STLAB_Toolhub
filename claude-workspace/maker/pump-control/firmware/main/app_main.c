@@ -4,7 +4,8 @@
 //   - Chay toi da (phut) (thanh keo 5..240, luu lai qua mat dien)
 //   - Con lai (phut)     (chi doc, cap nhat moi phut khi dang chay)
 //   - Gio thiet bi       (chi doc, moi phut - kiem mui gio truoc khi tin lich tuoi)
-//   + Lich hen gio (Schedules) va cap nhat firmware tu xa (OTA) co san trong app.
+//   - Phien ban / Ban moi (chi doc) + nut "Cap nhat": khach bam -> tai firmware moi Tuan dang tren GitHub (ota_pull.c)
+//   + Lich hen gio (Schedules) co san trong app.
 // Lich tuoi: app -> Schedules -> vd. 06:00 + 18:00 hang ngay "Bat"; bom tu tat sau "Chay toi da" = thoi gian tuoi.
 // Lich luu va chay TREN ESP32 (mat Internet van chay, mien la da co gio; mat dien + mat mang thi cho dong bo gio lai).
 // Ket noi Wi-Fi lan dau: app RainMaker -> Add device -> quet ma QR / Bluetooth (in log Serial).
@@ -25,6 +26,7 @@
 #include "app_network.h"
 #include "app_reset.h"
 
+#include "ota_pull.h"
 #include "pump.h"
 
 #define RELAY_GPIO        GPIO_NUM_26  // -> IN1 module relay (jumper H)
@@ -36,6 +38,10 @@
 #define PARAM_MAX  "Chay toi da (phut)"
 #define PARAM_LEFT "Con lai (phut)"
 #define PARAM_CLOCK "Gio thiet bi"
+#define PARAM_VER   "Phien ban"
+#define PARAM_NEW   "Ban moi"
+#define PARAM_UPD   "Cap nhat"
+#define OTA_CHECK_HOURS 6
 
 static const char *TAG = "app";
 
@@ -43,8 +49,10 @@ static esp_rmaker_param_t *s_power;
 static esp_rmaker_param_t *s_max;
 static esp_rmaker_param_t *s_left;
 static esp_rmaker_param_t *s_clock;
+static esp_rmaker_param_t *s_new;
 static esp_timer_handle_t s_tick;
 static esp_timer_handle_t s_clock_tick;
+static esp_timer_handle_t s_ota_tick;
 
 static void report_left(void)
 {
@@ -56,6 +64,18 @@ static void report_left(void)
 static void tick_cb(void *arg)
 {
     report_left();
+}
+
+static void ota_status_cb(const char *text)
+{
+    if (s_new) {
+        esp_rmaker_param_update_and_report(s_new, esp_rmaker_str(text));
+    }
+}
+
+static void ota_tick_cb(void *arg)
+{
+    ota_pull_check_async();  // chi kiem, khong tu cai
 }
 
 static void clock_cb(void *arg)
@@ -97,6 +117,11 @@ static esp_err_t write_cb(const esp_rmaker_device_t *device, const esp_rmaker_pa
     const char *name = esp_rmaker_param_get_name(param);
     if (strcmp(name, ESP_RMAKER_DEF_POWER_NAME) == 0) {
         ESP_LOGI(TAG, "lenh %s tu %s", val.val.b ? "BAT" : "TAT", esp_rmaker_device_cb_src_to_str(ctx->src));
+        if (val.val.b && ota_pull_busy()) {
+            ota_status_cb("Dang cap nhat firmware - chua bat bom duoc");
+            esp_rmaker_param_update_and_report(param, esp_rmaker_bool(false));
+            return ESP_OK;
+        }
         pump_set(val.val.b, PUMP_SRC_USER);
         esp_rmaker_param_update(param, val);
     } else if (strcmp(name, PARAM_MAX) == 0) {
@@ -107,6 +132,12 @@ static esp_err_t write_cb(const esp_rmaker_device_t *device, const esp_rmaker_pa
         pump_set_max_minutes(m);
         esp_rmaker_param_update(param, val);  // co PROP_FLAG_PERSIST -> luu NVS
         report_left();
+    } else if (strcmp(name, PARAM_UPD) == 0) {
+        if (pump_is_on()) {
+            ota_status_cb("Dang bom - tat bom roi bam Cap nhat lai");  // khong ngat giua luc tuoi
+        } else {
+            ota_pull_update_async();
+        }
     }
     return ESP_OK;
 }
@@ -165,6 +196,17 @@ void app_main(void)
     esp_rmaker_param_add_ui_type(s_clock, ESP_RMAKER_UI_TEXT);
     esp_rmaker_device_add_param(dev, s_clock);
 
+    esp_rmaker_device_add_param(dev, esp_rmaker_param_create(PARAM_VER, "stlab.param.fw-version",
+                                     esp_rmaker_str(ota_pull_current_version()), PROP_FLAG_READ));
+    s_new = esp_rmaker_param_create(PARAM_NEW, "stlab.param.fw-latest", esp_rmaker_str("chua kiem"), PROP_FLAG_READ);
+    esp_rmaker_param_add_ui_type(s_new, ESP_RMAKER_UI_TEXT);
+    esp_rmaker_device_add_param(dev, s_new);
+    esp_rmaker_param_t *upd = esp_rmaker_param_create(PARAM_UPD, "stlab.param.fw-update", esp_rmaker_bool(false),
+                                                      PROP_FLAG_READ | PROP_FLAG_WRITE);
+    esp_rmaker_param_add_ui_type(upd, ESP_RMAKER_UI_TRIGGER);
+    esp_rmaker_device_add_param(dev, upd);
+    ota_pull_init(ota_status_cb);
+
     esp_rmaker_node_add_device(node, dev);
 
     esp_rmaker_ota_enable_default();
@@ -179,9 +221,19 @@ void app_main(void)
     const esp_timer_create_args_t cargs = {.callback = clock_cb, .name = "clock_tick"};
     ESP_ERROR_CHECK(esp_timer_create(&cargs, &s_clock_tick));
     esp_timer_start_periodic(s_clock_tick, 60LL * 1000000);
+    const esp_timer_create_args_t oargs = {.callback = ota_tick_cb, .name = "ota_tick"};
+    ESP_ERROR_CHECK(esp_timer_create(&oargs, &s_ota_tick));
+    esp_timer_start_periodic(s_ota_tick, OTA_CHECK_HOURS * 3600LL * 1000000);
 
     err = app_network_start(POP_TYPE_RANDOM);
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "khong ket noi duoc Wi-Fi (%s) - relay van TAT", esp_err_to_name(err));
+    } else {
+        // app_network_start tra ve truoc khi Wi-Fi ket noi xong -> kiem ban moi lan dau sau 90 s
+        static esp_timer_handle_t first;
+        const esp_timer_create_args_t fargs = {.callback = ota_tick_cb, .name = "ota_first"};
+        if (esp_timer_create(&fargs, &first) == ESP_OK) {
+            esp_timer_start_once(first, 90LL * 1000000);
+        }
     }
 }
