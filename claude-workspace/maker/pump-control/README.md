@@ -14,7 +14,7 @@
 | GĐ | Việc | Trạng thái |
 |---|---|---|
 | 0 | Khảo sát: motor 220 V 2 HP, Wi-Fi có, CB/RCD nhà bỏ qua; còn vẽ trước app + bố trí tủ (`design/`) | khảo sát xong |
-| 1 | Firmware RainMaker bật/tắt (Tuan tự lập trình), thử với đèn/bơm 12 V trước | chưa |
+| 1 | Firmware RainMaker bật/tắt (`firmware/`, ESP-IDF 5.5) – build sạch; chưa nạp phần cứng | viết xong |
 | 2 | BOM tối giản (`docs/bom.md`) | xong |
 | 3 | Tuan lắp tủ → thử không tải → có tải, đo dòng khởi động; bàn giao + hướng dẫn khách | chưa |
 | 4 | Bàn giao app cho khách | chưa |
