@@ -83,8 +83,21 @@ description: Thiet ke co khi robot trong FreeCAD cho STLab - chon linh kien tu d
 5. Báo lại: kích thước chính (mm), khối lượng ước tính (vật liệu PLA/PETG), các giả định.
 
 ## Chốt / trục khớp quay (cập nhật 2026-10-25 – Tuan: chốt pushrod-arm "quá khít", "rỗng sẽ yếu lực")
-Đo thật pushrod-arm: chốt in Ø5,0 trong lỗ Ø5,4 = khe **0,2 mm mỗi bên** → lắp ra quá khít; chốt S/A–E in nằm, `Pin_jaw2`
-in đứng; chốt không rỗng suốt (chỉ lỗ Ø2,2 sâu 5 mm cho vít M2.5 ở đầu).
+**Ca thật pushrod-arm:** chốt xuyên nhiều chi tiết (`Pin_S`: Turret_one_piece ↔ Spacer_S ↔ Boom001) in Ø5,0 trong lỗ Ø5,4
+= khe **0,2 mm/bên** → in ra **không nhét vào được**; ruột chốt **rỗng vì in infill 40 %** (model đặc); `Pin_jaw2` in
+**đứng**; lỗ vít M2.5 sâu đúng bằng phần vít ăn vào (vít chạm đáy). Đã sửa (`freecad/scripts/history/
+2026-10-25_pins_clearance_solid.py <D>`): thân Ø4,8 (0,3 mm/bên), vát đầu 0,4, mặt phẳng đáy, lỗ vít sâu 5,5, bàn in
+P8 đặc 100 %, bộ chốt thử `print/print-pin-gauge.yaml`, test `T7Pins`.
+
+**Quy trình chốt / trục cho mọi dự án:**
+- Chốt xuyên **nhiều** chi tiết: khe tính với **MỌI** lỗ dọc chốt (lỗ nhỏ nhất quyết định), không chỉ 1 lỗ.
+- Chi tiết có lỗ đã in, chỉ sai khe → **sửa (thu nhỏ) chốt, in lại chốt**, không in lại chi tiết lớn.
+- **In bộ chốt thử trước** (vài cỡ cách 0,1 mm, vạch đánh dấu trên mũ, ~10 phút) cắm vào lỗ thật → chọn cỡ → chạy script với cỡ đó.
+- Lỗ vít ở đầu chốt: Ø mồi theo vít (M2.5 tự ren trong PETG: Ø2,2), **sâu = chiều dài vít − washer + 0,5–1 mm**; không khoan sâu hơn.
+- Chi tiết nhỏ **chịu lực** (chốt, trục, then, vấu) → bàn in riêng **100 % infill**; ghi trong print.yaml, không để chung bàn 40 %.
+- Script đổi chốt trong hệ riêng (Placement ≠ I, vd. chốt đi theo cụm kẹp): dựng hình trong hệ riêng rồi gán `Shape` +
+  đặt lại `Placement`; **không dùng `transformShape` để đổi hệ** (FreeCAD chỉ gán Placement → bị áp 2 lần, lỗi thật 2026-10-25).
+- `BoundBox` của mặt cong có thể rộng hơn thật (~0,4 mm) → kiểm vị trí bằng `isInside` / mặt cắt, không tin hộp bao.
 1. **Ưu tiên trục kim loại cho khớp chịu lực:** bu lông/chốt thép (vd. M5 hoặc chốt Ø5 xuyên lỗ in Ø5,4–5,6) + đai ốc
    khóa nylon hoặc phe/vít đầu. Thép không gãy theo lớp, không mòn, không cần in lại khi hỏng. Cánh tay mở dùng ổ bi /
    bạc ở khớp (BCN3D Moveo: 608ZZ, 62x, bạc tự bôi trơn – `docs/cad-mechanisms-teaching-research.md` mục 1).
@@ -102,7 +115,8 @@ in đứng; chốt không rỗng suốt (chỉ lỗ Ø2,2 sâu 5 mm cho vít M2.
    | **Quay / trượt nhiều** | **≥ 0,3 mm** (Prusa KB: chi tiết chuyển động ≥ 0,3 mm – `TODO` nguồn không nói rõ mỗi bên hay tổng → lấy mỗi bên cho chắc) | chốt khớp tay, bánh răng, rãnh trượt |
    | Trục kim loại trong lỗ in | 0,2–0,3 mm | bu lông M5 trong lỗ Ø5,4–5,6 |
    Lỗ in nhỏ hơn bản vẽ (nophead polyholes); lỗ NGANG (trục song song bàn) còn bị dẹt đỉnh → dùng lỗ giọt nước / vát đỉnh.
-   Số cuối cùng chốt bằng **mẫu thử khe** (coupon 0,1–0,4 mm) trên máy thật – `TODO` chưa có coupon chuẩn STLab.
+   Số cuối cùng chốt bằng **mẫu thử** trên máy thật: chốt → bộ chốt thử (`make_pin_gauge.py` của pushrod-arm làm mẫu);
+   lỗ/hốc khác → coupon 0,1–0,4 mm (`TODO` chưa có coupon chuẩn STLab).
 4. **Kiểm bằng hình học, đưa vào test:** với mỗi chốt, đo đường kính thân + mọi lỗ đồng trục trên chi tiết lắp → khe ≥ ngưỡng
    theo kiểu lắp; báo chốt in đứng / chốt < 5 mm / thân bị khoét dọc (`WARN`).
 

@@ -1,0 +1,16 @@
+# BO CHOT THU 2026-10-25: 4 chot ngan O4,6/4,7/4,8/4,9 (1-4 vach tren mu) - cam vao lo Turret_one_piece/Boom001 DA IN.
+# Chon co LON NHAT xoay tron tay ma khong lac -> chay lai: freecad/scripts/history/2026-10-25_pins_clearance_solid.py <D>
+# Sinh STL: freecad/scripts/make_pin_gauge.py. Cat: python robotics-cad/scripts/slice.py <file nay>
+partial: true
+fcstd: ../freecad/pushrod_arm.FCStd
+machine: Bambu Lab A1 0.4 nozzle
+filament: Bambu PETG Basic @BBL A1
+stl: gauges
+plates_dir: plates-pin-gauge
+common: {only_one_wall_top: "1", infill_combination: "1", sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
+plates:
+  G1_PinGauge__0.16_PETG_100pct:
+    process: 0.16mm Optimal @BBL A1
+    overrides: {wall_loops: "4", sparse_infill_density: "100%", sparse_infill_pattern: zig-zag, infill_combination: "0",
+                wall_generator: arachne, only_one_wall_top: "0", brim_type: auto_brim}
+    stl: ["gauge_pin_*.stl"]

@@ -167,6 +167,58 @@ class T6PrintFile(unittest.TestCase):
             self.assertGreaterEqual(os.path.getmtime(p), os.path.getmtime(FC), "%s: STL cu hon model -> xuat lai" % t)
 
 
+class T7Pins(unittest.TestCase):
+    """Tuan 2026-10-25: chot (Pin_S...) "qua khit khong the nhet vo" Boom001/Turret; "lam rong nen yeu luc".
+    Khop QUAY: khe >= 0,3 mm/ben voi MOI lo dong truc; chot dac (lo vit chi o dau, <= 6 mm); in NAM."""
+
+    PINS = ["Pin_S", "Pin_A", "Pin_B", "Pin_C", "Pin_D", "Pin_E", "Pin_jaw2"]
+
+    def _axis(self, s):
+        import Part
+        f = max((f for f in s.Faces if isinstance(f.Surface, Part.Cylinder)), key=lambda f: f.Area)
+        return f.Surface.Axis, f.Surface.Center, f.Surface.Radius
+
+    def test_rotating_clearance(self):
+        import Part
+        for n in self.PINS:
+            s = O(n).Shape
+            ax, c, r = self._axis(s)
+            holes = []
+            for q in D["O"].values():
+                if q.Label.startswith(("Pin_", "M2_5")) or not q.Shape.BoundBox.intersect(s.BoundBox):
+                    continue
+                for f in q.Shape.Faces:
+                    su = f.Surface
+                    if (isinstance(su, Part.Cylinder) and abs(abs(su.Axis.dot(ax)) - 1) < 1e-3
+                            and (su.Center - c).cross(ax).Length < 0.05 and r < su.Radius < r + 1.0):
+                        holes.append((q.Label, su.Radius - r))
+            self.assertTrue(holes, "%s: khong thay lo nao" % n)
+            tight = [(lb, round(g, 3)) for lb, g in holes if g < 0.3 - TOL]
+            self.assertEqual(tight, [], "%s: khe < 0,3 mm/ben" % n)
+
+    def test_solid_pin(self):
+        for n in self.PINS:
+            s = O(n).Shape
+            ax, c, r = self._axis(s)
+            ts = [v.Point.sub(c).dot(ax) for v in s.Vertexes]
+            t0, t1 = min(ts), max(ts)
+            hollow = []
+            for k in range(1, 20):  # mat cat doc than: chi 1 vong (dac), tru doan lo vit o dau (<= 6 mm)
+                t = t0 + (t1 - t0) * k / 20
+                if min(t - t0, t1 - t) <= 6.0:
+                    continue
+                if len(s.slice(ax, (c + ax * t).dot(ax))) != 1:
+                    hollow.append(round(t - t0, 1))
+            self.assertEqual(hollow, [], "%s: than rong tai (mm)" % n)
+
+    def test_pins_print_lying(self):
+        import Mesh
+        for n in self.PINS:
+            m = Mesh.Mesh(os.path.join(HERE, "..", "..", "print", "stl", "07_Pins__%s.stl" % n))
+            bb = m.BoundBox
+            self.assertLess(bb.ZLength, max(bb.XLength, bb.YLength), "%s: in DUNG (gay ngang lop)" % n)
+
+
 class T5Motion(unittest.TestCase):
     """Quet 24 tu the (yaw 0/90, 3 x 4 hanh trinh) - khong va cham, gom ca hop so moi."""
 

@@ -1,0 +1,16 @@
+# IN LAI CHOT 2026-10-25: 7 chot khop (Pin_S, Pin_A..E, Pin_jaw2) than O4,8 (khe 0,3 mm/ben voi lo O5,4), dac 100 %,
+# in NAM, lo vit O2,2 sau 5,5 (M2.5x6 + washer). Giu nguyen chi tiet co lo (Boom, Turret...). In BO CHOT THU truoc.
+partial: true
+fcstd: ../freecad/pushrod_arm.FCStd
+rest_pose: ../freecad/pushrod_arm_rest.json
+machine: Bambu Lab A1 0.4 nozzle
+filament: Bambu PETG Basic @BBL A1
+stl: stl
+plates_dir: plates-reprint-pins-2026-10-25
+common: {only_one_wall_top: "1", infill_combination: "1", sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
+plates:
+  R5_Pins__0.16_PETG_100pct:
+    process: 0.16mm Optimal @BBL A1
+    overrides: {wall_loops: "4", sparse_infill_density: "100%", sparse_infill_pattern: zig-zag, infill_combination: "0",
+                wall_generator: arachne, only_one_wall_top: "0", brim_type: auto_brim}
+    stl: ["07_Pins__Pin_[SABCDE].stl", "07_Pins__Pin_jaw2.stl"]

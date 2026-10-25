@@ -52,9 +52,10 @@ export:
        frame: [209.00144394797778, 0, 133.90666646784498, 0, 1, 0, 30]}
     - {names: [Gripper_frame], group: 06_Gripper, rotate: {x: 90},
        frame: [209.00144394797778, 0, 133.90666646784498, 0, 1, 0, 30]}
-    - {names: [Jaw_2_idler, Gripper_top_plate, Pin_jaw2, Spacer_jaw2, Washer_pin], group: 06_Gripper, rotate: {x: 90},
+    - {names: [Jaw_2_idler, Gripper_top_plate, Spacer_jaw2, Washer_pin], group: 06_Gripper, rotate: {x: 90},
        frame: [209.00144394797778, 0, 133.90666646784498, 0, 1, 0, 30]}
-    - {names: [Pin_S, Pin_A, Pin_B, Pin_C, Pin_D, Pin_E], group: 07_Pins}
+    # Chot khop in NAM (huong the gioi, mat phang day cach truc 2,0) - Pin_jaw2 truoc in dung (gay ngang lop) -> 2026-10-25
+    - {names: [Pin_S, Pin_A, Pin_B, Pin_C, Pin_D, Pin_E, Pin_jaw2], group: 07_Pins}
     - {names: [Pin_gearbox_Shoulder], group: 07_Pins, rotate: {y: 90}, frame: Rack_Shoulder, split_solids: true}  # dau chot xuong ban
     - {names: [Pin_gearbox_Elbow], group: 07_Pins, rotate: {y: 90}, frame: Rack_Elbow, split_solids: true}
     - {names: [Pin_S_washer, Pin_A_washer, Pin_B_washer, Pin_C_washer, Pin_D_washer, Pin_E_washer], group: 07_Pins, rotate: {x: 90}}
@@ -87,7 +88,7 @@ plates:
     process: 0.16mm Optimal @BBL A1
     overrides: {wall_loops: "4", sparse_infill_density: "40%", wall_generator: arachne, top_shell_layers: "6",
                 bottom_shell_layers: "5", brim_type: auto_brim, infill_combination: "0"}
-    stl: ["*__Rack_*.stl", "*__Jaw_1_driven_by_servo*.stl", "*__Jaw_2_idler*.stl", "*__Pinion*.stl", "*__Pin_*.stl",
+    stl: ["*__Rack_*.stl", "*__Jaw_1_driven_by_servo*.stl", "*__Jaw_2_idler*.stl", "*__Pinion*.stl",
           "*__Spacer_jaw2.stl", "*__Washer_pin.stl"]
     exclude: ["*_TPU.stl"]
   P6_GripperPads__TPU95A:
@@ -101,3 +102,9 @@ plates:
     overrides: {wall_loops: "4", sparse_infill_density: "100%", sparse_infill_pattern: zig-zag, infill_combination: "0",
                 wall_generator: arachne, brim_type: outer_only, brim_width: "4", only_one_wall_top: "0"}
     stl: ["*__Worm_*.stl"]
+  # Tuan 2026-10-25: chot in infill 40 % -> ruot rong, yeu. Chot chiu luc -> DAC 100 %.
+  P8_Pins__0.16_PETG_100pct:
+    process: 0.16mm Optimal @BBL A1
+    overrides: {wall_loops: "4", sparse_infill_density: "100%", sparse_infill_pattern: zig-zag, infill_combination: "0",
+                wall_generator: arachne, only_one_wall_top: "0", brim_type: auto_brim}
+    stl: ["*__Pin_*.stl"]
