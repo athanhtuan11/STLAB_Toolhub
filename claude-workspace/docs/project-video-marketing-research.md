@@ -116,6 +116,15 @@ Ký hiệu: (thứ cấp) = nguồn không phải hãng/repo chính · `TODO` = 
     đồng dịch vụ chính thức; bản 7.2.8 từng bị 403 ([repo](https://github.com/rany2/edge-tts)). Chỉ hợp thử nghiệm.
   - **VieNeu-TTS** (2,9k★, Apache-2.0, chạy CPU qua ONNX, clone giọng từ 3–8 s; README không ghi license trọng số; v4 là đóng/API)
     ([repo](https://github.com/pnnbao97/VieNeu-TTS)) → **ứng viên thử** chạy cục bộ. **Không clone giọng người khác/học sinh.**
+  - **Đã thử 2026-10-25 – CHỌN VieNeu-TTS v3 Turbo** (`video-ai/scripts/tts_vi.py`, venv riêng `%LOCALAPPDATA%/stlab-studio/venvs/vieneu`):
+    - Trọng số `pnnbao-ump/VieNeu-TTS-v3-Turbo` trên Hugging Face: **license apache-2.0** (hết `TODO`). 25 giọng có sẵn (Bắc/Trung/Nam).
+    - i5-13400F CPU: tải model 10 s; RTF 0,62–0,70 (câu 11–17 s đọc mất 7–12 s). Không cần GPU, không gửi văn bản đi đâu.
+    - Bẫy: onnxruntime 1.31 báo "External data path escapes model directory" (cache HF dùng symlink) → ghim `onnxruntime==1.22.1`;
+      `infer(voice=...)` nhận MÃ giọng ("Mai Anh"), không nhận nhãn.
+    - Whisper nghe lại 6 giọng: rõ nhất Mai Anh, Ngọc Huyền (nữ Bắc); Quang Sơn (Trung) bị nghe sai nhiều nhất. Giọng Bắc đọc
+      "ráp" thành "dáp", "turret" thành "tu-rít". Mẫu nghe: `maker/pushrod-arm/marketing/voice-samples/*.mp3` – **Tuan chọn giọng**.
+    - Gắn vào `make_reel.py`: cảnh có `say:` → giọng đúng cảnh (lệch < 0,02 s), −14 LUFS, kèm `<ten>.srt` sinh từ kịch bản.
+      Mẫu: `maker/pushrod-arm/marketing/reel-13-steps-voice.yaml` (37,8 s, ~3 phút dựng).
   - viXTTS: Coqui Public Model License (phi thương mại) (thứ cấp, [HF](https://huggingface.co/dotyfake/Doty_viXTTS)) → bảng thương mại.
   - Khuyến nghị: **giọng thật của Tuan/giáo viên** cho video thương hiệu (tương tác tin cậy hơn – gợi ý), TTS chỉ cho series kỹ thuật.
 - **Nhạc nền:**

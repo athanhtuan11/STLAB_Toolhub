@@ -112,6 +112,8 @@ maker/<project>/            tên tiếng Anh, kebab-case
   - Hốc servo SG90 / PG001 / MG90S **không dùng chung** (đáy→mặt dưới tai 17 / 16,3 / 18,5 mm) → ghi đúng loại servo.
 - **Đọc `docs/freecad-automation-research.md` mục 7 trước khi viết script FreeCAD** (11 bẫy CLI đã dính + cách chặn,
   số đo hiệu năng, `fc_cli.py` / `gui_run.py` / bộ test `-t`).
+- **Ảnh dựng từng bước cho video** (2026-10-25): `scripts/build_replay.py` qua `gui_run.py` (biến `REPLAY_OUT`, `REPLAY_MODE`
+  auto|body|parts, `REPLAY_SIZE`) → `step-XX.png` + `steps.json`. PartDesign: từng feature (+ khung sketch); chỉ Part: theo nhóm.
 - **CLI trước, GUI chỉ để xem** (Tuan 2026-10-24: "mở FreeCAD dễ crash"): sửa model bằng
   `"C:/Program Files/FreeCAD 1.1/bin/freecadcmd.exe" script.py` trên file đã Lưu, **GUI phải đóng file đó**
   (hoặc xong thì File → Revert). Lưu từ CLI làm mất dữ liệu hiển thị (màu, ẩn hiện, thumbnail; hình học giữ nguyên)

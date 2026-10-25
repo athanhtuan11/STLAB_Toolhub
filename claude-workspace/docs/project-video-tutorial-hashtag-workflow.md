@@ -66,7 +66,13 @@ Ký hiệu: (thứ cấp) = không phải nguồn hãng/repo chính · `TODO` = 
       Gui.updateGui(); view.saveImage(f"{out}/step-{i:02d}.png", 1920, 1080, "White")
   ```
   Kèm `steps.json` (tên feature `f.Label`, loại `f.TypeId`, kích thước chính như `Length` của Pad) → Claude viết chú thích/phụ đề từng bước.
-  `TODO` thử trên `pushrod_arm.FCStd`: Body nào là PartDesign, feature nào chỉ là Part (không có lịch sử).
+  **Đã làm 2026-10-25: `maker/robotics-cad/scripts/build_replay.py`** (chạy qua `gui_run.py`). Thử thật:
+  - `pushrod_arm.FCStd` = 86 `Part::Feature`, **0 PartDesign Body** (model sinh/sửa bằng script) → không có lịch sử feature;
+    chế độ `parts` hiện dần theo 9 nhóm cây (Base → … → Pins_printed). Thứ tự LẮP thật vẫn là `render_assembly.py` (13 bước).
+    `TODO`: khung hình còn rộng (tay nhỏ, lệch góc) – tìm vật thể phụ làm `fitAll` rộng ra.
+  - File PartDesign mẫu (Pad → Pocket 2 lỗ → Fillet): 5 ảnh, có khung sketch trước Pad/Pocket, `steps.json` kèm `Length`/`Radius`.
+  - Bẫy: bật/tắt `App::DocumentObjectGroup` bật/tắt luôn mọi con → bật nhóm TRƯỚC rồi mới ẩn chi tiết;
+    file lưu từ CLI mở ra ẩn hết → hiện trạng thái cuối rồi mới `fitAll`.
 - **cyberbrick-car** sinh từ `build_car.py` (Part, không phải lịch sử PartDesign) → replay theo **từng giai đoạn trong script** (ghi ảnh sau mỗi
   khối/boolean) thay vì `Body.Group`. `TODO` kiểm cấu trúc file.
 - Ảnh 1920×1080 cho video dài; chạy lần 2 ở 1080×1920 (camera zoom gần) cho Shorts. Ghép bằng FFmpeg/`make_reel.py` (cảnh `step`).

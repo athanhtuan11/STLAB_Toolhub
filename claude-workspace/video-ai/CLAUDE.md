@@ -25,6 +25,10 @@ Tuan đưa clip tự quay + vài dòng mong muốn → Claude phân tích, lập
   (tài khoản cá nhân → Tuan chọn nhạc trend trong app). Kèm `<ten>-contact.png` để duyệt bằng ảnh. Không tự đăng.
 - Mẫu: `maker/pushrod-arm/marketing/reel-13-steps.yaml` (video #1 trong `docs/trend-content-ideas.md`).
 
+- **Giọng đọc AI tiếng Việt (2026-10-25):** spec có `voice: "Mai Anh"` + cảnh có `say: "..."` → `scripts/tts_vi.py`
+  (VieNeu-TTS, chạy trên máy, venv riêng – cài: docstring tts_vi.py) đọc; cảnh tự dài theo câu; ra thêm `<ten>.srt`.
+  Cache trong `out/_<ten>-voice/` (sửa 1 câu chỉ đọc lại câu đó). Mẫu: `reel-13-steps-voice.yaml`. KHÔNG clone giọng người thật.
+
 ## Template (`templates/<id>/cau-hinh.yaml`)
 - `reel-9x16`: TikTok/Reels/Shorts – khung dọc bám chủ thể, bỏ từ đệm + khoảng lặng > 0,35 s, phụ đề
   in cứng, chữ mở đầu/CTA, −14 LUFS. TODO: màu/logo/nhạc STLab.
