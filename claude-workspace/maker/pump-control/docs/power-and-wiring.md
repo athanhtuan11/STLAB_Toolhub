@@ -34,7 +34,7 @@ Relay này chỉ đóng **cuộn hút contactor** (dòng nhỏ), không đóng d
   nối contactor.
 - PZEM-004T (UART): dùng UART2, vd. GPIO16 (RX), GPIO17 (TX). Mức điện áp TX của PZEM: `TODO` theo datasheet PZEM.
 
-## 4. Sơ đồ khối tủ (chốt dòng theo nhãn motor)
+## 4. Sơ đồ khối tủ – bản đầy đủ có bảo vệ (THAM KHẢO; Tuan chọn bản tối giản `bom.md`)
 ```
 Nguồn 220 V ─ CB (≥ 1,25 × dòng định mức) ─ RCD 30 mA ─ Contactor (AC-3 ≥ dòng định mức) ─ Relay nhiệt (= dòng nhãn) ─ Motor
                                                        ▲ cuộn hút

@@ -9,10 +9,10 @@
 ## An toàn (bắt buộc, đọc trước mọi việc)
 - 220 V AC + nước. Tuan tự lắp tủ: cắt nguồn + treo biển/khóa, **thử không điện bằng bút/đồng hồ** trước khi chạm, nối đất
   PE cho tủ và motor, bấm nút TEST của RCD sau khi lắp. Học sinh không đụng tủ đang có điện.
-- ESP32 **chỉ đóng cuộn hút contactor**, không đóng dòng motor. Không dùng module relay 10 A hay SSR để chạy motor.
-- Bảo vệ bằng **phần cứng** (không phụ thuộc ESP32): RCD 30 mA, relay nhiệt, nút dừng khẩn NC, công tắc TAY/TẮT/TỰ ĐỘNG,
-  chống chạy khô (phao/áp) nối thẳng vào mạch cuộn hút.
-- Firmware mặc định TẮT khi khởi động, giới hạn thời gian chạy, nghỉ giữa 2 lần bật, tắt khi công suất bất thường.
+- **Phạm vi (Tuan quyết 2026-10-25): chỉ điều khiển bật/tắt từ xa qua Wi-Fi; bỏ bảo vệ motor** (relay nhiệt, dừng khẩn,
+  chống chạy khô, đo dòng). Không tự thêm lại – chỉ nhắc khi Tuan hỏi.
+- ESP32 **chỉ đóng cuộn hút contactor**, không đóng dòng motor (relay module không chịu dòng khởi động ~60–90 A).
+- Firmware gợi ý: mặc định TẮT khi khởi động, giới hạn thời gian chạy mỗi lần.
 - Số liệu dòng điện hiện là **ước tính** – chốt theo nhãn motor (`docs/survey-checklist.md`). Không bịa thông số linh kiện.
 
 ## Cấu trúc
