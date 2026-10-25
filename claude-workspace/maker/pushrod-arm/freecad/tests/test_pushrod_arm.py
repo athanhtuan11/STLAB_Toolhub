@@ -149,6 +149,24 @@ class T4Marks(unittest.TestCase):
             self.assertIn(pins, o.STLab_Marks, t)
 
 
+class T6PrintFile(unittest.TestCase):
+    """Tuan 2026-10-24 toi: 'Worm_Shoulder chua co lo gan truc hop so' - model co lo, nhung support tu ve (export
+    support: true) lap kin lo trong STL. Kiem FILE IN: lo truc o day con trong, khong co mau support nao."""
+
+    def test_worm_stl_socket_open(self):
+        import Mesh
+        for t in TAGS:
+            p = os.path.join(HERE, "..", "..", "print", "stl", "05_PushRod_%s__Worm_%s.stl" % (t, t))
+            m = Mesh.Mesh(p)
+            self.assertEqual(len(m.getSeparateComponents()), 1, "%s: co support roi" % t)
+            for z in (1.0, 4.0, 7.5):   # lo sau ~8,4 mm tu ban in
+                loops = m.crossSections([((0, 0, z), (0, 0, 1))])[0]
+                w = sorted(max(q.x for q in lp) - min(q.x for q in lp) for lp in loops)
+                self.assertEqual(len(w), 2, "%s z %.1f: %d vong (can vanh + lo)" % (t, z, len(w)))
+                self.assertGreater(w[0], 5.5, "%s z %.1f: lo hep %.2f" % (t, z, w[0]))
+            self.assertGreaterEqual(os.path.getmtime(p), os.path.getmtime(FC), "%s: STL cu hon model -> xuat lai" % t)
+
+
 class T5Motion(unittest.TestCase):
     """Quet 24 tu the (yaw 0/90, 3 x 4 hanh trinh) - khong va cham, gom ca hop so moi."""
 

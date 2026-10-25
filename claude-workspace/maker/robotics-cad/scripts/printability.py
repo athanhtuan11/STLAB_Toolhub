@@ -17,7 +17,8 @@ from pathlib import Path
 
 import numpy as np
 
-MAC_DINH = {"overhang_deg": 45, "overhang_tol_deg": 2.0, "support_min_patch_mm2": 4.0, "min_patch_height_mm": 1.0, "bridge_max_mm": 5.0, "bed_tol_mm": 0.2,
+MAC_DINH = {"overhang_deg": 45, "overhang_tol_deg": 2.0, "support_min_patch_mm2": 4.0, "min_patch_height_mm": 1.0, "bridge_max_mm": 5.0,
+            "bridge_closed_max_mm": 8.0, "bed_tol_mm": 0.2,
             "brim_contact_max_mm2": 120.0, "brim_aspect_min": 2.5,
             "support_gap_max_mm": 0.6, "support_gap_mm": 0.2,
             "bed_near_mm": 0.6, "short_overhang_mm": 2.5}
@@ -66,6 +67,25 @@ def _cum(tri, chon):
     a = g @ g.T  # 2 tam giac chung >= 1 dinh -> noi
     k, lab = connected_components(a, directed=False)
     return [idx[lab == i] for i in range(k)]
+
+
+def _mai_lo_kin(tri, nz, c):
+    """Cum c la MAI LO KIN: moi dinh bien cua cum deu cham thanh dung DI XUONG (vd. day lo truc Ø5,9 in mieng lo
+    xuong ban - Worm pushrod-arm 2026-10-25: support tu ve lap kin lo). Mai ngoai (go, vanh) co bien cham thanh di LEN."""
+    v = np.round(tri.reshape(-1, 3), 3)
+    _, vid = np.unique(v, axis=0, return_inverse=True)
+    vid = vid.reshape(-1, 3)
+    e = np.sort(np.concatenate([vid[c][:, [0, 1]], vid[c][:, [1, 2]], vid[c][:, [2, 0]]]), axis=1)
+    u, n = np.unique(e, return_counts=True, axis=0)
+    bien = np.unique(u[n == 1])
+    if len(bien) == 0:
+        return False
+    zc = tri[c][:, :, 2].max()
+    tuong = np.abs(nz) < 0.3                                      # thanh gan dung
+    xuong = tuong & (tri[:, :, 2].min(axis=1) < zc - 0.2)         # keo xuong duoi mai
+    co = np.zeros(vid.max() + 1, dtype=bool)
+    co[vid[xuong].ravel()] = True
+    return bool(co[bien].mean() >= 0.95)
 
 
 def _co_do_duoi(tri, nz, idx, gap, khoi=2000):
@@ -122,7 +142,10 @@ def vung_can_do(tri, ng):
         dien_tich = float(dt[c].sum())
         rong_dai = _rong_dai(tri[c])
         # bo qua: nho / hep (bac cau duoc: noc lo ngang) / sat ban / dai hep (ren, vat nho - moi lop nho < 1 vet)
-        if (dien_tich >= ng["support_min_patch_mm2"] and min(dx, dy) > ng["bridge_max_mm"]
+        cau = ng["bridge_max_mm"]
+        if min(dx, dy) <= ng["bridge_closed_max_mm"] and _mai_lo_kin(tri, nz, c):
+            cau = ng["bridge_closed_max_mm"]  # mai lo kin: bac cau neo moi phia
+        if (dien_tich >= ng["support_min_patch_mm2"] and min(dx, dy) > cau
                 and float(zmax[c].max()) >= ng["min_patch_height_mm"] and rong_dai > ng["short_overhang_mm"]):
             cum.append({"mm2": round(dien_tich, 1), "rong_mm": round(min(dx, dy), 1), "dai_mm": round(rong_dai, 1),
                         "z_mm": round(float(zmin[c].min()), 1)})

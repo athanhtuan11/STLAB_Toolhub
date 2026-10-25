@@ -41,6 +41,7 @@ print:
   overhang_tol_deg: 2.0        # vat dung 45 do van in duoc -> chi bao khi < 43 do (luoi lam lech vai phan do)
   support_min_patch_mm2: 4.0   # TAM (Claude dat): vung nho ra nho hon -> bo qua
   bridge_max_mm: 5.0           # TAM: vung nho ra hep hon (vd. noc lo ngang) -> slicer bac cau duoc, khong can support
+  bridge_closed_max_mm: 8.0    # TAM: mai lo KIN (thanh dung bao quanh, vd. lo truc Ø5,9 Worm) bac cau toi muc nay
   min_patch_height_mm: 1.0     # vat nho sat ban (cao < 1 mm) -> bo qua
   brim_contact_max_mm2: 120.0  # TAM: dien tich chan cham ban nho hon -> bat brim (Tuan 2026-10-23: chi tiet nho can brim)
   brim_aspect_min: 2.5         # TAM: cao / be ngang nho nhat >= -> chi tiet cao manh -> brim
