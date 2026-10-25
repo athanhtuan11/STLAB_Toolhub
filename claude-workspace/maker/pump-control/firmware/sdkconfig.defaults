@@ -14,3 +14,6 @@ CONFIG_ESP_MAIN_TASK_STACK_SIZE=7168
 CONFIG_ESP_RMAKER_WORK_QUEUE_TASK_STACK=4096
 # Dieu khien noi bo khi dien thoai cung mang Wi-Fi (nhanh, khong qua cloud)
 CONFIG_ESP_RMAKER_LOCAL_CTRL_AUTO_ENABLE=y
+
+# Gio Viet Nam (UTC+7) - mac dinh thu vien la Asia/Shanghai (UTC+8, lech 1 gio -> lich 6h chay 5h)
+CONFIG_ESP_RMAKER_DEF_TIMEZONE="Asia/Ho_Chi_Minh"

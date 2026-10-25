@@ -3,10 +3,14 @@
 //   - Bat/Tat           (toggle, KHONG luu -> khoi dong/co dien lai luon TAT)
 //   - Chay toi da (phut) (thanh keo 5..240, luu lai qua mat dien)
 //   - Con lai (phut)     (chi doc, cap nhat moi phut khi dang chay)
+//   - Gio thiet bi       (chi doc, moi phut - kiem mui gio truoc khi tin lich tuoi)
 //   + Lich hen gio (Schedules) va cap nhat firmware tu xa (OTA) co san trong app.
+// Lich tuoi: app -> Schedules -> vd. 06:00 + 18:00 hang ngay "Bat"; bom tu tat sau "Chay toi da" = thoi gian tuoi.
+// Lich luu va chay TREN ESP32 (mat Internet van chay, mien la da co gio; mat dien + mat mang thi cho dong bo gio lai).
 // Ket noi Wi-Fi lan dau: app RainMaker -> Add device -> quet ma QR / Bluetooth (in log Serial).
 // Nut BOOT (GPIO0): giu 3 s = xoa Wi-Fi, giu 10 s = reset nha may.
 #include <string.h>
+#include <time.h>
 
 #include "esp_log.h"
 #include "esp_timer.h"
@@ -31,13 +35,16 @@
 
 #define PARAM_MAX  "Chay toi da (phut)"
 #define PARAM_LEFT "Con lai (phut)"
+#define PARAM_CLOCK "Gio thiet bi"
 
 static const char *TAG = "app";
 
 static esp_rmaker_param_t *s_power;
 static esp_rmaker_param_t *s_max;
 static esp_rmaker_param_t *s_left;
+static esp_rmaker_param_t *s_clock;
 static esp_timer_handle_t s_tick;
+static esp_timer_handle_t s_clock_tick;
 
 static void report_left(void)
 {
@@ -49,6 +56,22 @@ static void report_left(void)
 static void tick_cb(void *arg)
 {
     report_left();
+}
+
+static void clock_cb(void *arg)
+{
+    time_t now = time(NULL);
+    struct tm t;
+    localtime_r(&now, &t);
+    char buf[32];
+    if (t.tm_year < (2024 - 1900)) {
+        snprintf(buf, sizeof(buf), "chua co gio (cho Internet)");
+    } else {
+        strftime(buf, sizeof(buf), "%H:%M %d/%m/%Y", &t);
+    }
+    if (s_clock) {
+        esp_rmaker_param_update_and_report(s_clock, esp_rmaker_str(buf));
+    }
 }
 
 // Lop dieu khien bao doi trang thai (ke ca tu tat khi het gio) -> cap nhat app
@@ -109,7 +132,7 @@ void app_main(void)
 
     app_network_init();
 
-    esp_rmaker_config_t cfg = {.enable_time_sync = false};
+    esp_rmaker_config_t cfg = {.enable_time_sync = true};  // SNTP: lich hen gio can gio dung
     esp_rmaker_node_t *node = esp_rmaker_node_init(&cfg, "STLab May bom", "Pump");
     if (!node) {
         ESP_LOGE(TAG, "khong khoi tao duoc RainMaker node");
@@ -137,6 +160,11 @@ void app_main(void)
     esp_rmaker_param_add_ui_type(s_left, ESP_RMAKER_UI_TEXT);
     esp_rmaker_device_add_param(dev, s_left);
 
+    s_clock = esp_rmaker_param_create(PARAM_CLOCK, "stlab.param.device-time", esp_rmaker_str("chua co gio (cho Internet)"),
+                                      PROP_FLAG_READ);
+    esp_rmaker_param_add_ui_type(s_clock, ESP_RMAKER_UI_TEXT);
+    esp_rmaker_device_add_param(dev, s_clock);
+
     esp_rmaker_node_add_device(node, dev);
 
     esp_rmaker_ota_enable_default();
@@ -147,6 +175,10 @@ void app_main(void)
     esp_rmaker_system_service_enable(&sys);
 
     esp_rmaker_start();
+
+    const esp_timer_create_args_t cargs = {.callback = clock_cb, .name = "clock_tick"};
+    ESP_ERROR_CHECK(esp_timer_create(&cargs, &s_clock_tick));
+    esp_timer_start_periodic(s_clock_tick, 60LL * 1000000);
 
     err = app_network_start(POP_TYPE_RANDOM);
     if (err != ESP_OK) {

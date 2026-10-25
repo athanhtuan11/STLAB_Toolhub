@@ -14,7 +14,17 @@ ESP-IDF **5.5.4** (`C:\Espressif`), `esp_rainmaker` ~1.17.0, `rmaker_app_network
 | Bật/Tắt | công tắc | không lưu → mất điện có lại luôn TẮT |
 | Chạy tối đa (phút) | thanh kéo 5–240, bước 5 | mặc định 30, lưu qua mất điện |
 | Còn lại (phút) | chỉ đọc | cập nhật mỗi phút khi đang chạy |
+| Giờ thiết bị | chỉ đọc, mỗi phút | kiểm múi giờ: phải trùng giờ Việt Nam |
 | Lịch (Schedules) | có sẵn trong app | bật theo lịch vẫn bị giới hạn "Chạy tối đa" |
+## Hẹn giờ tưới (vd. 6h sáng + 6h chiều)
+App → tab **Schedules** → **Add Schedule** → chọn thiết bị "May bom" → hành động **Power = On** → giờ **06:00** → lặp
+**mỗi ngày** → lưu. Tạo thêm 1 lịch **18:00**. Bơm tự tắt sau "Chạy tối đa (phút)" = thời gian tưới.
+Muốn sáng/chiều tưới khác thời lượng: thêm lịch **Power = Off** (vd. 06:20, 18:30); "Chạy tối đa" để dài hơn làm chốt an toàn.
+- Múi giờ: firmware mặc định **Asia/Ho_Chi_Minh (UTC+7)** (thư viện mặc định Asia/Shanghai UTC+8 → lệch 1 giờ – đã sửa).
+  Đã kiểm 2026-10-25: SNTP đồng bộ, giờ thiết bị 12:08 +07 trùng giờ máy tính.
+- Lịch lưu và chạy **trên ESP32**: mất Internet vẫn chạy nếu đã có giờ. Mất điện + mất mạng cùng lúc → chờ có mạng lấy giờ lại
+  (mục "Giờ thiết bị" hiện "chua co gio").
+
 Tự tắt do hết giờ → app nhận thông báo "May bom da tu tat…".
 
 ## Nối dây
