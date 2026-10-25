@@ -405,4 +405,7 @@ trục vít `Worm_Shoulder` ×1 (bàn P7), chốt hộp số `Pin_gearbox_Should
   - Cổng: XA004 có M1, M2 (SH1.0 2P, ≤ 1 A, điện áp = pin), S1–S4 (5 V), nguồn 7,4–12,6 V tối đa 3 A (thông số XA004,
     Accessories Specification). Phân cổng theo `Robotic arm (official remote control).json`: MOTOR1, PWM1–2 speed, PWM3 angle.
   - Servo kẹp: CyberBrick 180° **PG001** (có ly hợp chống kẹt) – Tuan xác nhận.
-- `TODO` còn mở: cấu hình app thật (file .json cho pushrod-arm) – thử khi lắp xong; dòng động cơ 030 khi kẹt so với 1 A/cổng.
+- **Cấu hình app CyberBrick:** thầy/cô tự tạo trong app theo bảng cổng ở mục "Sau khi lắp xong" (app không có mã nguồn mở,
+  không xuất file sẵn được) – mẫu tham khảo: cấu hình "Robotic arm" chính hãng trong app.
+- **Động cơ:** dùng động cơ 030 + hộp số **của CyberBrick** cắm thẳng cổng M1/M2 của XA004 – giống cánh tay L-ONE chính hãng
+  cắm "Gearmotor" vào cổng động cơ XA004. Vẫn không để động cơ kẹt khi có điện.
