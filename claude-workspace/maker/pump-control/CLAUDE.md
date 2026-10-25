@@ -12,7 +12,8 @@
 - **Phạm vi (Tuan quyết 2026-10-25): chỉ điều khiển bật/tắt từ xa qua Wi-Fi; bỏ bảo vệ motor** (relay nhiệt, dừng khẩn,
   chống chạy khô, đo dòng). Không tự thêm lại – chỉ nhắc khi Tuan hỏi.
 - ESP32 **chỉ đóng cuộn hút contactor**, không đóng dòng motor (relay module không chịu dòng khởi động ~60–90 A).
-- Firmware gợi ý: mặc định TẮT khi khởi động, giới hạn thời gian chạy mỗi lần.
+- Firmware (Tuan đồng ý): mặc định TẮT khi khởi động/có điện lại; tự tắt sau thời gian chạy tối đa.
+- Công tắc xoay 3 vị trí TAY–TẮT–TỰ ĐỘNG (Ø22, 2NO) để bơm tay khi mất Wi-Fi. Không cầu chì điều khiển (Tuan bỏ).
 - Số liệu dòng điện hiện là **ước tính** – chốt theo nhãn motor (`docs/survey-checklist.md`). Không bịa thông số linh kiện.
 
 ## Cấu trúc

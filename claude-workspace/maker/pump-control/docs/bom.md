@@ -14,17 +14,21 @@ Motor 220 V 1 pha 2 HP (≈ 1,5 kW), dòng chạy ≈ 12,5 A, khởi động ~60
 | 5 | Dây | Cu **2,5 mm²** động lực (L, N, PE); 1 mm² điều khiển | – | |
 | 6 | Tủ nhựa | IP65 (nếu ngoài trời), ray DIN, cầu đấu, ốc siết cáp | 1 | |
 
-## Nên có (rẻ, tùy Tuan)
-| Món | Lợi |
-|---|---|
-| Cầu chì 2 A + đế cho mạch cuộn hút / nguồn 5 V | Chập dây điều khiển không cháy tủ |
-| Công tắc 2 vị trí TAY / TỰ ĐỘNG (song song tiếp điểm relay) | Mất Wi-Fi / hỏng ESP32 vẫn bật bơm được bằng tay |
+| 7 | Công tắc xoay | **3 vị trí giữ nguyên TAY – TẮT – TỰ ĐỘNG**, lỗ **Ø22 mm**, **2NO**, ≥ 220 VAC. Tìm: "công tắc xoay 3 vị trí phi 22 2NO" (vd. Schneider XB7ND33 – `TODO` kiểm mô tả khi mua; Hanyoung/Idec/Chint tương đương) | 1 | Mất Wi-Fi / hỏng ESP32 vẫn bật bơm tay; TẮT tại tủ |
+
+Bỏ (Tuan 2026-10-25): cầu chì mạch điều khiển, bảo vệ motor.
 
 ## Nối mạch cuộn hút
-L → (cầu chì 2 A) → tiếp điểm NO relay kênh 1 → cuộn hút A1; A2 → N. Contactor đóng L và N tới motor; PE nối thẳng motor + tủ.
-GPIO26 → IN1 của module relay; 5V/GND chung với ESP32.
+```
+L ─► chân chung công tắc ─┬─ TAY ───────────────────────────► A1 cuộn hút contactor
+                          ├─ TẮT: hở
+                          └─ TỰ ĐỘNG ─► NO relay kênh 1 (ESP32) ─► A1
+A2 ─► N.   Contactor đóng L và N tới motor; PE nối thẳng motor + tủ.
+GPIO26 → IN1 module relay (jumper H); 5V/GND chung với ESP32.
+```
+Ở TAY: app không tắt được và không biết bơm chạy (ESP32 không đọc công tắc – thêm 1 GPIO đọc vị trí nếu cần sau).
 
-## Firmware (miễn phí, Tuan tự lập trình – gợi ý)
+## Firmware (Tuan tự lập trình – đã đồng ý 2026-10-25)
 - Khởi động/mất điện xong → mặc định **TẮT**.
 - Giới hạn thời gian chạy mỗi lần (tự tắt), tránh quên tắt từ xa.
 - Hiện trạng thái bật/tắt trên app RainMaker.
