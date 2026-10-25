@@ -246,6 +246,7 @@ Khi chuyển sang thương mại, rà bảng này trước (và cột License �
 | RawTherapee Film Simulation (qua cedeber/hald-clut) | CC BY-SA 4.0 (ghi công Pat David và cộng sự; LUT phái sinh cùng license) | photo-ai `luts/*.cube` |
 | RawTherapee Film Simulation HaldCLUT | Không rõ (nhiều tác giả) | Ứng viên LUT cho PhotoCraft |
 | abpy/FujifilmCameraProfiles (588★) | Không có license; mô phỏng giả lập phim của Fujifilm | Ứng viên LUT |
+| Nguồn tham khảo cơ cấu tay robot + dạy CAD (Thor CC-BY-SA, PAROL6 GPL-3.0, Faze4, Onshape/Fusion EDU…) | Xem bảng "Xem lại khi thương mại" trong `docs/cad-mechanisms-teaching-research.md` (2026-10-25) | Chỉ tham khảo |
 
 ## Chính sách cập nhật (tóm tắt)
 1. Ghim tag/SHA, không bám `main`. Nâng cấp từng repo một, giữ `prev_sha` để rollback.
