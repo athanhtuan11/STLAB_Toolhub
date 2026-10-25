@@ -6,7 +6,6 @@ import launcher
 
 from . import opener
 from . import printprep
-from . import photolab
 from . import workspace as ws
 
 bp = Blueprint("hub", __name__)
@@ -15,7 +14,7 @@ bp = Blueprint("hub", __name__)
 @bp.app_context_processor
 def nav():
     # Menu gon: viec hang ngay o ngoai, trang he thong gom vao "Them"
-    main = [("hub.tong_quan", "Trang chính"), ("hub.du_an", "Dự án"), ("hub.thu_vien", "Linh kiện"), ("hub.anh", "Sửa ảnh")]
+    main = [("hub.tong_quan", "Trang chính"), ("hub.du_an", "Dự án"), ("hub.thu_vien", "Linh kiện")]
     more = [("hub.ung_dung", "Ứng dụng & MCP"), ("hub.cong_dong", "Nguồn cộng đồng"), ("hub.skills", "Skills & agents"),
             ("hub.prompt", "Prompt library")]
     ep = request.endpoint or ""
@@ -137,11 +136,6 @@ def du_an_anh_in(slug, i):
     return send_file(p, max_age=0)
 
 
-@bp.get("/anh")
-def anh():
-    return render_template("anh.html", src=request.args.get("src") or photolab.last_src())
-
-
 @bp.get("/prompt")
 def prompt():
     return render_template("prompt.html", prompts=ws.prompts())
@@ -206,50 +200,3 @@ def api_open_file(slug, i):
     return jsonify(opener.open_file(p["rel"], i))
 
 
-# ---------- Sua anh (photo-ai) ----------
-def _lab(fn, *args):
-    try:
-        return jsonify(fn(*args))
-    except ValueError as e:
-        return jsonify({"ok": False, "msg": str(e)}), 400
-
-
-@bp.get("/api/anh/looks")
-def api_anh_looks():
-    return _lab(photolab.looks)
-
-
-@bp.post("/api/anh/photos")
-def api_anh_photos():
-    return _lab(photolab.photos, (request.get_json(silent=True) or {}).get("src", ""))
-
-
-@bp.post("/api/anh/preview")
-def api_anh_preview():
-    d = request.get_json(silent=True) or {}
-    return _lab(photolab.preview, d.get("src", ""), str(d.get("photo", "")), str(d.get("look", "")),
-                bool(d.get("local")))
-
-
-@bp.post("/api/anh/apply")
-def api_anh_apply():
-    d = request.get_json(silent=True) or {}
-    return _lab(photolab.apply, d.get("src", ""), str(d.get("look", "")), d.get("strength", 1), bool(d.get("local")))
-
-
-@bp.get("/api/anh/job")
-def api_anh_job():
-    return jsonify(photolab.job())
-
-
-@bp.post("/api/anh/open-output")
-def api_anh_open_output():
-    return jsonify(photolab.open_output())
-
-
-@bp.get("/anh/file")
-def anh_file():
-    p = photolab.file_path(request.args.get("src", ""), request.args.get("p", ""))
-    if p is None:
-        abort(404)
-    return send_file(p, max_age=0)

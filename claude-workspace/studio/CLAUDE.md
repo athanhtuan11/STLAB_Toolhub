@@ -12,14 +12,11 @@ qua cả 4 MCP server trong `.mcp.json`.
 - `launcher.py`: `status`, `start <id|all>`, `mcp-check <ten|all>`, `claude`.
 - `toolhub/`: giao diện web **STLAB Toolhub** (Flask app factory). Chạy `uv run flask run`
   tại `studio/`; cấu hình trong `.flaskenv` (127.0.0.1:5050). Menu gọn (Tuan 2026-10-24: "quá nhiều điểm"):
-  **Trang chính · Dự án · Linh kiện · Sửa ảnh** + "Thêm ▾" (Ứng dụng & MCP, Nguồn cộng đồng – chỉ kiểm tra/báo cáo,
+  **Trang chính · Dự án · Linh kiện** + "Thêm ▾" (Ứng dụng & MCP, Nguồn cộng đồng – chỉ kiểm tra/báo cáo,
   apply/rollback chỉ hiện lệnh –, Skills & agents, Prompt library). Trang chính chỉ có: dòng "Cần chú ý" (chỉ hiện lỗi,
   nạp sau qua `/api/health`), hàng ứng dụng (đèn + Mở), thẻ dự án in 3D (kết quả Chuẩn bị in + nút), dự án khác thu gọn.
   Thêm trang mới: đặt vào "Thêm" trừ khi dùng hằng ngày. Trang chính phải hiện ngay – việc chậm (git, tasklist) nạp bằng JS.
-  - `toolhub/photolab.py` (trang Sửa ảnh): gọi `photo-ai/scripts/looklab.py` / `develop.py` bằng Python của
-    photo-ai (`.venv` riêng, Toolhub không cài Pillow). Chỉ đọc thư mục ảnh gốc; ghi vào `<nguon>-edit/lab/`
-    (xem trước) và `<nguon>-edit/xuat-<kieu>[-local]-<do-manh>/` (kết quả, không ghi đè). `/anh/file` chỉ trả `.jpg`
-    trong `lab/` và `xuat-*`. Mọi lệnh tạo ảnh là POST (cần `X-Studio`).
+  - Trang **Sửa ảnh** (photolab, LUT/preset) đã gỡ 2026-10-25 – Tuan: tập trung CAD + Blender, ảnh/video mảng robotics.
   - `toolhub/workspace.py`: đọc pins/links/reports/CLAUDE.md (chỉ đọc). `toolhub/views.py`: trang + API.
   - `toolhub/printprep.py` (trang Dự án, dự án có `print/print.yaml`): nút **Chuẩn bị in** và **Tự chạy khi Lưu**
     gọi `maker/robotics-cad/scripts/prepare-print.py` / `watch.py` bằng Python của FreeCAD, chạy nền (PID ở

@@ -70,53 +70,7 @@ pre.doc { background: var(--card); border: 1px solid var(--line); border-radius:
 .toast.err { border-left-color: var(--err); }
 footer { color: var(--muted); font-size: 12.5px; margin-top: 28px; }
 
-/* ---------- Sua anh ---------- */
-.lab-src { display: flex; gap: 8px; margin-bottom: 4px; }
-.lab-src input { font: inherit; font-size: 14px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px;
-  background: var(--card); color: var(--text); min-width: 0; }
-.lab { display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 18px; margin-top: 12px; }
-.lab-side { display: flex; flex-direction: column; gap: 14px; }
-.lab-side h2 { margin: 0; }
-.looks { display: flex; flex-direction: column; gap: 2px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 8px; }
-.looks-group { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; padding: 8px 6px 2px; }
-.look { display: flex; align-items: center; gap: 8px; padding: 5px 6px; border-radius: 7px; cursor: pointer; font-size: 14px; }
-.look:hover { background: var(--bg); }
-.look.on { background: var(--accent-soft); }
-.look span { flex: 1; }
-.look .ready { width: 7px; height: 7px; border-radius: 50%; background: transparent; flex: none; }
-.look.is-ready .ready { background: var(--ok); }
-.check { align-items: flex-start; font-size: 14px; cursor: pointer; }
-.check input { margin-top: 4px; }
-.strength { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
-.strength input { width: 100%; accent-color: var(--accent); }
-.apply-box { display: flex; flex-direction: column; gap: 8px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
-.progress { height: 8px; background: var(--bg); border-radius: 999px; overflow: hidden; }
-.progress div { height: 100%; width: 0; background: var(--accent); transition: width .4s; }
-.sheet { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--muted); }
-.sheet img { width: 100%; border-radius: 6px; border: 1px solid var(--line); }
-.err-text { color: var(--err); font-size: 13px; white-space: pre-wrap; }
-.keys { font-size: 12px; }
-kbd { border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; font-size: 11px; }
-
-.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.compare figure { margin: 0; position: relative; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 8px; }
-.compare figcaption { font-size: 13px; font-weight: 600; margin: 0 2px 6px; }
-.compare img { display: block; width: 100%; height: auto; border-radius: 6px; }
-.stack { display: block; position: relative; }
-.stack #over { position: absolute; inset: 0; }
-.stack.peek { outline: 3px solid var(--warn); border-radius: 6px; }
 [hidden] { display: none !important; }
-.busy { position: absolute; inset: 36px 8px 8px; display: grid; place-items: center; background: color-mix(in srgb, var(--card) 70%, transparent);
-  border-radius: 6px; font-size: 14px; }
-.thumbs { position: relative; display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; max-height: 300px; overflow-y: auto; }
-.thumbs button { padding: 0; border: 2px solid transparent; border-radius: 6px; overflow: hidden; background: var(--card); line-height: 0; }
-.thumbs button.on { border-color: var(--accent); }
-.thumbs img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
-@media (max-width: 860px) {
-  .lab { grid-template-columns: 1fr; }
-  .lab-main { order: -1; }
-  .compare { grid-template-columns: 1fr; }
-}
 
 /* ---------- Menu "Them" + trang chinh gon ---------- */
 nav details.more { position: relative; }
