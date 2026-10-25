@@ -26,29 +26,36 @@ Bản tự sinh đầy đủ (vít, linh kiện, chi tiết in → bàn/nhựa):
 | Vít M2.5 × 10 | 2 | |
 Nguồn model linh kiện: `community/cyberbrick-official` (xem `maker/robotics-cad/library/cyberbrick-sources.tsv`).
 
-## In (bản 2026-10-23 chiều – Bambu PETG Basic, sau lần in thử đầu)
+## In (bản 2026-10-25 – Bambu PETG Basic, 8 bàn)
 Nhựa: cuộn **Bambu PETG Basic** – profile chính hãng `Bambu PETG Basic @BBL A1` (245 °C, bàn Textured PEI 70 °C, flow 0,94,
-13 mm³/s, quạt 30–50 %); đệm kẹp TPU 95A. 7 bàn, tổng **~10 h 26, ~289 g** (Bambu Studio 02.07). **Không dùng support
-của slicer** – support tự vẽ (trụ, khe 0,2 mm) chỉ ở bàn P4.
+13 mm³/s, quạt 30–50 %); đệm kẹp TPU 95A. 8 bàn, tổng **~10 h 58, ~288 g** (cắt lớp 2026-10-25).
+**Support: KHÔNG vẽ vào STL – Tuan tô trong Bambu Studio** (support tự vẽ từng lấp rãnh thanh răng Housing + lỗ trục Worm).
+Khi tô: giữ trống rãnh thanh răng, rãnh chữ U trục vít, hốc bánh vít, mọi lỗ chốt.
 Bảng số liệu luôn mới nhất: [BOM.md](BOM.md) mục "Bàn in".
 Ảnh: `print/plates/print-overview.png`; file in: `print/plates/<plate>/<plate>.3mf` (mở Bambu Studio, chọn cuộn PETG Basic).
 | Bàn | Thời gian | Nhựa | Ghi chú |
 |---|---|---|---|
 | P1_Base (0,24 Draft) | 2 h 27 | 92,9 g | vấu deck có vát 45° → không support |
-| P2_Turret_Turntable (0,20) | 2 h 53 | 75,5 g | **brim** (đệm, washer nhỏ) |
+| P2_Turret_Turntable (0,20) | 2 h 56 | 76,3 g | **brim** (đệm, washer nhỏ) |
 | P3_Forearm_Plates (0,20) | 41 ph | 21,3 g | |
-| P4_Boom_Gripper_Housings (0,20) | 2 h 29 | 74,6 g | **support tự vẽ** dưới Boom, 2 Housing, Gripper_frame – TODO sửa model để bỏ (xem dưới) |
-| P5_Gears_Racks_Pins (0,16) | 1 h 33 | 23,1 g | **brim**; bánh vít: phần nhô chỉ là vành hẹp ≤ 1,3 mm → không support |
+| P4_Boom_Gripper_Housings (0,20) | 2 h 29 | 71,5 g | **Tuan tô support**: dưới Boom, tai chốt 2 Housing, Gripper_frame |
+| P5_Gears_Racks (0,16) | 1 h 13 | 16,9 g | **brim** |
 | P6_GripperPads (TPU 95A) | 5 ph | 0,6 g | brim |
-| P7_Worms (0,12, 100%) | 14 ph | 0,9 g | trục vít **dựng đứng** (ren tự in, không support; nằm ngang thì lơ lửng) |
-
-TODO sửa model để bỏ support P4 (Tuan duyệt): Boom001 mặt dưới cách bàn 1,2 mm (vấu nhô 1,2 mm kê cả thân – 607 mm²);
-Housing ×2 tai chốt ngang rộng ~7 mm ở z 9,4 / 21,6 (vát 45° mặt dưới tai); Gripper_frame vùng 341 mm² ở z 1,5.
+| P7_Worms (0,12, 100%) | 34 ph | 1,9 g | trục vít dựng đứng, lỗ trục hộp số ở đáy (mái lỗ tự bắc cầu) |
+| P8_Pins (0,16, **100%**) | 29 ph | 6,8 g | chốt khớp **đặc, in nằm**, thân Ø4,8 (khe 0,3 mm/bên) |
+In lại riêng: `plates-reprint-2026-10-24/` (xi-lanh 030), `plates-reprint-pins-2026-10-25/` (7 chốt), **bộ chốt thử**
+`plates-pin-gauge/` (Ø4,6–4,9, 1–4 vạch – in trước, chọn cỡ, xem `print/print-pin-gauge.yaml`).
 
 Lưu ý PETG Basic (TDS chính hãng): PEI bám rất chặt → **đợi bàn nguội rồi mới gỡ**; cuộn để ngoài > 72 h ở độ ẩm > 50 %
 thì sấy trước (máy sấy/tủ sấy có quạt, không dùng lò vi sóng/lò bếp).
 
 ## Lịch sử sửa
+- 2026-10-25: **chốt khớp** S/A–E/jaw2 thân Ø5,0 → **Ø4,8** (khe 0,3 mm/bên với lỗ Ø5,4), đặc 100 % (bàn P8), in nằm cả
+  Pin_jaw2, lỗ vít M2.5 sâu 5,5; bộ chốt thử; test `T7Pins` (`history/2026-10-25_pins_clearance_solid.py`).
+- 2026-10-25: bỏ support tự vẽ (Tuan tô trong slicer); vát miệng lỗ trục Worm 0,4 mm; luật mái lỗ kín bắc cầu ≤ 8 mm;
+  ASSEMBLY: lắp động cơ + trục vít SAU CÙNG (bước 11b, trục vít tự hãm).
+- 2026-10-24: xi-lanh dùng động cơ CyberBrick 030 + hộp số (thay N20), bộ thu XA003/XA004 có shield, khe bánh răng/trượt
+  0,3 mm, khắc số khớp (commit c2d0af7).
 - 2026-10-23 18:00: chính sách support mới (Tuan): không để slicer sinh support → P4 dùng support tự vẽ (export
   `support: true`), trục vít dựng đứng, bánh vít không cần support → 7 bàn, 10 h 26, 289 g.
 - 2026-10-23 17:40: in thử lỗi (Tuan) – phần nhô ra in **không support**, chi tiết nhỏ bong bàn. Sửa QUY TRÌNH (không
@@ -69,6 +76,8 @@ thì sấy trước (máy sấy/tủ sấy có quạt, không dùng lò vi sóng
 
 ## Lịch sử in
 <!-- /print-result ghi vào đây: ngày | plate | PASS/FAIL | mô tả | ảnh -->
+- 2026-10-25 | P8/R5 chốt | FAIL | chốt Ø5,0 không nhét vào lỗ Ø5,4 (Boom001/Turret); ruột rỗng (infill 40 %) → sửa Ø4,8 + 100 %.
+- 2026-10-25 | R1 Housings | FAIL | support tự vẽ lấp rãnh thanh răng → Rack_Elbow không luồn qua → bỏ support tự vẽ, in lại R1.
 - 2026-10-23 | (bàn chưa ghi rõ) | FAIL | phần treo/nhô ra in không support → lỗi; chi tiết nhỏ cần brim (Tuan báo).
   Nguyên nhân: slicer chỉ báo cụm rời hẳn, phần nhô dính liền không bị báo. Đã sửa quy trình, cắt lại 8 bàn – xem Lịch sử sửa.
   TODO Tuan: bàn/chi tiết nào hỏng + ảnh, để đối chiếu với danh sách tự phát hiện.

@@ -33,21 +33,6 @@ in 3D,Housing_Elbow,1,P4_Boom_Gripper_Housings__0.20_PETG,Bambu PETG Basic @BBL 
 in 3D,Housing_Shoulder,1,P4_Boom_Gripper_Housings__0.20_PETG,Bambu PETG Basic @BBL A1,15.01 cm³
 in 3D,Jaw_1_driven_by_servo,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,2.34 cm³
 in 3D,Jaw_2_idler,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,2.57 cm³
-in 3D,Pin_A,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,0.99 cm³
-in 3D,Pin_A_washer,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,0.07 cm³
-in 3D,Pin_B,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,0.47 cm³
-in 3D,Pin_B_washer,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,0.07 cm³
-in 3D,Pin_C,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,0.47 cm³
-in 3D,Pin_C_washer,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,0.07 cm³
-in 3D,Pin_D,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,0.62 cm³
-in 3D,Pin_D_washer,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,0.07 cm³
-in 3D,Pin_E,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,0.62 cm³
-in 3D,Pin_E_washer,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,0.07 cm³
-in 3D,Pin_S,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,0.99 cm³
-in 3D,Pin_S_washer,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,0.07 cm³
-in 3D,Pin_gearbox_Elbow,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,2 miếng; 0.31 cm³
-in 3D,Pin_gearbox_Shoulder,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,2 miếng; 0.31 cm³
-in 3D,Pin_jaw2,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,0.43 cm³
 in 3D,Pinion_WormWheel_Elbow,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,1.80 cm³
 in 3D,Pinion_WormWheel_Shoulder,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,1.80 cm³
 in 3D,Pinion_m1_z10_turntable,1,P5_Gears_Racks_Pins__0.16_PETG,Bambu PETG Basic @BBL A1,0.33 cm³
@@ -59,5 +44,20 @@ in 3D,Jaw_1_driven_by_servo_TPU_pad,1,P6_GripperPads__TPU95A,Bambu TPU 95A @BBL 
 in 3D,Jaw_2_idler_TPU_pad,1,P6_GripperPads__TPU95A,Bambu TPU 95A @BBL A1,0.18 cm³
 in 3D,Worm_Elbow,1,P7_Worms__0.12_PETG_100pct,Bambu PETG Basic @BBL A1,0.76 cm³
 in 3D,Worm_Shoulder,1,P7_Worms__0.12_PETG_100pct,Bambu PETG Basic @BBL A1,0.76 cm³
+in 3D,Pin_A,1,P8_Pins__0.16_PETG_100pct,Bambu PETG Basic @BBL A1,0.93 cm³
+in 3D,Pin_A_washer,1,P8_Pins__0.16_PETG_100pct,Bambu PETG Basic @BBL A1,0.07 cm³
+in 3D,Pin_B,1,P8_Pins__0.16_PETG_100pct,Bambu PETG Basic @BBL A1,0.44 cm³
+in 3D,Pin_B_washer,1,P8_Pins__0.16_PETG_100pct,Bambu PETG Basic @BBL A1,0.07 cm³
+in 3D,Pin_C,1,P8_Pins__0.16_PETG_100pct,Bambu PETG Basic @BBL A1,0.44 cm³
+in 3D,Pin_C_washer,1,P8_Pins__0.16_PETG_100pct,Bambu PETG Basic @BBL A1,0.07 cm³
+in 3D,Pin_D,1,P8_Pins__0.16_PETG_100pct,Bambu PETG Basic @BBL A1,0.58 cm³
+in 3D,Pin_D_washer,1,P8_Pins__0.16_PETG_100pct,Bambu PETG Basic @BBL A1,0.07 cm³
+in 3D,Pin_E,1,P8_Pins__0.16_PETG_100pct,Bambu PETG Basic @BBL A1,0.58 cm³
+in 3D,Pin_E_washer,1,P8_Pins__0.16_PETG_100pct,Bambu PETG Basic @BBL A1,0.07 cm³
+in 3D,Pin_S,1,P8_Pins__0.16_PETG_100pct,Bambu PETG Basic @BBL A1,0.93 cm³
+in 3D,Pin_S_washer,1,P8_Pins__0.16_PETG_100pct,Bambu PETG Basic @BBL A1,0.07 cm³
+in 3D,Pin_gearbox_Elbow,1,P8_Pins__0.16_PETG_100pct,Bambu PETG Basic @BBL A1,2 miếng; 0.31 cm³
+in 3D,Pin_gearbox_Shoulder,1,P8_Pins__0.16_PETG_100pct,Bambu PETG Basic @BBL A1,2 miếng; 0.31 cm³
+in 3D,Pin_jaw2,1,P8_Pins__0.16_PETG_100pct,Bambu PETG Basic @BBL A1,0.37 cm³
 chua phan loai,Battery_bay,1,,,TODO: đặt lại Label hoặc thêm vào print.yaml
 chua phan loai,Servo_horn,1,,,TODO: đặt lại Label hoặc thêm vào print.yaml

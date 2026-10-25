@@ -47,21 +47,6 @@ Sinh tự động từ `freecad/pushrod_arm.FCStd` bằng `maker/robotics-cad/sc
 | `Housing_Shoulder` | P4_Boom_Gripper_Housings__0.20_PETG | Bambu PETG Basic @BBL A1 | 15.01 |
 | `Jaw_1_driven_by_servo` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 2.34 |
 | `Jaw_2_idler` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 2.57 |
-| `Pin_A` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.99 |
-| `Pin_A_washer` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.07 |
-| `Pin_B` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.47 |
-| `Pin_B_washer` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.07 |
-| `Pin_C` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.47 |
-| `Pin_C_washer` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.07 |
-| `Pin_D` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.62 |
-| `Pin_D_washer` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.07 |
-| `Pin_E` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.62 |
-| `Pin_E_washer` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.07 |
-| `Pin_S` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.99 |
-| `Pin_S_washer` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.07 |
-| `Pin_gearbox_Elbow` (2 miếng) | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.31 |
-| `Pin_gearbox_Shoulder` (2 miếng) | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.31 |
-| `Pin_jaw2` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.43 |
 | `Pinion_WormWheel_Elbow` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 1.80 |
 | `Pinion_WormWheel_Shoulder` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 1.80 |
 | `Pinion_m1_z10_turntable` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.33 |
@@ -73,6 +58,21 @@ Sinh tự động từ `freecad/pushrod_arm.FCStd` bằng `maker/robotics-cad/sc
 | `Jaw_2_idler_TPU_pad` | P6_GripperPads__TPU95A | Bambu TPU 95A @BBL A1 | 0.18 |
 | `Worm_Elbow` | P7_Worms__0.12_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.76 |
 | `Worm_Shoulder` | P7_Worms__0.12_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.76 |
+| `Pin_A` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.93 |
+| `Pin_A_washer` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.07 |
+| `Pin_B` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.44 |
+| `Pin_B_washer` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.07 |
+| `Pin_C` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.44 |
+| `Pin_C_washer` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.07 |
+| `Pin_D` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.58 |
+| `Pin_D_washer` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.07 |
+| `Pin_E` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.58 |
+| `Pin_E_washer` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.07 |
+| `Pin_S` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.93 |
+| `Pin_S_washer` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.07 |
+| `Pin_gearbox_Elbow` (2 miếng) | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.31 |
+| `Pin_gearbox_Shoulder` (2 miếng) | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.31 |
+| `Pin_jaw2` | P8_Pins__0.16_PETG_100pct | Bambu PETG Basic @BBL A1 | 0.37 |
 
 ## Bàn in (số liệu slicer)
 | Bàn | Thời gian | Nhựa (g) | Support |
@@ -81,10 +81,11 @@ Sinh tự động từ `freecad/pushrod_arm.FCStd` bằng `maker/robotics-cad/sc
 | P2_Turret_Turntable__0.20_PETG | 2h56 | 76.3 | – |
 | P3_Forearm_Plates__0.20_PETG | 0h41 | 21.3 | – |
 | P4_Boom_Gripper_Housings__0.20_PETG | 2h29 | 71.5 | – |
-| P5_Gears_Racks_Pins__0.16_PETG | 1h38 | 23.8 | – |
+| P5_Gears_Racks_Pins__0.16_PETG | 1h13 | 16.9 | – |
 | P6_GripperPads__TPU95A | 0h05 | 0.6 | – |
 | P7_Worms__0.12_PETG_100pct | 0h34 | 1.9 | – |
-| **Tổng** | **10h53** | **288.3** | |
+| P8_Pins__0.16_PETG_100pct | 0h29 | 6.8 | – |
+| **Tổng** | **10h58** | **288.2** | |
 
 ## Chưa phân loại (TODO)
 Label không khớp quy ước vít / `components=` / `export.rules`:

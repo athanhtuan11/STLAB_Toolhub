@@ -13,7 +13,7 @@ Cấu trúc chuẩn: `maker/robotics-cad/CLAUDE.md` mục "Dự án".
 - `check/`: kết quả kiểm nhanh (`overview.png`) – file sinh.
 
 ## Bàn in – `print/`
-- `print.yaml`: hướng in từng chi tiết, tham số kiểm, 7 bàn in (profile A1 chính hãng + ghi đè). Nhựa mặc định
+- `print.yaml`: hướng in từng chi tiết, tham số kiểm, 8 bàn in (profile A1 chính hãng + ghi đè). Nhựa mặc định
   **Bambu PETG Basic** (profile chính hãng `Bambu PETG Basic @BBL A1`); đệm kẹp TPU 95A.
 - `plates/<plate>/<plate>.3mf`: **file để mở Bambu Studio và in**; `plates/print-overview.png`: bảng + ảnh từng bàn.
 - `stl/`: STL theo hướng in – file sinh.
@@ -25,7 +25,9 @@ Cấu trúc chuẩn: `maker/robotics-cad/CLAUDE.md` mục "Dự án".
   backup `freecad/backup/`; giữ `Placement`; sửa xong tự Lưu).
 - In xong: `/print-result pushrod-arm <plate> pass|fail [mô tả]`.
 
-## Trạng thái (2026-10-23)
-- Kiểm nhanh: WARN, không FAIL. Cắt lớp Bambu PETG Basic: PASS – 7 bàn, ~10 h 26, ~281 g. Support chỉ ở bàn P4
-  (Boom, khung kẹp, tai chốt 2 Housing).
-- Chờ: in thật.
+## Trạng thái (2026-10-25)
+- 16/16 test PASS (`freecad/tests`); kiểm nhanh WARN (không FAIL); cắt lớp 8 bàn ~10 h 58, ~288 g; BOM PASS.
+- Support: Tuan tô trong Bambu Studio (không vẽ vào STL). Chốt khớp Ø4,8, đặc, in nằm (bàn P8 100 %).
+- Chờ Tuan: in **bộ chốt thử** → chọn cỡ chốt → in lại chốt; in lại R1 Housings; lắp theo ASSEMBLY (bước 11b);
+  thử tự hãm trục vít khi tắt điện.
+- `print.yaml` giờ 8 bàn (thêm P8_Pins 100 %).
