@@ -120,6 +120,26 @@ khớp nhẹ dùng vít me trong ống kín. Củng cố khuyến nghị: **khu�
 `Forearm_plate_R` (y −20…−15), dời cụm xi-lanh ngang −17,75 mm (script concept `freecad/scripts/render_concept_sector.py`, chưa chạy);
 (2) như máy xúc: dời bánh răng dẫn sát khớp → quạt nhỏ r ≈ 25–30 mm, thêm 1 cấp giảm tốc (vẽ lại vỏ nhiều hơn).
 
+## 4d. Xi-lanh piston theo cộng đồng (Tuan chọn piston 2026-10-25)
+**Motor cộng đồng dùng:** Bambu Maker's Supply **N20 M3 Threaded Shaft Reduction Gear Motor** – LA005 (M3×25, 400 rpm),
+**LA006 (M3×45, 1000 rpm)**, LA007 (M3×60, 1000 rpm); 6 V (3–7 V), 90 g·cm, đầu **SH1.0-2P** (cùng kiểu cắm motor 030 → cổng M1/M2 XA004),
+~7,5 USD. Dùng trong Cyberbrick Excavator (2371626) và **Cyberbrick RC Wheel Loader (1745230)** ("threaded N20 motors… M3 nut pushes or pulls
+a rod"). Chưa thấy STEP chính hãng của motor này (TODO: đo motor thật hoặc dựng từ STEP N20 có sẵn trong `community/n20-motor` + trục Ø3).
+Hàng tương tự giá rẻ: GA12-N20 M3×55 (nhiều tốc độ). Hàng đóng sẵn: Actuonix L12-30 (hành trình 30 mm, thu ngắn 82 mm, 6 V) – đắt.
+
+**Mẫu xi-lanh máy xúc (đo từ STL):** ống Ø16,8, lỗ motor Ø12,6, buồng piston không tròn ~12,6×10,6, piston 12×9 kẹp đai ốc vuông M3,
+ty chữ D 8×7,3 rỗng Ø4,4. Tỉ lệ hành trình / chiều dài thu ngắn ≈ 0,3.
+
+**Kiểm hình học tay mình (đo khoảng trống quanh trục 9 tư thế, 2026-10-25):**
+- Khuỷu: trống r ≈ 10 mm từ x 18 → 90 (ống Ø16,8 vừa), nhưng **sát chốt C chỉ r 3,6 mm tới x ≈ 14** (càng Boom). Cần hành trình 36 mm, L_min 92.
+- Vai: trống chỉ **r 7,5 mm** suốt x 26–74 (chạy trong rãnh Boom) và r 3,6 gần chốt B → ống tối đa Ø14. Hành trình 26 mm.
+- Xi-lanh đồng trục kiểu máy xúc cần L_min ≈ khe sau + motor 26 + piston 8 + hành trình + bạc 6 + khe mắt 7.
+  Khuỷu: 16 + 26 + 8 + 36 + 6 + 7 = **99 > 92** → không vừa (dù đảo chiều xi-lanh). Vai: vừa chiều dài nhưng ống Ø16,8 > rãnh Boom.
+
+**Hướng khả thi:** (a) N20 LA006 đặt **cạnh** ống + cặp bánh răng nhỏ (giữ chốt cũ, ống mảnh); (b) đồng trục y hệt máy xúc nhưng
+**đổi vị trí chốt** C/D (in lại Boom + tấm cẳng tay) hoặc giảm hành trình khuỷu còn ~28 mm (mất ~15° biên độ khuỷu);
+(c) giữ motor 030 + hộp số đặt cạnh ống (concept `freecad/scripts/render_concept_piston.py`, chưa chạy).
+
 ## 5. Nguồn
 - Cyberbrick Excavator (N20 + trục ren M3×45 + đai ốc vuông M3): https://makerworld.com/models/2371626
 - Máy xúc CyberBrick dựa trên bài "Electric Push Rod for Cyberbrick": https://makerworld.com/models/3021552
@@ -136,6 +156,10 @@ khớp nhẹ dùng vít me trong ống kín. Củng cố khuyến nghị: **khu�
 - Forte – capstan + dây đai: https://arxiv.org/abs/2507.15693v1 ; giới thiệu capstan: https://aaronnewmanb.substack.com/p/capstan-drives-affordable-precision
 - Puly GT2 in nhảy răng ở khớp tay máy: https://michaelteeuw.nl/tag/belt
 - Slider-crank vs bánh răng (UT Austin): https://cloud.wikis.utexas.edu/wiki/spaces/RMD/pages/667877618
+- Bambu N20 M3 Threaded Shaft (LA005–LA007): https://us.store.bambulab.com/products/n20-m3-threaded-shaft-reduction-gear-motor
+- Cyberbrick RC Wheel Loader (N20 ren + đai ốc M3 như xi-lanh): https://makerworld.com/en/models/1745230-cyberbrick-rc-wheel-loader
+- GA12-N20 M3×55 (lưu ý trục rơ nếu không đỡ 2 đầu): https://probots.co.in/30-rpm-6v-linear-actuator-n20-micro-metal-gear-dc-motor-with-m3-screw-lead-shaft.html
+- Actuonix L12 (30 mm, 82 mm thu ngắn): https://www.robotshop.com/products/actuonix-l12-s-micro-linear-actuator-w-limit-switches-30mm-2101-6-volts
 - Bù trọng lực bằng lò xo/đối trọng: https://la.disneyresearch.com/wp-content/uploads/A-Passively-Safe-and-Gravity-Counterbalanced-Anthropomorphic-Robot-Arm-Paper.pdf
 
 Ghi chú: các trang MakerWorld/Printables chặn đọc tự động – thông tin lấy từ đoạn trích tìm kiếm; license từng mẫu **chưa kiểm** (xem trước khi dùng file, theo chính sách phi thương mại).
