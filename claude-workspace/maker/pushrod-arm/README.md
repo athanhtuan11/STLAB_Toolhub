@@ -43,7 +43,8 @@ Bảng số liệu luôn mới nhất: [BOM.md](BOM.md) mục "Bàn in".
 | P6_GripperPads (TPU 95A) | 5 ph | 0,6 g | brim |
 | P7_Worms (0,12, 100%) | 34 ph | 1,9 g | trục vít dựng đứng, lỗ trục hộp số ở đáy (mái lỗ tự bắc cầu) |
 | P8_Pins (0,16, **100%**) | 29 ph | 6,8 g | chốt khớp **đặc, in nằm**, thân Ø4,8 (khe 0,3 mm/bên) |
-In lại riêng: `plates-reprint-2026-10-24/` (xi-lanh 030), `plates-reprint-pins-2026-10-25/` (7 chốt), **bộ chốt thử**
+In lại riêng: `plates-reprint-2026-10-24/` (xi-lanh 030), `plates-reprint-pins-2026-10-25/` (7 chốt),
+`plates-reprint-housings-2026-10-25/` (R6: 2 vỏ xi-lanh, vách rãnh 0,9 mm – thay Housing trong R1/P4), **bộ chốt thử**
 `plates-pin-gauge/` (Ø4,6–4,9, 1–4 vạch – in trước, chọn cỡ, xem `print/print-pin-gauge.yaml`).
 
 Lưu ý PETG Basic (TDS chính hãng): PEI bám rất chặt → **đợi bàn nguội rồi mới gỡ**; cuộn để ngoài > 72 h ở độ ẩm > 50 %
@@ -85,6 +86,8 @@ thì sấy trước (máy sấy/tủ sấy có quạt, không dùng lò vi sóng
 <!-- /print-result ghi vào đây: ngày | plate | PASS/FAIL | mô tả | ảnh -->
 - 2026-10-25 | G1 bộ chốt thử | PASS | Ø4,8 vừa (Tuan thử) → giữ chốt Ø4,8, in bàn R5/P8.
 - 2026-10-25 | P8/R5 chốt | FAIL | chốt Ø5,0 không nhét vào lỗ Ø5,4 (Boom001/Turret); ruột rỗng (infill 40 %) → sửa Ø4,8 + 100 %.
+- 2026-10-25 | R1/P4 Housings | FAIL | mất 1 bên thành ngoài (bật support hay không): vách ngoài rãnh thanh răng chỉ 0,2 mm
+  (nới rãnh ±6,3, mặt ngoài 6,5) → slicer bỏ → đắp 0,7 mm ra ngoài (vách 0,9, né Boom001 khi duỗi hết), in R6.
 - 2026-10-25 | R1 Housings | FAIL | support tự vẽ lấp rãnh thanh răng → Rack_Elbow không luồn qua → bỏ support tự vẽ, in lại R1.
 - 2026-10-23 | (bàn chưa ghi rõ) | FAIL | phần treo/nhô ra in không support → lỗi; chi tiết nhỏ cần brim (Tuan báo).
   Nguyên nhân: slicer chỉ báo cụm rời hẳn, phần nhô dính liền không bị báo. Đã sửa quy trình, cắt lại 8 bàn – xem Lịch sử sửa.

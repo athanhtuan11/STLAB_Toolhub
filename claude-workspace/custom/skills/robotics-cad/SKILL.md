@@ -80,6 +80,12 @@ description: Thiet ke co khi robot trong FreeCAD cho STLab - chon linh kien tu d
    ghi chú) – Tuan tự tô support trong Bambu Studio. Support tự vẽ từng lấp lỗ trục Worm và rãnh thanh răng Housing của
    pushrod-arm. Việc của mình: báo rõ chi tiết/vùng nào CẦN support (printability WARN: mm², z) và **lỗ/khe/rãnh chức
    năng nào phải giữ trống** (để Tuan không tô support vào đó). Ưu tiên vẽ để khỏi cần support (vát 45°, giọt nước).
+   **Nới khe / khoét rãnh → kiểm lại thành bên ngoài** (Tuan 2026-10-25: Housing pushrod-arm "mất 1 bên thành phía
+   ngoài, bật support hay không đều bị"): nới rãnh thanh răng lên ±6,3 mm trong khi mặt ngoài vỏ ở 6,5 mm → vách
+   **0,2 mm** < 1 đường đùn → slicer bỏ hẳn, in ra hở thành (check/printability đều không báo). Mỗi lần cắt/nới hốc,
+   đo vách còn lại tới mặt ngoài ≥ **2 đường in** (≈ 0,9 mm với profile classic 0,42 + 0,45). Đắp ra ngoài thì chạy
+   `kinematics_test.py` – Housing chỉ đắp được 0,7 mm vì Boom001 vào tới cách 1,0 mm khi xi-lanh duỗi hết. Cách tìm:
+   cắt lưới **theo hướng in** (lấy từ 3MF) từng lớp 0,2 mm, mặt cắt có 2·diện tích/chu vi < 0,45 mm = vách mỏng.
 5. Báo lại: kích thước chính (mm), khối lượng ước tính (vật liệu PLA/PETG), các giả định.
 
 ## Chốt / trục khớp quay (cập nhật 2026-10-25 – Tuan: chốt pushrod-arm "quá khít", "rỗng sẽ yếu lực")

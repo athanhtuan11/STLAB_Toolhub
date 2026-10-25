@@ -29,6 +29,7 @@ Cấu trúc chuẩn: `maker/robotics-cad/CLAUDE.md` mục "Dự án".
 ## Trạng thái (2026-10-25)
 - 16/16 test PASS (`freecad/tests`); kiểm nhanh WARN (không FAIL); cắt lớp 8 bàn ~10 h 58, ~288 g; BOM PASS.
 - Support: Tuan tô trong Bambu Studio (không vẽ vào STL). Chốt khớp Ø4,8, đặc, in nằm (bàn P8 100 %).
-- Bộ chốt thử: Ø4,8 vừa (Tuan 2026-10-25). Chờ Tuan: in lại 7 chốt (R5); in lại R1 Housings; lắp theo ASSEMBLY (bước 11b);
+- Bộ chốt thử: Ø4,8 vừa (Tuan 2026-10-25). Chờ Tuan: in lại 7 chốt (R5); in **R6 Housings** (`plates-reprint-housings-2026-10-25/`,
+  vách ngoài rãnh thanh răng 0,2 → 0,9 mm – KHÔNG dùng Housing trong R1/P4 cũ); lắp theo ASSEMBLY (bước 11b);
   thử tự hãm trục vít khi tắt điện.
 - `print.yaml` giờ 8 bàn (thêm P8_Pins 100 %).

@@ -1,0 +1,16 @@
+# IN LAI 2 VO XI-LANH 2026-10-25: ban truoc mat 1 ben thanh ngoai (vach ranh thanh rang chi 0,2 mm -> slicer bo).
+# Sua: dap 0,7 mm ra ngoai -> vach 0,9 = 2 duong (freecad/scripts/history/2026-10-25_housing_rack_wall.py).
+# Support: Tuan to trong Bambu Studio (tai chot) - GIU TRONG ranh thanh rang. Khong ghi de R1/P4 da luu.
+partial: true
+fcstd: ../freecad/pushrod_arm.FCStd
+rest_pose: ../freecad/pushrod_arm_rest.json
+machine: Bambu Lab A1 0.4 nozzle
+filament: Bambu PETG Basic @BBL A1
+stl: stl
+plates_dir: plates-reprint-housings-2026-10-25
+common: {only_one_wall_top: "1", infill_combination: "1", sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
+plates:
+  R6_Housings__0.20_PETG:
+    process: 0.20mm Standard @BBL A1
+    overrides: {wall_loops: "3", sparse_infill_density: "20%"}
+    stl: ["*__Housing_Shoulder.stl", "*__Housing_Elbow.stl"]
