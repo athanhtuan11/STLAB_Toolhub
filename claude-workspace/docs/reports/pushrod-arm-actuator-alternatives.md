@@ -59,6 +59,43 @@ Trong cộng đồng, xi-lanh in 3D cho tay máy/máy xúc gần như đều dù
 
 Đánh đổi chính: A rẻ/nhanh nhưng có thể vẫn lệch; B chắc chắn hơn nhưng vẽ lại cả 2 xi-lanh; C tốn tiền + đổi hình học.
 
+## 4b. Hướng bổ sung (nghiên cứu vòng 2, 2026-10-25)
+
+### E. Bánh răng quạt tại khớp (giữ gần hết cụm truyền động hiện có) – **khuyến nghị mới**
+- Thay thanh răng thẳng bằng **bánh răng quạt** (sector) gắn chặt vào cần, đồng tâm chốt khớp. Vỏ xi-lanh **bắt cứng** vào khâu trước
+  (không xoay quanh chốt nữa); bánh răng z10 hiện có ăn khớp với quạt. Thanh răng = quạt bán kính vô hạn → chỉ "uốn cong" nó lại.
+- Trục bánh vít hiện song song Y = song song các chốt khớp → hình học tương thích.
+- Ưu: **không còn chi tiết trượt** → hết lệch; giữ motor 030 + hộp số, trục vít tự hãm, bánh vít + z10 (in lại vỏ + quạt);
+  khoảng cách tâm cố định nên không có lực đẩy thanh răng ra khỏi răng như hiện tại.
+- Nhược: toàn bộ mô-men khớp đi qua răng m1 bằng nhựa → phải tính tải răng (TODO: mô-men khớp lớn nhất, có thể cần mặt răng rộng hơn
+  hoặc m1,5); mất kiểu dáng "xi-lanh". Cộng đồng có tay máy in 3D dùng trục vít ở khớp (bài báo Plymouth 2023, 3 bậc, trục vít giữ tư thế
+  không cần điện) và hộp số trục vít in 30:1 tự hãm (góc xoắn < 5°, ~3 Nm theo người đăng, PLA) – không có file quạt sẵn, phải tự vẽ.
+
+### F. Tay quay + thanh truyền (kiểu servo RC kéo thanh nối)
+- Hộp số + trục vít quay một **tay quay** gắn trên khâu trước; thanh nối 2 đầu chốt nối tay quay với cần (cơ cấu 4 khâu).
+- Ưu: chỉ có chốt xoay, không trượt; in đơn giản. Nhược: tỉ số thay đổi theo góc, phải tránh điểm chết; rơ cộng dồn ở 4 chốt
+  (chốt hiện có khe 0,3 mm/bên). Nguồn cộng đồng: so sánh slider-crank / bánh răng ở wiki thiết kế robot UT Austin.
+
+### G. Cáp capstan / dây đai từ đế
+- **Forte** (arXiv 2507.15693): tay 6 bậc in 3D, vai + khuỷu dùng **cáp thép capstan + dây đai**, giá vật liệu < 215 USD.
+  Dây Dyneema DM20 được cộng đồng chuộng cho capstan.
+- Dây đai GT2 từ motor ở đế: người làm báo **puly GT2 in bị nhảy răng khi mô-men lớn** → chuyển HTD 5M.
+- Đánh giá: chính xác, nhẹ cần, nhưng phức tạp (căng cáp, quấn dây) – quá sức cho bài lắp của học sinh. Không khuyến nghị cho bản này.
+
+### H. Lò xo bù trọng lực (bổ sung cho mọi phương án)
+- Lò xo kéo/nén bù mô-men do trọng lượng cần → giảm tải motor và giảm lực tách răng; có thể làm A khả thi hơn.
+- CyberBrick có sẵn lò xo nén BB007 (0,5 × 5 × 20 mm) và BB016 (0,6 × 8 × 20 mm), STEP trong `community/cyberbrick-official/models/`;
+  độ cứng **TODO** (chưa có datasheet). Lò xo nén này cũng dùng được làm lực ép con lăn tựa lưng của phương án A.
+
+### Khuyến nghị cập nhật
+| Hướng | Sửa/in lại | Hết lệch? | Ghi chú |
+|---|---|---|---|
+| A con lăn + rãnh kín | Housing, Rack | Một phần | Nhanh nhất, thử trước nếu lệch kiểu (a) |
+| **E bánh răng quạt** | Housing (bắt cứng), quạt thay Rack, điểm bắt trên Boom/Turret | **Có** | Giữ motor + bánh vít + z10; cần tính tải răng |
+| B vít me ống lồng | Cả xi-lanh | Có | Giữ kiểu "pushrod", cộng đồng CyberBrick đã làm |
+| F tay quay | Housing, thêm tay quay + thanh nối | Có | Tỉ số không đều |
+| H lò xo bù | Thêm | – | Kết hợp với bất kỳ |
+
 ## 5. Nguồn
 - Cyberbrick Excavator (N20 + trục ren M3×45 + đai ốc vuông M3): https://makerworld.com/models/2371626
 - Máy xúc CyberBrick dựa trên bài "Electric Push Rod for Cyberbrick": https://makerworld.com/models/3021552
@@ -70,5 +107,11 @@ Trong cộng đồng, xi-lanh in 3D cho tay máy/máy xúc gần như đều dù
 - Xi-lanh in 3D ty ren (độ rơ ty ren thường): https://hackster.io/news/3d-print-your-own-linear-actuators-bce586a10766 , https://www.instructables.com/Linear-Actuator-V2
 - Máy xúc in 3D của Ivan Miranda (xi-lanh ty ren, chậm, dễ gãy): https://hackaday.com/tag/digger/
 - EEZYbotARM MK2: https://www.myminifactory.com/object/3d-print-46620
+- Tay máy trục vít 3 bậc in 3D (Plymouth 2023): https://www.astesj.com/v08/i05/p09/
+- Hộp số trục vít in 30:1 tự hãm: https://3dgo.app/models/makerworld/674621
+- Forte – capstan + dây đai: https://arxiv.org/abs/2507.15693v1 ; giới thiệu capstan: https://aaronnewmanb.substack.com/p/capstan-drives-affordable-precision
+- Puly GT2 in nhảy răng ở khớp tay máy: https://michaelteeuw.nl/tag/belt
+- Slider-crank vs bánh răng (UT Austin): https://cloud.wikis.utexas.edu/wiki/spaces/RMD/pages/667877618
+- Bù trọng lực bằng lò xo/đối trọng: https://la.disneyresearch.com/wp-content/uploads/A-Passively-Safe-and-Gravity-Counterbalanced-Anthropomorphic-Robot-Arm-Paper.pdf
 
 Ghi chú: các trang MakerWorld/Printables chặn đọc tự động – thông tin lấy từ đoạn trích tìm kiếm; license từng mẫu **chưa kiểm** (xem trước khi dùng file, theo chính sách phi thương mại).
