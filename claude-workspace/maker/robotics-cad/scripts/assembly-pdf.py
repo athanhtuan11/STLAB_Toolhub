@@ -4,7 +4,8 @@ Chay: python scripts/assembly-pdf.py maker/<project>/ASSEMBLY.md   -> maker/<pro
 Cach lam: Markdown (tap con dung trong ASSEMBLY.md) -> HTML co CSS in A4 -> Microsoft Edge headless --print-to-pdf
 (co san tren Windows, chu tieng Viet chuan, chon/tim chu duoc). Khong can cai them goi.
 - Trang bia: ten du an, ngay, anh cuoi (buoc cuoi), muc luc cac buoc.
-- Moi "## Buoc ..." sang trang moi; anh step-XX-a.png tu dong kem step-XX-b.png (phong to) canh nhau.
+- Moi "## Buoc ..." sang trang moi; anh step-XX.png = 1 anh lon (kieu "thao tac" 2026-10-25); kieu cu step-XX-a/b/c
+  van doc duoc (2 anh/hang). Bia: freecad/images/assembly/cover.png.
 """
 
 import html
@@ -39,7 +40,9 @@ th { background: #f3f3f3; }
 code { font-family: Consolas, monospace; font-size: 9pt; background: #f2f2f2; padding: 0 1mm; }
 ul { margin: 1mm 0 2mm 5mm; padding-left: 4mm; }
 .imgs { flex-wrap: wrap; }
-.imgs figure { flex: 0 0 48%; box-sizing: border-box; }  /* 2 anh / hang: to hon cho hoc sinh (3 anh / hang qua nho) */
+.imgs figure { flex: 0 0 48%; box-sizing: border-box; }
+.imgs figure.one { flex: 0 0 100%; border: none; }
+.imgs figure.one img { max-height: 125mm; width: auto; max-width: 100%; margin: 0 auto; }  /* 2 anh / hang: to hon cho hoc sinh (3 anh / hang qua nho) */
 ol { margin: 1mm 0 2mm 5mm; padding-left: 5mm; font-size: 11.5pt; }
 ol li { margin-bottom: 1.2mm; }
 p.check { background: #eaf6ea; border-left: 4px solid #2e8b3e; padding: 1.5mm 3mm; font-size: 11pt; }
@@ -62,6 +65,9 @@ def inline(s, goc):
 
 def anh(rel, goc):
     p = (goc / rel).resolve()
+    if re.match(r".*step-\d+\.png$", str(p)):  # 1 anh "thao tac" lon / buoc (phong cach 2026-10-25)
+        return (f'<div class="imgs"><figure class="one"><img src="{p.as_uri()}"><figcaption>Chi tiết mới màu vàng – '
+                f'lắp theo đường nét đứt</figcaption></figure></div>')
     ds = [(p, "Toàn cảnh – chi tiết mới tô xanh")]
     m = re.match(r"(.*step-\d+)-([abc])\.png$", str(p))
     if m:  # c (chi tiet can lay - neu co) + a (toan canh) + b (phong to) - render_assembly_steps.py 2026-10-25
@@ -145,7 +151,8 @@ def main():
     src = Path(sys.argv[1]).resolve()
     goc = src.parent
     tieu_de, buoc, than = md_html(src.read_text(encoding="utf-8"), goc)
-    cuoi = sorted(goc.glob("freecad/images/assembly/step-*-a.png"))
+    cuoi = (sorted(goc.glob("freecad/images/assembly/cover.png"))  # anh bia rieng (2026-10-25)
+            or sorted(goc.glob("freecad/images/assembly/step-*-a.png")))
     bia_anh = f'<img src="{cuoi[-1].as_uri()}">' if cuoi else ""
     muc_luc = "".join(f"<div>{html.escape(b)}</div>" for b in buoc)
     bia = (f'<section class="cover"><h1>{html.escape(tieu_de)}</h1>'

@@ -1,3 +1,4 @@
+# CU (13 buoc, gui qua RPC) - da THAY bang render_assembly_steps.py (32 buoc, kieu "thao tac", 2026-10-25). Giu de tham khao.
 # Render anh huong dan lap rap (ASSEMBLY.md) trong FreeCAD GUI - gui noi dung file qua RPC (cong 9875).
 # Moi buoc: chi tiet cua cac buoc truoc -> mo (trong suot), chi tiet MOI -> dac + to xanh (selection); anh b phong to chi tiet moi.
 # Chi doi hien thi (Visibility/Transparency), xong tra lai nhu cu, KHONG Luu file. Ra: freecad/images/assembly/step-XX-{a,b}.png

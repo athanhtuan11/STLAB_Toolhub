@@ -36,7 +36,7 @@ Nhãn: **[nguồn gốc]** = bài báo / tài liệu hãng; **[đo]** = mình th
 | Bước lặp | vẽ lại (xi-lanh khuỷu 15–17) | "làm giống bước 12–14" + 1 ảnh xong |
 
 Mẫu: `maker/pushrod-arm/freecad/images/assembly-style-proto/compare-old-new.png`, `new-style-3-steps.png`
-(script `freecad/scripts/render_assembly_style_proto.py`).
+(đã áp dụng: `freecad/scripts/render_assembly_steps.py`, 32 bước – 2026-10-25).
 
 ## 3. Việc còn lại khi áp dụng cho 34 bước
 - Khai **hướng tách + khoảng cách** cho từng chi tiết từng bước (bảng trong script) và **cụm bối cảnh**.

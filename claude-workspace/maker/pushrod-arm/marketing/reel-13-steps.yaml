@@ -5,20 +5,20 @@ name: pushrod-arm-13-buoc
 out: video-ai/projects/pushrod-arm-13-buoc/out
 fps: 30
 scenes:
-  - {type: title, image: ../freecad/images/assembly/step-13-a.png, zoom: 1.45, seconds: 2.6,
+  - {type: title, image: ../freecad/images/assembly/cover.png, seconds: 2.6,
      text: "49 chi tiết in 3D thành 1 cánh tay robot", sub: "Ráp cùng STLab trong 13 bước"}
-  - {type: step, image: ../freecad/images/assembly/step-01-b.png, seconds: 1.6, n: 1, total: 13, text: "Đế"}
-  - {type: step, image: ../freecad/images/assembly/step-02-b.png, seconds: 1.6, n: 2, total: 13, text: "Mạch và servo xoay đế"}
-  - {type: step, image: ../freecad/images/assembly/step-03-b.png, seconds: 1.6, n: 3, total: 13, text: "Mâm xoay"}
-  - {type: step, image: ../freecad/images/assembly/step-04-b.png, seconds: 1.6, n: 4, total: 13, text: "Gắn mâm xoay lên đế"}
-  - {type: step, image: ../freecad/images/assembly/step-05-b.png, seconds: 1.6, n: 5, total: 13, text: "Turret"}
-  - {type: step, image: ../freecad/images/assembly/step-06-b.png, seconds: 1.6, n: 6, total: 13, text: "Hai cụm xi-lanh"}
-  - {type: step, image: ../freecad/images/assembly/step-07-b.png, seconds: 1.6, n: 7, total: 13, text: "Cần chính lên turret"}
-  - {type: step, image: ../freecad/images/assembly/step-08-b.png, seconds: 1.6, n: 8, total: 13, text: "Xi-lanh vai"}
-  - {type: step, image: ../freecad/images/assembly/step-09-b.png, seconds: 1.6, n: 9, total: 13, text: "Cụm cẳng tay"}
-  - {type: step, image: ../freecad/images/assembly/step-10-a.png, zoom: 1.35, seconds: 1.6, n: 10, total: 13, text: "Cẳng tay lên cần chính"}
-  - {type: step, image: ../freecad/images/assembly/step-11-b.png, seconds: 1.6, n: 11, total: 13, text: "Xi-lanh khuỷu"}
-  - {type: step, image: ../freecad/images/assembly/step-12-b.png, seconds: 1.6, n: 12, total: 13, text: "Cụm kẹp"}
-  - {type: step, image: ../freecad/images/assembly/step-13-a.png, zoom: 1.4, seconds: 1.6, n: 13, total: 13, text: "Gắn kẹp. Xong!"}
-  - {type: end, image: ../freecad/images/assembly/step-13-a.png, zoom: 1.45, seconds: 3.6,
+  - {type: step, image: ../freecad/images/assembly/step-01.png, seconds: 1.6, n: 1, total: 13, text: "Đế"}
+  - {type: step, image: ../freecad/images/assembly/step-05.png, seconds: 1.6, n: 2, total: 13, text: "Mạch và servo xoay đế"}
+  - {type: step, image: ../freecad/images/assembly/step-08.png, seconds: 1.6, n: 3, total: 13, text: "Mâm xoay"}
+  - {type: step, image: ../freecad/images/assembly/step-10.png, seconds: 1.6, n: 4, total: 13, text: "Gắn mâm xoay lên đế"}
+  - {type: step, image: ../freecad/images/assembly/step-11.png, seconds: 1.6, n: 5, total: 13, text: "Turret"}
+  - {type: step, image: ../freecad/images/assembly/step-14.png, seconds: 1.6, n: 6, total: 13, text: "Hai cụm xi-lanh"}
+  - {type: step, image: ../freecad/images/assembly/step-16.png, seconds: 1.6, n: 7, total: 13, text: "Cần chính lên turret"}
+  - {type: step, image: ../freecad/images/assembly/step-17.png, seconds: 1.6, n: 8, total: 13, text: "Xi-lanh vai"}
+  - {type: step, image: ../freecad/images/assembly/step-19.png, seconds: 1.6, n: 9, total: 13, text: "Cụm cẳng tay"}
+  - {type: step, image: ../freecad/images/assembly/step-21.png, seconds: 1.6, n: 10, total: 13, text: "Cẳng tay lên cần chính"}
+  - {type: step, image: ../freecad/images/assembly/step-22.png, seconds: 1.6, n: 11, total: 13, text: "Xi-lanh khuỷu"}
+  - {type: step, image: ../freecad/images/assembly/step-29.png, seconds: 1.6, n: 12, total: 13, text: "Cụm kẹp"}
+  - {type: step, image: ../freecad/images/assembly/cover.png, seconds: 1.6, n: 13, total: 13, text: "Gắn kẹp. Xong!"}
+  - {type: end, image: ../freecad/images/assembly/cover.png, seconds: 3.6,
      lead: "Muốn tự tay ráp một con?", text: "Open Lab tham quan", sub: "STLab, Đức Trọng, Lâm Đồng. Nhắn tin để hẹn lịch."}

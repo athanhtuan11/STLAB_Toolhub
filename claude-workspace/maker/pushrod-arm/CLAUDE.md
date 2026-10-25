@@ -9,7 +9,8 @@ Cấu trúc chuẩn: `maker/robotics-cad/CLAUDE.md` mục "Dự án".
   là file chuyển tiếp tới đây).
 - `scripts/`: `kinematics_test.py` (quét tư thế + kẹp, chạy `freecadcmd`/`fc_job`, ra `check/`),
   `reset_rest_pose.py` (gửi qua RPC khi file bị Lưu lúc mô phỏng); `history/` = script sửa model đã chạy (chỉ đọc lại).
-- `images/assembly/`: ảnh 13 bước lắp (`scripts/render_assembly.py` render lại). Hướng dẫn: `ASSEMBLY.md`.
+- `images/assembly/`: ảnh 32 bước lắp kiểu "thao tác" + `cover.png` (`scripts/render_assembly_steps.py` qua gui_run →
+  `scripts/crop_assembly_images.py`; ảnh gốc 2400 px ở `raw/` không lên git). Hướng dẫn: `ASSEMBLY.md` / `ASSEMBLY.pdf`.
 - `check/`: kết quả kiểm nhanh (`overview.png`) – file sinh.
 
 ## Bàn in – `print/`
