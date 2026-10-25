@@ -96,6 +96,30 @@ Trong cộng đồng, xi-lanh in 3D cho tay máy/máy xúc gần như đều dù
 | F tay quay | Housing, thêm tay quay + thanh nối | Có | Tỉ số không đều |
 | H lò xo bù | Thêm | – | Kết hợp với bất kỳ |
 
+## 4c. Mổ xẻ Cyberbrick Excavator (MakerWorld 2371626) – 2026-10-25
+Tuan tải `Cyberbrick+Excavator.zip` (75 STL, không kèm hướng dẫn/license). Đo bằng cắt lát STL (số đo ± 0,3 mm; module quạt là ước lượng):
+
+**Khớp cần chính (boom – khớp chịu tải lớn nhất) = bánh răng quạt, KHÔNG dùng xi-lanh** → cùng ý tưởng phương án E.
+- Quạt răng **liền khối ở gốc `boom`**, quét ~118°, bán kính đỉnh ≈ 25 mm, ~m1,1 (ước lượng), **mặt răng rộng ≈ 21 mm** (cả bề dày boom).
+- Dẫn động: `boom_drive_gear` (m1 z30 + bánh răng con dài) → `boom_reduction_gear` (m1 z40 + z~15) → quạt. Giảm tốc nhiều cấp bánh răng thẳng,
+  không trục vít (giữ tư thế nhờ hộp số motor – không tự hãm như trục vít của mình).
+- Rút ra: quạt nhỏ (r ≈ 25 mm) đặt sát khớp, bánh răng dẫn đặt trên khâu trước, mặt răng rộng để chịu mô-men.
+
+**Tay gầu + gầu = xi-lanh vít me (phương án B)**:
+- `cylinder_Base`: ống tròn Ø16,8 dài 90 mm. Nửa dưới lỗ Ø12,6 chứa motor N20 (BOM: N20 trục ren M3 × 45, 1000 rpm);
+  nửa trên lỗ **không tròn** (~12,6 × 10,6, có gờ) làm rãnh chống xoay cho piston.
+- `push_rod`: đầu piston 12 × 9 mm có **hốc đai ốc vuông M3 (6,1 × 6,1)**; thân ty tiết diện chữ D 8 × 7,3 mm, lỗ dọc Ø4,4 cho ty ren chui vào.
+  → Ty được dẫn **2 điểm** (piston trong ống + miệng ống), lực đi dọc trục, không có lực tách răng.
+- Gầu dùng thêm `dogbone` + `Hlink` (cơ cấu 4 khâu) để khuếch đại góc quay từ hành trình xi-lanh ngắn.
+
+**So với pushrod-arm**: thanh răng của mình chỉ dẫn 1 rãnh hở + lực tách răng; máy xúc tránh hẳn thanh răng – khớp tải lớn dùng quạt,
+khớp nhẹ dùng vít me trong ống kín. Củng cố khuyến nghị: **khuỷu → E (quạt)**, nếu muốn giữ dáng xi-lanh → B kiểu ống Ø16,8 + đai ốc vuông.
+
+**Bài học bố cục cho E** (từ thử dựng quạt trên model, 2026-10-25): tâm z10 hiện cách chốt E 61,6 mm → quạt m1 z113 (r 56,5), quét 78° khi khuỷu
+đi hết hành trình; **đặt ở mặt phẳng giữa sẽ đâm vào thân Boom001** (Boom đặc ở góc 220–240° quanh E, r 40–58). Hai cách: (1) quạt bắt ngoài
+`Forearm_plate_R` (y −20…−15), dời cụm xi-lanh ngang −17,75 mm (script concept `freecad/scripts/render_concept_sector.py`, chưa chạy);
+(2) như máy xúc: dời bánh răng dẫn sát khớp → quạt nhỏ r ≈ 25–30 mm, thêm 1 cấp giảm tốc (vẽ lại vỏ nhiều hơn).
+
 ## 5. Nguồn
 - Cyberbrick Excavator (N20 + trục ren M3×45 + đai ốc vuông M3): https://makerworld.com/models/2371626
 - Máy xúc CyberBrick dựa trên bài "Electric Push Rod for Cyberbrick": https://makerworld.com/models/3021552
