@@ -17,3 +17,7 @@ CONFIG_ESP_RMAKER_LOCAL_CTRL_AUTO_ENABLE=y
 
 # Gio Viet Nam (UTC+7) - mac dinh thu vien la Asia/Shanghai (UTC+8, lech 1 gio -> lich 6h chay 5h)
 CONFIG_ESP_RMAKER_DEF_TIMEZONE="Asia/Ho_Chi_Minh"
+
+# OTA tu xa an toan: ban moi khong ket noi duoc cloud trong ESP_RMAKER_OTA_ROLLBACK_WAIT_PERIOD (90 s) -> tu quay ve ban cu.
+# Nam trong BOOTLOADER -> KHONG doi duoc qua OTA, phai nap USB 1 lan (2026-10-25).
+CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y
