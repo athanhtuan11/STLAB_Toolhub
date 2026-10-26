@@ -538,6 +538,7 @@ def _plt():
 
 
 VIEWS = [(0, 1, "Nhìn từ trên (X, Y)"), (0, 2, "Nhìn trước (X, Z)"), (1, 2, "Nhìn cạnh (Y, Z)")]
+ANH_VA_CHAM_PHIEN_BAN = 2   # doi cach ve collisions.png -> tang so nay de ve lai (anh cu giu theo .collisions.sig)
 
 
 def _ve_luoi(ax, verts, tris, i, j, mau, alpha):
@@ -590,15 +591,15 @@ def anh_va_cham(cts, giao, png):
     bb = App.BoundBox()
     for ct in cts:
         bb.add(ct["shape"].BoundBox)
+    # tessellate 1 lan / chi tiet cho ca 3 huong (truoc: trong vong lap huong = 3 lan); luoi 1,0 mm du de xem tong the
+    # (profile 2026-10-26: anh nay 69/78 s cua lan kiem pushrod-arm du cache 100 %)
+    nen = [ct["shape"].tessellate(1.0) for ct in cts]
+    do = [([(p.x, p.y, p.z) for p in g.Topology[0]], g.Topology[1]) if hasattr(g, "Topology")  # Mesh (manifold3d)
+          else g.tessellate(0.1) for g in giao]
     for ax, (i, j, lab) in zip(axs, VIEWS):
-        for ct in cts:
-            v, t = ct["shape"].tessellate(0.5)
+        for v, t in nen:
             _ve_luoi(ax, v, t, i, j, "#9ab", 0.25)
-        for g in giao:
-            if hasattr(g, "Topology"):  # Mesh (tu manifold3d)
-                v, t = [(p.x, p.y, p.z) for p in g.Topology[0]], g.Topology[1]
-            else:
-                v, t = g.tessellate(0.1)
+        for v, t in do:
             _ve_luoi(ax, v, t, i, j, "#e53935", 0.9)
         _khung(ax, bb, i, j, lab)
     fig.suptitle("Va chạm: vùng đỏ là phần thể tích chồng nhau", fontsize=10)
@@ -897,7 +898,14 @@ def main():
         if f.name not in giu:
             f.unlink()
     if giao:
-        anh_va_cham(cts, giao, out / "collisions.png")
+        # chi ve lai khi chi tiet (khoa = hinh + vi tri) hoac cap chong nhau doi; khong doi -> giu anh cu
+        ky = hashlib.sha1(json.dumps([sorted(ct["khoa"] for ct in cts),
+                                      sorted((c["a"], c["b"], c.get("the_tich_mm3")) for c in cap if c["giao"]),
+                                      ANH_VA_CHAM_PHIEN_BAN], default=str).encode()).hexdigest()
+        png, f_ky = out / "collisions.png", out / ".collisions.sig"
+        if not (png.exists() and f_ky.exists() and f_ky.read_text() == ky):
+            anh_va_cham(cts, giao, png)
+            f_ky.write_text(ky)
     for q in qk:
         anh_quet(q, out / f"sweep-{ten_file(q['khop'])}.png")
     bc["thoi_gian_chay_s"] = round(time.time() - t0, 1)
