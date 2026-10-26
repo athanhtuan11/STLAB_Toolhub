@@ -16,6 +16,7 @@ va bom.py (BOM.csv + BOM.md, kiem bang vit trong ASSEMBLY.md) - chi canh bao, kh
 Ra: tom tat + duong dan anh overview.png (tang 1) va print-overview.png (tang 2). Exit 1 neu co FAIL.
 """
 
+import hashlib
 import json
 import subprocess
 import sys
@@ -66,6 +67,18 @@ def main():
     p1 = chay([FCC, HERE / "check.py", "--pass", fcstd, *kt], logs / "check.txt")
     p2 = chay([FCC, HERE / "export-stl.py", "--pass", cfg_p], logs / "export-stl.txt")
     p4 = chay([FCC, HERE / "metrics.py", "--pass", cfg_p], logs / "metrics.txt")
+    # thao lap (assembly_paths, Tuan 2026-10-26: "in roi khong lap vao nhau duoc") - chi khi print.yaml co `assembly:`;
+    # cache theo noi dung FCStd + allow + ma assembly_paths (pushrod-arm ~53 s -> 0 s khi model khong doi)
+    asm, p5, a5 = cfg.get("assembly"), None, None
+    if asm is not None:
+        allow = ",".join((asm or {}).get("allow", []))
+        f_ky, f_js = logs / "assembly.sig", logs / "assembly.json"
+        ky = hashlib.sha1(fcstd.read_bytes() + allow.encode() + (HERE / "assembly_paths.py").read_bytes()).hexdigest()
+        if f_ky.exists() and f_js.exists() and f_ky.read_text() == ky:
+            a5 = json.loads(f_js.read_text(encoding="utf-8"))
+        else:
+            p5 = chay([FCC, "--safe-mode", HERE / "fc_cli.py", "--pass", HERE / "assembly_paths.py", fcstd,
+                       f"allow={allow}", f"json={f_js}"], logs / "assembly.txt")
     p2.wait()
     t_xuat = time.time() - t0
     xs = doc_moi(goc / cfg["stl"] / "_export-stl.json", t0, logs / "export-stl.txt")
@@ -101,6 +114,14 @@ def main():
     kq.append(("Tang 1 kiem nhanh", b1["ket_luan"], f"{b1['thoi_gian_chay_s']} s", loi1, out_kt / "overview.png"))
     kq.append(("Kha nang in (STL)", "FAIL" if loi_in else ("WARN" if cb_in else "PASS"),
                f"{xs['so_stl']} STL", loi_in + cb_in, ""))
+    if asm is not None:
+        if p5 is not None:
+            p5.wait()
+            a5 = doc_moi(f_js, t0, logs / "assembly.txt")
+            f_ky.write_text(ky)
+        kq.append(("Thao lap (assembly_paths)", "WARN" if a5["trapped"] else "PASS",
+                   f"{a5['pairs']} cap cham, {len(a5['trapped'])} cap KET",
+                   [f"KET: {a} | {b} {n}" for a, b, n in a5["trapped"]], ""))
 
     # 3) chi cat lop khi da sach
     b2 = None

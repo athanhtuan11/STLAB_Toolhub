@@ -11,6 +11,13 @@ bom_groups:
   "CB_Tire_*": "CB_Tire_LA027 (lop cao su D33.7 x 13.85)"
   "CB_Magnet_4x2_*": "CB_Magnet_CA001 (nam cham 4 x 2 mm)"
 
+# Thao lap (assembly_paths, them 2026-10-26): moi cap dang cham phai tach duoc bang tinh tien. Ngoai le CO CHU DICH:
+# vit tu ren an vao lo moi, lop om vanh (gian), horn ep len truc servo, moay-o banh sau ep len truc ra hop so.
+# Con lai WARN de xem: hop so | Chassis va servo lai | Chassis "ket" (2026-10-26 - hop so la STEP 1 truc thay the, TODO).
+assembly:
+  allow: ["*M2_5x*|*", "*M2x*|*", "CB_Tire_*|Wheel_*", "CB_Servo9g_*|LK_Servo_horn", "CB_Gearbox_*|Wheel_R*"]
+  known: ["CB_Gearbox_030_dual_axis|Chassis", "CB_Servo9g_180_steering|Chassis"]   # TODO xem truoc khi in (2026-10-26)
+
 check:
   - out=../freecad/check
   - components=CB_*,LK_*,M2_5x*,M2x*

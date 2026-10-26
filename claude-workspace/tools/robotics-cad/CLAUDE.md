@@ -33,6 +33,11 @@ Thiết kế cơ khí robot (khung, gá động cơ/cảm biến, hộp số) đ
 0. **Giao diện trước** (Tuan 2026-10-24): `design/brief.md` → 3 concept dáng (bóng hông/đỉnh/3/4) + `cmf.png` (≤ 3 màu, cuộn có thật) + render + mockup UI nếu có → `contact-sheet.png` → Tuan chọn bằng ảnh. Chưa chọn thì chưa dựng cơ khí. Mức A/B/C và checklist: `studio/design/DESIGN.md`, `project-template/design/brief.md`.
 1. Chọn linh kiện trong `library/components.yaml`; chèn STEP từ thư viện (không tự vẽ lại linh kiện chuẩn).
 2. Dựng khung quanh linh kiện; tham số hóa kích thước chính bằng Spreadsheet.
+   **Script dựng/sửa hình MỚI dùng `scripts/cad_lib.py`** (2026-10-26): `box(x=(a,b), y=…, z=…)` (bắt buộc đặt tên –
+   trước đây `box` có 3 kiểu tham số khác nhau giữa các file), `cyl(r, "x"|"y"|"z", span, at)`, `rrect`, `teardrop` (lỗ
+   ngang tự in, mũi 45°), `local`/`put` (đổi hệ, gộp Placement), `pos`, khe `FIT` 0,2 · `SLIDE` 0,3 · `PIN` 0,3/bên.
+   Test: `FreeCADCmd --safe-mode -P tools/robotics-cad/tests -t test_cad_lib`. Dự án mới: dựng từ tham số (kiểu
+   `maker/cyberbrick-car/freecad/scripts/build_car.py`), FCStd là file sinh.
 3. Kiểm tra va chạm và tầm quay khớp trong Assembly.
 4. **Một lệnh chuẩn bị in** (2026-10-23, pushrod-arm ~1–2 phút; trước đó >1 giờ):
    `"C:/Program Files/FreeCAD 1.1/bin/python.exe" scripts/prepare-print.py maker/<project>/print/print.yaml`
@@ -102,6 +107,9 @@ maker/<project>/            tên tiếng Anh, kebab-case
     stl/  plates/           file sinh (không lên git): plates/<plate>/<plate>.3mf để in, print-overview.png
 ```
 - Tạo bằng `/new-project <name>`: chép `project-template/` → `maker/<name>/`. Không để dữ liệu dự án ở nơi khác.
+- Test mẫu `project-template/freecad/tests/test_model.py` (2026-10-26): hình hợp lệ, 1 solid, thể tích dương, không ẩn,
+  **tháo lắp được** (theo `assembly.allow`/`known` trong `print.yaml`). Yêu cầu riêng của Tuan → lớp `T2Requirements`.
+- `print.yaml` khối `assembly:` → `prepare-print` thêm tầng **Thao lap** (assembly_paths, WARN khi kẹt, cache theo FCStd).
 - Macro trong thư mục macro của FreeCAD chỉ là **file chuyển tiếp** `exec(...)` tới macro trong dự án (1 nguồn).
 - Tên Label trong FreeCAD: linh kiện mua bắt đầu `CB_` (CyberBrick) hoặc `LK_` (khác), vít `M2_5x6`, `M3x8`…;
   nhựa dẻo hậu tố `_TPU`; chi tiết đối xứng `_L`/`_R`; bánh răng `Gear_*`/`Pinion_*`

@@ -11,6 +11,13 @@ stl: stl                                       # file sinh (khong len git)
 plates_dir: plates                             # file sinh: <plate>/<plate>.3mf de in + print-overview.png
 
 # Tang 1 - tham so check.py (key=value)
+# Thao lap (assembly_paths, them 2026-10-26): moi cap dang cham phai tach duoc bang tinh tien; ngoai le giong
+# freecad/tests/test_pushrod_arm.py T9Assemble.ALLOW (ly do ghi o do). Cache theo noi dung FCStd.
+assembly:
+  allow: ["*M2_5x*|*", "CB_Servo9g_180_gripper|Servo_horn", "CB_Servo9g_360_turntable|Pinion_m1_z10_turntable",
+          "Gear_z12_*|LK_Nut_M3_gear_*", "Base_housing|Battery_bay", "Base_housing|Receiver_riser",
+          "CB_030_gearbox_*|Pin_gearbox_*"]
+
 check:
   - out=../freecad/check
   - components=CB_*,M2_5x*,LK_*

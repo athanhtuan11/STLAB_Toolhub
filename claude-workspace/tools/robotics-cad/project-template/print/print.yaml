@@ -10,6 +10,12 @@ stl: stl                                     # file sinh
 plates_dir: plates                           # file sinh: <plate>/<plate>.3mf + print-overview.png
 
 # Tang 1 - tham so check.py (key=value). Quy uoc ten Label: tools/robotics-cad/CLAUDE.md
+# Thao lap (assembly_paths): moi cap dang cham phai tach duoc bang tinh tien (WARN neu ket). Cache theo noi dung FCStd.
+# allow = cap co chu dich (vit tu ren, ep, gian) - ghi ly do canh tung mau. Bo ca khoi nay = khong kiem.
+assembly:
+  allow: ["*M2_5x*|*", "*M3x*|*"]
+  # known: ["A|B"]   # loi DA BIET dang cho xu ly: test khong do, prepare-print van WARN
+
 check:
   - out=../freecad/check
   - components=CB_*,LK_*,M2_5x*,M3x*      # linh kien mua: chi kiem hinh hoc + va cham
