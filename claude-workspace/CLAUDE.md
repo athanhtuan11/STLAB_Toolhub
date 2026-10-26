@@ -46,6 +46,28 @@ file này; mỗi dự án con có CLAUDE.md riêng và tự nạp file này theo
   "Xem lại khi làm thương mại" trong `docs/COMMUNITY.md`. An toàn (mã chạy gì, gửi dữ liệu đi đâu) vẫn bắt buộc.
 - `.claude/skills/` và `.claude/agents/` của các dự án chỉ chứa symlink và không đưa lên git.
 
+## Phân việc theo model (Tuan 2026-10-26: chỉ trả Claude Pro, còn lại free)
+Chi tiết, cài đặt, gỡ bỏ: `docs/model-routing.md`.
+
+| Ai | Làm gì |
+|---|---|
+| Phiên chính (Opus) | Hình học, khe/dung sai, động học, va chạm, `safe_edit.py`, script FreeCAD tham số, hướng in/support trong `print.yaml`, thứ tự lắp, ghi chú an toàn, duyệt ảnh, quyết định cuối |
+| Agent `check-runner` (Haiku) | Sau mỗi lần sửa model đã Lưu: chạy `prepare-print.py` + test, trả tóm tắt ≤ 15 dòng. **Không tự đọc log dài trong phiên chính** |
+| Agent `doc-writer` (Haiku + Gemini free qua PAL) | README, văn xuôi ASSEMBLY.md, ghi chú nghiên cứu, caption, lịch sử sửa – từ gạch đầu dòng phiên chính đưa |
+| Agent `git-scribe` (Haiku) | Soạn commit + push khi kiểm đạt (đưa kèm phạm vi file + kết quả kiểm) |
+| PAL `chat` (`flash`/`lite`) | Tóm tắt tài liệu/trang web dài (> ~300 dòng) trước khi Claude đọc; dịch; đổi giọng văn |
+| PAL `codereview`, `/codex:review` (ChatGPT Free) | Review lần 2 script Python/FreeCAD lớn trước khi commit; `/codex:adversarial-review` khi phân vân thiết kế code |
+
+Nguyên tắc cứng:
+- Model free (Gemini, Codex) **không quyết** kích thước, khe, thông số linh kiện, an toàn điện/pin/nhiệt. Số liệu từ chúng
+  phải được phiên chính hoặc script kiểm; không có nguồn → `TODO`.
+- **Không gửi ra ngoài** (PAL/Gemini, Codex): `stlab/parent-reports/`, dữ liệu khách (`maker/pump-control/` phần khách),
+  `.env`/key/mật khẩu, ảnh có người. Chỉ tài liệu kỹ thuật, mã nguồn của workspace.
+- `/codex:rescue` (Codex được ghi file, sandbox `workspace-write`) chỉ dùng khi Tuan đồng ý; cấm cho đụng `.FCStd`,
+  `print.yaml`, `community/`. Không bật cổng review khi dừng (`/codex:setup` → stop gate giữ **tắt**).
+- Chỉ một phiên điều khiển FreeCAD GUI; agent chỉ chạy `freecadcmd`/`python.exe` trên file đã Lưu.
+- Hết hạn mức free (lỗi 429/quota) → làm tiếp bằng Haiku/phiên chính, không đổi sang dịch vụ trả phí.
+
 ## Git
 - Repo này định đưa lên GitHub. Không đưa bản clone cộng đồng và bí mật vào repo (xem `.gitignore`).
 - Kiểm ổn (test/kiểm tra đạt) thì tự commit + push lên GitHub (Tuan 2026-10-23); thay đổi lớn làm trên nhánh rồi gộp.

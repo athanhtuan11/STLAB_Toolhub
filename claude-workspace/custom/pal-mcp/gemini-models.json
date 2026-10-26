@@ -1,0 +1,45 @@
+{
+  "_README": {
+    "description": "Danh muc Gemini cho PAL MCP (thay conf/gemini_models.json cua ban ghim, da cu tu 2025-12: chi co 2.x/3-pro-preview).",
+    "usage": "Nap qua bien GEMINI_MODELS_CONFIG_PATH; key free tu AI Studio trong bien moi truong GEMINI_API_KEY. Xem docs/model-routing.md.",
+    "source": "ID model: ai.google.dev/gemini-api/docs/models (2026-10-26, ban Stable). Context/output: catalog OpenRouter cung ngay (trang Google khong ghi). Han muc free xem trong AI Studio, Google khong cong bo so chung.",
+    "thinking": "supports_extended_thinking=false: PAL khong gui thinking_budget kieu Gemini 2.x; model dung muc mac dinh cua Google.",
+    "intelligence_score": "Chi de PAL xep thu tu khi DEFAULT_MODEL=auto."
+  },
+  "models": [
+    {
+      "model_name": "gemini-3.8-flash",
+      "friendly_name": "Gemini 3.8 Flash",
+      "aliases": ["flash", "gemini"],
+      "intelligence_score": 12,
+      "description": "Mac dinh: viet nhap tai lieu tieng Viet, tom tat tai lieu dai, review lan 2",
+      "context_window": 1048576,
+      "max_output_tokens": 65536,
+      "supports_extended_thinking": false,
+      "supports_system_prompts": true,
+      "supports_streaming": true,
+      "supports_function_calling": true,
+      "supports_json_mode": true,
+      "supports_images": true,
+      "supports_temperature": true,
+      "max_image_size_mb": 20.0
+    },
+    {
+      "model_name": "gemini-3.5-flash-lite",
+      "friendly_name": "Gemini 3.5 Flash-Lite",
+      "aliases": ["lite", "flash-lite"],
+      "intelligence_score": 9,
+      "description": "Du phong khi het han muc 3.8 Flash; viec chu ngan (caption, doi giong van)",
+      "context_window": 1048576,
+      "max_output_tokens": 65536,
+      "supports_extended_thinking": false,
+      "supports_system_prompts": true,
+      "supports_streaming": true,
+      "supports_function_calling": true,
+      "supports_json_mode": true,
+      "supports_images": true,
+      "supports_temperature": true,
+      "max_image_size_mb": 20.0
+    }
+  ]
+}

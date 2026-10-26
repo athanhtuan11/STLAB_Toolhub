@@ -14,6 +14,10 @@ Các dự án con tự nạp file này. Phần riêng nằm trong CLAUDE.md củ
 - Điện lưới 220 V: cách ly, nối đất; khuyến nghị dùng module có chứng nhận.
 - Không flash firmware hay điều khiển thiết bị thật khi chưa hỏi.
 
+## Agent rẻ dùng chung (`~/.claude/agents/`, nguồn `custom/agents/`)
+`check-runner` (chạy kiểm/test, tóm tắt), `doc-writer` (viết tài liệu qua Gemini free), `git-scribe` (commit + push) –
+model `haiku`. Khi nào giao việc: mục "Phân việc theo model" trong `claude-workspace/CLAUDE.md`.
+
 ## Agent cộng đồng (VoltAgent, MIT)
 `embedded-systems`, `iot-engineer`, `cpp-pro`, `python-pro` được liên kết theo từng dự án.
 Các agent này có quyền Read/Write/Edit/Bash và mặc định dùng model `sonnet`.

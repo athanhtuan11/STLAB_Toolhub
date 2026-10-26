@@ -3,6 +3,8 @@
 
 # Script shell phai la LF, CRLF lam bash loi ($'\r': command not found)
 *.sh text eol=lf
+# Bang TSV doc bang bash (update-community.sh): CRLF lam ky tu CR dinh vao duong dan
+*.tsv text eol=lf
 
 # File .bat cua Windows giu CRLF
 *.bat text eol=crlf

@@ -12,6 +12,10 @@
 ~/.claude/skills/lightcraft	community/midasmatterhorn-artcraft-skills/lightcraft
 ~/.claude/skills/video-ai	custom/skills/video-ai
 ~/.claude/skills/remotion-best-practices	community/remotion-dev-skills/skills/remotion-best-practices
+# --- Agent re (phan viec theo model, 2026-10-26, docs/model-routing.md) ---
+~/.claude/agents/check-runner.md	custom/agents/check-runner.md
+~/.claude/agents/doc-writer.md	custom/agents/doc-writer.md
+~/.claude/agents/git-scribe.md	custom/agents/git-scribe.md
 # --- stlab ---
 stlab/.claude/skills/docx	community/anthropics-skills/skills/docx
 stlab/.claude/skills/pptx	community/anthropics-skills/skills/pptx

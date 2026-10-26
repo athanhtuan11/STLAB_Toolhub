@@ -34,6 +34,8 @@ Sau mỗi lần `apply`/`rollback`, cập nhật cột "Ghim" và "Kiểm tra".
 | [cedeber/hald-clut](https://github.com/cedeber/hald-clut) | `3b3180f82d4d` (sparse: Film Simulation/Color/{Fuji,Kodak}, Fujifilm XTrans III) | Repo GPL-3.0; bộ RawTherapee Film Simulation **CC BY-SA 4.0** (Pat David, Pavlov Dmitry, Michael Ezra) | Cộng đồng, 324★ | 2026-10-21 | HaldCLUT phim (Portra, 400H…) → `photo-ai/scripts/luts.py` đổi sang `.cube`. **Không lấy** `Apple/`, `Pixelmator Pro/` (trích từ app thương mại). XTrans III chỉ dành cho RAW trung tính |
 | [peva3/Lightroom-Presets](https://github.com/peva3/Lightroom-Presets) | `f22f4d8057aa` | MIT | Cộng đồng, 99★, repo mới (2026-05) | 2026-10-21 | 445 preset XMP Lightroom (chỉ `.xmp` + `.md`) → LightCraft `render --settings x.xmp` (áp được) |
 | [remotion-dev/skills](https://github.com/remotion-dev/skills) | `6c67adcd9cdb` (@remotion/skills 4.0.538) | **Không có file LICENSE**; Remotion License của monorepo (free cá nhân/công ty ≤ 3 NV) | **Chính hãng** (tổ chức Remotion), 5,6k★ | 2026-10-24 | Skill `remotion-best-practices` (router, chứa đủ 11 skill con) → `~/.claude/skills`: video motion graphics bằng React |
+| [BeehiveInnovations/pal-mcp-server](https://github.com/BeehiveInnovations/pal-mcp-server) (tên cũ Zen MCP) | `v9.8.2` (`fa78edca0b6b`) | Apache-2.0 | Cộng đồng, 11,8k★; **không cập nhật từ 2025-12-15** | 2026-10-26 | MCP `pal` (user): Claude gọi Gemini API free (`chat`, `consensus`, `codereview`) – xem `docs/model-routing.md` |
+| [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) | `v1.0.6` (`db52e28f4d9d`) | Apache-2.0 | **Chính hãng** (OpenAI), 34,6k★ | 2026-10-26 | Plugin `codex@openai-codex` (user, marketplace cục bộ từ bản ghim): `/codex:review` bằng ChatGPT Free |
 
 ## Những gì nguồn chạy/truy cập (đọc mã ngày 2026-10-21)
 - **Skill markdown** (mattpocock, homeassistant-ai, teaching-skills, GarethManning): không có script,
@@ -187,6 +189,27 @@ obotcad` khi khởi động. Workbench vẫn nạp
 - Remotion **chưa cài** vào dự án nào. Telemetry Remotion: `TODO` đọc trước khi cài (xem `docs/project-video-marketing-research.md`).
 - `scripts/*.ts`, `package.json` của repo là công cụ đồng bộ nội bộ của Remotion – không chạy.
 
+### PAL MCP (đọc mã 2026-10-26)
+- Python, chạy bằng `custom/pal-mcp/.venv` (thư viện khóa theo ngày phát hành 2025-12-16, không đụng bản clone).
+- Mạng: chỉ gọi API provider có key (`generativelanguage` qua `google-genai`; OpenAI/X.AI/OpenRouter/DIAL chỉ khi có key –
+  máy này **chỉ đặt `GEMINI_API_KEY`**). Tool `version` đọc `raw.githubusercontent.com/.../config.py` để so phiên bản.
+  Không có telemetry.
+- Tiến trình con: chỉ tool `clink` (chạy gemini/codex/claude CLI với `--yolo`/bỏ sandbox) → **tắt** bằng `DISABLED_TOOLS`.
+- Ghi file: log `logs/mcp_server.log`, `logs/mcp_activity.log` trong bản clone (đã thêm `logs/` vào `.git/info/exclude`;
+  `LOG_LEVEL=WARNING`); `chat` có thể ghi `pal_generated.code` vào thư mục làm việc khi model trả khối code.
+- **Đọc được mọi file Claude truyền vào** (`absolute_file_paths`) rồi gửi lên Google → danh sách cấm gửi trong
+  `CLAUDE.md` mục "Phân việc theo model". Nạp `.env` trong thư mục clone nếu có (hiện không có, không tạo).
+- Danh mục model của bản ghim đã cũ (Gemini 2.x) → dùng `custom/pal-mcp/gemini-models.json` qua `GEMINI_MODELS_CONFIG_PATH`.
+
+### Codex plugin (đọc mã 2026-10-26)
+- Node script gọi Codex CLI (`@openai/codex` 0.164.0, chính hãng) qua app-server cục bộ; Codex dùng đăng nhập ChatGPT.
+- Sandbox: `review`/`adversarial-review` = `read-only`; `rescue` = `workspace-write` khi yêu cầu ghi
+  (`approvalPolicy: never`) → chỉ dùng khi Tuan đồng ý.
+- Hook: `SessionStart`/`SessionEnd` (dọn job + tắt broker, timeout 5 s); `Stop` = cổng review khi dừng, **mặc định tắt**
+  (`stopReviewGate: false`), bật chỉ qua `/codex:setup`. Trạng thái lưu ở thư mục dữ liệu plugin/`%TEMP%\codex-companion`.
+- Agent `codex:codex-rescue` dùng `model: sonnet` (chỉ chuyển tiếp lệnh, vẫn tốn quota Claude ít).
+- Không có URL cứng trong script; mạng do Codex CLI gọi OpenAI.
+
 ## Thay đổi bên ngoài workspace (để gỡ/khôi phục)
 | Ngày | Vị trí | Thay đổi | Khôi phục |
 |---|---|---|---|
@@ -208,15 +231,25 @@ obotcad` khi khởi động. Workbench vẫn nạp
 | 2026-10-21 | `%USERPROFILE%\Pictures\stlab-studio\` | thư mục PhotoCraft được đọc/ghi qua MCP | xóa thư mục |
 | 2026-10-21 | `~/.claude/skills/lightcraft` | symlink → artcraft-skills/lightcraft (`aa35c24`) | `update-community.sh unlink` |
 | 2026-10-24 | `~/.claude/skills/remotion-best-practices` | symlink → remotion-dev/skills (`6c67adc`) | `update-community.sh unlink` |
+| 2026-10-26 | `~/.claude.json` | MCP `pal` cấp user (Gemini, env trong `docs/model-routing.md`, không chứa key) | `claude mcp remove pal -s user` |
+| 2026-10-26 | `~/.claude/settings.json` + `~/.claude/plugins/` | marketplace cục bộ `openai-codex` → `community/openai-codex-plugin-cc`, plugin `codex@openai-codex` (user) | `claude plugin uninstall codex@openai-codex`, `claude plugin marketplace remove openai-codex` |
+| 2026-10-26 | npm global | `@openai/codex@0.164.0` | `npm uninstall -g @openai/codex` |
+| 2026-10-26 | `~/.claude/agents/{check-runner,doc-writer,git-scribe}.md` | symlink → `custom/agents/` | `update-community.sh unlink` |
+| 2026-10-26 | Biến môi trường người dùng | `GEMINI_API_KEY` (**Tuan tự đặt**) | `[Environment]::SetEnvironmentVariable('GEMINI_API_KEY',$null,'User')` |
 
-Các bản clone có `__pycache__/`, `*.pyc`, `build/`, `*.egg-info/` trong `.git/info/exclude`
-(lệnh `exclude`), vì FreeCAD/Blender/uv sinh các file này khi chạy trực tiếp từ bản ghim.
+Các bản clone có `__pycache__/`, `*.pyc`, `build/`, `*.egg-info/`, `logs/` trong `.git/info/exclude`
+(lệnh `exclude`), vì FreeCAD/Blender/uv/PAL sinh các file này khi chạy trực tiếp từ bản ghim.
 
 ## Đã xem và KHÔNG dùng
 | Repo | Lý do |
 |---|---|
 | schwarztim/bambu-mcp | Nhúng khóa trích từ Bambu Connect để vượt xác thực firmware: rủi ro pháp lý/ToS |
 | Eyalm321, griches, rowbotik (bambu) | Không hỗ trợ A1 / 0★ |
+| musistudio/claude-code-router, LiteLLM proxy (2026-10-26) | Gateway đổi `ANTHROPIC_BASE_URL` → Claude tính theo API, không dùng gói Pro |
+| jarrodwatts/claude-delegator (2026-10-26) | Đã archive; Codex bỏ lệnh `mcp-server` nó dùng |
+| cheaper-inference/OmniRoute, gpt4free (2026-10-26) | Có tuyến cookie web/giả vân tay TLS (wreq-js) – rủi ro vi phạm ToS |
+| jamubc/gemini-mcp-tool + Antigravity `agy` (2026-10-26) | Để sau khi mua Google AI Pro: backend `agy` thử nghiệm, `-p` không sandbox |
+| greenpolo/cc-multi-cli-plugin – Grok Build (2026-10-26) | Để sau: 193★, hạn mức Grok free không công bố |
 | loryanstrant, bberrevoets, NickLD, Vortitron (ESPHome MCP) | Quá mới, ít người dùng: xem lại sau |
 | ezrover, agodianel, f2daz (skill ESP32) | Ít người dùng hoặc ngừng cập nhật: thử nghiệm sau khi đọc mã |
 | idealo/imagededup | Kéo theo PyTorch (vài GB) cho việc ImageHash làm được |

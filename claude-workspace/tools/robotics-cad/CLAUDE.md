@@ -43,6 +43,8 @@ Thiết kế cơ khí robot (khung, gá động cơ/cảm biến, hộp số) đ
    bản đầy đủ: `maker/pushrod-arm/print/print.yaml`). Chỉ đọc file đã **Lưu**; có `rest_pose` thì tự về tư thế gốc.
    Toolhub → Dự án → nút **Chuẩn bị in** / **Tự chạy khi Lưu** (`scripts/watch.py`); in xong `/print-result`.
    Trong FreeCAD: workbench STLab → **Chuẩn bị in** (Ctrl+Shift+P) hoặc ô "Tự chuẩn bị in mỗi khi Lưu".
+   Claude chạy lệnh này qua agent **`check-runner`** (Haiku, tóm tắt ≤ 15 dòng) để log dài không vào phiên chính
+   (2026-10-26, xem "Phân việc theo model" trong `claude-workspace/CLAUDE.md`).
    Kèm theo (chỉ cảnh báo, không FAIL):
    - `scripts/metrics.py`: thể tích/hộp bao/trọng tâm/số solid từng chi tiết + giờ/gam từng bàn → `freecad/metrics.json`
      (**lên git**, commit cùng lần sửa model), so với commit trước: chi tiết đổi ngoài ý muốn hiện ngay;

@@ -204,7 +204,7 @@ cmd_exclude() {
   local r d
   while IFS= read -r r; do
     d="$COMM/$(fld "$r" 1)"; [ -d "$d/.git" ] || continue
-    for p in '__pycache__/' '*.pyc' 'build/' '*.egg-info/'; do
+    for p in '__pycache__/' '*.pyc' 'build/' '*.egg-info/' 'logs/'; do
       grep -qxF "$p" "$d/.git/info/exclude" 2>/dev/null || echo "$p" >>"$d/.git/info/exclude"
     done
   done < <(rows)
