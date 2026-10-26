@@ -46,10 +46,10 @@ Tầng 3 bớt thêm phần viết chữ và review.
    Tài khoản free có: Gemini 3.8 Flash (low/medium/high), Claude Sonnet/Opus 4.6, GPT-OSS 120B (`agy models`).
 2. ~~**Codex**: `codex login`~~ – **xong 2026-10-26** (ChatGPT). Trong Claude Code: `/codex:setup` để kiểm,
    **không bật** "stop review gate".
-3. Đóng hết VS Code / Claude Code rồi mở lại (nạp plugin, agent mới).
-4. Kiểm: `/mcp` → thấy `plugin:deliberation:deliberation` *connected*. `TODO`: xem tên tool thật của server plugin;
-   nếu không phải dạng `mcp__plugin_deliberation_<server>__<tool>` thì sửa luật `deny` trong `~/.claude/settings.json`
-   và dòng `tools:` của `custom/agents/doc-writer.md`.
+3. ~~Đóng hết VS Code / Claude Code rồi mở lại~~ – **xong 2026-10-26**.
+4. ~~Kiểm tên tool~~ – **xong 2026-10-26**: tool thật là `mcp__plugin_deliberation_deliberation__<tool>` (vd. `ask-gemini`)
+   → khớp dòng `tools:` của `doc-writer`; server `deliberation-gemini/-grok/-openrouter` không hiện trong phiên (luật
+   `deny` có tác dụng).
 
 Lỗi "agy (Antigravity CLI) not on PATH" khi gọi từ Claude Code (2026-10-26, `doc-writer`): VS Code mở bằng môi trường cũ,
 chưa thấy PATH mà trình cài agy thêm vào → đã đặt biến người dùng `AGY_BIN=%LOCALAPPDATA%\agy\bin\agy.exe`
@@ -58,6 +58,9 @@ chưa thấy PATH mà trình cài agy thêm vào → đã đặt biến người
 Thử thật qua MCP (2026-10-26): `ask-gpt` 12 s đúng; `ask-gemini` không file 7 s; `ask-gemini` đọc bản chép
 `model-routing.md` 20 s, tóm tắt đúng ý nhưng có câu nói quá ("an toàn tuyệt đối") → bản nháp luôn phải duyệt.
 Repo và bản chép không bị ghi.
+Sau khi mở lại VS Code (2026-10-26 chiều): `ask-gemini` 10 s (`gemini-3.8-flash-medium`), `ask-gpt` 16 s – gọi thẳng
+từ Claude Code, không còn lỗi PATH; `agy-scratch` trống, repo không bị ghi. Kiểm phiên bản cùng ngày: deliberation
+v3.31.0, codex-plugin-cc v1.0.6, Codex CLI 0.164.0, agy 1.4.7 – đều là bản mới nhất.
 
 ## Cách dùng hằng ngày
 
