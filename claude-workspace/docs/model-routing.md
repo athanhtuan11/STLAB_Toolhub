@@ -1,7 +1,8 @@
 # Phân việc theo model – Claude làm CAD khó, model free làm việc dễ
 
 Quyết định của Tuan (2026-10-26): **chỉ trả Claude Pro**, mọi thứ khác miễn phí. Gemini nếu cần chỉ mua gói
-Google AI Pro (thuê bao người dùng), không trả tiền API. Không chạy model local.
+Google AI Pro (thuê bao người dùng), không trả tiền API. Không chạy model local. Chọn nguồn cộng đồng **còn cập nhật
+đều** (PAL MCP bị loại vì dừng từ 2025-12).
 
 Quy tắc ngắn (ai làm gì, cấm gửi gì) nằm trong `claude-workspace/CLAUDE.md` mục "Phân việc theo model".
 File này ghi cách cài, cách dùng, lý do chọn và cách gỡ.
@@ -12,69 +13,83 @@ File này ghi cách cài, cách dùng, lý do chọn và cách gỡ.
 |---|---|---|---|
 | 1 | Claude Opus (phiên chính) | Quota Claude Pro | CAD, khe/dung sai, động học, quyết định |
 | 2 | Subagent `check-runner`, `doc-writer`, `git-scribe` (`model: haiku`) | Quota Claude Pro, ít hơn Opus nhiều | Chạy kiểm, viết file, commit – giữ log/diff dài ngoài phiên chính |
-| 3a | PAL MCP → **Gemini API key free** (`gemini-3.8-flash`, `gemini-3.5-flash-lite`) | 0 đ (hạn mức free của Google) | Viết nháp tiếng Việt, tóm tắt tài liệu dài, review lần 2 |
-| 3b | Plugin **Codex chính hãng** (`openai/codex-plugin-cc`) + tài khoản **ChatGPT Free** | 0 đ (hạn mức Codex của gói Free) | `/codex:review`, `/codex:adversarial-review` cho script Python/FreeCAD |
+| 3a | Plugin **deliberation** → Gemini qua **Antigravity CLI `agy`** (đăng nhập tài khoản Google) | 0 đ (hạn mức tuần của gói free; Google AI Pro thì nạp lại mỗi 5 giờ) | Viết nháp tiếng Việt, tóm tắt tài liệu dài, `consensus` Gemini + GPT |
+| 3b | Plugin **Codex chính hãng** (`openai/codex-plugin-cc`) + tài khoản **ChatGPT Free** | 0 đ (hạn mức Codex gói Free, không công bố) | `/codex:review`, `/codex:adversarial-review` cho script Python/FreeCAD |
 
 Phần tiết kiệm chính là **tầng 2**: phiên Opus không phải đọc log `prepare-print`, diff dài hay bản nháp tài liệu.
 Tầng 3 bớt thêm phần viết chữ và review.
 
+## An toàn – vì sao gọi Gemini kiểu này
+
+- `agy` là agent. Trên **Windows không có sandbox hệ điều hành** (Seatbelt của deliberation chỉ có trên macOS);
+  `--sandbox` của agy chỉ chặn lệnh terminal, không chặn công cụ sửa file (ghi chú trong `server/gemini/index.js`).
+  Còn lại: lời nhắc "READ-ONLY", xóa biến môi trường dạng key/token, **phát hiện** thay đổi git (không tự hoàn tác).
+- Lớp thêm của STLab:
+  1. Bộ điều phối deliberation (`ask-gemini`, `consensus`, `ask-all`…) **luôn chỉ đọc** – khóa `allowImplement`
+     không bật ở đâu cả.
+  2. Đường ghi duy nhất (tool `gemini` của server `deliberation-gemini`, `sandbox: workspace-write` →
+     `--dangerously-skip-permissions`) bị chặn bằng `permissions.deny` trong `~/.claude/settings.json`,
+     cùng server grok/openrouter không dùng.
+  3. `cwd` luôn là `D:\04_Stlab\agy-scratch` (trống, ngoài repo); file cần đọc đưa qua `files` – deliberation
+     (Node) tự đọc rồi chèn dạng chữ vào prompt.
+  4. **Không** chạy `/deliberation:setup`: nó cài `~/.claude/rules/deliberation/` bắt Claude "quét MỌI tin nhắn và
+     tự giao việc" → tốn token, tự gửi dữ liệu ra ngoài. Config tự viết (dưới).
+- Bản free của Gemini/ChatGPT: dữ liệu có thể được dùng để cải tiến dịch vụ → chỉ gửi tài liệu kỹ thuật/mã nguồn.
+
 ## Việc Tuan tự làm (một lần)
 
-Key và đăng nhập **không** đi qua chat hay file trong repo.
-
-1. **Gemini API key free**
-   - Vào <https://aistudio.google.com> → *Get API key* → tạo key (không cần thẻ).
-   - Đặt biến môi trường người dùng (PowerShell):
-     `[Environment]::SetEnvironmentVariable('GEMINI_API_KEY','<key>','User')`
-   - Đóng hết VS Code / Claude Code rồi mở lại (tiến trình cũ không thấy biến mới).
-   - Kiểm: trong Claude Code gõ `/mcp` → `pal` phải là *connected*.
-   - Hạn mức thật của project xem tại <https://aistudio.google.com/rate-limit> (Google không công bố số chung;
-     nguồn bên thứ ba 2026-10 nói khoảng 10 request/phút, vài trăm–1.500 request/ngày cho bản Flash – `TODO` xác nhận).
-2. **Codex (ChatGPT Free)**
-   - Mở terminal: `codex login` → đăng nhập bằng tài khoản ChatGPT trong trình duyệt.
-   - Trong Claude Code: `/codex:setup` để kiểm. **Không bật** "stop review gate" (mặc định tắt).
-   - Hạn mức gói Free OpenAI không công bố; hết thì đợi hoặc bỏ qua bước review.
+1. **Gemini (agy)**: mở terminal, gõ `agy`, đăng nhập tài khoản Google trong trình duyệt, xong gõ `/exit`.
+   (agy đã cài: `%LOCALAPPDATA%\agy\bin\agy.exe` 1.4.7, đã thêm PATH; **tự cập nhật ngầm** – không ghim được.)
+2. **Codex**: `codex login` → đăng nhập ChatGPT. Trong Claude Code: `/codex:setup` để kiểm,
+   **không bật** "stop review gate".
+3. Đóng hết VS Code / Claude Code rồi mở lại (nạp plugin, agent mới, PATH mới).
+4. Kiểm: `/mcp` → thấy `plugin:deliberation:deliberation` *connected*. `TODO`: xem tên tool thật của server plugin;
+   nếu không phải dạng `mcp__plugin_deliberation_<server>__<tool>` thì sửa luật `deny` trong `~/.claude/settings.json`
+   và dòng `tools:` của `custom/agents/doc-writer.md`.
 
 ## Cách dùng hằng ngày
 
 - Sửa model xong (đã Lưu) → Claude giao `check-runner`: nhận PASS/WARN/FAIL + đường dẫn ảnh.
 - Cần viết README / phần văn xuôi ASSEMBLY / ghi chú → Claude đưa gạch đầu dòng cho `doc-writer`.
 - Kiểm đạt → `git-scribe` commit + push.
-- Script Python lớn trước khi commit → `/codex:review` (chỉ đọc), hoặc PAL `codereview`.
-- Tài liệu/trang dài > ~300 dòng → PAL `chat` tóm tắt trước, Claude chỉ đọc bản tóm tắt.
+- Script Python lớn trước khi commit → `/codex:review` (chỉ đọc).
+- Phân vân thiết kế code → deliberation `consensus` (Gemini + GPT, `maxFanout` 2).
+- Tài liệu/trang dài > ~300 dòng → `ask-gemini` tóm tắt trước, Claude chỉ đọc bản tóm tắt.
+- Hết hạn mức (agy tuần, Codex) → làm bằng Haiku/phiên chính; không chuyển sang dịch vụ trả phí.
 
 ## Thành phần đã cài
 
 | Thành phần | Nơi | Ghi chú |
 |---|---|---|
-| PAL MCP v9.8.2 | `community/beehiveinnovations-pal-mcp-server` (ghim `pins.tsv`) | Bản cuối 2025-12-15, repo không cập nhật từ đó |
-| Python env cho PAL | `custom/pal-mcp/.venv` (không lên git) | Thư viện khóa theo ngày phát hành: `custom/pal-mcp/requirements.lock.txt` (`uv pip compile --exclude-newer 2025-12-16`) |
-| Danh mục Gemini | `custom/pal-mcp/gemini-models.json` | Thay danh mục cũ trong bản ghim (chỉ có Gemini 2.x) |
-| Đăng ký MCP `pal` | `~/.claude.json` (cấp user) | Bật chỉ `chat`, `consensus`, `codereview` (+ `listmodels`, `version`) |
+| deliberation v3.31.0 | `community/antonbabenko-deliberation` (ghim `pins.tsv`) → marketplace cục bộ `antonbabenko-deliberation`, plugin `deliberation@antonbabenko-deliberation` (user) | MIT, Node thuần (không phụ thuộc npm), phát hành đều từ 2026-05 |
+| Config deliberation | `%APPDATA%\deliberation\config.json` | Bật `codex` + `gemini`; tắt grok/openrouter/ollama/lmstudio, dashboard, `orientation` (tự đọc 6 file trong cwd), `sessions.persist` |
+| Antigravity CLI 1.4.7 | `%LOCALAPPDATA%\agy\bin` | Script cài chính hãng (đã đọc, kiểm SHA-512), tự cập nhật |
+| Thư mục nháp | `D:\04_Stlab\agy-scratch` | `cwd` cho agy, giữ trống |
 | Codex CLI 0.164.0 | `npm install -g @openai/codex@0.164.0` | CLI chính hãng OpenAI |
-| Plugin Codex v1.0.6 | `community/openai-codex-plugin-cc` → marketplace cục bộ `openai-codex`, plugin `codex@openai-codex` (user) | Claude đọc thẳng từ bản ghim |
+| Plugin Codex v1.0.6 | `community/openai-codex-plugin-cc` → plugin `codex@openai-codex` (user) | Claude đọc thẳng từ bản ghim |
+| Luật chặn | `~/.claude/settings.json` `permissions.deny` (bản lưu `settings.json.bak-2026-10-26`) | Server `deliberation-gemini/-grok/-openrouter` |
 | 3 agent | `custom/agents/*.md` → symlink `~/.claude/agents/` (`links.tsv`) | `model: haiku` |
 
-Lệnh đăng ký PAL (để dựng lại trên máy mới; `<W>` = đường dẫn `claude-workspace`):
+Config deliberation (dựng lại trên máy mới, chép nguyên):
 
-```powershell
-claude mcp add -s user pal `
-  -e DEFAULT_MODEL=flash `
-  -e "GEMINI_MODELS_CONFIG_PATH=<W>\custom\pal-mcp\gemini-models.json" `
-  -e "GOOGLE_ALLOWED_MODELS=gemini-3.8-flash,gemini-3.5-flash-lite" `
-  -e "DISABLED_TOOLS=clink,thinkdeep,planner,precommit,debug,secaudit,docgen,analyze,refactor,tracer,testgen,challenge,apilookup" `
-  -e LOG_LEVEL=WARNING -e PYTHONIOENCODING=utf-8 `
-  -- "<W>\custom\pal-mcp\.venv\Scripts\python.exe" "<W>\community\beehiveinnovations-pal-mcp-server\server.py"
+```json
+{
+  "version": 1,
+  "providers": {
+    "defaults": { "timeout": 600000 },
+    "codex": { "enabled": true },
+    "gemini": { "enabled": true, "model": "auto-gemini-3" },
+    "grok": { "enabled": false, "apiKeyEnv": "XAI_API_KEY", "model": "grok-4.6" },
+    "openrouter": { "enabled": false, "apiKeyEnv": "OPENROUTER_API_KEY", "apiBase": "https://openrouter.ai/api/v1", "defaultModel": "openrouter/auto" },
+    "ollama": { "enabled": false, "apiBase": "http://localhost:11434/v1" },
+    "lmstudio": { "enabled": false, "apiBase": "http://localhost:1234/v1" }
+  },
+  "routing": { "maxFanout": 2, "timeoutPolicy": "longest-peer" },
+  "sessions": { "persist": false, "maxRecords": 200, "maxAgeDays": 30, "captureText": false },
+  "orientation": { "enabled": false, "maxFiles": 6, "maxBytes": 16000 },
+  "dashboard": { "enabled": false, "capture": "metadata", "showPII": false, "port": 7717, "maxRuns": 200, "maxAgeDays": 30 }
+}
 ```
-
-Dựng lại venv: `uv venv --python 3.12 custom/pal-mcp/.venv` rồi
-`uv pip install --python custom/pal-mcp/.venv/Scripts/python.exe -r custom/pal-mcp/requirements.lock.txt`.
-
-## Đổi model
-
-- Google ra Flash mới: thêm mục vào `custom/pal-mcp/gemini-models.json` (ID lấy ở
-  <https://ai.google.dev/gemini-api/docs/models>), sửa `GOOGLE_ALLOWED_MODELS` (gỡ + đăng ký lại MCP), mở lại Claude Code.
-- Giữ `supports_extended_thinking: false` (PAL bản 2025 gửi `thinking_budget` kiểu Gemini 2.x).
 
 ## Vì sao chọn như vậy (2026-10-26)
 
@@ -83,23 +98,25 @@ Dựng lại venv: `uv venv --python 3.12 custom/pal-mcp/.venv` rồi
 | Gateway (claude-code-router, LiteLLM) | Loại: đổi `ANTHROPIC_BASE_URL` → Claude tính phí theo API, không dùng gói Pro |
 | OpenRouter | Loại: trả theo token; bản `:free` chỉ 50 request/ngày |
 | Model local (Ollama) | Loại theo Tuan; máy GTX 1660 Super 6 GB chỉ chạy tốt model ~4B |
-| Gemini qua Antigravity CLI (`agy`) + gemini-mcp-tool | Để sau (khi mua Google AI Pro): bridge còn thử nghiệm, chế độ `-p` **không sandbox** (agent tự chạy lệnh trong workspace CAD), hạn mức tuần không công bố |
-| Grok (Grok Build qua cc-multi-cli-plugin, 193★) | Để sau: hạn mức free không công bố, repo tích hợp nhỏ |
+| PAL MCP + Gemini API key free | Đã cài rồi **gỡ** cùng ngày: mã dừng từ 2025-12-15, lỗi bảo mật mới báo chưa ai vá; fork còn sống đều 0–3★ |
+| deliberation + agy (**đang dùng**) | Cập nhật đều; Gemini qua tài khoản Google (khớp hướng mua Google AI Pro); bộ điều phối luôn chỉ đọc |
+| Proxima | Loại: dùng phiên web (README tự nhận có thể vi phạm ToS), license chỉ cá nhân |
+| ask-llm | Loại: chỉ Linux/macOS |
+| Grok (Grok Build) | Để sau: hạn mức free không công bố; deliberation hỗ trợ Grok qua `XAI_API_KEY` (trả phí) |
 | ChatGPT API, GitHub Models, Qwen OAuth, Cerebras free | Không có/đã dừng gói free |
 | claude-delegator | Loại: đã archive |
-| OmniRoute, gpt4free | Loại: có tuyến dùng cookie web/giả vân tay TLS – rủi ro vi phạm điều khoản |
-
-Khi mua Google AI Pro: cài `agy` (`irm https://antigravity.google/cli/install.ps1 | iex`) + gemini-mcp-tool,
-chỉ cho chạy trong thư mục nháp tách khỏi workspace.
+| OmniRoute, gpt4free | Loại: có tuyến cookie web/giả vân tay TLS – rủi ro vi phạm điều khoản |
 
 ## Gỡ bỏ
 
 ```powershell
-claude mcp remove pal -s user
+claude plugin uninstall deliberation@antonbabenko-deliberation
+claude plugin marketplace remove antonbabenko-deliberation
 claude plugin uninstall codex@openai-codex
 claude plugin marketplace remove openai-codex
 npm uninstall -g @openai/codex
-[Environment]::SetEnvironmentVariable('GEMINI_API_KEY',$null,'User')
+Remove-Item -Recurse "$env:APPDATA\deliberation", "$env:LOCALAPPDATA\agy", "D:\04_Stlab\agy-scratch"
 ```
 
-Agent: xóa 3 dòng trong `community/links.tsv` rồi xóa symlink trong `~/.claude/agents/`.
+Rồi: xóa 3 luật `deny` `mcp__plugin_deliberation_*` trong `~/.claude/settings.json`, bỏ `%LOCALAPPDATA%\agy\bin`
+khỏi PATH người dùng, xóa 3 dòng agent trong `community/links.tsv` + symlink trong `~/.claude/agents/`.
