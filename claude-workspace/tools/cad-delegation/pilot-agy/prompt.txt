@@ -1,0 +1,8 @@
+Ban la nguoi thuc thi CAD. Thu muc hien tai chua spec.yaml (dac ta chi tiet), context.FCStd (chi tiet lan can). Gate o ../../gate.py.
+Lam dung muc "deliverable" trong spec.yaml:
+1. Viet build_part.py (Python FreeCAD, module Part, tham so dat ten o dau file) dung chi tiet theo muc "design" + "print", xuat part.step (1 solid) cung thu muc. Chay: "C:/Program Files/FreeCAD 1.1/bin/freecadcmd.exe" build_part.py
+2. Chay gate: "C:/Program Files/FreeCAD 1.1/bin/freecadcmd.exe" ../../gate.py .   roi doc gate.json (passed, checks, warnings).
+3. Neu FAIL: sua build_part.py theo cac check FAIL, chay lai. Toi da 8 vong gate.
+4. MOI lan chay gate, them 1 dong vao attempts.log: "<so vong> <summary> <ten cac check FAIL>".
+Quy dinh: chi doc/ghi trong thu muc nay (doc them ../../gate.py duoc); KHONG sua spec.yaml, context.FCStd, gate.py; khong git.
+Ket thuc: in ngan gon so vong, summary gate cuoi, cac check con FAIL (neu co).

@@ -1,0 +1,70 @@
+# DAC TA GIAO VIEC - chi tiet in 3D cho canh tay pushrod-arm (STLab). Don vi mm, goc do.
+part: Piston_rod_Shoulder
+project: pushrod-arm (canh tay robot in 3D, xi-lanh piston chay bang dong co 030 + ty ren M3)
+
+frame: |
+  He toa do XI-LANH (rieng cua chi tiet): truc X = truc ty (ty truot theo +X ra khoi ong), Y = be day ty,
+  Z = be rong ty. Goc O nam tren truc ty. Moi so trong file nay theo he nay.
+
+design: |
+  Ty piston: thanh dai tiet dien chu nhat bo goc, mot dau la "got piston" nam trong ong xi-lanh (Housing),
+  dau kia la MAT NOI (eye) de chot Pin_B xuyen qua. Trong ty co lo doc cho ty ren M3 va hoc giu dai oc M3:
+  dong co quay ty ren -> dai oc (ket trong ty, khong xoay duoc) day ty truot ra/vao.
+
+  1. Than ty: tiet dien 6.0 (theo Y, y -3..+3) x 8.0 (theo Z, z -4..+4), bo 4 canh doc theo X ban kinh 1.5.
+     Dun doc X tu x = 27.38 (mat dau got piston) toi x = 94.78.
+  2. Mat noi: tru tron truc Y, tam (x 99.78, z 0), ban kinh 6.0, y -3..+3 (cung be day ty), hop voi than ty.
+     Lo chot xuyen theo Y, duong kinh 5.4 (chot Pin_B 4.8 -> khe 0.3/ben), dong tam mat noi.
+  3. Lo ty ren: lo tron duong kinh 3.6 doc truc X (y 0, z 0), mo o mat dau x = 27.38, CUT (khong thung) tai x = 61.88.
+     (Ty ren M3 = 3.0 -> khe 0.3/ben.)
+  4. Hoc dai oc M3 (dai oc luc giac: rong 2 mat 5.5, day 2.4, goc 3.18):
+     - doan x 30.03 .. 32.73 (day dai oc 2.4 + 0.3);
+     - luc giac rong 2 mat 5.7 (5.5 + 0.2), XOAY sao cho 2 DINH nam tren truc Z (z = +-3.29) va 2 MAT PHANG song
+       song mat XZ o y = +-2.85 -> dai oc nam gon trong tiet dien ty;
+     - CONG them ranh ho mo len mat +Y: hop x 30.03..32.73, y 0..+4 (thoat ra khoi mat y = +3), z -3.29..+3.29
+       -> dai oc tha tu tren xuong (theo -Y) vao ghe, nua duoi luc giac giu chong xoay.
+  Ket qua: 1 solid duy nhat.
+
+print: |
+  In nam, MAT y = -3 (mat -Y) up xuong ban (mat +Y co ranh ho dai oc huong len). PETG, KHONG support.
+  Lo ngang (lo 3.6 doc X) va mat noi deu phai tu in duoc - neu gate bao can support thi sua hinh (vd lo giot nuoc),
+  KHONG duoc them support.
+
+neighbors_info: |
+  context.FCStd (cung he toa do) chua cac chi tiet XUNG QUANH - dung de kiem khe, KHONG sua chung:
+  - Housing_Shoulder: ong xi-lanh, long ong 6.6 x 8.6 bo goc 1.8 (khe 0.3/ben voi ty).
+  - LK_Nut_M3_piston_Shoulder: dai oc M3 dat dung vi tri trong hoc.
+  - LK_Threaded_rod_M3_L45_Shoulder: ty ren M3 (duong kinh 3.0) trong lo 3.6.
+  - Pin_B: chot qua mat noi.
+
+deliverable: |
+  1. build_part.py - script Python FreeCAD (chay: "C:/Program Files/FreeCAD 1.1/bin/freecadcmd.exe" build_part.py),
+     dung module Part, TU THAM SO (cac so tren dat thanh bien o dau file), xuat part.step (1 solid) vao CUNG thu muc.
+  2. Chay gate: "C:/Program Files/FreeCAD 1.1/bin/freecadcmd.exe" ../../gate.py .   -> doc gate.json, sua toi khi PASS.
+  3. Khong mo/doc file nao ngoai thu muc nay va gate.py.
+
+gate:
+  output: part.step
+  context: context.FCStd
+  bbox: {min: [27.38, -3.0, -6.0], max: [105.78, 3.0, 6.0], tol: 0.3}
+  empty:
+    - {name: lo ty ren 3.6, cyl: {base: [27.0, 0, 0], axis: [1, 0, 0], r: 1.75, h: 34.7}}
+    - {name: lo chot mat noi 5.4, cyl: {base: [99.78, -3.5, 0], axis: [0, 1, 0], r: 2.65, h: 7.0}}
+    - {name: hoc dai oc, box: {min: [30.1, -2.8, -1.6], max: [32.65, 3.5, 1.6]}}
+    - {name: ranh ho dai oc, box: {min: [30.1, 0.0, -3.2], max: [32.65, 3.5, 3.2]}}
+  filled:
+    - {name: day lo ty ren (cut tai 61.88), cyl: {base: [62.2, 0, 0], axis: [1, 0, 0], r: 1.5, h: 28.0}}
+    - {name: than ty (chu thap), box: {min: [63.0, -2.9, -2.4], max: [92.0, 2.9, 2.4]}}
+    - {name: than ty (chu thap 2), box: {min: [63.0, -1.4, -3.9], max: [92.0, 1.4, 3.9]}}
+    - {name: thanh tren lo ty ren, box: {min: [34.0, 1.95, -1.0], max: [60.0, 2.9, 1.0]}}
+    - {name: vanh mat noi, box: {min: [103.2, -2.9, -1.0], max: [105.6, 2.9, 1.0]}}
+    - {name: thanh ben hoc dai oc, box: {min: [30.1, -1.4, 3.4], max: [32.6, 1.4, 3.9]}}
+  neighbors:
+    - {label: Housing_Shoulder, min_gap: 0.25}
+    - {label: LK_Nut_M3_piston_Shoulder, min_gap: 0.05}
+    - {label: LK_Threaded_rod_M3_L45_Shoulder, min_gap: 0.25}
+    - {label: Pin_B, min_gap: 0.25}
+  motions:
+    - {name: ty truot ra khoi ong theo +X, kind: translate, vector: [1, 0, 0], total: 40, step: 1, against: [Housing_Shoulder]}
+    - {name: dai oc tha ra theo +Y, kind: translate, move: LK_Nut_M3_piston_Shoulder, vector: [0, 1, 0], total: 4, step: 0.5, against: [part]}
+  print: {down: [0, -1, 0]}

@@ -41,6 +41,19 @@ codex exec --sandbox workspace-write --skip-git-repo-check -c features.prefer_mx
 - `pilot/prompt.txt` là mẫu prompt.
 - Plugin `/codex:rescue` hiện KHÔNG dùng được cho việc này vì không truyền được tham số sandbox.
 
+## Lệnh giao agy (dự phòng)
+
+```bash
+cd <thư mục giao>
+agy -p "<prompt>" --model gemini-3.8-flash-high --dangerously-skip-permissions --sandbox
+```
+
+- Chỉ dùng khi Codex không chạy được. Không chạy song song với Codex hay với agy khác.
+- CẢNH BÁO HẠN MỨC: 2 tác vụ agy chạy song song đã làm hết hạn mức cá nhân (429 "Individual quota reached", reset sau ~156 giờ). Trong thời gian đó hết cả Gemini cho `ask-gemini` và `doc-writer`.
+- Không dùng cho việc lớn. `--mode auto` không khả dụng với tài khoản này.
+- agy không ghi `attempts.log` (đã thấy ở Piston_rod_Shoulder); tự kiểm log sau khi chạy.
+- Tuan đã thêm luật `Bash(agy -p *)` vào `.claude/settings.json`.
+
 ## Mẫu
 
 - `pilot/knuckle`

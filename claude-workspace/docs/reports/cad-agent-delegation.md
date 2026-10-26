@@ -71,14 +71,22 @@ Claude viết spec → `codex:codex-rescue` thực thi → so với bản Claude
 
 ## 7. Kết quả thử nghiệm (2026-10-26)
 
-| chi tiết | dự án | vòng gate | thời gian | token Codex | gate | lệch với mẫu |
-|---|---|---|---|---|---|---|
-| Knuckle_L | cyberbrick-car | 1 | 52 s | 26 694 | 26/26 PASS | 0,00 % (trùng) |
-| Piston_rod_Shoulder | pushrod-arm | 1 | 63 s | 34 270 | 21/21 PASS | 0,05 % (1,5 mm3; spec cố ý bỏ dấu khắc lắp) |
+| chi tiết | người thực thi | gate | lệch với mẫu | thời gian |
+|---|---|---|---|---|
+| Knuckle_L | Codex (ChatGPT Free) | 26/26 PASS vòng 1 | 0,00 % | 52 s |
+| Knuckle_L | agy (Gemini 3.8 Flash High) | 26/26 PASS vòng 1 | 0,00 % | ~7 phút |
+| Piston_rod_Shoulder | Codex | 21/21 PASS vòng 1 | 0,05 % | 63 s |
+| Piston_rod_Shoulder | agy | 21/21 PASS | 0,05 % | ~7 phút |
 
 Ghi chú:
 
+- Dự án: Knuckle_L thuộc `cyberbrick-car`; Piston_rod_Shoulder thuộc `pushrod-arm`. Lệch 0,05 % = 1,5 mm3, spec cố ý bỏ dấu khắc lắp.
+- Số token Codex đo được: Knuckle_L 26 694; Piston_rod_Shoulder 34 270. agy không đo token.
 - Codex không đọc file ngoài thư mục giao (đã kiểm log).
+- agy: lệnh `agy -p "<prompt>" --model gemini-3.8-flash-high --dangerously-skip-permissions --sandbox`. Chế độ không tương tác tự từ chối ghi file/chạy lệnh nếu không có quyền; `--mode auto` không khả dụng với tài khoản này. Tuan đã thêm luật `Bash(agy -p *)` vào `.claude/settings.json`.
+- agy không ghi `attempts.log` cho Piston_rod_Shoulder (không đúng yêu cầu).
+- Cảnh báo hạn mức: 2 tác vụ agy chạy song song làm hết hạn mức cá nhân của agy (lỗi 429 "Individual quota reached", reset sau ~156 giờ). Trong thời gian đó hết luôn Gemini cho `ask-gemini` và `doc-writer`.
+- Kết luận: Codex là người thực thi chính (nhanh hơn ~7 lần, hạn mức chịu được). agy là dự phòng: không chạy song song, không dùng cho việc lớn.
 - Hiệu chuẩn gate trên chi tiết mẫu bắt được 3 lỗi spec: vùng kiểm chạm bo góc R1,5; vùng kiểm lấn lên tay lái/thân chốt lại; khe lòng đến 0,036 mm của bản góc.
 - Đổi "vươn ra" theo lớp thành cảnh báo (không chặn gate).
 - Lỗi môi trường: `codex:rescue` và `codex exec` mặc định bị "blocked by policy" vì chưa chọn sandbox Windows. Sửa bằng `-c features.prefer_mxc=true` (hoặc `windows.sandbox="unelevated"`). Chưa ghi vào `~/.codex/config.toml`.

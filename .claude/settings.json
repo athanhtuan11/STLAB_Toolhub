@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(tasklist)",
-      "Bash(tasklist *)"
+      "Bash(tasklist *)",
+	  "Bash(agy -p *)"
     ]
   }
 }
