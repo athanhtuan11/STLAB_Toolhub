@@ -27,7 +27,8 @@ P = dict(            # ---- tham so chinh (mm) ----
     servo_horn_r=8.2,
     rear_arch_r=18.3, front_arch_r=18.8, front_arch_dx=5.0,   # dinh hoc banh duoi mat chan bun >= 3 mm
     stub_d=5.0,                         # truc banh truoc IN LIEN VANH (in dung), qua lo giot nuoc o khop lai
-    rear_bore_d=5.4, rear_bore_af=3.7,  # truc ra double-D (do STEP: D5.3, dep 3.6 = chuan TT); TODO do bo 2 truc
+    rear_bore_d=5.4, rear_bore_af=3.7,  # truc ra double-D (do STEP: D5.3, dep 3.6 = chuan TT)
+    gb_gap=0.4,                         # 2 hop so 030 1 truc (Tuan 2026-10-26) dat lung tua lung, khe giua 2 vo
     post_top=30.0, magnet_d=4.4, magnet_h=2.1,
     win_d=0.4,                          # kinh khac chim (Tuan 2026-10-26): vo 1,3 -> con 0,9 = 2 duong Bambu
 )
@@ -97,19 +98,22 @@ tire = placed(tire, App.Rotation(V(0, 0, 1), 90))                            # t
 for nm, x, y in (("RL", 0, YW), ("RR", 0, -YW), ("FL", FX, YW), ("FR", FX, -YW)):
     add(f"CB_Tire_{nm}", placed(tire, move=V(x, y, Z_AX)), (0.12, 0.12, 0.12))
 
-# Hop so: dung STEP hop so 1 truc 030 (cung bo banh rang, cung vo) lam proxy cho bo 2 truc LA013 (1:21).
+# Dan dong: 2 hop so 030 1 TRUC (LA024, STEP chinh hang) - moi banh sau 1 dong co, cong M1 + M2 bo thu (Tuan 2026-10-26).
 # local: truc ra double-D D5.3 o (x 0, z 11.15) theo Y, loi 8.1 mm khoi mat vo (y 15.2..23.3); dong co theo -Z.
 # Xoay: local x->Z, y->Y, z->-X (dong co huong ve phia truoc); dat truc ra trung truc banh sau (x 0).
+# Bo trai: vo y gb_gap/2 .. +18, truc ra +Y. Bo phai = bo trai xoay 180 do quanh truc X (Z_AX) -> up nguoc, truc ra -Y;
+# vo doi xung quanh truc ra theo Z (x +-11) nen bao ngoai giong nhau. Dong co phai quay NGUOC chieu -> dao trong app/day.
 gb = step("la024-030-micro-dc-motor-with-sh1-0/030-micro-dc-motor-with-sh1-0-reducer.step")
 GB_ROT = App.Rotation(V(0, 1, 0), -90)
-GB_MOVE = V(11.15, -6.2, Z_AX)                                               # vo hop so doi xung quanh Y = 0
-gearbox = placed(gb, GB_ROT, GB_MOVE)
-add("CB_Gearbox_030_dual_axis", gearbox, (0.95, 0.80, 0.10))
-# truc ra ben trai (bo 2 truc LA013): STEP chinh hang chi co bo 1 truc (truc phai, loi 8.1 mm). Do tu anh huong dan lap
-# chinh hang (Assembly_Guide_of_Dual_Axis_030..., hinh chieu canh, ti le theo vo 18 mm): loi ~9 mm moi ben, D ~5.3-5.6.
-add("CB_Gearbox_shaft_left", cyl(2.65, 9.0, V(0, -9.0, Z_AX), V(0, -1, 0)), (0.9, 0.9, 0.9))
-# hop bao VO hop so (khong tinh dong co / truc): local x +-11, y -2.8..15.2, z -32.2..22.15
-H = dict(x0=11.15 - 22.15, x1=11.15 + 32.2, y=9.0, z0=Z_AX - 11.0, z1=Z_AX + 11.0)
+gearbox_l = placed(gb, GB_ROT, V(11.15, P["gb_gap"] / 2 + 2.8, Z_AX))
+gearbox_r = gearbox_l.copy()
+gearbox_r.rotate(V(0, 0, Z_AX), V(1, 0, 0), 180)
+add("CB_Gearbox_030_L", gearbox_l, (0.95, 0.80, 0.10))
+add("CB_Gearbox_030_R", gearbox_r, (0.95, 0.80, 0.10))
+# hop bao 2 VO hop so (khong tinh dong co / truc): local x +-11, y -2.8..15.2, z -32.2..22.15; y = mat ngoai (phia truc)
+# dong co (local x +-7.75, y -1.8..10.2, z -4.6..-54, chan cam -56.8) -> X 15.8..67.9, |Y| 1.2..13.2, Z_AX +-7.75
+H = dict(x0=11.15 - 22.15, x1=11.15 + 32.2, y=P["gb_gap"] / 2 + 18.0, z0=Z_AX - 11.0, z1=Z_AX + 11.0)
+MOTOR_X1, MOTOR_Y = 11.15 + 56.8, P["gb_gap"] / 2 + 13.0
 
 # Lai: chot lai (KPX, +-ky); tay lai huong ve tam truc sau (Ackermann); dau tay = diem noi thanh giang
 KPX = FX + P["kingpin_dx"]
@@ -155,7 +159,8 @@ RC_C = V(62.0, -26.0, 18.3)
 receiver = placed(rc, App.Rotation(V(1, 0, 0), -90), RC_C)
 add("CB_XA004_receiver", receiver, (0.1, 0.1, 0.1))
 
-# Pin PC003 2S 7.4 V: chi lay than pin (bo day 100 mm thang trong STEP - day mem), nam ngang ben trai dong co.
+# Pin PC003 2S 7.4 V: chi lay than pin (bo day 100 mm thang trong STEP - day mem). DUNG CANH (day 16.3 theo Y, rong 28.4
+# theo Z) ben trai dong co trai: nam ngang thi lan dong co 4 mm. Dinh pin z 35.1 < vai than (zb 37) o x 45..97.
 bt = step("pc003-14500-7-4v-800mah-li-ion-battery/14500-7-4v-800mah-li-ion-battery.step")
 # STEP pin loi BOP: common() voi hop tra ve 10.6 mm3 (that bai AM THAM, 2026-10-23) -> lay cac mat cua than pin (y <= 51.2)
 _pack = [f for f in bt.Solids[0].Faces if f.BoundBox.YMax <= 51.21]
@@ -164,8 +169,10 @@ try:
     assert bt.isValid() and bt.Volume > 15000
 except Exception:
     bt = box(-14.2, 0, -8.15, 14.2, 51.2, 8.15)                             # du phong: hop bao than pin
-BAT = dict(x0=43.3, yc=23.9, z0=PLATE_TOP + 0.3)
-battery = placed(bt, App.Rotation(V(0, 0, 1), -90), V(BAT["x0"], BAT["yc"], BAT["z0"] + 8.15))
+BAT = dict(x0=H["x1"] + 2.15, yc=MOTOR_Y + 0.5 + 8.15, z0=PLATE_TOP + 0.3)    # x0: chan sau cach vo hop so 0.45
+BAT["yi"], BAT["yo"], BAT["x1"] = BAT["yc"] - 8.15, BAT["yc"] + 8.15, BAT["x0"] + 51.2
+battery = placed(bt, App.Rotation(V(1, 0, 0), 90).multiply(App.Rotation(V(0, 0, 1), -90)),
+                 V(BAT["x0"], BAT["yc"], BAT["z0"] + 14.2))
 add("CB_Battery_PC003", battery, (0.15, 0.25, 0.65))
 
 # Cong tac XA007: mach nam ngang, linh kien huong len.
@@ -189,7 +196,7 @@ except Exception:
 c = P["clr"] * 2
 plate = plate.cut(box(H["x0"] - c, -H["y"] - c, 0, H["x1"] + c, H["y"] + c, 20))   # cua so hop so (day vo 5.8 mm)
 add_ch = []
-# vach kep hop so (vung dong co, x 12..32), day 4 mm, chot dinh vi D3.6 vao lo D4 cua vo (TODO kiem lo tren vo 2 truc)
+# vach kep 2 hop so (mat ngoai, x 22.9..42.9), day 4 mm, chot dinh vi D3.6 vao 2 lo D4 mat phia truc cua moi vo
 yi = H["y"] + P["clr"]
 WALL_TOP = H["z1"] + P["clr"]
 WX0, WX1, SX = H["x1"] - 20.5, H["x1"] - 0.5, H["x1"] - 10.5                     # SX: thanh chan tren
@@ -197,10 +204,9 @@ for sgn in (1, -1):
     w = box(WX0, min(sgn * yi, sgn * (yi + 4)), PLATE_TOP - 0.01, WX1, max(sgn * yi, sgn * (yi + 4)), WALL_TOP)
     w = w.cut(cyl(1.05, 6, V(SX, sgn * (yi + 2), WALL_TOP - 5.0), V(0, 0, 1)))   # lo moi vit thanh chan
     add_ch.append(w)
-    if sgn > 0:
-        for xx in (11.15 + 18.0, 11.15 + 24.0):
-            for zz in (Z_AX - 6.5, Z_AX + 6.5):
-                add_ch.append(cyl(1.8, 1.2 + 0.01, V(xx, yi + 0.01, zz), V(0, -1, 0)))
+    for xx in (11.15 + 18.0, 11.15 + 24.0):                                # bo phai up nguoc: lo doi xung z +-6.5
+        for zz in (Z_AX - 6.5, Z_AX + 6.5):
+            add_ch.append(cyl(1.8, 1.2 + 0.01, V(xx, sgn * (yi + 0.01), zz), V(0, -sgn, 0)))
 # truc lai duoi (lug) quanh chot lai + tay noi vao san
 for sgn in (1, -1):
     ky = sgn * P["kingpin_y"]
@@ -208,10 +214,11 @@ for sgn in (1, -1):
     lug = lug.fuse(box(KPX - 3.5, min(ky, sgn * 15), P["plate_z0"], KPX + 3.5, max(ky, sgn * 15), 10.6 - P["clr"]))
     lug = lug.cut(cyl(1.05, 20, V(KPX, ky, 0), V(0, 0, 1)))                # lo moi vit M2.5 x 16 (chot lai)
     add_ch.append(lug)
-# giu pin: chan sau + chan truoc + vach ngoai (TODO: day dan velcro qua 2 khe)
-add_ch += [box(BAT["x0"] - 1.7, 10.0, PLATE_TOP - 0.01, BAT["x0"] - 0.3, 36.0, PLATE_TOP + 8),
-           box(BAT["x0"] + 51.2 + 0.3, 23.0, PLATE_TOP - 0.01, BAT["x0"] + 51.2 + 1.8, 36.0, PLATE_TOP + 8),
-           box(BAT["x0"], BAT["yc"] + 14.2 + 0.3, PLATE_TOP - 0.01, BAT["x0"] + 51.2, BAT["yc"] + 14.2 + 1.8, PLATE_TOP + 9)]
+# giu pin dung: chan sau + chan truoc + vach ngoai cao 20 + vach trong (chi truoc dong co) (TODO: day dan velcro)
+add_ch += [box(BAT["x0"] - 1.7, BAT["yi"], PLATE_TOP - 0.01, BAT["x0"] - 0.3, BAT["yo"] + 1.8, PLATE_TOP + 10),
+           box(BAT["x1"] + 0.3, BAT["yi"] - 1.5, PLATE_TOP - 0.01, BAT["x1"] + 1.8, BAT["yo"] + 1.8, PLATE_TOP + 10),
+           box(BAT["x0"], BAT["yo"] + 0.3, PLATE_TOP - 0.01, BAT["x1"], BAT["yo"] + 1.8, PLATE_TOP + 20),
+           box(MOTOR_X1 + 0.6, BAT["yi"] - 1.5, PLATE_TOP - 0.01, BAT["x1"], BAT["yi"] - 0.3, PLATE_TOP + 12)]
 # tru do bo thu (4 x M2.5 tu duoi len qua san): lo bat local (+-11.5, z +-12)
 for dx in (-11.5, 11.5):
     for dy in (-12.0, 12.0):
@@ -235,11 +242,13 @@ for ty in (SDY + 19.28, SDY - 8.49):                                       # tru
     bracket = bracket.cut(cyl(0.8, 10, V(TAB_X - 1, ty, SHAFT_Z), V(1, 0, 0)))   # lo moi vit M2
 add_ch.append(bracket)
 # tru nam cham (than xe) x4
-POSTS = [(-14.0, 19.0), (-14.0, -19.0), (FX - 35.0, 33.0), (FX - 35.0, -33.0)]
+# 2 dong co (2026-10-26): sau lui x -15.5 (vo hop so x >= -11, rong +-18.2); truoc ra y +-35.5 de gan than (doc 50 do)
+# khong cham goc truoc-tren pin dung (x 96.7, y 30, z 35.1)
+POSTS = [(-15.5, 19.0), (-15.5, -19.0), (FX - 35.0, 35.5), (FX - 35.0, -35.5)]
 for x, y in POSTS:
     add_ch.append(cyl(3.5, P["post_top"] - PLATE_TOP + 0.01, V(x, y, PLATE_TOP - 0.01), V(0, 0, 1)))
-# cua so giam tai (khong cat duoi tru / vach / gia): sau pin, giua bo thu, giua san, truoc giua 2 tai lai, sau truc sau
-for x0, y0, x1, y1 in ((47, 14, 91, 34), (54, -34, 70, -18), (72, -4, 90, 8), (103, -10, 114, 12), (FX - 12, -10, FX + 2, 10),
+# cua so giam tai (khong cat duoi tru / vach / gia / pin): duoi dong co, giua bo thu, giua san, giua 2 tai lai, sau truc sau
+for x0, y0, x1, y1 in ((47, -9, 64, 9), (54, -34, 70, -18), (72, -4, 90, 8), (103, -10, 114, 12), (FX - 12, -10, FX + 2, 10),
                        (-27, -14, -19, 14)):
     w = box(x0, y0, P["plate_z0"] - 1, x1, y1, PLATE_TOP + 1)
     try:
@@ -343,7 +352,7 @@ def rim(sgn, rear):
              Part.makeCone(13.4, 15.05, dh, V(0, yc - 4.9, 0), V(0, 1, 0)),
              Part.makeCone(15.05, 13.4, dh, V(0, yc + 4.9 - dh, 0), V(0, 1, 0)))
     r = r.cut(cyl(11.4, w - 2.0, V(0, yc - sgn * 1.0 - (w - 2.0) / 2, 0), V(0, 1, 0)))   # long trong (mat ngoai day 2)
-    hub_in = sgn * 9.6 if rear else yc - sgn * (w / 2)
+    hub_in = sgn * (H["y"] + 0.3) if rear else yc - sgn * (w / 2)       # sau: tu mat vo hop so (truc loi 8.1)
     hy0, hy1 = sorted((hub_in, yc + sgn * w / 2))
     r = r.fuse(cyl(4.5, hy1 - hy0, V(0, hy0, 0), V(0, 1, 0)))
     face_y = yc + sgn * (w / 2) - (2.0 if sgn > 0 else 0)
@@ -544,7 +553,7 @@ json.dump(COLORS, open(os.path.join(PROJ, "freecad", "colors.json"), "w"), inden
 json.dump(P, open(os.path.join(PROJ, "freecad", "params.json"), "w"), indent=1)
 info = {o.Label: [round(v, 1) for v in (o.Shape.BoundBox.XMin, o.Shape.BoundBox.YMin, o.Shape.BoundBox.ZMin,
                                          o.Shape.BoundBox.XMax, o.Shape.BoundBox.YMax, o.Shape.BoundBox.ZMax)]
-        for o in doc.Objects if o.Label in ("Body_coupe", "Chassis", "CB_Gearbox_030_dual_axis", "CB_Servo9g_180_steering",
+        for o in doc.Objects if o.Label in ("Body_coupe", "Chassis", "CB_Gearbox_030_L", "CB_Gearbox_030_R", "CB_Servo9g_180_steering",
                                             "CB_XA004_receiver", "CB_Battery_PC003", "CB_Switch_XA007", "Tie_rod")}
 print("DIAG", json.dumps(DIAG))
 print("BUILD_OK", json.dumps({"objects": len(doc.Objects), "body_valid": body.isValid(), "body_solids": len(body.Solids),

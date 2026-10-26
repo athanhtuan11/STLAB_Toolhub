@@ -14,8 +14,8 @@ Sinh tự động từ `freecad/cyberbrick_car.FCStd` bằng `tools/robotics-cad
 | Tên (Label) | SL |
 |---|---|
 | `CB_Battery_PC003` | 1 |
-| `CB_Gearbox_030_dual_axis` | 1 |
-| `CB_Gearbox_shaft_left` | 1 |
+| `CB_Gearbox_030_L` | 1 |
+| `CB_Gearbox_030_R` | 1 |
 | `CB_Magnet_CA001 (nam cham 4 x 2 mm)` | 8 |
 | `CB_Servo9g_180_steering` | 1 |
 | `CB_Switch_XA007` | 1 |
@@ -26,9 +26,9 @@ Sinh tự động từ `freecad/cyberbrick_car.FCStd` bằng `tools/robotics-cad
 ## Chi tiết in 3D
 | Chi tiết | Bàn in | Nhựa | Thể tích (cm³) |
 |---|---|---|---|
-| `Body_coupe` | P1_Body__0.20_PETG | Bambu PETG Basic @BBL A1 | 80.18 |
-| `Chassis` | P2_Chassis_Steering__0.20_PETG | Bambu PETG Basic @BBL A1 | 31.09 |
-| `Gearbox_strap` | P2_Chassis_Steering__0.20_PETG | Bambu PETG Basic @BBL A1 | 0.32 |
+| `Body_coupe` | P1_Body__0.20_PETG | Bambu PETG Basic @BBL A1 | 79.52 |
+| `Chassis` | P2_Chassis_Steering__0.20_PETG | Bambu PETG Basic @BBL A1 | 31.47 |
+| `Gearbox_strap` | P2_Chassis_Steering__0.20_PETG | Bambu PETG Basic @BBL A1 | 0.54 |
 | `Knuckle_L` | P2_Chassis_Steering__0.20_PETG | Bambu PETG Basic @BBL A1 | 1.34 |
 | `Knuckle_R` | P2_Chassis_Steering__0.20_PETG | Bambu PETG Basic @BBL A1 | 1.34 |
 | `Tie_rod` | P2_Chassis_Steering__0.20_PETG | Bambu PETG Basic @BBL A1 | 0.36 |
@@ -36,13 +36,13 @@ Sinh tự động từ `freecad/cyberbrick_car.FCStd` bằng `tools/robotics-cad
 | `Washer_axle_R` | P2_Chassis_Steering__0.20_PETG | Bambu PETG Basic @BBL A1 | 0.04 |
 | `Wheel_FL` | P3_Wheels__0.16_PETG | Bambu PETG Basic @BBL A1 | 4.52 |
 | `Wheel_FR` | P3_Wheels__0.16_PETG | Bambu PETG Basic @BBL A1 | 4.52 |
-| `Wheel_RL` | P3_Wheels__0.16_PETG | Bambu PETG Basic @BBL A1 | 5.07 |
-| `Wheel_RR` | P3_Wheels__0.16_PETG | Bambu PETG Basic @BBL A1 | 5.07 |
+| `Wheel_RL` | P3_Wheels__0.16_PETG | Bambu PETG Basic @BBL A1 | 4.67 |
+| `Wheel_RR` | P3_Wheels__0.16_PETG | Bambu PETG Basic @BBL A1 | 4.67 |
 
 ## Bàn in (số liệu slicer)
 | Bàn | Thời gian | Nhựa (g) | Support |
 |---|---|---|---|
-| P1_Body__0.20_PETG | 4h18 | 59.9 | – |
-| P2_Chassis_Steering__0.20_PETG | 1h30 | 34.3 | – |
-| P3_Wheels__0.16_PETG | 1h26 | 20.4 | – |
-| **Tổng** | **7h15** | **114.6** | |
+| P1_Body__0.20_PETG | 4h18 | 59.5 | – |
+| P2_Chassis_Steering__0.20_PETG | 1h32 | 35.3 | – |
+| P3_Wheels__0.16_PETG | 1h13 | 19.5 | – |
+| **Tổng** | **7h04** | **114.3** | |

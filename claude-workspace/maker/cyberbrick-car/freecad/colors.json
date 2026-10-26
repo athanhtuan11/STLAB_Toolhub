@@ -19,15 +19,15 @@
   0.12,
   0.12
  ],
- "CB_Gearbox_030_dual_axis": [
+ "CB_Gearbox_030_L": [
   0.95,
   0.8,
   0.1
  ],
- "CB_Gearbox_shaft_left": [
-  0.9,
-  0.9,
-  0.9
+ "CB_Gearbox_030_R": [
+  0.95,
+  0.8,
+  0.1
  ],
  "CB_Servo9g_180_steering": [
   0.2,

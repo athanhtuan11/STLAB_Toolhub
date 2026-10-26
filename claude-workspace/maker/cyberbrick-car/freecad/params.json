@@ -19,6 +19,7 @@
  "stub_d": 5.0,
  "rear_bore_d": 5.4,
  "rear_bore_af": 3.7,
+ "gb_gap": 0.4,
  "post_top": 30.0,
  "magnet_d": 4.4,
  "magnet_h": 2.1,

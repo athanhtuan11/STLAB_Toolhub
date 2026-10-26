@@ -1,6 +1,6 @@
 # cyberbrick-car – xe điều khiển thể thao (CyberBrick)
 
-Xe coupé gầm thấp, cầu sau chủ động (hộp số 2 trục ra, **không vi sai**), lái servo kiểu Ackermann. Điều khiển bằng
+Xe coupé gầm thấp, cầu sau chủ động (**2 động cơ**, mỗi bánh sau 1 động cơ qua hộp số 1 trục, **không vi sai**), lái servo kiểu Ackermann. Điều khiển bằng
 bộ phát/thu CyberBrick (XA003 + XA004/XA005). Model **sinh từ tham số**: `freecad/scripts/build_car.py`
 (sửa tham số `P` ở đầu file rồi chạy lại – không sửa tay trong FreeCAD). Ảnh: `freecad/images/`.
 
@@ -15,13 +15,13 @@ bộ phát/thu CyberBrick (XA003 + XA004/XA005). Model **sinh từ tham số**: 
 |---|---|
 | Dài × rộng × cao | thân 222,5 × 88,6 mm, nóc cao 57,7 mm so với mặt đất (đo trên lưới); chiều dài cơ sở 140 mm, vệt bánh 72 mm |
 | Bánh | lốp CyberBrick LA027 Φ33,7 × 13,85 mm trên vành in (5 nan) |
-| Truyền động | động cơ 030 (LA024) + bộ bánh răng 2 trục **LA013 1:21** (khuyên dùng; có 1:37/1:48/…) – trục ra double-D làm luôn trục bánh sau |
+| Truyền động | **2 bộ động cơ 030 (LA024) kèm hộp số 1 trục** (STEP chính hãng), mỗi bánh sau 1 động cơ; trục ra lồi 8,1 mm vào moay-ơ bánh sau; hộp số dựng lưng tựa lưng |
 | Lái | servo **PG001** (CyberBrick) hoặc **MG90S** (mua ngoài) – giá servo dùng chung; chốt lái trước tâm bánh 7 mm (caster) |
 | Thân | dáng **GT bo tròn** (đường vai, kính nghiêng) + **kính khắc chìm 0,4 mm**; gắn bằng 4 cặp nam châm 4 × 2 mm (tháo nhanh) |
-| In | 3 bàn, **~7 h 15, ~114,6 g** Bambu PETG Basic (số liệu luôn mới: [BOM.md](BOM.md)); **không support** |
+| In | 3 bàn, **~7 h 04, ~114,3 g** Bambu PETG Basic (số liệu luôn mới: [BOM.md](BOM.md)); **không support** |
 
-Tốc độ ước tính (chưa đo): 030 không tải 10 500 vòng/phút ±10 % (8 V), định mức 6 900 → qua 1:21 ≈ 330–500 vòng/phút ở
-bánh Φ33,7 → **≈ 0,6–0,9 m/s**. TODO: đo thật.
+Tốc độ ước tính (chưa đo): 030 không tải 10 500 vòng/phút ±10 % (8 V), định mức 6 900 → qua 1:21 (tạm tính; tỉ số của
+bộ 1 trục: TODO kiểm) ≈ 330–500 vòng/phút ở bánh Φ33,7 → **≈ 0,6–0,9 m/s**. TODO: đo thật.
 
 ## Chọn servo lái
 `P["servo_type"]` trong `build_car.py`: `"pg001"` (mặc định) hoặc `"mg90s"`; thử nhanh: `CAR_SERVO=mg90s freecadcmd build_car.py`.
@@ -46,30 +46,41 @@ Giá servo: mặt tựa theo MG90S; PG001 vít kéo áp vào giá (lệch 0,47 m
 - Kiểm: `printability.py` (mặt nhô + **kiểm theo lớp** giống slicer) – tất cả chi tiết sạch; Bambu cắt lớp PASS.
 
 ## Lắp (tóm tắt – chi tiết sẽ viết ASSEMBLY.md sau khi in thử)
-1. Lắp hộp số 2 trục (LA013 + 030) theo hướng dẫn chính hãng `Assembly_Guide_of_Dual_Axis_030_Reduction_Motor.pdf`.
-2. Đặt hộp số vào cửa sổ sàn giữa 2 vách, chốt định vị vào lỗ vỏ, bắt thanh chặn trên (2 × M2.5 × 6).
+1. Lắp 2 bộ động cơ 030 + hộp số 1 trục. Bộ phải = bộ trái lật úp (xoay 180° quanh trục X).
+2. Đặt 2 hộp số lưng tựa lưng vào cửa sổ sàn giữa 2 vách (khe giữa 2 vỏ 0,4 mm; mặt vỏ phía trục ở |y| 18,2 mm; trục ra
+   lồi 8,1 mm vào moay-ơ bánh sau, moay-ơ từ |y| 18,5 mm). Vách ngoài kẹp 2 bên: mỗi vách 2 chốt D3,6 vào 2 lỗ D4 mặt phía
+   trục của vỏ; bắt thanh chặn trên dài hơn (2 × M2.5 × 6).
 3. Ép 2 vành sau lên trục double-D.
 4. Khớp lái: M2.5 × 16 làm chốt lái (từ trên xuống tai dưới sàn). Luồn trục vành trước qua lỗ khớp lái, đặt long đen
    và bắt vít M2.5 × 6 vào đầu trục.
 5. Thanh giằng: 2 × M2.5 × 6 vào đầu tay lái. Servo luồn từ sau ra trước qua giá, bắt 2 × M2 × 8, đưa về giữa,
    lắp horn hướng lên. Chốt horn: khoan lỗ ngoài cùng của horn Φ2,0 mm, vít M2 × 8 làm chốt vào khe thanh giằng.
-6. Bộ thu (4 × M2.5 × 6 từ dưới sàn), công tắc (2 × M2 × 6), pin vào khay (TODO dây velcro).
-7. Dây: servo → S1, động cơ → cổng M (theo sơ đồ chính hãng xe Truck); 8 nam châm (để ý cực hút nhau).
+6. Bộ thu (4 × M2.5 × 6 từ dưới sàn), công tắc (2 × M2 × 6). Pin PC003 **đứng cạnh bên trái động cơ trái** (nằm ngang
+   thì lấn động cơ 4 mm): x 45,5..96,7 mm, đỉnh pin cao 35,1 mm, thấp hơn vai thân (37 mm). Giữ bằng chân sau, chân
+   trước; vách ngoài cao 20 mm, vách trong chỉ ở đoạn trước động cơ (TODO dây velcro).
+7. Dây: servo → S1; động cơ trái → M1, động cơ phải → M2 của bộ thu (mỗi cổng tối đa 1 A, tổng 3 A theo datasheet).
+   Động cơ phải quay ngược chiều: đảo chiều trong app CyberBrick hoặc đảo 2 dây. 8 nam châm (để ý cực hút nhau).
 
 ## TODO (cần đo/hỏi trước khi in khớp chặt)
-- Trục ra **bộ 2 trục** (LA013): cửa hàng Bambu không ghi số. Đo theo tỉ lệ ảnh hướng dẫn lắp chính hãng
-  (`Assembly_Guide_of_Dual_Axis_030_Reduction_Motor.pdf`, hình chiếu cạnh, lấy bề dày vỏ 18 mm làm thước):
-  **lồi ≈ 9 mm mỗi bên (±1 mm)**, Φ ≈ 5,3–5,6, có mặt dẹt + lỗ ở đầu trục. Moay-ơ bánh sau ôm 8,4 mm – đủ.
-  TODO đo thật khi có hàng.
-- Vỏ hộp số 2 trục: có lỗ Φ4 ở cùng vị trí bộ 1 trục không (chốt định vị trên vách sàn).
-- Lốp LA027 ôm vành: kiểm độ chặt (vành Φ26,8/Φ30,1).
+- Dòng khóa (stall) của động cơ 030 LA024: chưa có số liệu. Cần để kiểm không vượt 1 A mỗi cổng M của XA004.
+- Tỉ số truyền bộ hộp số 1 trục: chưa có số (tốc độ đang tính tạm theo 1:21). Kiểm trước khi chốt.
+- App CyberBrick: gán 1 kênh ga cho cả 2 cổng M (M1, M2) và đảo chiều động cơ phải.
 - Bộ phát: chọn cấu hình kênh (lái/ga) trong app CyberBrick.
+- Lốp LA027 ôm vành: kiểm độ chặt (vành Φ26,8/Φ30,1).
 
 ## Mua (ngoài bộ phát/thu đã có)
-Động cơ 030 LA024, bộ bánh răng 2 trục LA013 (1:21), 4 lốp LA027, servo PG001 hoặc MG90S, pin PC003 + công tắc XA007,
+2 bộ động cơ 030 LA024 kèm hộp số 1 trục, 4 lốp LA027, servo PG001 hoặc MG90S, pin PC003 + công tắc XA007,
 8 nam châm 4 × 2 mm, vít (bảng vít trong [BOM.md](BOM.md)).
 
 ## Lịch sử sửa
+- 2026-10-26 (2): **thiết kế lại 2 motor 1 trục** (Tuan yêu cầu). Bỏ hộp số 2 trục LA013 (không có file/sơ đồ chính
+  hãng); thay bằng 2 bộ động cơ 030 LA024 + hộp số 1 trục (STEP chính hãng), mỗi bánh sau 1 động cơ. Vẫn lái servo
+  Ackermann, không vi sai. Hai hộp số lưng tựa lưng, khe 0,4 mm. Pin PC003 đứng cạnh động cơ trái (x 45,5..96,7 mm).
+  Vách kẹp kép (chốt D3,6 vào lỗ D4 mặt phía trục). Cửa sổ giảm tải dưới pin bo, thêm cửa sổ dưới 2 động cơ. Trụ nam
+  châm sau x -14 → -15,5; trụ trước y ±33 → ±35,5. Kiểm: va chạm không chồng (khe pin–thân 0,7 mm, hộp số–sàn 0,2 mm),
+  test 6/6, cắt lớp Bambu PASS không support: P1 thân 4 h 18 / 59,5 g; P2 sàn + lái 1 h 32 / 35,3 g; P3 bánh 1 h 14 /
+  19,5 g; cả xe 7 h 04 / 114,3 g. Ảnh mới: `freecad/images/two-motor/`. `freecad/scripts/gearbox_housing_dual.py`
+  (vỏ hộp số 2 trục tự in): không còn dùng từ 2026-10-26, giữ file. Động cơ phải đảo chiều (xem bước Lắp 7).
 - 2026-10-26: **thân GT** (Tuan chọn: GT bo tròn + kính khắc chìm; không cánh gió/LED). Mặt cắt nửa trên = B-spline:
   sườn đứng tới vai → vai bo r ≤ 1,4 mm → kính nghiêng → mép mái (`upper_curve` trong `build_car.py`). Kính hông/lái/sau
   khắc sâu `win_d` 0,4 mm (vỏ còn 0,9 mm = 2 đường). Cắt lớp PASS, không support: P1 thân 4 h 18, 59,9 g (trước 63,3 g);
