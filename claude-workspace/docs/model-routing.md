@@ -72,6 +72,22 @@ v3.31.0, codex-plugin-cc v1.0.6, Codex CLI 0.164.0, agy 1.4.7 – đều là b�
 - Tài liệu/trang dài > ~300 dòng → `ask-gemini` tóm tắt trước, Claude chỉ đọc bản tóm tắt.
 - Hết hạn mức (agy tuần, Codex) → làm bằng Haiku/phiên chính; không chuyển sang dịch vụ trả phí.
 
+### Xem hạn mức (Tuan chọn 2026-10-26: dùng đồ có sẵn – báo cáo `docs/reports/ai-resource-management-oss.md`)
+
+| Agent | Xem ở đâu | Khi nào |
+|---|---|---|
+| Claude Pro | `/usage` trong Claude Code → % cửa sổ 5 giờ + tuần, giờ reset; mục **Attribution** cho biết subagent/plugin nào tốn | Đầu và cuối buổi |
+| Codex (ChatGPT Free) | `codex` → `/status`; `/statusline` bật mục *limits* (lưu `config.toml`) | Khi hay dùng `/codex:review` |
+| Gemini (agy) | `agy` → `/usage` (hay `/quota`) – còn lại theo từng model | Khi `doc-writer`/`ask-gemini` chậm hoặc lỗi |
+
+Hook tự động (`~/.claude/settings.json`, bản lưu `settings.json.bak-2026-10-26-hooks`; mã `custom/hooks/usage_alert.py`):
+- `StopFailure` matcher `rate_limit` → bong bóng thông báo Windows "Claude chạm hạn mức – chuyển việc chữ sang
+  doc-writer / ask-gemini" + 1 dòng log.
+- `Notification` matcher `^quota_auto_resume_` (tự chạy tiếp khi reset / bỏ chờ) → 1 dòng log.
+- Log: `%USERPROFILE%\.claude\usage-log\rate-limit.log` (giờ, sự kiện, loại, thư mục). Chỉ ghi máy, không gọi mạng.
+- Viết bằng Python vì Windows đang ở ExecutionPolicy mặc định (chặn file `.ps1`) – không nới chính sách.
+- Gỡ: xóa 2 mục `StopFailure`/`Notification` trong `hooks` (hoặc chép lại bản `.bak`).
+
 ## Thành phần đã cài
 
 | Thành phần | Nơi | Ghi chú |
