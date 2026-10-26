@@ -200,8 +200,9 @@ obotcad` khi khởi động. Workbench vẫn nạp
 - GPT: gọi `codex` CLI (đăng nhập ChatGPT; không đọc `OPENAI_API_KEY`), chế độ advisory chỉ đọc.
 - Mạng: agy/codex tự gọi Google/OpenAI; Grok/OpenRouter chỉ khi bật + có key (đang tắt). Dashboard HTTP chỉ
   `127.0.0.1` + token, **tắt**. Không thấy telemetry.
-- Ghi file: config/journal/sessions ở `%APPDATA%\deliberation` (sessions/journal tắt). `files` được Node đọc và chèn
-  vào prompt → đọc được mọi file Claude chỉ định → danh sách cấm gửi trong `CLAUDE.md`.
+- Ghi file: config/journal/sessions ở `%APPDATA%\deliberation` (sessions/journal tắt). Tham số `files`: với Gemini
+  **không** chèn nội dung (chỉ `dir` → `--add-dir`, thử 2026-10-26) → STLab chép file vào `agy-scratch\<ten-viec>`;
+  Codex tự đọc đường dẫn (sandbox chỉ đọc). Danh sách cấm gửi trong `CLAUDE.md`.
 - `/deliberation:setup` ghi `~/.claude/rules/deliberation/` (luật tự giao việc trên mọi tin nhắn) + `~/.claude.json`
   → **không chạy**; config tự viết (`docs/model-routing.md`).
 - PAL MCP (`BeehiveInnovations/pal-mcp-server` v9.8.2) đã thẩm định và cài thử cùng ngày rồi gỡ: mã dừng từ 2025-12-15.

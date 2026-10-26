@@ -30,22 +30,30 @@ Tầng 3 bớt thêm phần viết chữ và review.
   2. Đường ghi duy nhất (tool `gemini` của server `deliberation-gemini`, `sandbox: workspace-write` →
      `--dangerously-skip-permissions`) bị chặn bằng `permissions.deny` trong `~/.claude/settings.json`,
      cùng server grok/openrouter không dùng.
-  3. `cwd` luôn là `D:\04_Stlab\agy-scratch` (trống, ngoài repo); file cần đọc đưa qua `files` – deliberation
-     (Node) tự đọc rồi chèn dạng chữ vào prompt.
+  3. agy chỉ thấy **bản chép**: file cần đọc chép vào `D:\04_Stlab\agy-scratch\<ten-viec>\` (ngoài repo), `cwd` = thư
+     mục đó, xong xóa. Không dùng tham số `files` cho Gemini: mô tả tool ghi "inlined" nhưng mã
+     (`core/providers/antigravity.js`) chỉ chuyển `dir` thành `--add-dir`, bỏ qua `path` → agy cố chạy lệnh tìm file,
+     bị chặn ở chế độ headless, không trả kết quả (thử 2026-10-26). Prompt dài cũng không nhét được vì Windows giới
+     hạn dòng lệnh ~32.000 ký tự.
   4. **Không** chạy `/deliberation:setup`: nó cài `~/.claude/rules/deliberation/` bắt Claude "quét MỌI tin nhắn và
      tự giao việc" → tốn token, tự gửi dữ liệu ra ngoài. Config tự viết (dưới).
 - Bản free của Gemini/ChatGPT: dữ liệu có thể được dùng để cải tiến dịch vụ → chỉ gửi tài liệu kỹ thuật/mã nguồn.
 
 ## Việc Tuan tự làm (một lần)
 
-1. **Gemini (agy)**: mở terminal, gõ `agy`, đăng nhập tài khoản Google trong trình duyệt, xong gõ `/exit`.
-   (agy đã cài: `%LOCALAPPDATA%\agy\bin\agy.exe` 1.4.7, đã thêm PATH; **tự cập nhật ngầm** – không ghim được.)
-2. **Codex**: `codex login` → đăng nhập ChatGPT. Trong Claude Code: `/codex:setup` để kiểm,
+1. ~~**Gemini (agy)**: `agy` → đăng nhập Google → `/exit`~~ – **xong 2026-10-26**. agy ở
+   `%LOCALAPPDATA%\agy\bin\agy.exe` 1.4.7 (đã thêm PATH; cửa sổ cmd mở trước đó phải mở lại), **tự cập nhật ngầm**.
+   Tài khoản free có: Gemini 3.8 Flash (low/medium/high), Claude Sonnet/Opus 4.6, GPT-OSS 120B (`agy models`).
+2. ~~**Codex**: `codex login`~~ – **xong 2026-10-26** (ChatGPT). Trong Claude Code: `/codex:setup` để kiểm,
    **không bật** "stop review gate".
-3. Đóng hết VS Code / Claude Code rồi mở lại (nạp plugin, agent mới, PATH mới).
+3. Đóng hết VS Code / Claude Code rồi mở lại (nạp plugin, agent mới).
 4. Kiểm: `/mcp` → thấy `plugin:deliberation:deliberation` *connected*. `TODO`: xem tên tool thật của server plugin;
    nếu không phải dạng `mcp__plugin_deliberation_<server>__<tool>` thì sửa luật `deny` trong `~/.claude/settings.json`
    và dòng `tools:` của `custom/agents/doc-writer.md`.
+
+Thử thật qua MCP (2026-10-26): `ask-gpt` 12 s đúng; `ask-gemini` không file 7 s; `ask-gemini` đọc bản chép
+`model-routing.md` 20 s, tóm tắt đúng ý nhưng có câu nói quá ("an toàn tuyệt đối") → bản nháp luôn phải duyệt.
+Repo và bản chép không bị ghi.
 
 ## Cách dùng hằng ngày
 
@@ -62,7 +70,7 @@ Tầng 3 bớt thêm phần viết chữ và review.
 | Thành phần | Nơi | Ghi chú |
 |---|---|---|
 | deliberation v3.31.0 | `community/antonbabenko-deliberation` (ghim `pins.tsv`) → marketplace cục bộ `antonbabenko-deliberation`, plugin `deliberation@antonbabenko-deliberation` (user) | MIT, Node thuần (không phụ thuộc npm), phát hành đều từ 2026-05 |
-| Config deliberation | `%APPDATA%\deliberation\config.json` | Bật `codex` + `gemini`; tắt grok/openrouter/ollama/lmstudio, dashboard, `orientation` (tự đọc 6 file trong cwd), `sessions.persist` |
+| Config deliberation | `%APPDATA%\deliberation\config.json` | Bật `codex` + `gemini` (ghim `gemini-3.8-flash-medium`: alias mặc định `auto-gemini-3` không còn trong `agy models`); tắt grok/openrouter/ollama/lmstudio, dashboard, `orientation` (tự đọc 6 file trong cwd), `sessions.persist` |
 | Antigravity CLI 1.4.7 | `%LOCALAPPDATA%\agy\bin` | Script cài chính hãng (đã đọc, kiểm SHA-512), tự cập nhật |
 | Thư mục nháp | `D:\04_Stlab\agy-scratch` | `cwd` cho agy, giữ trống |
 | Codex CLI 0.164.0 | `npm install -g @openai/codex@0.164.0` | CLI chính hãng OpenAI |
@@ -78,7 +86,7 @@ Config deliberation (dựng lại trên máy mới, chép nguyên):
   "providers": {
     "defaults": { "timeout": 600000 },
     "codex": { "enabled": true },
-    "gemini": { "enabled": true, "model": "auto-gemini-3" },
+    "gemini": { "enabled": true, "model": "gemini-3.8-flash-medium" },
     "grok": { "enabled": false, "apiKeyEnv": "XAI_API_KEY", "model": "grok-4.6" },
     "openrouter": { "enabled": false, "apiKeyEnv": "OPENROUTER_API_KEY", "apiBase": "https://openrouter.ai/api/v1", "defaultModel": "openrouter/auto" },
     "ollama": { "enabled": false, "apiBase": "http://localhost:11434/v1" },

@@ -1,7 +1,7 @@
 ---
 name: doc-writer
 description: Viet/cap nhat tai lieu tieng Viet (README, phan van xuoi cua ASSEMBLY.md, ghi chu nghien cuu, caption, lich su sua) tu gach dau dong ma phien chinh dua, nho Gemini free (Antigravity agy qua deliberation). Khong tu them so lieu ky thuat.
-tools: Read, Write, Edit, Glob, Grep, mcp__plugin_deliberation_deliberation__ask-gemini
+tools: Read, Write, Edit, Glob, Grep, Bash, mcp__plugin_deliberation_deliberation__ask-gemini
 model: haiku
 ---
 
@@ -10,11 +10,14 @@ bạn biến nó thành văn bản tiếng Việt gọn, đúng quy ước repo,
 
 ## Cách làm
 1. Đọc file đích (nếu có) và 1 file cùng loại trong repo để bắt chước giọng văn, cấu trúc heading.
-2. Gọi `ask-gemini` (deliberation, luôn chỉ đọc) với:
-   - `prompt`: yêu cầu + gạch đầu dòng + đoạn mẫu giọng văn + "chỉ trả văn bản, không sửa file".
-   - `cwd`: **luôn** `D:\04_Stlab\agy-scratch` (thư mục trống ngoài repo – agy không có sandbox HĐH trên Windows).
-   - `files`: `[{ "path": "<đường dẫn tuyệt đối>" }]` cho file tài liệu kỹ thuật công khai cần đọc – deliberation
-     tự đọc rồi chèn dạng chữ; file dài thêm `"headBytes": 40000`.
+2. Gọi `ask-gemini` (deliberation, luôn chỉ đọc). agy **không có sandbox HĐH trên Windows** nên chỉ cho nó thấy bản chép:
+   - Tạo `D:\04_Stlab\agy-scratch\<ten-viec>\` (kebab-case), **chép** (`cp`) vào đó các file tài liệu kỹ thuật công khai
+     cần đọc. Không chép cả thư mục dự án, không chép `.FCStd`.
+   - `cwd` = thư mục đó; `prompt` = yêu cầu + gạch đầu dòng + đoạn mẫu giọng văn + "Chỉ đọc các file trong thư mục làm
+     việc hiện tại, không chạy lệnh terminal. Chỉ trả văn bản." Không dùng tham số `files` (deliberation không chèn nội
+     dung cho Gemini – agy sẽ cố chạy lệnh và bị chặn).
+   - Xong (kể cả khi lỗi): `rm -rf` đúng thư mục `D:\04_Stlab\agy-scratch\<ten-viec>` đó. Bash chỉ dùng cho `cp`/`rm`
+     trong `agy-scratch`.
    Gemini lỗi (chưa đăng nhập `agy`, hết hạn mức tuần, mạng) → tự viết, ghi "Gemini lỗi: <lý do>" trong báo cáo.
 3. Tự đối chiếu bản nháp với gạch đầu dòng: mọi con số (mm, V, A, W, °C, g, giờ, số vít…) phải có trong đầu vào.
    Số không có nguồn → xóa hoặc thay bằng `TODO`. Không để model free "điền cho đủ".

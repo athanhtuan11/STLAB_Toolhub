@@ -58,8 +58,10 @@ Chi tiết, cài đặt, gỡ bỏ: `docs/model-routing.md`.
 | deliberation `ask-gemini` (Gemini qua Antigravity `agy`) | Tóm tắt tài liệu/trang web dài (> ~300 dòng) trước khi Claude đọc; dịch; đổi giọng văn |
 | `/codex:review` (ChatGPT Free); deliberation `consensus` (Gemini + GPT) | Review lần 2 script Python/FreeCAD lớn trước khi commit; `consensus`/`/codex:adversarial-review` khi phân vân thiết kế code |
 
-Gọi deliberation: `cwd` **luôn** `D:\04_Stlab\agy-scratch` (trống, ngoài repo), file cần đọc đưa qua `files`
-(deliberation đọc rồi chèn dạng chữ). Lý do: trên Windows `agy` không có sandbox HĐH, chỉ có lời nhắc "chỉ đọc".
+Gọi Gemini qua deliberation: chép file cần đọc vào `D:\04_Stlab\agy-scratch\<ten-viec>\` (ngoài repo), `cwd` = thư
+mục đó, prompt ghi "chỉ đọc file trong thư mục làm việc, không chạy lệnh terminal"; xong xóa thư mục. **Không** dùng
+`files` cho Gemini (không được chèn nội dung; đã thử 2026-10-26). Lý do: trên Windows `agy` không có sandbox HĐH.
+Codex (`ask-gpt`, `/codex:review`) đọc được repo trực tiếp ở chế độ chỉ đọc.
 
 Nguyên tắc cứng:
 - Model free (Gemini, Codex) **không quyết** kích thước, khe, thông số linh kiện, an toàn điện/pin/nhiệt. Số liệu từ chúng
