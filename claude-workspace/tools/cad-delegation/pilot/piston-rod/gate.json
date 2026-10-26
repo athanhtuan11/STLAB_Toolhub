@@ -1,0 +1,194 @@
+{
+ "spec": "Piston_rod_Shoulder",
+ "checks": [
+  {
+   "name": "output ton tai",
+   "ok": true,
+   "path": "part.step"
+  },
+  {
+   "name": "hop le + 1 solid",
+   "ok": true,
+   "valid": true,
+   "solids": 1,
+   "volume": 3204.5
+  },
+  {
+   "name": "bao ngoai",
+   "ok": true,
+   "got": [
+    27.38,
+    -3.0,
+    -6.0,
+    105.78,
+    3.0,
+    6.0
+   ],
+   "want": [
+    27.38,
+    -3.0,
+    -6.0,
+    105.78,
+    3.0,
+    6.0
+   ],
+   "err": [
+    0.0,
+    -0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "tol": 0.3
+  },
+  {
+   "name": "rong: lo ty ren 3.6",
+   "ok": true,
+   "overlap_mm3": 0.0
+  },
+  {
+   "name": "rong: lo chot mat noi 5.4",
+   "ok": true,
+   "overlap_mm3": 0.0
+  },
+  {
+   "name": "rong: hoc dai oc",
+   "ok": true,
+   "overlap_mm3": 0.0
+  },
+  {
+   "name": "rong: ranh ho dai oc",
+   "ok": true,
+   "overlap_mm3": 0.0
+  },
+  {
+   "name": "dac: day lo ty ren (cut tai 61.88)",
+   "ok": true,
+   "frac": 1.0,
+   "min_frac": 0.98
+  },
+  {
+   "name": "dac: than ty (chu thap)",
+   "ok": true,
+   "frac": 1.0,
+   "min_frac": 0.98
+  },
+  {
+   "name": "dac: than ty (chu thap 2)",
+   "ok": true,
+   "frac": 1.0,
+   "min_frac": 0.98
+  },
+  {
+   "name": "dac: thanh tren lo ty ren",
+   "ok": true,
+   "frac": 1.0,
+   "min_frac": 0.98
+  },
+  {
+   "name": "dac: vanh mat noi",
+   "ok": true,
+   "frac": 1.0,
+   "min_frac": 0.98
+  },
+  {
+   "name": "dac: thanh ben hoc dai oc",
+   "ok": true,
+   "frac": 1.0,
+   "min_frac": 0.98
+  },
+  {
+   "name": "lan can: Housing_Shoulder",
+   "ok": true,
+   "overlap_mm3": 0.0,
+   "gap": 0.3,
+   "min_gap": 0.25,
+   "max_gap": null
+  },
+  {
+   "name": "lan can: LK_Nut_M3_piston_Shoulder",
+   "ok": true,
+   "overlap_mm3": 0.0,
+   "gap": 0.1,
+   "min_gap": 0.05,
+   "max_gap": null
+  },
+  {
+   "name": "lan can: LK_Threaded_rod_M3_L45_Shoulder",
+   "ok": true,
+   "overlap_mm3": 0.0,
+   "gap": 0.3,
+   "min_gap": 0.25,
+   "max_gap": null
+  },
+  {
+   "name": "lan can: Pin_B",
+   "ok": true,
+   "overlap_mm3": 0.0,
+   "gap": 0.296,
+   "min_gap": 0.25,
+   "max_gap": null
+  },
+  {
+   "name": "chuyen dong: ty truot ra khoi ong theo +X",
+   "ok": true,
+   "total": 40
+  },
+  {
+   "name": "chuyen dong: dai oc tha ra theo +Y",
+   "ok": true,
+   "total": 4
+  },
+  {
+   "name": "in: khong can support",
+   "ok": true,
+   "vung": []
+  },
+  {
+   "name": "in: kiem lop (khong co cum roi)",
+   "ok": true,
+   "loi": []
+  }
+ ],
+ "warnings": [
+  {
+   "name": "in: vuon ra theo lop (xem, khong bat buoc sua)",
+   "loai": "vuon ra",
+   "z_mm": 0.3,
+   "mm2": 8.6,
+   "bao_xy": [
+    27.4,
+    -3.4,
+    94.5,
+    3.4
+   ]
+  },
+  {
+   "name": "in: vuon ra theo lop (xem, khong bat buoc sua)",
+   "loai": "vuon ra",
+   "z_mm": 4.7,
+   "mm2": 6.8,
+   "bao_xy": [
+    27.4,
+    -0.7,
+    61.6,
+    0.7
+   ]
+  },
+  {
+   "name": "in: vuon ra theo lop (xem, khong bat buoc sua)",
+   "loai": "vuon ra",
+   "z_mm": 4.9,
+   "mm2": 17.6,
+   "bao_xy": [
+    27.4,
+    -0.3,
+    61.6,
+    0.3
+   ]
+  }
+ ],
+ "passed": true,
+ "summary": "21/21 PASS"
+}

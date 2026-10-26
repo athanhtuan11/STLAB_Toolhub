@@ -1,0 +1,77 @@
+# DAC TA GIAO VIEC - chi tiet in 3D cho xe RC cyberbrick-car (STLab). Don vi mm, goc do.
+part: Knuckle_L
+project: cyberbrick-car (xe RC 1 cau sau, lai banh truoc kieu Ackermann bang servo)
+
+frame: |
+  He toa do XE: X huong ra truoc, Y sang trai, Z len. Goc O = tam truc sau, tren mat dat.
+  Banh truoc trai: tam (x 140, y 36, z 16.8). Chot lai trai (truc xoay khop lai, thang dung): x 147, y 20.
+
+design: |
+  Khop lai (steering knuckle) banh truoc TRAI: xoay quanh chot lai thang dung (vit M2.5 x 16 lam chot, ren vao
+  tai duoi tren san xe), giu truc banh (truc in lien vanh, duong kinh 5.0, nam ngang theo Y), co tay lai noi thanh giang.
+  Gom cac khoi (hop/tru) HOP lai thanh 1 solid, roi khoet lo:
+  1. Than chot lai: tru tron truc Z, tam (147, 20), ban kinh 4.0, z 10.6 .. 22.8.
+  2. Khoi giu truc: hop x 136.0..147.5, y 24.0..29.05, z 10.6..22.8.
+  3. Vach noi: hop x 144.4..147.0, y 20.0..24.0, z 10.6..22.8.
+  4. Dai duoi: hop x 136.0..144.4, y 20.0..24.0, z 10.6..12.4.
+  5. Dai tren: hop x 136.0..144.4, y 20.0..24.0, z 21.2..22.8.
+     (Giua 2 dai la cho trong cho long den + dau vit giu banh.)
+  6. Tay lai: thanh phang day z 20.5..22.8, rong 4.0 (+-2.0 vuong goc duong tam), duong tam tu (147.0, 20.0) toi
+     dau tay (135.110, 18.381) (huong ve tam truc sau - Ackermann); dau tay co tru tron ban kinh 3.0, z 20.5..22.8.
+  Lo:
+  a. Lo chot lai: tron duong kinh 2.7, truc Z qua (147, 20), xuyen het.
+  b. Lo moi vit thanh giang: tron duong kinh 2.1, truc Z qua (135.110, 18.381), tu z 15 len (xuyen tay lai).
+  c. Lo truc banh: theo Y, tam (x 140, z 16.8), y 23.0 .. 30.05 (xuyen khoi giu truc), tiet dien GIOT NUOC:
+     tron ban kinh 2.7 (truc 5.0 + khe 0.2) + mui nhon 45 do huong -Z (dinh mui tai z = 16.8 - 2.7*sqrt(2) = 12.98),
+     2 canh mui tiep tuyen voi vong tron o goc 45 do. (Khi in up nguoc, mui huong len -> lo ngang in khong can do.)
+  Ket qua: 1 solid duy nhat.
+
+print: |
+  In UP NGUOC: mat tren z = 22.8 up xuong ban. PETG, KHONG support - neu gate bao can support thi sua hinh, KHONG
+  them support.
+
+neighbors_info: |
+  context.FCStd (cung he toa do xe) chua chi tiet XUNG QUANH - dung de kiem khe, KHONG sua chung:
+  - Chassis: san xe; tai duoi chot lai cao toi z 10.4 (khe 0.2 duoi khop lai).
+  - Wheel_FL: vanh banh truoc trai, truc in lien duong kinh 5.0 luon qua lo truc; mat trong vanh y 29.25.
+  - CB_Tire_FL: lop cao su.
+  - Washer_axle_L: long den giu truc (y 22.7..23.7).
+  - Tie_rod: thanh giang nam tren tay lai (z 23.0..25.0).
+  - M2_5x16_kingpin_L: vit chot lai (than 2.5 trong lo 2.7, dau vit tua mat tren z 22.8).
+
+deliverable: |
+  1. build_part.py - script Python FreeCAD (chay: "C:/Program Files/FreeCAD 1.1/bin/freecadcmd.exe" build_part.py),
+     dung module Part, TU THAM SO (cac so tren dat thanh bien o dau file), xuat part.step (1 solid) vao CUNG thu muc.
+  2. Chay gate: "C:/Program Files/FreeCAD 1.1/bin/freecadcmd.exe" ../../gate.py .   -> doc gate.json, sua toi khi PASS.
+  3. Khong mo/doc file nao ngoai thu muc nay va gate.py.
+
+gate:
+  output: part.step
+  context: context.FCStd
+  bbox: {min: [132.11, 15.38, 10.6], max: [151.0, 29.05, 22.8], tol: 0.3}
+  empty:
+    - {name: lo chot lai 2.7, cyl: {base: [147.0, 20.0, 10.0], axis: [0, 0, 1], r: 1.3, h: 13.5}}
+    - {name: lo truc banh (tron), cyl: {base: [140.0, 23.5, 16.8], axis: [0, 1, 0], r: 2.65, h: 6.0}}
+    - {name: lo truc banh (mui giot nuoc), box: {min: [139.5, 23.5, 13.6], max: [140.5, 29.5, 14.2]}}
+    - {name: lo moi vit thanh giang 2.1, cyl: {base: [135.11, 18.381, 20.3], axis: [0, 0, 1], r: 1.0, h: 2.7}}
+    - {name: khoang giua 2 dai, box: {min: [137.0, 20.3, 12.8], max: [142.8, 23.7, 20.3]}}
+  filled:
+    - {name: than chot lai, box: {min: [148.6, 19.5, 11.0], max: [150.8, 20.5, 22.4]}}
+    - {name: khoi giu truc (vach sau lo), box: {min: [136.2, 24.2, 11.0], max: [137.0, 28.8, 22.4]}}
+    - {name: khoi giu truc (tren lo), box: {min: [138.0, 24.2, 20.0], max: [142.0, 28.8, 22.4]}}
+    - {name: dai duoi, box: {min: [137.0, 20.3, 10.8], max: [143.0, 23.7, 12.2]}}
+    - {name: dai tren, box: {min: [137.0, 20.3, 21.4], max: [143.0, 23.7, 22.6]}}
+    - {name: tay lai (giua), box: {min: [140.5, 18.75, 20.7], max: [141.5, 19.6, 22.6]}}
+    - {name: dau tay lai, box: {min: [132.5, 18.0, 20.7], max: [133.5, 18.8, 22.6]}}
+  neighbors:
+    - {label: Chassis, min_gap: 0.15}
+    - {label: Wheel_FL, min_gap: 0.15}
+    - {label: CB_Tire_FL, min_gap: 0.05}
+    - {label: Washer_axle_L, min_gap: 0.02}
+    - {label: Tie_rod, min_gap: 0.15}
+    - {label: M2_5x16_kingpin_L, min_gap: 0.0}
+  motions:
+    - {name: lai trai 20 do, kind: rotate, point: [147, 20, 0], axis: [0, 0, 1], total: 20, step: 2, against: [Chassis]}
+    - {name: lai phai 20 do, kind: rotate, point: [147, 20, 0], axis: [0, 0, -1], total: 20, step: 2, against: [Chassis]}
+    - {name: rut banh ra theo +Y, kind: translate, move: Wheel_FL, vector: [0, 1, 0], total: 12, step: 0.5, against: [part]}
+  print: {down: [0, 0, 1]}

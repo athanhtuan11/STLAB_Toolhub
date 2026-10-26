@@ -59,7 +59,7 @@ Phần giữ cho Claude: boolean trên loft B-spline (bài học `safe_edit`), q
 
 ## 5. Rủi ro
 - Hạn mức Codex Free không rõ → có thể hết giữa vòng lặp.
-- Codex đọc file máy trên Windows: TODO kiểm. Qua deliberation trước đây không đọc được; `codex:rescue` chưa thử.
+- Codex đọc file máy trên Windows: **đã giải quyết** (xem mục 7): cần tham số sandbox khi giao; `codex:rescue` không dùng được cho việc này.
 - Chất lượng script FreeCAD của Codex chưa có benchmark → phải thử thực tế.
 
 ## 6. Bước tiếp theo (chờ Tuan duyệt)
@@ -68,6 +68,28 @@ Thử nghiệm 2 chi tiết:
 2. 1 chi tiết `pushrod-arm` có lỗ trục + khe trượt 0,3 mm.
 
 Claude viết spec → `codex:codex-rescue` thực thi → so với bản Claude theo 4 tiêu chí: đúng kích thước, qua gate, số vòng sửa, token Claude tiêu tốn.
+
+## 7. Kết quả thử nghiệm (2026-10-26)
+
+| chi tiết | dự án | vòng gate | thời gian | token Codex | gate | lệch với mẫu |
+|---|---|---|---|---|---|---|
+| Knuckle_L | cyberbrick-car | 1 | 52 s | 26 694 | 26/26 PASS | 0,00 % (trùng) |
+| Piston_rod_Shoulder | pushrod-arm | 1 | 63 s | 34 270 | 21/21 PASS | 0,05 % (1,5 mm3; spec cố ý bỏ dấu khắc lắp) |
+
+Ghi chú:
+
+- Codex không đọc file ngoài thư mục giao (đã kiểm log).
+- Hiệu chuẩn gate trên chi tiết mẫu bắt được 3 lỗi spec: vùng kiểm chạm bo góc R1,5; vùng kiểm lấn lên tay lái/thân chốt lại; khe lòng đến 0,036 mm của bản góc.
+- Đổi "vươn ra" theo lớp thành cảnh báo (không chặn gate).
+- Lỗi môi trường: `codex:rescue` và `codex exec` mặc định bị "blocked by policy" vì chưa chọn sandbox Windows. Sửa bằng `-c features.prefer_mxc=true` (hoặc `windows.sandbox="unelevated"`). Chưa ghi vào `~/.codex/config.toml`.
+
+Đánh giá trung thực: 2 chi tiết này đơn giản (hộp/trụ/lỗ). Token Claude để viết spec + hiệu chuẩn không ít hơn nhiều so với tự viết script cho chi tiết đơn giản. Lợi ích lớn khi chi tiết phức tạp hoặc sửa lắp nhiều vòng, và hạ tầng gate dùng lại được.
+
+Cần thử tiếp:
+
+- Chi tiết phức tạp: Housing_Shoulder (trục nghiêng, nhiều lần lỗ, loft).
+- Chi tiết MỚI chưa có mẫu.
+- Hạn mức Codex Free: TODO theo dõi.
 
 ## Nguồn
 - Codex limit/status: https://help.openai.com/en/articles/11369540
