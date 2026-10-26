@@ -1,7 +1,7 @@
 # VO HOP SO 030 cho cyberbrick-car (Tuan 2026-10-26: "in CB_Gearbox_030_dual_axis, xuat ban in").
-# STL sinh bang freecad/scripts/gearbox_housing_dual.py: than + nap NGUYEN BAN cua STEP hang trong model (vo 1 TRUC -
-# truc ra chi tho phia nap). Vo 2 truc LA013 that: chua co file/so do (TODO) - xem ghi chu dau script.
-# Mat ngoai phang up xuong ban; ranh/lo giu trong. In xong: thu lap motor 030 + banh rang + truc thep Ø2,1.
+# STL sinh bang freecad/scripts/gearbox_housing_dual.py: vo 2 TRUC (LA013) dung tu vo 1 truc hang - than: bo ong chot,
+# lo xuyen Ø5,7 + go do Ø5,7/Ø8,5 doi xung nap; nap nguyen ban. TODO doi chieu truc kim loai that cua bo LA013.
+# Mat ngoai phang up xuong ban; ranh/lo giu trong. In xong: thu lap motor 030 + bo banh rang LA013 + truc ra kim loai (xoay tay).
 # Chay: python ../../../tools/robotics-cad/scripts/slice.py <file nay>
 partial: true
 fcstd: ../freecad/cyberbrick_car.FCStd
@@ -11,8 +11,8 @@ stl: stl-gearbox
 plates_dir: plates-gearbox
 common: {only_one_wall_top: "1", infill_combination: "1", sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
 plates:
-  G1_Gearbox_030__0.16_PETG:
+  G1_Gearbox_030_dual__0.16_PETG:
     process: 0.16mm Optimal @BBL A1
     overrides: {wall_loops: "4", sparse_infill_density: "40%", wall_generator: arachne, brim_type: auto_brim,
                 infill_combination: "0"}
-    stl: ["Gearbox_030_housing.stl", "Gearbox_030_cover.stl"]
+    stl: ["Gearbox_030_dual_housing.stl", "Gearbox_030_cover.stl"]
