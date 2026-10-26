@@ -35,6 +35,7 @@ Sau mỗi lần `apply`/`rollback`, cập nhật cột "Ghim" và "Kiểm tra".
 | [peva3/Lightroom-Presets](https://github.com/peva3/Lightroom-Presets) | `f22f4d8057aa` | MIT | Cộng đồng, 99★, repo mới (2026-05) | 2026-10-21 | 445 preset XMP Lightroom (chỉ `.xmp` + `.md`) → LightCraft `render --settings x.xmp` (áp được) |
 | [remotion-dev/skills](https://github.com/remotion-dev/skills) | `6c67adcd9cdb` (@remotion/skills 4.0.538) | **Không có file LICENSE**; Remotion License của monorepo (free cá nhân/công ty ≤ 3 NV) | **Chính hãng** (tổ chức Remotion), 5,6k★ | 2026-10-24 | Skill `remotion-best-practices` (router, chứa đủ 11 skill con) → `~/.claude/skills`: video motion graphics bằng React |
 | [antonbabenko/deliberation](https://github.com/antonbabenko/deliberation) | `v3.31.0` (`ef84a71a66bf`) | MIT | Cộng đồng, 178★, phát hành đều (tạo 2026-05) | 2026-10-26 | Plugin `deliberation@antonbabenko-deliberation` (user, marketplace cục bộ): Gemini qua `agy` + GPT qua Codex, chỉ đọc – xem `docs/model-routing.md` |
+| [CyberBrick-Official/CyberBrick_Controller_Core](https://github.com/CyberBrick-Official/CyberBrick_Controller_Core) | `9712a8439f33` (commit 2026-03-25, repo không có release) | CyberBrick Codebase License: chỉ dùng qua sản phẩm/dịch vụ MakerWorld–Bambu, bản sửa giữ thông báo | **Chính hãng**, 236★ | 2026-10-26 | Tham khảo MicroPython XA003 (`src/app_rc`) khi viết điều khiển riêng cho pushrod-arm/cyberbrick-car – chỉ đọc; báo cáo `docs/reports/community-for-repo-growth.md` |
 | [openai/codex-plugin-cc](https://github.com/openai/codex-plugin-cc) | `v1.0.6` (`db52e28f4d9d`) | Apache-2.0 | **Chính hãng** (OpenAI), 34,6k★ | 2026-10-26 | Plugin `codex@openai-codex` (user, marketplace cục bộ từ bản ghim): `/codex:review` bằng ChatGPT Free |
 
 ## Những gì nguồn chạy/truy cập (đọc mã ngày 2026-10-21)
@@ -280,6 +281,7 @@ Khi chuyển sang thương mại, rà bảng này trước (và cột License �
 | hesreallyhim/awesome-claude-code | CC BY-NC-ND 4.0 (phi thương mại, không phái sinh) | Tra cứu |
 | GarethManning/education-agent-skills | CC BY-SA 4.0 (ghi công, chia sẻ cùng license) | stlab |
 | FreeCAD/FreeCAD-library | CC-BY 3.0 (ghi công) | FreeCAD |
+| CyberBrick-Official/CyberBrick_Controller_Core | CyberBrick Codebase License (chỉ trong hệ MakerWorld/Bambu; giữ thông báo bản quyền) | Tham khảo code XA003 |
 | anthropics/skills docx/pdf/pptx/xlsx | Source-available | stlab |
 | theosib/FreeCAD-MCP-Server | Không có license | Chưa dùng |
 | chaofengc/IQA-PyTorch (pyiqa) | NTU S-Lab + CC BY-NC-SA 4.0 | Ứng viên chấm điểm thẩm mỹ ảnh |

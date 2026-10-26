@@ -24,3 +24,4 @@ shaise-freecad-fasteners	https://github.com/shaise/FreeCAD_FastenersWB.git	tag	V
 remotion-dev-skills	https://github.com/remotion-dev/skills.git	sha	-	6c67adcd9cdbe6eb84d76342da89b225f9161cb2	-	no	off	none trong repo (Remotion License cua monorepo: free ca nhan/<=3 NV)
 openai-codex-plugin-cc	https://github.com/openai/codex-plugin-cc.git	tag	v1.0.6	db52e28f4d9ded852ab3942cea316258ae4ef346	-	no	off	Apache-2.0
 antonbabenko-deliberation	https://github.com/antonbabenko/deliberation.git	tag	v3.31.0	ef84a71a66bfa2b77b866312036c59807fe050a0	-	no	off	MIT
+cyberbrick-official-controller-core	https://github.com/CyberBrick-Official/CyberBrick_Controller_Core.git	sha	-	9712a8439f339a09e454baf543b8e97a5b1f03a7	-	no	off	CyberBrick Codebase License (chi dung qua san pham/dich vu MakerWorld-Bambu; giu thong bao)
