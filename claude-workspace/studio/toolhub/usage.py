@@ -77,7 +77,8 @@ def gemini():
     try:
         j = json.loads(AGY.read_text(encoding="utf-8"))
     except (OSError, ValueError):
-        out["note"] = "Chưa có dữ liệu – mở agy trong terminal 1 lần."
+        out["note"] = ("Chưa có số: agy chỉ báo hạn mức khi mở trong terminal. Gõ agy → đợi dòng "
+                       "\"con lai: …\" dưới ô nhập → /exit, rồi tải lại trang.")
         return out
     t = j.get("time", 0)
     for name, q in sorted((j.get("quota") or {}).items()):
