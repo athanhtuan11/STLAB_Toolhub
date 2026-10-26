@@ -19,7 +19,7 @@ qua cả 4 MCP server trong `.mcp.json`.
   - Trang **Sửa ảnh** (photolab, LUT/preset) đã gỡ 2026-10-25 – Tuan: tập trung CAD + Blender, ảnh/video mảng robotics.
   - Ô **Hạn mức AI** (2026-10-26) ở trang chính, nạp sau qua `/api/usage` (`toolhub/usage.py`, chỉ đọc file trên máy):
     Codex = `rate_limits` mới nhất trong `~/.codex/sessions` (trường không có trong docs, có thể đổi); Gemini = ảnh chụp
-    `%LOCALAPPDATA%\stlab-usagegy.json` do `custom/statusline/agy_statusline.py` ghi khi mở TUI agy; Claude chỉ nhắc `/usage`.
+    `%LOCALAPPDATA%/stlab-usage/agy.json` do `custom/statusline/agy_statusline.py` ghi khi mở TUI agy; Claude chỉ nhắc `/usage`.
   - `toolhub/workspace.py`: đọc pins/links/reports/CLAUDE.md (chỉ đọc). `toolhub/views.py`: trang + API.
   - `toolhub/printprep.py` (trang Dự án, dự án có `print/print.yaml`): nút **Chuẩn bị in** và **Tự chạy khi Lưu**
     gọi `tools/robotics-cad/scripts/prepare-print.py` / `watch.py` bằng Python của FreeCAD, chạy nền (PID ở
