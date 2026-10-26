@@ -4,7 +4,8 @@
   moi lan chay, ca khi Claude goi qua plugin). Truong nay KHONG co trong docs Codex -> co the doi; doc loi thi bo qua.
 - Gemini (agy): anh chup `quota` do custom/statusline/agy_statusline.py ghi vao %LOCALAPPDATA%/stlab-usage/agy.json
   (chi cap nhat khi mo TUI agy; agy goi qua deliberation khong chay statusline).
-- Claude Pro: khong co nguon chinh thuc doc tu ngoai -> chi nhac /usage.
+- Claude Pro: anh chup `rate_limits` (5 gio + tuan) do custom/statusline/claude_statusline.py ghi vao
+  %LOCALAPPDATA%/stlab-usage/claude.json (chi khi chay `claude` trong terminal - panel VS Code khong goi statusline).
 """
 import json
 import os
@@ -13,6 +14,7 @@ from pathlib import Path
 
 CODEX = Path.home() / ".codex" / "sessions"
 AGY = Path(os.environ.get("LOCALAPPDATA", Path.home())) / "stlab-usage" / "agy.json"
+CLAUDE = AGY.with_name("claude.json")
 
 
 def _window(minutes):
@@ -95,8 +97,22 @@ def gemini():
 
 
 def claude():
-    return {"name": "Claude", "plan": "Pro", "bars": [], "updated": "",
-            "note": "Xem /usage trong Claude Code (không có nguồn đọc từ ngoài)."}
+    out = {"name": "Claude", "plan": "Pro", "bars": [], "updated": "", "note": ""}
+    try:
+        j = json.loads(CLAUDE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        out["note"] = ("Chưa có số: chạy `claude` trong terminal (statusline ghi hạn mức), "
+                       "hoặc xem /usage trong panel VS Code.")
+        return out
+    t = j.get("time", 0)
+    for key, label in (("five_hour", "5 giờ"), ("seven_day", "tuần")):
+        w = (j.get("rate_limits") or {}).get(key) or {}
+        if w.get("used_percentage") is not None and (w.get("resets_at") or 0) > time.time():
+            out["bars"].append(_bar(label, w["used_percentage"], w.get("resets_at")))
+    out["updated"] = time.strftime("%d/%m %H:%M", time.localtime(t)) if t else ""
+    if not out["bars"]:
+        out["note"] = "Ảnh chụp cũ đã qua giờ reset – chạy `claude` trong terminal để cập nhật."
+    return out
 
 
 def all_agents():
