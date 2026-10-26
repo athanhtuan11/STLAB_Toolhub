@@ -10,9 +10,11 @@ import unittest
 import FreeCAD as App
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FC = os.path.normpath(os.path.join(HERE, "..", "pushrod_arm.FCStd"))
+# PUSHROD_ARM_FCSTD: chay test tren ban sao (thu script sua truoc khi dung file that - 2026-10-26)
+FC = os.environ.get("PUSHROD_ARM_FCSTD") or os.path.normpath(os.path.join(HERE, "..", "pushrod_arm.FCStd"))
 sys.path.insert(0, os.path.normpath(os.path.join(HERE, "..", "..", "..", "..", "tools", "robotics-cad", "scripts")))
 import fast_collide  # noqa: E402
+import assembly_paths  # noqa: E402
 
 TAGS = ("Shoulder", "Elbow")
 FIT_GAP = 0.3       # Tuan 2026-10-24: khe lap co cau banh rang + truot 0,3 mm
@@ -163,6 +165,53 @@ class T8Piston(unittest.TestCase):
             rod = _local(O("Piston_rod_" + t).Shape, r).BoundBox
             self.assertLess(nut.XMax + (lmax - l0), sc.XMax - 1.0, "%s: duoi het, dai oc tuot ty ren" % t)
             self.assertGreater(rod.XMin + (lmin - l0), sc.XMin + 5.0, "%s: rut het, piston dam banh rang" % t)
+
+
+class T9Assemble(unittest.TestCase):
+    """Tuan 2026-10-26: Housing_Elbow + Piston_rod_Elbow in rieng KHONG lap vao nhau duoc (piston 6 x 10,4 > bac mieng ong
+    6,6 x 8,6, dau kia kin) trong khi mo phong + va cham PASS: mo phong chi DAT san chi tiet vao cho. Moi cap dang cham
+    phai co duong TINH TIEN tach rieng (tools/robotics-cad/scripts/assembly_paths.py); ngoai le ghi ly do o day."""
+
+    ALLOW = {  # (mau_a, mau_b) fnmatch: ly do chong/ket CO CHU DICH
+        ("*M2_5x*", "*"): "vit M2.5 tu ren vao lo moi (chong = ren an)",
+        ("CB_Servo9g_180_gripper", "Servo_horn"): "tay servo ep len cot rang servo",
+        ("CB_Servo9g_360_turntable", "Pinion_m1_z10_turntable"): "banh rang z10 ep len cot servo",
+        ("Gear_z12_*", "LK_Nut_M3_gear_*"): "hoc dai oc nong hon dai oc 0,1 mm (dai oc nho 0,1 - chap nhan; "
+                                            "TODO lan in z12 sau: hoc sau them 0,2)",
+        ("Base_housing", "Battery_bay"): "pin PC003 nghieng luon duoi go giu 1,2 mm (xoay - cong cu chi thu tinh tien)",
+        ("Base_housing", "Receiver_riser"): "ong nang nghieng duoi go 1,1 mm; ke tam, bo o v2",
+        ("CB_030_gearbox_*", "Pin_gearbox_*"): "LOI DA BIET -> test_gearbox_pins (expectedFailure)",
+    }
+
+    @staticmethod
+    def _objs():
+        return {k: o for k, o in D["O"].items() if o.Shape.Solids and not k.startswith("_")}
+
+    def test_all_parts_assemblable(self):
+        res, pairs = assembly_paths.trapped(self._objs(), allow=list(self.ALLOW))
+        self.assertGreater(len(pairs), 100, "it cap dang cham - model doi?")
+        self.assertEqual(res, [], "cap KHONG lap duoc (ket/chong san):\n" + "\n".join("%s | %s %s" % r for r in res))
+
+    def test_cylinder_insertion_path(self):
+        """Ty truot vao tu mieng ong (+x he xi-lanh); dai oc piston truot vao ranh theo +y (mat tren khi in)."""
+        for t in TAGS:
+            objs = {k: O(k) for k in ("Housing_" + t, "Piston_rod_" + t, "LK_Nut_M3_piston_" + t)}
+            col = fast_collide.Collider(objs)
+            F = O("Piston_rod_" + t).Placement.Rotation
+            for a, b, axis in (("Piston_rod_" + t, "Housing_" + t, (1, 0, 0)), ("LK_Nut_M3_piston_" + t, "Piston_rod_" + t, (0, 1, 0))):
+                d = assembly_paths.free_direction(col, a, b, O(a))
+                self.assertIsNotNone(d, "%s ket trong %s" % (a, b))
+                want = F.multVec(App.Vector(*axis))
+                self.assertAlmostEqual(abs(d[0] * want.x + d[1] * want.y + d[2] * want.z), 1.0, 3,
+                                       "%s: thao theo %s, mong doi truc %s he xi-lanh" % (a, d, axis))
+
+    @unittest.expectedFailure
+    def test_gearbox_pins(self):
+        """TODO (2026-10-26): Pin_gearbox dam vao hop so 030 ~52 mm3/chot. STEP hang: tai (+-9; -4,02) la kenh O4 BIT 2 dau
+        (day vo 1 mm, nap 2,15 mm) -> can Tuan xem hop so THAT: mat nao co lo O4? Sua xong -> bo expectedFailure."""
+        objs = {k: o for k, o in self._objs().items() if k.startswith(("CB_030_gearbox_", "Pin_gearbox_"))}
+        res, _ = assembly_paths.trapped(objs)
+        self.assertEqual(res, [])
 
 
 class T4Marks(unittest.TestCase):

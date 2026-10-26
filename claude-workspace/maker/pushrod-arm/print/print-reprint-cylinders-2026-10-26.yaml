@@ -1,0 +1,26 @@
+# IN LAI 2026-10-26: xi-lanh LAP DUOC (Tuan: Housing_Elbow + Piston_rod_Elbow in rieng khong lap vao nhau).
+# Model: freecad/scripts/history/2026-10-26_cylinder_assemblable.py - long ong thang 6,6 x 8,6 ho mieng, piston got ve
+# tiet dien ty 6 x 8, ranh dai oc ho mat tren (+y), lo O3,6 tron cho ty ren qua tuong truoc. Anh: images/review/12-*.png
+# Thay R7 + R8 cua plates-reprint-piston-2026-10-25 (KHONG dung Housing/Piston_rod ban do). Banh rang (R9) giu nguyen.
+# Pin_gearbox: CHUA in lai - cho Tuan xem lo O4 tren hop so 030 that (test T9Assemble.test_gearbox_pins).
+# Support: Tuan to trong Bambu Studio duoi TAI CHOT vo xi-lanh - GIU TRONG long ong (tran = cau 8,6 mm), khe banh rang,
+# lo truc, ranh dai oc tren ty.
+# Chay: python ../../tools/robotics-cad/scripts/slice.py <file nay>   (STL tu prepare-print print.yaml)
+partial: true
+fcstd: ../freecad/pushrod_arm.FCStd
+rest_pose: ../freecad/pushrod_arm_rest.json
+machine: Bambu Lab A1 0.4 nozzle
+filament: Bambu PETG Basic @BBL A1
+stl: stl
+plates_dir: plates-reprint-cylinders-2026-10-26
+common: {only_one_wall_top: "1", infill_combination: "1", sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
+plates:
+  R10_Cylinder_Housings__0.20_PETG:
+    process: 0.20mm Standard @BBL A1
+    overrides: {wall_loops: "3", sparse_infill_density: "20%"}
+    stl: ["*__Housing_Shoulder.stl", "*__Housing_Elbow.stl"]
+  R11_Piston_Rods__0.16_PETG:
+    process: 0.16mm Optimal @BBL A1
+    overrides: {wall_loops: "4", sparse_infill_density: "40%", wall_generator: arachne, brim_type: auto_brim,
+                infill_combination: "0"}
+    stl: ["*__Piston_rod_*.stl"]

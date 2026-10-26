@@ -66,6 +66,13 @@ Thiết kế cơ khí robot (khung, gá động cơ/cảm biến, hộp số) đ
    - **Tầng 1 – mỗi lần sửa** (file LẮP RÁP, có cache): `freecadcmd scripts/check.py --pass <file.FCStd>
      components=... ignore-pair=... mesh-pair=... multi-solid=...` → hình học, lưới, **va chạm** (manifold3d),
      quét khớp (`sweep=`). Ngưỡng: `thresholds.yaml`. Ra `freecad/check/overview.png`.
+   - **Tầng 1b – LẮP ĐƯỢC KHÔNG** (2026-10-26, ~45 s cả pushrod-arm): `scripts/assembly_paths.py <file.FCStd>
+     [only=...] [allow="A|B,..."]` – mỗi cặp đang chạm phải có đường **tịnh tiến** tách rời (6 trục chung + 6 trục riêng,
+     bước 0,2 mm); không có = **KẸT** (in rời không lắp được), chồng sẵn = **CHỒNG SẴN**. Lý do: mô phỏng/va chạm chỉ
+     ĐẶT chi tiết vào chỗ – pushrod-arm 2026-10-26 piston to hơn bạc miệng ống, đai ốc trong hốc kín, vẫn 18/18 test PASS.
+     Chạy trước khi in mọi cụm chi tiết lồng nhau; đưa vào test dự án (mẫu `maker/pushrod-arm/freecad/tests`
+     `T9Assemble`), ngoại lệ (vít tự ren, ép cốt servo, nghiêng dưới gờ) ghi lý do. Chưa xét: thứ tự lắp nhiều chi
+     tiết, xoay, uốn snap-fit. **Không `ignore-pair=X|*` cả nhóm** – che lỗi (bài học `LK_*|*`).
    - **Tầng 2 – trước khi in** (STL theo HƯỚNG IN, ~10–40 s): `slice.py print/print.yaml` → Bambu Studio CLI cắt lớp
      theo profile A1 chính hãng: lơ lửng, support, thời gian, số gam. Ra `print/plates/<plate>/<plate>.3mf` (mở Bambu
      để in) + `print/plates/print-overview.png`.

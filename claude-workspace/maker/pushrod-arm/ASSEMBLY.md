@@ -41,10 +41,10 @@ phong cách: `docs/assembly-instructions-style-research.md`. PDF:
 |---|---|---|---|
 | 1 | S | Tháp (turret) ↔ Cần chính (Boom) | 16 |
 | 2 | A | Tháp ↔ Xi-lanh vai | 17 |
-| 3 | B | Cần chính ↔ Thanh răng vai | 18 |
+| 3 | B | Cần chính ↔ Đầu ty piston vai | 18 |
 | 4 | E | Cần chính ↔ Cẳng tay | 21 |
 | 5 | C | Cần chính ↔ Xi-lanh khuỷu | 22 |
-| 6 | D | Cẳng tay ↔ Thanh răng khuỷu | 23 |
+| 6 | D | Cẳng tay ↔ Đầu ty piston khuỷu | 23 |
 Chi tiết in trước 2026-10-24 chưa có số khắc → dùng bút lông ghi số cạnh lỗ chốt theo bảng.
 
 **Thử chốt trước**: mỗi chốt (bàn P8, thân Ø4,8 mm) phải **xoay trơn bằng tay** trong lỗ. Chặt thì chà nhẹ giấy nhám –
@@ -160,43 +160,56 @@ không đóng, không ép mạnh.
 
 **Kiểm tra:** tháp chắc, xoay cả đế thấy tháp quay theo mâm.
 
-## Bước 12 – Xi-lanh vai: bánh vít vào vỏ
+## Bước 12 – Xi-lanh vai: bánh răng z12 vào vỏ
 **Cụm D – Xi-lanh vai** (làm riêng trên bàn)
-**Cần lấy:** vỏ xi-lanh vai `Housing_Shoulder` ×1 (bàn P4, có số **2**), bánh vít `Pinion_WormWheel_Shoulder` ×1 (bàn P5).
-![](freecad/images/assembly/step-12.png)
-1. Tìm phía **miệng rãnh chữ U** của vỏ (phía động cơ sau này chĩa ra).
-2. Đưa bánh vít vào vỏ **từ phía miệng rãnh chữ U**, cho trục bánh vít lọt vào lỗ trên thành vỏ.
+**Cần lấy:** vỏ xi-lanh vai `Housing_Shoulder` ×1 (bàn R10, có số **2**), bánh răng nhỏ `Gear_z12_Shoulder` ×1 (bàn R9),
+đai ốc lục giác M3 ×1 (**mua**).
+> Ảnh: TODO (chụp lại theo thiết kế piston 2026-10-26)
+1. Ấn đai ốc M3 vào hốc lục giác ở một mặt bánh răng z12.
+2. Thả bánh răng z12 vào buồng bánh răng của vỏ qua cửa sổ. Mặt có đai ốc quay về phía tai chốt (phía sau); lỗ giữa
+   thẳng hàng với lỗ Ø3,6 mm ở thành trước buồng.
 
-**Kiểm tra:** lấy tay xoay bánh vít – quay được. Chưa lắp động cơ ở bước này.
+**Kiểm tra:** bánh răng z12 xoay tự do bằng tay; đai ốc nằm gọn trong hốc, không lộ ra ngoài.
 
-## Bước 13 – Xi-lanh vai: giữ bánh vít
+## Bước 13 – Xi-lanh vai: ty ren M3 vào bánh răng z12
 **Cụm D – Xi-lanh vai**
-**Cần lấy:** vòng đệm `Washer_shaft_Shoulder` ×1 (bàn P2), vít **M2.5 × 6** ×1.
-![](freecad/images/assembly/step-13.png)
-1. Từ **phía ngoài** vỏ, đặt vòng đệm lên đầu trục bánh vít.
-2. Vặn vít M2.5 × 6 vào tâm bánh vít. Vừa tay.
+**Cần lấy:** ty ren M3 dài **45 mm** ×1 (**mua**), cụm bước 12, keo 502 (chỉ người lớn dùng).
+> Ảnh: TODO (chụp lại theo thiết kế piston 2026-10-26)
+1. Luồn ty ren M3 từ **miệng ống** vào, qua lỗ thành trước, vặn vào bánh răng z12 + đai ốc.
+2. Vặn tới khi đầu ty ren **bằng mặt ngoài đai ốc** (không thò ra phía sau).
+3. **[Cần người lớn]** Khóa ty ren với đai ốc z12 bằng **1 giọt keo 502** (để ty ren quay cùng bánh răng, không tự tuột).
+   Chờ keo khô. Không để keo dính vào răng hay thành vỏ.
 
-**Kiểm tra:** bánh vít **vẫn quay tự do** (vòng đệm cố ý hở 0,1–0,2 mm). Kẹt thì nới vít.
+**Kiểm tra:** ty ren không thò ra phía sau; keo đã khô hẳn trước khi sang bước 14.
 
-## Bước 14 – Xi-lanh vai: thanh răng
+## Bước 14 – Xi-lanh vai: ty piston và bánh răng z28
 **Cụm D – Xi-lanh vai**
-**Cần lấy:** thanh răng `Rack_Shoulder` ×1 (bàn P5).
-![](freecad/images/assembly/step-14.png)
-1. Luồn thanh răng qua rãnh của vỏ, răng hướng vào bánh răng.
-2. Kéo đẩy thanh răng đi hết đường – bánh vít quay theo.
+**Cần lấy:** ty piston `Piston_rod_Shoulder` ×1 (bàn R11), đai ốc lục giác M3 ×1 (**mua**), bánh răng lớn
+`Gear_z28_Shoulder` ×1 (bàn R9), cụm bước 13.
+> Ảnh: TODO (chụp lại theo thiết kế piston 2026-10-26)
+1. Thả đai ốc M3 vào **rãnh** ở đầu ty piston (rãnh mở ở một mặt ty): **2 góc đai ốc hướng theo chiều rãnh, 2 mặt phẳng
+   ra 2 bên**, ấn xuống cho đai ốc nằm gọn trong ghế lục giác dưới đáy rãnh – đai ốc không nhô ra khỏi mặt ty, lỗ đai ốc
+   thẳng lỗ giữa ty.
+2. Giữ đai ốc, đẩy ty vào **miệng ống**: cạnh 8 mm của ty theo cạnh dài của lòng ống (rãnh quay lên hay xuống đều vào
+   được). Khi ty đã vào ống, thành ống giữ đai ốc không rơi ra.
+3. Đẩy tới khi đai ốc chạm đầu ty ren. Rồi **xoay bánh răng z12 bằng tay** qua cửa sổ (không xoay ty) để ty ren ăn vào
+   đai ốc và kéo ty vào ống.
+4. Đặt bánh răng lớn z28 vào buồng, ăn khớp với z12.
 
-**Kiểm tra:** kéo đẩy **êm** cả đoạn. Bây giờ đẩy tay được – sau bước 25 thì **không đẩy tay được nữa**.
+**Kiểm tra:** xoay z28 bằng tay → ty chạy ra/vào êm, không kẹt, không lắc ngang; ty không tự xoay.
 
 ## Bước 15 – Xi-lanh khuỷu: làm giống bước 12–14
 **Cụm E – Xi-lanh khuỷu**
-**Cần lấy:** vỏ xi-lanh khuỷu `Housing_Elbow` ×1 (bàn P4, có số **5**), bánh vít `Pinion_WormWheel_Elbow` ×1 (bàn P5),
-vòng đệm `Washer_shaft_Elbow` ×1 (bàn P2), thanh răng `Rack_Elbow` ×1 (bàn P5), vít **M2.5 × 6** ×1.
-![](freecad/images/assembly/step-15.png)
-1. Làm **giống bước 12**: đưa bánh vít vào vỏ từ phía miệng rãnh chữ U.
-2. Làm **giống bước 13**: vòng đệm phía ngoài + vít M2.5 × 6 vào tâm bánh vít.
-3. Làm **giống bước 14**: luồn thanh răng qua rãnh, kéo đẩy thử hết đường.
+**Cần lấy:** vỏ xi-lanh khuỷu `Housing_Elbow` ×1 (bàn R10, có số **5**), ty piston `Piston_rod_Elbow` ×1 (bàn R11),
+bánh răng nhỏ `Gear_z12_Elbow` ×1 và bánh răng lớn `Gear_z28_Elbow` ×1 (bàn R9), ty ren M3 dài **55 mm** ×1 (**mua**),
+đai ốc lục giác M3 ×2 (**mua**), keo 502 (chỉ người lớn dùng).
+> Ảnh: TODO (chụp lại theo thiết kế piston 2026-10-26)
+1. Làm **giống bước 12** với bánh răng z12 khuỷu: đai ốc vào hốc, thả vào buồng qua cửa sổ.
+2. Làm **giống bước 13** với ty ren 55 mm: vặn vào z12, khóa keo 502 (**[Cần người lớn]**).
+3. Làm **giống bước 14** với ty piston khuỷu và bánh răng z28 khuỷu.
 
-**Kiểm tra:** bánh vít quay tự do, thanh răng kéo đẩy êm. Rãnh bị nhựa/support lấp thì báo thầy/cô (không cố đẩy).
+**Kiểm tra:** như bước 14 – xoay z28 bằng tay, ty chạy ra/vào êm, không kẹt, không lắc ngang. Rãnh/hốc bị support lấp thì
+báo thầy/cô (không cố đẩy).
 
 ## Bước 16 – Cần chính lên tháp – chốt S (khớp số 1)
 **Cụm F – Cần chính**
@@ -219,14 +232,15 @@ vít **M2.5 × 6** ×1.
 
 **Kiểm tra:** xi-lanh vai xoay lên xuống được quanh chốt A.
 
-## Bước 18 – Thanh răng vai vào cần chính – chốt B (khớp số 3)
+## Bước 18 – Đầu ty piston vai vào cần chính – chốt B (khớp số 3)
 **Cụm F – Cần chính**
 **Cần lấy:** chốt `Pin_B` ×1 + vòng đệm chốt ×1 (bàn P8), vít **M2.5 × 6** ×1.
-![](freecad/images/assembly/step-18.png)
-1. Kéo/đẩy thanh răng vai và nâng/hạ cần chính cho **lỗ đầu thanh răng trùng lỗ trên cần chính**.
+> Ảnh: TODO (chụp lại theo thiết kế piston 2026-10-26)
+1. Ty piston **không kéo/đẩy bằng tay được** (ty ren M3 giữ). Xoay **bánh răng z28 vai** bằng tay để ty ra/vào, đồng thời
+   nâng/hạ cần chính, cho **lỗ đầu ty trùng lỗ trên cần chính**.
 2. Luồn chốt B, khóa vòng đệm + vít.
 
-**Kiểm tra:** nâng hạ cần chính bằng tay thì thanh răng trượt theo, bánh vít quay.
+**Kiểm tra:** nâng hạ cần chính, xoay z28 bằng tay thì đầu ty theo; không bẻ ty bằng tay.
 
 ## Bước 19 – Hai tấm cẳng tay
 **Cụm G – Cẳng tay** (làm riêng trên bàn)
@@ -264,20 +278,21 @@ vít **M2.5 × 6** ×1.
 
 **Kiểm tra:** xi-lanh khuỷu xoay được quanh chốt C.
 
-## Bước 23 – Thanh răng khuỷu vào cẳng tay – chốt D (khớp số 6)
+## Bước 23 – Đầu ty piston khuỷu vào cẳng tay – chốt D (khớp số 6)
 **Cụm G – Cẳng tay**
 **Cần lấy:** chốt `Pin_D` ×1 + vòng đệm chốt ×1 (bàn P8), vít **M2.5 × 6** ×1.
-![](freecad/images/assembly/step-23.png)
-1. Kéo/đẩy thanh răng khuỷu cho lỗ đầu thanh răng trùng lỗ chốt D giữa 2 tấm cẳng tay (có đệm D).
+> Ảnh: TODO (chụp lại theo thiết kế piston 2026-10-26)
+1. Xoay **bánh răng z28 khuỷu** bằng tay để ty piston ra/vào, cho lỗ đầu ty trùng lỗ chốt D giữa 2 tấm cẳng tay (có đệm D).
 2. Luồn chốt D, khóa vòng đệm + vít.
 
-**Kiểm tra:** gập cẳng tay bằng tay thì thanh răng khuỷu trượt theo.
+**Kiểm tra:** xoay z28 khuỷu bằng tay thì cẳng tay gập theo. **KHÔNG bẻ cẳng tay bằng tay.**
 
 ## Bước 24 – Thử tay và đặt tư thế gốc [Cần người lớn]
 **Cụm H – Động cơ** (chưa lắp động cơ)
 **Cần lấy:** thước kẹp hoặc thước kẻ.
-![](freecad/images/assembly/step-24.png)
-1. Nâng hạ cần chính, gập cẳng tay vài lần: **không kẹt, không cạ**.
+> Ảnh: TODO (chụp lại theo thiết kế piston 2026-10-26)
+1. Xoay **bánh răng z28 vai và z28 khuỷu** bằng tay để nâng hạ cần chính, gập cẳng tay vài lần: **không kẹt, không cạ**.
+   Không bẻ tay.
 2. Đặt tay về **tư thế gốc** như ảnh: khoảng cách tâm chốt A đến tâm chốt B = **99,8 mm**; tâm chốt C đến tâm chốt D =
    **121,6 mm**.
 
@@ -285,25 +300,29 @@ vít **M2.5 × 6** ×1.
 
 ## Bước 25 – Động cơ xi-lanh vai [Cần người lớn]
 **Cụm H – Động cơ**
-**Cần lấy:** động cơ CyberBrick 030 + hộp số 1 trục (**mua**, đã lắp theo hướng dẫn của hãng – xem Ghi chú cho thầy/cô),
-trục vít `Worm_Shoulder` ×1 (bàn P7), chốt hộp số `Pin_gearbox_Shoulder` ×2 (bàn P8).
-![](freecad/images/assembly/step-25.png)
-1. Cắm trục vít vào trục ra của hộp số: xoay cho **2 mặt phẳng** của trục khớp lỗ, ấn nhẹ, không đóng.
-2. Giữ tay ở tư thế gốc. Đẩy **cả cụm động cơ + trục vít** vào vỏ xi-lanh vai **từ phía miệng rãnh chữ U**: đầu tròn trục
-   vít trượt theo rãnh, răng trục vít trượt vào răng bánh vít.
-3. Đẩy 2 chốt hộp số **từ phía trục vít về phía động cơ** (đầu to ở phía trục vít), qua 2 lỗ trên thành vỏ, vào 2 lỗ trên
-   nắp hộp số.
+**An toàn:** chạy thử ở **tốc độ thấp**. KHÔNG có công tắc hành trình → không giữ cần điều khiển khi ty đã ra/vào hết
+(ty ren có thể tuột khỏi đai ốc hoặc ép vỡ vỏ). **Tắt nguồn trước khi chạm tay vào bánh răng.**
 
-**Kiểm tra:** cụm động cơ không lắc; **không thử đẩy thanh răng bằng tay nữa** (trục vít tự khóa – đẩy sẽ gãy răng).
+**Cần lấy:** động cơ CyberBrick 030 + hộp số 1 trục (**mua**, đã lắp theo hướng dẫn của hãng – xem Ghi chú cho thầy/cô),
+cụm xi-lanh vai (bước 12–14), chốt gắn hộp số `Pin_gearbox_Shoulder`: **TODO**.
+> Ảnh: TODO (chụp lại theo thiết kế piston 2026-10-26)
+1. Trước khi cấp điện: đưa ty về chiều dài chốt–chốt tư thế gốc, vai **99,8 mm**.
+2. Cắm trục ra hộp số (trục có **2 mặt vát**) qua lỗ tấm gá vào lỗ vát của bánh răng z28, áp mặt hộp số vào tấm gá.
+3. Cố định hộp số bằng 2 chốt `Pin_gearbox_Shoulder`: **TODO** (đang kiểm lỗ Ø4 mm trên hộp số thật, chưa in lại).
+
+**Kiểm tra:** bật nguồn, nhích cần → ty ra/vào; tắt nguồn → tay giữ nguyên tư thế (ty ren tự hãm). **TODO** xác nhận khi thử thật.
 
 ## Bước 26 – Động cơ xi-lanh khuỷu [Cần người lớn]
 **Cụm H – Động cơ** (giống bước 25)
-**Cần lấy:** động cơ 030 + hộp số ×1 (**mua**), trục vít `Worm_Elbow` ×1 (bàn P7), chốt hộp số `Pin_gearbox_Elbow` ×2 (bàn P8).
-![](freecad/images/assembly/step-26.png)
-1. Cắm trục vít vào hộp số, đẩy cả cụm vào vỏ xi-lanh khuỷu từ phía miệng rãnh chữ U.
-2. Đẩy 2 chốt hộp số từ phía trục vít vào.
+**An toàn:** như bước 25 – tốc độ thấp, không giữ cần khi ty đã hết hành trình, tắt nguồn trước khi chạm bánh răng.
 
-**Kiểm tra:** như bước 25.
+**Cần lấy:** động cơ 030 + hộp số ×1 (**mua**), cụm xi-lanh khuỷu (bước 15), chốt gắn hộp số `Pin_gearbox_Elbow`: **TODO**.
+> Ảnh: TODO (chụp lại theo thiết kế piston 2026-10-26)
+1. Trước khi cấp điện: đưa ty về chiều dài chốt–chốt tư thế gốc, khuỷu **121,6 mm**.
+2. Cắm trục ra hộp số (trục có **2 mặt vát**) qua lỗ tấm gá vào lỗ vát của bánh răng z28 khuỷu, áp mặt hộp số vào tấm gá.
+3. Cố định hộp số: **TODO** (như bước 25).
+
+**Kiểm tra:** như bước 25 – **TODO** xác nhận khi thử thật.
 
 ## Bước 27 – Servo kẹp vào khung kẹp
 **Cụm I – Kẹp** (làm riêng trên bàn)
@@ -361,7 +380,8 @@ trục vít `Worm_Shoulder` ×1 (bàn P7), chốt hộp số `Pin_gearbox_Should
 **Kiểm tra:** kẹp chắc, không lắc. **Xong phần lắp!** Báo thầy/cô kiểm tra trước khi cắm pin.
 
 ## Sau khi lắp xong [Cần người lớn]
-- Chỉ xoay bằng tay **đế** (nhẹ tay) và **kẹp**. **Không bẻ vai, khuỷu bằng tay** – trục vít tự khóa, bẻ sẽ gãy răng.
+- Chỉ xoay bằng tay **đế** (nhẹ tay) và **kẹp**. **Không bẻ vai, khuỷu bằng tay** – ty ren M3 (bước ren 0,5 mm) + hộp số giữ
+  vai/khuỷu; bẻ bằng tay có thể tuột ren hoặc gãy răng. Tự hãm khi tắt điện: **TODO** xác nhận khi thử.
 - Đấu dây vào mạch XA004 theo bảng dưới (giống cấu hình cánh tay robot chính hãng CyberBrick). Dây servo: **nâu – đỏ –
   vàng** đúng chân như in trên mạch. Cổng động cơ tối đa 1 A; servo bên trái / phải tối đa 2 A mỗi bên, tổng 3 A.
 
@@ -376,17 +396,18 @@ trục vít `Worm_Shoulder` ×1 (bàn P7), chốt hộp số `Pin_gearbox_Should
 
 ## Ghi chú cho thầy/cô
 - **Động cơ CyberBrick 030 (LA024):** 5–9 V; không để kẹt trục khi đang cấp điện (nóng, có thể cháy). Lắp hộp số 1 trục theo
-  `Assembly_Guide_of_Single_Axis_030_Reduction_Motor.pdf` của hãng, **bôi mỡ bánh răng hộp số**. **Không bôi mỡ trục vít /
-  bánh vít in** khi chưa thử: mỡ giảm ma sát có thể làm mất tự hãm (tay tự trôi khi tắt điện) – xem
+  `Assembly_Guide_of_Single_Axis_030_Reduction_Motor.pdf` của hãng, **bôi mỡ bánh răng hộp số**. **Không bôi mỡ ty ren M3 /
+  đai ốc** khi chưa thử: mỡ có thể làm mất tự hãm (tay tự trôi khi tắt điện) – xem
   `docs/cad-mechanisms-teaching-research.md`.
-- **Vì sao lắp động cơ sau cùng (bước 25–26):** trục vít tự hãm – bánh vít không quay ngược được trục vít, nên sau khi lắp
-  thanh răng bị khóa. Tư thế gốc (bước 24) đo từ model: A–B 99,8 mm, C–D 121,6 mm; tầm cho phép vai 92–118 mm, khuỷu
-  92–128 mm. Kiểm trên model: cụm hộp số chỉ vào được theo 1 hướng (miệng rãnh chữ U) và đường vào không vướng Boom/tháp.
+- **Vì sao lắp động cơ sau cùng (bước 25–26):** các bước 14, 18, 23, 24 cần XOAY z28 BẰNG TAY để chỉnh chiều dài ty; khi đã
+  gắn hộp số (giảm tốc lớn) thì không xoay tay được. Tư thế gốc (bước 24) đo từ model: A–B 99,8 mm, C–D 121,6 mm; tầm cho
+  phép vai 92–118 mm, khuỷu 92–128 mm. Kiểm trên model: hộp số áp vào tấm gá cạnh ống, trục ra vào lỗ vát của z28.
 - **Servo 360° PG002 không có bảo vệ kẹt/nhiệt/quá dòng** (datasheet B-PG002) – thử tay trước khi cấp nguồn.
 - **Pin PC003** (Li-ion 2S 7,4 V): đọc nhãn dung lượng; học sinh không sạc khi không có người lớn.
 - **Chốt khớp:** thân Ø4,8 mm (hở 0,3 mm/bên với lỗ Ø5,4), in **đặc 100 %**, in nằm (bàn P8); Ø4,8 đã thử vừa 2026-10-25.
-- **Support:** in bằng support tô tay trong Bambu Studio – giữ trống rãnh thanh răng, rãnh chữ U, hốc bánh vít, lỗ chốt.
-- Tỉ số: hộp số hãng ≈ 45,5:1 × trục vít 16:1 – mã kit bánh răng thật: `TODO`.
+- **Support:** in bằng support tô tay trong Bambu Studio – giữ trống lòng ống (trần ống = cầu 8,6 mm), cửa sổ buồng bánh răng, rãnh đai ốc trên ty, lỗ Ø3,6 mm thành trước, lỗ chốt.
+- Tỉ số: hộp số hãng ≈ 45,5:1 × bánh răng z28/z12 (28:12) → ty đi ≈ 1,17 mm mỗi vòng trục ra hộp số (ty ren M3 bước 0,5 mm);
+  mã kit bánh răng thật: `TODO`.
 - Đã chốt 2026-10-25 (đo model + tài liệu hãng trong `community/cyberbrick-official/`):
   - Vít M2.5 ISO 4762 (mũ Ø4,5 khớp model), lục giác 2 mm. Bộ thu: **M2.5 × 16** (mạch 1,7 + ống 9,7 = 11,4; lỗ trụ sâu 5,0
     → ăn 4,6 mm, cách đáy 0,4 mm) – đã thêm 4 vít vào model.

@@ -21,10 +21,16 @@ check:
   - mesh-pair=Turntable_gear_m1_z60|Pinion_m1_z10_turntable
   - mesh-pair=Gear_z28_*|Gear_z12_*                # xi-lanh piston (2026-10-25): z28 truc hop so -> z12 ty ren
   - mesh-pair=Gear_z28_*|CB_030_gearbox_*          # lo 2 mat vat O5,3 tren truc ra (khe 0,32 nhu Worm cu)
-  - ignore-pair=LK_*|*                             # ty ren M3 + dai oc M3 mua: nam trong hoc kep co chu dich
+  # 2026-10-26: BO "ignore-pair=LK_*|*" - no che ty ren M3 dam 8,8 mm3 vao tuong truoc buong banh rang (lo chi nua tren).
+  # Chi bo qua dung cap co ly do; kiem "lap duoc" (assembly_paths.py) o test T9Assemble.
+  - ignore-pair=Gear_z12_*|LK_Nut_M3_gear_*        # hoc dai oc z12 nong hon dai oc 0,1 mm (1,8 mm3) - chap nhan, TODO lan in sau
+  - ignore-pair=Gear_z12_*|LK_Threaded_rod_M3_*    # quay CUNG nhau (khoa keo 502 - ASSEMBLY buoc 13), lo dan r 1,6 / ty r 1,5
+  - ignore-pair=Piston_rod_*|LK_Nut_M3_piston_*    # dai oc KEP trong ghe luc giac + ranh, khe 0,1 co chu dich
   - mesh-pair=Jaw_1_driven_by_servo|Jaw_2_idler     # 2 ham kep an khop rang quanh 2 chot
   - multi-solid=Spacer_D,Spacer_E,Receiver_riser,Pin_gearbox_*
-  - ignore-pair=Pin_gearbox_*|CB_030_gearbox_*   # chot O3,9 trong lo O4 nap hop so: lap chat co chu dich (2026-10-24)
+  # TODO 2026-10-26: KHONG phai lap chat - chot dam ~52 mm3/chot vao vo hop so (STEP: kenh O4 bit 2 dau). Cho Tuan xem
+  # hop so that (test T9Assemble.test_gearbox_pins = expectedFailure). Sua xong thi bo dong nay.
+  - ignore-pair=Pin_gearbox_*|CB_030_gearbox_*
 
 # Huong in tung chi tiet (khop quy tac DAU TIEN; names = Label, glob)
 export:

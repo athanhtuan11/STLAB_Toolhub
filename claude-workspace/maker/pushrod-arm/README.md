@@ -11,7 +11,8 @@ Lắp ráp: **[ASSEMBLY.pdf](ASSEMBLY.pdf)** (15 trang, chữ + hình – để 
 ## An toàn
 - Pin: `Battery_bay` là khoang pin của bộ CyberBrick – loại pin, điện áp: **TODO** (xem datasheet XA003/XA004 trước khi cắm).
   Pin Li-ion: không sạc khi không có người trông, không để chập cực khi lắp dây.
-- Động cơ 030 (LA024, 5–9 V) + trục vít tự hãm: **không để kẹt trục khi cấp điện** (datasheet: nóng, nguy cơ cháy) – thử tay trước, lần đầu chạy chậm.
+- Động cơ 030 (LA024, 5–9 V) + ty ren M3: **không để kẹt trục khi cấp điện** (datasheet: nóng, nguy cơ cháy) – thử tay trước,
+  lần đầu chạy chậm. **Không có công tắc hành trình**: không giữ cần điều khiển khi ty đã ra/vào hết.
 
 ## Linh kiện mua (BOM) – đếm từ model 2026-10-23
 Bản tự sinh đầy đủ (vít, linh kiện, chi tiết in → bàn/nhựa): [BOM.md](BOM.md) / `BOM.csv` – cập nhật mỗi lần *Chuẩn bị in*.
@@ -62,6 +63,15 @@ thì sấy trước (máy sấy/tủ sấy có quạt, không dùng lò vi sóng
 - Quy tắc: đổi/sai linh kiện thì **sửa chi tiết gốc**, không thêm miếng kê/đệm tạm (trừ khi đã in rồi và Tuan cho làm tạm).
 
 ## Lịch sử sửa
+- 2026-10-26: **xi-lanh LẮP ĐƯỢC** (Tuan: `Housing_Elbow` + `Piston_rod_Elbow` in rời không lắp vào nhau). Công cụ mới
+  `tools/robotics-cad/scripts/assembly_paths.py` + test `T9Assemble` tìm 4 lỗi ở cả 2 xi-lanh: piston 6 × 10,4 > bạc miệng
+  ống 6,6 × 8,6 (đầu kia kín); đai ốc M3 nhốt trong hốc kín; ty ren M3 đâm 8,8 mm³ thành trước buồng bánh răng (bị
+  `ignore-pair=LK_*|*` che – đã bỏ); `Pin_gearbox` đâm hộp số ~52 mm³/chốt (STEP: kênh Ø4 bịt 2 đầu – **chờ xem hộp số
+  thật**, test expectedFailure). Sửa (`history/2026-10-26_cylinder_assemblable.py`, `..._piston_nut_rot30.py`): lòng ống
+  thẳng 6,6 × 8,6 hở miệng, piston gọt về tiết diện ty 6 × 8, rãnh đai ốc hở mặt trên + ghế lục giác xoay 30° (đai ốc gọn
+  trong ty, khe ống 0,55), lỗ Ø3,6 tròn. 20/21 test + 1 expected failure, động học 24 tư thế sạch, kiểm nhanh không FAIL.
+  **In lại** `print/plates-reprint-cylinders-2026-10-26/`: R10 2 vỏ 51 ph 16,7 g, R11 2 ty 18 ph 6,5 g (thay R7/R8 cũ).
+  ASSEMBLY bước 12–15, 18, 23–26 viết lại theo piston (ảnh TODO). Ảnh duyệt `freecad/images/review/12-cylinder-assemblable.png`.
 - 2026-10-25 tối: **xi-lanh thanh răng → PISTON** (Tuan thử: `Rack_Elbow` lệch khi lên xuống). Giữ motor 030 + hộp số, chốt A–D,
   Boom, cẳng tay. Bỏ Worm, bánh vít, thanh răng, vòng đệm trục. Mới: `Housing_*` (ống + buồng bánh răng + tấm gá), `Piston_rod_*`,
   `Gear_z28_*`, `Gear_z12_*`, `Pin_gearbox_*` (mới), ty ren M3 + 4 đai ốc. 1,17 mm/vòng trục ra, ren M3 tự hãm.

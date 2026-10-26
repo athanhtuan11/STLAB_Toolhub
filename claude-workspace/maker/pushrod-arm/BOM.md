@@ -48,13 +48,13 @@ Sinh tự động từ `freecad/pushrod_arm.FCStd` bằng `tools/robotics-cad/sc
 | `Gripper_top_plate` | P3_Forearm_Plates__0.20_PETG | Bambu PETG Basic @BBL A1 | 1.69 |
 | `Boom001` | P4_Boom_Gripper_Housings__0.20_PETG | Bambu PETG Basic @BBL A1 | 74.01 |
 | `Gripper_frame` | P4_Boom_Gripper_Housings__0.20_PETG | Bambu PETG Basic @BBL A1 | 12.70 |
-| `Housing_Elbow` | P4_Boom_Gripper_Housings__0.20_PETG | Bambu PETG Basic @BBL A1 | 11.23 |
-| `Housing_Shoulder` | P4_Boom_Gripper_Housings__0.20_PETG | Bambu PETG Basic @BBL A1 | 6.50 |
+| `Housing_Elbow` | P4_Boom_Gripper_Housings__0.20_PETG | Bambu PETG Basic @BBL A1 | 12.00 |
+| `Housing_Shoulder` | P4_Boom_Gripper_Housings__0.20_PETG | Bambu PETG Basic @BBL A1 | 6.74 |
 | `Jaw_1_driven_by_servo` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 2.34 |
 | `Jaw_2_idler` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 2.57 |
 | `Pinion_m1_z10_turntable` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.33 |
-| `Piston_rod_Elbow` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 2.92 |
-| `Piston_rod_Shoulder` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 3.27 |
+| `Piston_rod_Elbow` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 2.78 |
+| `Piston_rod_Shoulder` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 3.21 |
 | `Spacer_jaw2` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.27 |
 | `Washer_pin` | P5_Gears_Racks_Pins__0.16_PETG | Bambu PETG Basic @BBL A1 | 0.07 |
 | `Jaw_1_driven_by_servo_TPU_pad` | P6_GripperPads__TPU95A | Bambu TPU 95A @BBL A1 | 0.18 |
@@ -85,12 +85,12 @@ Sinh tự động từ `freecad/pushrod_arm.FCStd` bằng `tools/robotics-cad/sc
 | P1_Base__0.24Draft_PETG | 2h27 | 92.9 | – |
 | P2_Turret_Turntable__0.20_PETG | 2h55 | 76.1 | – |
 | P3_Forearm_Plates__0.20_PETG | 0h41 | 21.3 | – |
-| P4_Boom_Gripper_Housings__0.20_PETG | 2h02 | 59.0 | – |
-| P5_Gears_Racks_Pins__0.16_PETG | 0h43 | 13.1 | – |
+| P4_Boom_Gripper_Housings__0.20_PETG | 2h02 | 59.2 | – |
+| P5_Gears_Racks_Pins__0.16_PETG | 0h41 | 12.8 | – |
 | P6_GripperPads__TPU95A | 0h05 | 0.6 | – |
 | P7_Gears__0.12_PETG_100pct | 0h36 | 7.3 | – |
 | P8_Pins__0.16_PETG_100pct | 0h28 | 6.7 | – |
-| **Tổng** | **10h00** | **277.0** | |
+| **Tổng** | **9h59** | **276.9** | |
 
 ## Chưa phân loại (TODO)
 Label không khớp quy ước vít / `components=` / `export.rules`:

@@ -242,6 +242,7 @@ obotcad` khi khởi động. Workbench vẫn nạp
 | 2026-10-26 | `%APPDATA%\deliberation\config.json` | config tự viết (codex + gemini, tắt phần còn lại) | xóa thư mục |
 | 2026-10-26 | `%LOCALAPPDATA%\agy\bin` + PATH người dùng | Antigravity CLI 1.4.7 (tự cập nhật); đăng nhập Google lưu ở `~/.gemini` (**Tuan tự làm**) | xóa thư mục, bỏ khỏi PATH |
 | 2026-10-26 | `D:\04_Stlab\agy-scratch` | thư mục trống làm `cwd` cho agy | xóa thư mục |
+| 2026-10-26 | Biến môi trường người dùng | `AGY_BIN=%LOCALAPPDATA%\agy\bin\agy.exe` (MCP deliberation không thấy agy trên PATH) | `[Environment]::SetEnvironmentVariable('AGY_BIN',$null,'User')` |
 | 2026-10-26 | `~/.claude/settings.json` + `~/.claude/plugins/` | marketplace cục bộ `openai-codex` → `community/openai-codex-plugin-cc`, plugin `codex@openai-codex` (user) | `claude plugin uninstall codex@openai-codex`, `claude plugin marketplace remove openai-codex` |
 | 2026-10-26 | npm global | `@openai/codex@0.164.0` | `npm uninstall -g @openai/codex` |
 | 2026-10-26 | `~/.claude/agents/{check-runner,doc-writer,git-scribe}.md` | symlink → `custom/agents/` | `update-community.sh unlink` |

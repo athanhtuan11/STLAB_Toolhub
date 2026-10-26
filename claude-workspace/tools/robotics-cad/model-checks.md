@@ -13,6 +13,7 @@ Viết ngày 2026-10-21. Mọi đoạn code ghi "đã chạy" đều đã chạy
 | 2 | Bỏ cạnh thừa | PartDesign/Part: thuộc tính **Refine = true** | `s.removeSplitter()` | – |
 | 3 | Va chạm tĩnh trong lắp ráp | Assembly (không có lệnh kiểm giao thoa) | `a.common(b).Volume`, `a.distToShape(b)[0]` | common = 0 mm³; khe hở ≥ dung sai thiết kế (TODO A1) |
 | 4 | Va chạm khi khớp quay hết hành trình | Assembly → Simulation (chỉ xem bằng mắt) | quét góc: xoay shape / chỉnh `Offset2` của joint + `asm.solve()` rồi `common()` | common = 0 ở mọi bước góc |
+| 4b | **Lắp được** (2026-10-26): chi tiết in rời có đường đưa vào chỗ | không có | `scripts/assembly_paths.py` (tịnh tiến 12 hướng, bước 0,2 mm) | mọi cặp đang chạm có hướng tách; ngoại lệ ghi lý do |
 | 5 | Thành mỏng | không có công cụ đo độ dày có sẵn | script bắn tia `solid.common(LineSegment)` (mục 5.2) | ≥ 0,84 mm = 2 × đường in 0,42 mm (đầu 0,4 mm mặc định, skill `bambu-a1`); chịu lực: 1,2–1,6 mm |
 | 6 | Overhang | không có công cụ phân tích draft trong FreeCAD 1.1 | duyệt facet mesh, `Normal.z < -cos(45°)` (mục 5.3) | góc với mặt bàn ≥ 45° hoặc có support (Bambu wiki) |
 | 7 | Lưới xuất ra sạch | Mesh → Analyze → **Evaluate and Repair** | `m.isSolid()`, `hasNonManifolds()`, `hasSelfIntersections()`, `countNonUniformOrientedFacets()` | isSolid True, các has* False, 0 facet ngược |
@@ -22,7 +23,7 @@ Viết ngày 2026-10-21. Mọi đoạn code ghi "đã chạy" đều đã chạy
 | 11 | Xuất file | File → Export | STEP: `Import.export`; 3MF: `mesh.write("x.3mf")` | Khuyến nghị **STEP** cho Bambu Studio (mục 2.4) |
 | 12 | Tự động hóa | Test workbench (tắt mặc định từ 1.1) | `freecadcmd -P <thư mục> -t <module_test>` → exit code 1 khi FAIL | – |
 
-Thứ tự khuyến nghị: **1 → 2 → 3/4 → 5/6 → 9 → 10 (nếu chịu lực) → 7/8 → 11**. Lỗi hình học (bước 1) làm sai mọi bước sau (boolean, khối lượng, mesh), nên luôn sửa trước.
+Thứ tự khuyến nghị: **1 → 2 → 3/4/4b → 5/6 → 9 → 10 (nếu chịu lực) → 7/8 → 11**. Lỗi hình học (bước 1) làm sai mọi bước sau (boolean, khối lượng, mesh), nên luôn sửa trước.
 
 ---
 

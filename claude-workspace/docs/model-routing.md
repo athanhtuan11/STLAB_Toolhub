@@ -51,6 +51,10 @@ Tầng 3 bớt thêm phần viết chữ và review.
    nếu không phải dạng `mcp__plugin_deliberation_<server>__<tool>` thì sửa luật `deny` trong `~/.claude/settings.json`
    và dòng `tools:` của `custom/agents/doc-writer.md`.
 
+Lỗi "agy (Antigravity CLI) not on PATH" khi gọi từ Claude Code (2026-10-26, `doc-writer`): VS Code mở bằng môi trường cũ,
+chưa thấy PATH mà trình cài agy thêm vào → đã đặt biến người dùng `AGY_BIN=%LOCALAPPDATA%\agy\bin\agy.exe`
+(deliberation đọc biến này). Cần **đóng hết VS Code rồi mở lại** một lần. Gỡ: xóa biến `AGY_BIN`.
+
 Thử thật qua MCP (2026-10-26): `ask-gpt` 12 s đúng; `ask-gemini` không file 7 s; `ask-gemini` đọc bản chép
 `model-routing.md` 20 s, tóm tắt đúng ý nhưng có câu nói quá ("an toàn tuyệt đối") → bản nháp luôn phải duyệt.
 Repo và bản chép không bị ghi.
