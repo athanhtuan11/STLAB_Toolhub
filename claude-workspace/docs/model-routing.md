@@ -80,6 +80,16 @@ v3.31.0, codex-plugin-cc v1.0.6, Codex CLI 0.164.0, agy 1.4.7 – đều là b�
 | Codex (ChatGPT Free) | `codex` → `/status`; `/statusline` bật mục *limits* (lưu `config.toml`) | Khi hay dùng `/codex:review` |
 | Gemini (agy) | `agy` → `/usage` (hay `/quota`) – còn lại theo từng model | Khi `doc-writer`/`ask-gemini` chậm hoặc lỗi |
 
+Statusline hiện hạn mức ngay dưới ô nhập (Tuan 2026-10-26; chỉ thấy khi mở **TUI** `codex` / `agy`, không áp dụng khi
+Claude gọi qua plugin):
+- **Codex**: `~/.codex/config.toml` → `[tui] status_line = ["model-with-reasoning", "context-remaining",
+  "five-hour-limit", "daily-limit", "weekly-limit", "monthly-limit"]` (tên mục lấy từ chính Codex CLI 0.164.0; mục
+  không áp dụng cho gói thì tự ẩn – gói Free hiện là cửa sổ 30 ngày). Đổi/sắp xếp: gõ `/statusline` trong `codex`.
+- **agy**: `~/.gemini/antigravity-cli/settings.json` → `statusLine` chạy `custom/statusline/agy_statusline.py`,
+  `stack_with_default: true` (giữ dòng mặc định, thêm dòng "con lại: ctx …% | <hạn mức> …% reset …"; xanh > 50 %,
+  vàng > 20 %, đỏ ≤ 20 %). Chưa có dữ liệu hạn mức thì hiện "chưa có (gõ /usage)". Tắt: `/statusline` → disable.
+- Claude Code: statusline tùy biến không hiện trong panel VS Code (TODO trong báo cáo) → dùng `/usage`.
+
 Hook tự động (`~/.claude/settings.json`, bản lưu `settings.json.bak-2026-10-26-hooks`; mã `custom/hooks/usage_alert.py`):
 - `StopFailure` matcher `rate_limit` → bong bóng thông báo Windows "Claude chạm hạn mức – chuyển việc chữ sang
   doc-writer / ask-gemini" + 1 dòng log.
