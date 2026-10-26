@@ -89,6 +89,8 @@ def main():
                 loi_in.append(f"{f.name}: cum ROI {x['mm2']} mm2 o z {x['z_mm']} (xy {x['bao_xy']})")
             elif x["loai"] == "vuon ra" and x.get("mm2", 0) > 20:
                 cb_in.append(f"{f.name}: vuon ra {x['mm2']} mm2 o z {x['z_mm']} (bac cau? xy {x['bao_xy']})")
+            elif x["loai"] != "vuon ra":  # vd. "luoi khong kin": KHONG kiem duoc theo lop -> phai bao, khong im lang PASS
+                cb_in.append(f"{f.name}: {x['loai']}")
     print(f"  kha nang in: {len(loi_in)} loi, {len(cb_in)} canh bao ({time.time() - t1:.1f} s)", flush=True)
     p1.wait()
     kq = []

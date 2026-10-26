@@ -1,6 +1,6 @@
 # Rà repo: cần cải thiện gì (agent free phân tích, Claude kiểm lại)
 
-Ngày: 2026-10-26 · Người yêu cầu: Tuan · Trạng thái: **nghiên cứu, chưa sửa** (chờ Tuan chọn mục)
+Ngày: 2026-10-26 · Người yêu cầu: Tuan · Trạng thái: **mục 1 đã sửa 2026-10-26** (Tuan đồng ý); mục 2–5 chờ
 
 ## Cách làm
 - **Gemini (agy)** đọc mã (bản chép trong `D:\04_Stlab\agy-scratch`, đã xóa sau khi xong): gói 1 = `tools/robotics-cad`
@@ -61,3 +61,12 @@ Ngày: 2026-10-26 · Người yêu cầu: Tuan · Trạng thái: **nghiên cứu
 3. **Sao lưu FCStd** ra chỗ thứ hai – vì FCStd chỉ có trên máy (nguy cơ mất lớn nhất).
 4. `assembly_paths` dùng `chi_tiet_la` + bộ test cho công cụ – M, làm khi có dự án dùng App::Part/Link.
 5. CI GitHub Actions – L, để sau.
+
+## 6. Đã sửa (2026-10-26, Tuan đồng ý mục 1)
+- #1 `prepare-print.py`: loại kết quả `kiem_lop` khác "vuon ra"/"roi" (vd. "luoi khong kin") → WARN, không im lặng PASS.
+- #3 + #4 + #5 `studio/toolhub/printprep.py`: `_song` khớp **PID + tên ảnh** (`tasklist /FO CSV`, python.exe của FreeCAD)
+  trước khi coi là đang chạy/`taskkill`; đóng file log ở tiến trình cha; ảnh chỉ trả khi nằm trong thư mục dự án.
+- #6 `safe_edit.py` `restore_gui`: mở zip bằng `with`.
+- Kiểm: test nhỏ (STL hở → được báo; `restore_gui` thêm đúng file; `_song` nhận python này, KHÔNG nhận PID explorer.exe;
+  ảnh ngoài dự án → chặn, ảnh trong dự án → 200); hồi quy Chuẩn bị in: pushrod-arm WARN 8 bàn 9 h 59 276,9 g,
+  cyberbrick-car WARN 3 bàn 7 h 15 114,6 g – **y như trước**, không cảnh báo mới.

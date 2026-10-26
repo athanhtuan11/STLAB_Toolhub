@@ -4,6 +4,7 @@ Goi tools/robotics-cad/scripts/prepare-print.py / watch.py bang Python di kem Fr
 Chi doc ket qua `_prepare-print-result.json` canh print.yaml; anh chi tra file .png ma ket qua tro toi.
 Tien trinh chay nen; PID ghi ra file de Toolhub khoi dong lai van biet / tat duoc.
 """
+import csv
 import json
 import subprocess
 import time
@@ -31,10 +32,14 @@ def _song(y, kieu):
     if not f.exists():
         return False
     pid = f.read_text().strip()
-    r = subprocess.run(["tasklist", "/FI", f"PID eq {pid}", "/NH"], capture_output=True, text=True,
-                       creationflags=NO_WINDOW)
-    if pid in r.stdout:
-        return True
+    # PID Windows duoc cap lai sau khi tien trinh ket thuc -> phai khop CA ten anh (python.exe cua FreeCAD), khong chi PID,
+    # neu khong nut "Tat" (taskkill /T /F) co the giet nham tien trinh khac (ra soat 2026-10-26)
+    if pid.isdigit():
+        r = subprocess.run(["tasklist", "/FI", f"PID eq {pid}", "/FO", "CSV", "/NH"], capture_output=True, text=True,
+                           creationflags=NO_WINDOW)
+        for row in csv.reader(r.stdout.splitlines()):
+            if len(row) > 1 and row[1] == pid and row[0].lower() == PY.name.lower():
+                return True
     f.unlink()
     return False
 
@@ -61,8 +66,9 @@ def bat(rel, kieu):
     if kieu == "run" and _song(y, "watch"):
         pass  # cho phep chay tay khi dang theo doi (theo-doi chi chay khi file doi)
     log = open(y.parent / ("_log-run.txt" if kieu == "run" else "_log-watch.txt"), "w", encoding="utf-8")
-    p = subprocess.Popen([str(PY), str(SCRIPTS / KIEU[kieu]), str(y)], stdout=log, stderr=subprocess.STDOUT,
-                         cwd=ROOT, creationflags=NO_WINDOW)
+    with log:   # tien trinh con giu ban sao handle; cha dong ngay (khong ro handle moi lan chay)
+        p = subprocess.Popen([str(PY), str(SCRIPTS / KIEU[kieu]), str(y)], stdout=log, stderr=subprocess.STDOUT,
+                             cwd=ROOT, creationflags=NO_WINDOW)
     _pid_file(y, kieu).write_text(str(p.pid))
     return {"ok": True, "msg": ("Đang chuẩn bị in (~1–2 phút)…" if kieu == "run"
                                 else "Bật tự chạy khi Lưu file FreeCAD") + f" [{time.strftime('%H:%M:%S')}]"}
@@ -85,4 +91,5 @@ def anh(rel, i):
         p = Path(st["ket_qua"]["tang"][i]["anh"])
     except (TypeError, KeyError, IndexError):
         return None
-    return p if p.suffix == ".png" and p.exists() else None
+    ok = p.suffix == ".png" and p.exists() and p.resolve().is_relative_to((ROOT / rel).resolve())  # chi anh trong du an
+    return p if ok else None

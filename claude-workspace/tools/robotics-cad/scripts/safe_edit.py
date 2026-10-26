@@ -174,12 +174,13 @@ def restore_gui(fcstd, gui_from):
     """Chep file chi-hien-thi (co trong gui_from, khong co trong fcstd) vao fcstd. GUI phai DONG file nay."""
     import shutil
     import zipfile
-    src, dst = zipfile.ZipFile(gui_from), Path(fcstd)
-    have = set(zipfile.ZipFile(dst).namelist())
-    add = [n for n in src.namelist() if n not in have]
+    dst = Path(fcstd)
+    with zipfile.ZipFile(dst) as d:   # dong handle truoc tmp.replace(dst) (Windows khoa file dang mo)
+        have = set(d.namelist())
     tmp = dst.with_suffix(".tmp.FCStd")
     shutil.copy2(dst, tmp)
-    with zipfile.ZipFile(tmp, "a", zipfile.ZIP_DEFLATED) as z:
+    with zipfile.ZipFile(gui_from) as src, zipfile.ZipFile(tmp, "a", zipfile.ZIP_DEFLATED) as z:
+        add = [n for n in src.namelist() if n not in have]
         for n in add:
             z.writestr(n, src.read(n))
     tmp.replace(dst)
