@@ -19,7 +19,7 @@ def left(sec):
 
 
 try:
-    j = json.loads(sys.stdin.buffer.read().decode("utf-8") or "{}")
+    j = json.loads(sys.stdin.buffer.read().decode("utf-8-sig") or "{}")   # -sig: chiu BOM (PowerShell them khi pipe)
 except ValueError:
     j = {}
 if j.get("quota"):   # anh chup cho STLAB Toolhub (studio/toolhub/usage.py) - chi file tren may

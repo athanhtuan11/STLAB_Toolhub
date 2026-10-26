@@ -86,7 +86,8 @@ Claude gọi qua plugin):
   "five-hour-limit", "daily-limit", "weekly-limit", "monthly-limit"]` (tên mục lấy từ chính Codex CLI 0.164.0; mục
   không áp dụng cho gói thì tự ẩn – gói Free hiện là cửa sổ 30 ngày). Đổi/sắp xếp: gõ `/statusline` trong `codex`.
 - **agy**: `~/.gemini/antigravity-cli/settings.json` → `statusLine` chạy `custom/statusline/agy_statusline.py`,
-  `stack_with_default: true` (giữ dòng mặc định, thêm dòng "con lại: ctx …% | <hạn mức> …% reset …"; xanh > 50 %,
+  lệnh **không bọc ngoặc kép** (`python D:/04_Stlab/.../agy_statusline.py` – agy chạy qua `cmd /c` và giữ nguyên dấu
+  `"` → Python mở sai đường dẫn, thử 2026-10-26), `stack_with_default: true` (giữ dòng mặc định, thêm dòng "con lại: ctx …% | <hạn mức> …% reset …"; xanh > 50 %,
   vàng > 20 %, đỏ ≤ 20 %). Chưa có dữ liệu hạn mức thì hiện "chưa có (gõ /usage)". Tắt: `/statusline` → disable.
 - **STLAB Toolhub** trang chính → ô "Hạn mức AI" (Codex từ log, Gemini từ ảnh chụp của statusline agy) – xem
   `studio/CLAUDE.md`.
