@@ -1,7 +1,7 @@
 # IN LAI 2026-10-26: xi-lanh LAP DUOC (Tuan: Housing_Elbow + Piston_rod_Elbow in rieng khong lap vao nhau).
 # Model: freecad/scripts/history/2026-10-26_cylinder_assemblable.py - long ong thang 6,6 x 8,6 ho mieng, piston got ve
 # tiet dien ty 6 x 8, ranh dai oc ho mat tren (+y), lo O3,6 tron cho ty ren qua tuong truoc. Anh: images/review/12-*.png
-# Thay R7 + R8 cua plates-reprint-piston-2026-10-25 (KHONG dung Housing/Piston_rod ban do). Banh rang (R9) giu nguyen.
+# Thay R7 + R8 cua bo piston 2026-10-25 (da xoa 2026-10-26). R9 banh rang + Pin_gearbox chuyen tu bo do sang day (hinh hoc khong doi).
 # Pin_gearbox: CHUA in lai - cho Tuan xem lo O4 tren hop so 030 that (test T9Assemble.test_gearbox_pins).
 # Support: Tuan to trong Bambu Studio duoi TAI CHOT vo xi-lanh - GIU TRONG long ong (tran = cau 8,6 mm), khe banh rang,
 # lo truc, ranh dai oc tren ty.
@@ -24,3 +24,8 @@ plates:
     overrides: {wall_loops: "4", sparse_infill_density: "40%", wall_generator: arachne, brim_type: auto_brim,
                 infill_combination: "0"}
     stl: ["*__Piston_rod_*.stl"]
+  R9_Gears_Pins__0.12_PETG_100pct:            # tu bo piston 2026-10-25; Pin_gearbox: chua kiem voi hop so that
+    process: 0.12mm Fine @BBL A1
+    overrides: {wall_loops: "4", sparse_infill_density: "100%", sparse_infill_pattern: zig-zag, infill_combination: "0",
+                wall_generator: arachne, brim_type: outer_only, brim_width: "4", only_one_wall_top: "0"}
+    stl: ["*__Gear_z*.stl", "*__Pin_gearbox_*.stl"]

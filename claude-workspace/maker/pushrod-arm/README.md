@@ -48,9 +48,9 @@ Bảng số liệu luôn mới nhất: [BOM.md](BOM.md) mục "Bàn in".
 | P6_GripperPads (TPU 95A) | 5 ph | 0,6 g | brim |
 | P7_Worms (0,12, 100%) | 34 ph | 1,9 g | trục vít dựng đứng, lỗ trục hộp số ở đáy (mái lỗ tự bắc cầu) |
 | P8_Pins (0,16, **100%**) | 29 ph | 6,8 g | chốt khớp **đặc, in nằm**, thân Ø4,8 (khe 0,3 mm/bên) |
-In lại riêng: `plates-reprint-2026-10-24/` (xi-lanh 030), `plates-reprint-pins-2026-10-25/` (7 chốt),
-`plates-reprint-housings-2026-10-25/` (R6: 2 vỏ xi-lanh, vách rãnh 0,9 mm – thay Housing trong R1/P4), **bộ chốt thử**
-`plates-pin-gauge/` (Ø4,6–4,9, 1–4 vạch – in trước, chọn cỡ, xem `print/print-pin-gauge.yaml`).
+In lại riêng (còn dùng): `plates-reprint-cylinders-2026-10-26/` (R10 2 vỏ xi-lanh, R11 2 ty piston, R9 bánh răng z28/z12 +
+Pin_gearbox) và `plates-reprint-pins-2026-10-25/` (R5: 7 chốt Ø4,8). 2026-10-26 đã xóa bộ cũ không dùng: R1–R3 (trục vít),
+R6 (vỏ thanh răng), R7/R8 (piston chưa lắp được), bộ chốt thử Ø4,6–4,9 (đã chọn Ø4,8; sinh lại: `freecad/scripts/make_pin_gauge.py`).
 
 Lưu ý PETG Basic (TDS chính hãng): PEI bám rất chặt → **đợi bàn nguội rồi mới gỡ**; cuộn để ngoài > 72 h ở độ ẩm > 50 %
 thì sấy trước (máy sấy/tủ sấy có quạt, không dùng lò vi sóng/lò bếp).
