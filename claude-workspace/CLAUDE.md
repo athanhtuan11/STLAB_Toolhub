@@ -61,7 +61,8 @@ Chi tiết, cài đặt, gỡ bỏ: `docs/model-routing.md`.
 Gọi Gemini qua deliberation: chép file cần đọc vào `D:\04_Stlab\agy-scratch\<ten-viec>\` (ngoài repo), `cwd` = thư
 mục đó, prompt ghi "chỉ đọc file trong thư mục làm việc, không chạy lệnh terminal"; xong xóa thư mục. **Không** dùng
 `files` cho Gemini (không được chèn nội dung; đã thử 2026-10-26). Lý do: trên Windows `agy` không có sandbox HĐH.
-Codex (`ask-gpt`, `/codex:review`) đọc được repo trực tiếp ở chế độ chỉ đọc.
+Codex `ask-gpt` (deliberation) trên Windows **không đọc được file** – sandbox chỉ đọc chặn mọi lệnh shell (thử 2026-10-26);
+dùng nó để tra web hoặc dán đoạn mã vào prompt; đọc mã/repo giao Gemini (agy). `/codex:review`: `TODO` thử lại trên Windows.
 
 Nguyên tắc cứng:
 - Model free (Gemini, Codex) **không quyết** kích thước, khe, thông số linh kiện, an toàn điện/pin/nhiệt. Số liệu từ chúng

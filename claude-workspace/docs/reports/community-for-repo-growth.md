@@ -1,6 +1,6 @@
 # Nguồn cộng đồng để phát triển repo STLab (4 mảng chưa nghiên cứu)
 
-Ngày: 2026-10-26 · Người yêu cầu: Tuan · Trạng thái: **nghiên cứu, chưa cài/chưa ghim**
+Ngày: 2026-10-26 · Người yêu cầu: Tuan · Trạng thái: **Tuan giao Claude tự quyết (2026-10-26)** – xem mục 7
 
 ## Cách làm
 - Tuan: "codex + agy quá nhiều, dùng nó tìm cộng đồng". Tra web bằng **Codex** (ChatGPT Free, `ask-gpt`) và **Gemini**
@@ -77,3 +77,25 @@ Build-A-Droid (`makerworld.com/en/models/1549117`), Jimny RC (`.../1604771`) do 
 - License thật của CyberBrick_Controller_Core và micropython (API ghi NOASSERTION).
 - Link/license các mẫu MakerWorld; số đo linh kiện từ cộng đồng (chỉ dùng khi có ảnh đo/nguồn).
 - singular-blockly có hỗ trợ đủ cổng XA004 (M1/M2, S1–S4) không.
+
+## 7. Đã làm (Claude tự quyết theo lời Tuan, 2026-10-26)
+| # | Quyết định | Kết quả |
+|---|---|---|
+| 1 | **Ghim** CyberBrick_Controller_Core | `community/cyberbrick-official-controller-core` @ `9712a8439f33`. License đọc file: **CyberBrick Codebase License** – chỉ dùng qua sản phẩm/dịch vụ MakerWorld–Bambu, bản sửa giữ thông báo → ghi bảng "Xem lại khi thương mại" (`docs/COMMUNITY.md`) |
+| 2 | Thử singular-blockly | **Để sau**: cần XA003 thật + lớp học để thử |
+| 3 | So CADCLAW + estampo với công cụ mình | Đã làm (dưới). Codex **không đọc được file** trên Windows (sandbox chỉ đọc chặn mọi lệnh shell, kể cả `ls`/`cat`) → Gemini (agy) đọc 21 file; Claude kiểm lại tên hàm bằng grep |
+| 4 | GitBuilding + open-source-rover | **Để sau**: ASSEMBLY.md + `assembly-pdf.py` đang dùng tốt; xem lại khi viết ASSEMBLY cyberbrick-car |
+
+### So sánh CADCLAW (v0.11.0, commit `d6d371b`) / estampo (v0.4.5, `f627129`) với `tools/robotics-cad/scripts`
+- **Mình đã mạnh hơn**: va chạm bằng lưới `manifold3d` + quét khớp động (`check.py`), đường tháo lắp tịnh tiến thật
+  (`assembly_paths.py`) – CADCLAW chỉ BRep tĩnh và `DisassemblySequence.auto_sequence` chỉ xếp theo khoảng cách tâm (để làm
+  ảnh nổ, không kiểm va chạm); estampo không có kiểm in hình học trước khi slice, chạy Docker-trước (Orca/Cura trên Linux).
+- **Ý đáng lấy (công nhỏ, đã kiểm hàm có thật)** – ghi `TODO` cho `tools/robotics-cad`, làm khi sửa check.py lần tới:
+  1. **Chi tiết lơ lửng** – `cadclaw/floating.py` `FloatingCheck`: mỗi chi tiết phải cách một chi tiết "khung" ≤ `max_gap_mm`
+     (mặc định 5 mm) → bắt lỗi quên đặt/đặt sai chỗ (kiểu `Receiver_riser` sai chiều cao). Công: S.
+  2. **Gợi ý hướng dời khi va chạm** – `cadclaw/interference.py` `_suggest_clear_shift`: trục rẻ nhất + mm cần dời (hộp bao)
+     → thêm vào báo cáo va chạm cho dễ sửa. Công: S.
+  3. **Xếp bàn trước khi slice** – `estampo/arrange.py` (`rectpack` MaxRectsBssf) thay `--arrange` của Bambu khi cần bố trí
+     cố định. Công: S – chỉ khi gặp lỗi xếp bàn (hiện chưa có).
+- **Không lấy**: dựng lắp ráp bằng CadQuery/OCP (FCStd là nguồn), Docker slice, `sf-hamilton` (nặng, không cần),
+  mã màu AMS (máy A1 của STLab chưa dùng AMS – `TODO` nếu mua).
