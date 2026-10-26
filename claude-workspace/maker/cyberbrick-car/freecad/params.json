@@ -21,5 +21,6 @@
  "rear_bore_af": 3.7,
  "post_top": 30.0,
  "magnet_d": 4.4,
- "magnet_h": 2.1
+ "magnet_h": 2.1,
+ "win_d": 0.4
 }

@@ -26,7 +26,7 @@ Sinh tự động từ `freecad/cyberbrick_car.FCStd` bằng `tools/robotics-cad
 ## Chi tiết in 3D
 | Chi tiết | Bàn in | Nhựa | Thể tích (cm³) |
 |---|---|---|---|
-| `Body_coupe` | P1_Body__0.20_PETG | Bambu PETG Basic @BBL A1 | 81.12 |
+| `Body_coupe` | P1_Body__0.20_PETG | Bambu PETG Basic @BBL A1 | 80.18 |
 | `Chassis` | P2_Chassis_Steering__0.20_PETG | Bambu PETG Basic @BBL A1 | 31.09 |
 | `Gearbox_strap` | P2_Chassis_Steering__0.20_PETG | Bambu PETG Basic @BBL A1 | 0.32 |
 | `Knuckle_L` | P2_Chassis_Steering__0.20_PETG | Bambu PETG Basic @BBL A1 | 1.34 |
@@ -42,7 +42,7 @@ Sinh tự động từ `freecad/cyberbrick_car.FCStd` bằng `tools/robotics-cad
 ## Bàn in (số liệu slicer)
 | Bàn | Thời gian | Nhựa (g) | Support |
 |---|---|---|---|
-| P1_Body__0.20_PETG | 4h20 | 63.3 | – |
+| P1_Body__0.20_PETG | 4h18 | 59.9 | – |
 | P2_Chassis_Steering__0.20_PETG | 1h30 | 34.3 | – |
 | P3_Wheels__0.16_PETG | 1h26 | 20.4 | – |
-| **Tổng** | **7h17** | **118.0** | |
+| **Tổng** | **7h15** | **114.6** | |

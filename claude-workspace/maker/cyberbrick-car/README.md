@@ -10,15 +10,15 @@ bộ phát/thu CyberBrick (XA003 + XA004/XA005). Model **sinh từ tham số**: 
 - Bộ thu XA004 cần 7,4–12,6 V, tối đa 3 A; mỗi cổng động cơ tối đa 1 A (datasheet `Accessories Specification.pdf`).
 - Lần chạy đầu: kê bánh lên, chạy chậm, kiểm nhiệt động cơ 030 và servo (servo PG001 có ly hợp, ngắt khi kẹt 5 s).
 
-## Thông số (model hiện tại, 2026-10-23)
+## Thông số (model hiện tại, 2026-10-26)
 | | |
 |---|---|
-| Dài × rộng × cao | 222,5 × 96 × 58,6 mm (thân), chiều dài cơ sở 140 mm, vệt bánh 72 mm |
+| Dài × rộng × cao | thân 222,5 × 88,6 mm, nóc cao 57,7 mm so với mặt đất (đo trên lưới); chiều dài cơ sở 140 mm, vệt bánh 72 mm |
 | Bánh | lốp CyberBrick LA027 Φ33,7 × 13,85 mm trên vành in (5 nan) |
 | Truyền động | động cơ 030 (LA024) + bộ bánh răng 2 trục **LA013 1:21** (khuyên dùng; có 1:37/1:48/…) – trục ra double-D làm luôn trục bánh sau |
 | Lái | servo **PG001** (CyberBrick) hoặc **MG90S** (mua ngoài) – giá servo dùng chung; chốt lái trước tâm bánh 7 mm (caster) |
-| Thân | gắn bằng 4 cặp nam châm 4 × 2 mm (tháo nhanh) |
-| In | 3 bàn, **~7 h 17, ~118 g** Bambu PETG Basic (số liệu luôn mới: [BOM.md](BOM.md)); **không support** |
+| Thân | dáng **GT bo tròn** (đường vai, kính nghiêng) + **kính khắc chìm 0,4 mm**; gắn bằng 4 cặp nam châm 4 × 2 mm (tháo nhanh) |
+| In | 3 bàn, **~7 h 15, ~114,6 g** Bambu PETG Basic (số liệu luôn mới: [BOM.md](BOM.md)); **không support** |
 
 Tốc độ ước tính (chưa đo): 030 không tải 10 500 vòng/phút ±10 % (8 V), định mức 6 900 → qua 1:21 ≈ 330–500 vòng/phút ở
 bánh Φ33,7 → **≈ 0,6–0,9 m/s**. TODO: đo thật.
@@ -64,13 +64,17 @@ Giá servo: mặt tựa theo MG90S; PG001 vít kéo áp vào giá (lệch 0,47 m
 - Vỏ hộp số 2 trục: có lỗ Φ4 ở cùng vị trí bộ 1 trục không (chốt định vị trên vách sàn).
 - Lốp LA027 ôm vành: kiểm độ chặt (vành Φ26,8/Φ30,1).
 - Bộ phát: chọn cấu hình kênh (lái/ga) trong app CyberBrick.
-- Kiểu dáng thân: bản này tròn đơn giản – vòng sau làm đường vai, kính, cánh gió, đèn LED (Tuan duyệt ảnh).
 
 ## Mua (ngoài bộ phát/thu đã có)
 Động cơ 030 LA024, bộ bánh răng 2 trục LA013 (1:21), 4 lốp LA027, servo PG001 hoặc MG90S, pin PC003 + công tắc XA007,
 8 nam châm 4 × 2 mm, vít (bảng vít trong [BOM.md](BOM.md)).
 
 ## Lịch sử sửa
+- 2026-10-26: **thân GT** (Tuan chọn: GT bo tròn + kính khắc chìm; không cánh gió/LED). Mặt cắt nửa trên = B-spline:
+  sườn đứng tới vai → vai bo r ≤ 1,4 mm → kính nghiêng → mép mái (`upper_curve` trong `build_car.py`). Kính hông/lái/sau
+  khắc sâu `win_d` 0,4 mm (vỏ còn 0,9 mm = 2 đường). Cắt lớp PASS, không support: P1 thân 4 h 18, 59,9 g (trước 63,3 g);
+  cả xe 7 h 15, 114,6 g. Concept: `freecad/scripts/concept_gt_body.py`, ảnh `freecad/images/concept-gt/`.
+  Ảnh render CLI: `freecad/scripts/render_car_cli.py` → `freecad/images/car-*.png`, `contact-sheet.png`.
 - 2026-10-23 (2): tiết kiệm nhựa 127 → 118 g:
   - Vỏ 1,6 → 1,3 mm. Thử 1,2 mm thì slicer báo floating.
   - Sàn 3 → 2,4 mm, thêm 6 cửa sổ giảm tải.

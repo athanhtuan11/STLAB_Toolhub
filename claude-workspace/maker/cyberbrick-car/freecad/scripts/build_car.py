@@ -29,6 +29,7 @@ P = dict(            # ---- tham so chinh (mm) ----
     stub_d=5.0,                         # truc banh truoc IN LIEN VANH (in dung), qua lo giot nuoc o khop lai
     rear_bore_d=5.4, rear_bore_af=3.7,  # truc ra double-D (do STEP: D5.3, dep 3.6 = chuan TT); TODO do bo 2 truc
     post_top=30.0, magnet_d=4.4, magnet_h=2.1,
+    win_d=0.4,                          # kinh khac chim (Tuan 2026-10-26): vo 1,3 -> con 0,9 = 2 duong Bambu
 )
 P["servo_type"] = os.environ.get("CAR_SERVO", P["servo_type"])               # thu nhanh: CAR_SERVO=mg90s
 Z_AX = P["wheel_r"]
@@ -384,11 +385,25 @@ ST = [  # x, nua rong w, cao vai (belt) zb, cao dinh h, nua rong mai wr
     (FX + 39, 26, 16.5, 19.0, 21), (FX + 41, 17, 13.5, 15.5, 13)]               # mui bo tron
 
 
+def upper_curve(w, zb, h, wr, zc):
+    """1/4 tren phai (y >= 0): (w, zc) -> suon dung -> vai bo -> kinh nghieng -> mep mai (wr) -> dinh (0, h).
+    Dang GT (Tuan 2026-10-26; concept freecad/scripts/concept_gt_body.py)."""
+    wr = min(wr, w - 1.0)
+    sh = min(1.4, max(0.6, (h - zb) * 0.2))                                  # ban kinh vai (thap o vom chan bun)
+    poles = [V(w, zc, 0), V(w, zb - sh, 0), V(w - 0.3, zb + sh * 0.6, 0),
+             V(wr + 1.5, h - 2.5, 0), V(wr * 0.55, h, 0), V(0, h, 0)]
+    bs = Part.BSplineCurve()
+    bs.buildFromPoles(poles, False, 3)
+    return bs
+
+
 def section(x, w, zb, h, wr, z0, t=0.0, n=48):
-    """Mat cat YZ: than duoi sieu-ellipse (vuong bo, n=6) tu z0 toi vai zb; nua tren vom tu vai len mai h,
-    thu hep dan ve mai (wr) -> cabin. Cung so diem + cung tham so cho moi tram -> loft tron, khong gon."""
+    """Mat cat YZ: than duoi sieu-ellipse (vuong bo, n=6) tu z0 toi giua suon; nua tren = suon dung toi vai zb, vai bo,
+    kinh nghieng vao mep mai wr, dinh h (upper_curve). Cung so diem + cung tham so cho moi tram -> loft tron, khong gon."""
     w, zb, h, wr = w - t, zb - t, h - t, wr - t
     zc = (z0 + zb) / 2.0
+    uc = upper_curve(w, zb, h, wr, zc)
+    u0, u1 = uc.FirstParameter, uc.LastParameter
     pts = []
     for i in range(n):
         a = 2 * math.pi * i / n - math.pi / 2                               # seam o giua day (bi cat bo khi lam day ho)
@@ -396,10 +411,10 @@ def section(x, w, zb, h, wr, z0, t=0.0, n=48):
         if sa < 0:   # nua duoi
             y = w * math.copysign(abs(ca) ** (2 / 6.0), ca)
             z = zc - (zc - z0) * abs(sa) ** (2 / 6.0)
-        else:        # nua tren: vom + thu hep ve mai
-            k = 1.0 - min(wr, w) / w
-            y = w * math.copysign(abs(ca) ** (2 / 3.2), ca) * (1.0 - k * sa ** 4)
-            z = zc + (h - zc) * sa ** (2 / 3.5)                              # vai day (vom chan bun che banh)
+        else:        # nua tren: 0 o suon -> 1 o dinh (doi xung)
+            f = (a if ca >= 0 else math.pi - a) / (math.pi / 2)
+            p = uc.value(u0 + (u1 - u0) * min(max(f, 0.0), 1.0))
+            y, z = (math.copysign(p.x, ca) if abs(ca) > 1e-9 else 0.0), p.y
         pts.append(V(x, y, z))
     bs = Part.BSplineCurve()
     bs.interpolate(pts, PeriodicFlag=True)
@@ -441,6 +456,38 @@ for x, r, dx in ((0, P["rear_arch_r"], 0), (FX, P["front_arch_r"], P["front_arch
         arch = arch.fuse(flare)
         body = body.cut(arch)
         DIAG[f"arch_{x}_{sgn}"] = [body.isValid(), round(body.Volume)]
+
+
+# ---- Kinh khac chim (Tuan 2026-10-26): lang tru kinh GIAO lop da [mat ngoai + 1 mm .. mat ngoai - win_d] ----
+# dao loi ra ngoai 1 mm -> khong trung mat B-spline cua vo (trung mat -> boolean hong)
+def lerp_st(x, k):
+    """noi suy cot k (1 w, 2 zb, 3 h, 4 wr) cua ST theo x"""
+    for (xa, *a), (xb, *b) in zip(ST, ST[1:]):
+        if xa <= x <= xb:
+            return a[k - 1] + (b[k - 1] - a[k - 1]) * (x - xa) / (xb - xa)
+
+
+def rounded(pts, r, plane):
+    vs = [V(p[0], 0, p[1]) if plane == "xz" else V(p[0], p[1], 0) for p in pts]
+    return Part.Face(Part.makePolygon(vs + [vs[0]])).makeOffset2D(-r).makeOffset2D(r)
+
+
+_xs = list(range(26, 93, 2))                                                 # kinh hong: vai + 2,5 .. mep mai - 3,5
+fs = rounded([(x, lerp_st(x, 2) + 2.5) for x in _xs] + [(x, min(lerp_st(x, 3) - 3.5, 52.5)) for x in reversed(_xs)],
+             2.5, "xz")
+_wx, _rx = [89, 93, 97, 101, 105], [4, 10, 16, 22, 28, 34]                    # kinh lai / kinh sau (fastback)
+fw = rounded([(x, lerp_st(x, 4) - 5) for x in _wx] + [(x, 5 - lerp_st(x, 4)) for x in reversed(_wx)], 2.0, "xy")
+fr = rounded([(x, lerp_st(x, 4) - 7) for x in _rx] + [(x, 7 - lerp_st(x, 4)) for x in reversed(_rx)], 3.0, "xy")
+fw.translate(V(0, 0, 38))
+fr.translate(V(0, 0, 41))
+skin = (Part.makeLoft([section(x, w, zb, h, wr, Z0, -1.0) for x, w, zb, h, wr in ST], True, False)
+        .cut(Part.makeLoft([section(x, w, zb, h, wr, Z0, P["win_d"]) for x, w, zb, h, wr in ST], True, False)))
+DIAG["solids_truoc_kinh"] = [round(x.Volume, 1) for x in body.Solids]
+body = max(body.Solids, key=lambda x: abs(x.Volume))                        # manh vun do cat mat day -> boolean hong
+for nm, prism in (("side", fs.extrude(V(0, 70, 0)).fuse(fs.extrude(V(0, -70, 0)))),
+                  ("wind", fw.extrude(V(0, 0, 40))), ("rear", fr.extrude(V(0, 0, 40)))):
+    body, _inf = se.safe_cut(body, skin.common(prism), rel_tol=0.15, abs_tol_mm3=30, mesh_mm=0.1, fuzzy=(0.0,))  # lop 0,4 mm: luoi 0,3 uoc lech 16 %
+    DIAG[f"glass_{nm}"] = [body.isValid(), round(body.Volume), _inf["uoc_mm3"], _inf["doi_mm3"]]
 # o nam cham: GAN tam giac moc tu vo xuong (canh duoi theo chieu in doc 50 do), hoc ngam dau tru + lo nam cham
 # mat cat giot nuoc (mui huong +X = huong len khi in dung)
 
