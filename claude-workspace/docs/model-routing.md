@@ -88,6 +88,8 @@ Claude gọi qua plugin):
 - **agy**: `~/.gemini/antigravity-cli/settings.json` → `statusLine` chạy `custom/statusline/agy_statusline.py`,
   `stack_with_default: true` (giữ dòng mặc định, thêm dòng "con lại: ctx …% | <hạn mức> …% reset …"; xanh > 50 %,
   vàng > 20 %, đỏ ≤ 20 %). Chưa có dữ liệu hạn mức thì hiện "chưa có (gõ /usage)". Tắt: `/statusline` → disable.
+- **STLAB Toolhub** trang chính → ô "Hạn mức AI" (Codex từ log, Gemini từ ảnh chụp của statusline agy) – xem
+  `studio/CLAUDE.md`.
 - Claude Code: statusline tùy biến không hiện trong panel VS Code (TODO trong báo cáo) → dùng `/usage`.
 
 Hook tự động (`~/.claude/settings.json`, bản lưu `settings.json.bak-2026-10-26-hooks`; mã `custom/hooks/usage_alert.py`):

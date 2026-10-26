@@ -3,7 +3,9 @@
 # (docs: https://antigravity.google/docs/cli/statusline - truong `quota`: remaining_fraction|remaining_amount, reset_in_seconds).
 # Dang ky: ~/.gemini/antigravity-cli/settings.json -> statusLine {command, stack_with_default: true}. Chi doc stdin, khong goi mang.
 import json
+import os
 import sys
+import time
 
 G, Y, R, D, X = "\033[32m", "\033[33m", "\033[31m", "\033[2m", "\033[0m"
 
@@ -20,8 +22,18 @@ try:
     j = json.loads(sys.stdin.buffer.read().decode("utf-8") or "{}")
 except ValueError:
     j = {}
+if j.get("quota"):   # anh chup cho STLAB Toolhub (studio/toolhub/usage.py) - chi file tren may
+    try:
+        d = os.path.join(os.environ.get("LOCALAPPDATA", os.path.expanduser("~")), "stlab-usage")
+        os.makedirs(d, exist_ok=True)
+        tmp = os.path.join(d, "agy.json.tmp")
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump({"time": time.time(), "quota": j["quota"], "plan_tier": j.get("plan_tier")}, f)
+        os.replace(tmp, os.path.join(d, "agy.json"))
+    except OSError:
+        pass
 parts = []
-ctx = (j.get("context_window") or {}).get("used_percentage")
+ctx =(j.get("context_window") or {}).get("used_percentage")
 if ctx is not None:
     parts.append("ctx %d%%" % ctx)
 for name, q in sorted((j.get("quota") or {}).items()):

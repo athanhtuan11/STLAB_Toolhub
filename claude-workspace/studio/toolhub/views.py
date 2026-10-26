@@ -6,6 +6,7 @@ import launcher
 
 from . import opener
 from . import printprep
+from . import usage
 from . import workspace as ws
 
 bp = Blueprint("hub", __name__)
@@ -58,6 +59,12 @@ def api_health():
     if n := sum(not x["ok"] for x in ws.links()):
         issues.append((f"{n} skill/agent liên kết lỗi", "hub.skills"))
     return jsonify([{"text": t, "url": url_for(ep)} for t, ep in issues])
+
+
+@bp.get("/api/usage")
+def api_usage():
+    """Han muc Claude/Codex/Gemini cho o "Han muc AI" o trang chinh (chi doc file tren may - toolhub/usage.py)."""
+    return jsonify(usage.all_agents())
 
 
 @bp.get("/apps")

@@ -18,6 +18,9 @@
   {% endfor %}
 </section>
 
+<h2>Hạn mức AI</h2>
+<section id="usage" class="usage"><span class="muted">Đang đọc…</span></section>
+
 <h2>Đang làm</h2>
 <section class="grid wide">
   {% for p in active %}
@@ -63,5 +66,30 @@ fetch("/api/health").then(r => r.json()).then(xs => {
     el.append(a, i < xs.length - 1 ? " · " : "");
   });
 }).catch(() => { document.getElementById("health").textContent = ""; });
+
+// "Han muc AI": doc file tren may (toolhub/usage.py); thanh = % DA DUNG, mau theo muc con lai
+fetch("/api/usage").then(r => r.json()).then(xs => {
+  const box = document.getElementById("usage");
+  box.textContent = "";
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; };
+  xs.forEach(a => {
+    const c = el("div", "u-card");
+    const h = el("div", "row");
+    h.append(el("b", "grow", a.name), el("span", "badge plain", a.plan));
+    c.append(h);
+    a.bars.forEach(b => {
+      const left = 100 - b.used;
+      const lv = left > 50 ? "ok" : left > 20 ? "warn" : "bad";
+      const line = el("div", "u-line");
+      line.append(el("span", "u-label", b.label), el("span", "u-val " + lv, "còn " + Math.round(left) + "%"));
+      const bar = el("div", "u-bar"); const fill = el("i", lv); fill.style.width = Math.min(100, b.used) + "%"; bar.append(fill);
+      c.append(line, bar);
+      if (b.reset) c.append(el("div", "muted", "reset " + b.reset));
+    });
+    if (a.note) c.append(el("div", "muted", a.note));
+    if (a.updated) c.append(el("div", "muted u-upd", "cập nhật " + a.updated));
+    box.append(c);
+  });
+}).catch(() => { document.getElementById("usage").textContent = ""; });
 </script>
 {% endblock %}
