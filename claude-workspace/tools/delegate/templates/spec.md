@@ -9,7 +9,9 @@ allow:                                # file được tạo/sửa (glob, tương
 gate: "python -m pytest -q tests"     # lệnh kiểm, chạy trong cwd; exit 0 = PASS
 timeout_min: 15                       # mỗi vòng executor
 max_rounds: 2                         # gate FAIL thì giao lại kèm lỗi, tối đa N vòng
-executor: auto                        # auto | codex | opencode | agy
+executor: auto                        # auto | id trong org/agents.yaml (codex, opencode, agy, ...)
+# ky_nang: [code]                     # thay executor: chon nhan vien chinh-thuc co du ky nang (xem org/agents.yaml)
+# read: ["community/abc"]             # thu muc duoc DOC them (khong ghi), tuong doi claude-workspace
 ---
 
 # Mục tiêu

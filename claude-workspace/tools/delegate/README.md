@@ -15,6 +15,8 @@ Quy tắc: executor **không tự chọn** kích thước, thông số hay ngư�
 ## File
 
 - `delegate.py`: đọc spec, chọn executor, chạy vòng lặp, chạy gate, kiểm file đã đổi.
+- `../../org/agents.yaml`, `../../org/policy.yaml`: sổ nhân sự và chính sách, nguồn duy nhất (xem mục bên dưới).
+- `tests/test_registry.py`: gate kiểm sổ nhân sự và chọn executor.
 - `templates/spec.md`: mẫu spec (front matter + Mục tiêu, Đầu vào, Yêu cầu, Không làm, Tiêu chí PASS).
 - `opencode.json`: luật cho OpenCode (cấm ghi ngoài cwd, cấm `.FCStd`, cấm git commit/push).
 - `json_ok.py`: đọc khóa `true/false` trong file JSON, dùng làm lệnh gate.
@@ -22,7 +24,7 @@ Quy tắc: executor **không tự chọn** kích thước, thông số hay ngư�
 
 ## Thứ tự executor
 
-Mặc định `executor: auto` theo thứ tự:
+Mặc định `executor: auto` đi theo chuỗi `khi_het_han_muc` trong `org/agents.yaml` (không khai báo cứng trong mã). Hiện tại:
 
 1. **Codex exec** (chính, ChatGPT Free).
 2. **OpenCode Zen free** (model `opencode/deepseek-v4.1-flash-free`).
@@ -38,7 +40,20 @@ python tools/delegate/delegate.py --clear-limit codex         # xóa đánh dấ
 python tools/delegate/delegate.py <spec.md> --simulate-limit codex    # giả lập codex hết hạn mức (thử nghiệm)
 ```
 
-Thời gian chờ hết hạn mức (`COOLDOWN_H` trong `delegate.py`): codex 5 giờ, opencode 1 giờ, agy 24 giờ. Đây là ước lượng, chưa xác nhận: TODO.
+Thời gian chờ hết hạn mức (`cooldown_h` trong `org/agents.yaml`): codex 5 giờ, opencode 1 giờ, agy 24 giờ. Đây là ước lượng, chưa xác nhận: TODO.
+
+## Sổ nhân sự (org/) và chọn theo kỹ năng
+
+- Nguồn duy nhất: `org/agents.yaml` (`model`, `cooldown_h`, `khi_het_han_muc`, `ky_nang`, `muc_du_lieu`, `trang_thai`) và `org/policy.yaml` (`duong_cam`, `muc_du_lieu`). Thứ tự, cooldown, model và đường cấm đều đọc từ hai file này.
+- Sổ hỏng (thiếu file, sai cấu trúc, không có hoặc có nhiều điểm bắt đầu chuỗi, trỏ tới executor không tồn tại, executor `chinh-thuc` thiếu adapter) → báo lỗi rõ và dừng. Không dùng mặc định ngầm.
+- Chuỗi `auto`: executor `chinh-thuc` đi theo `khi_het_han_muc`. Người `nghi` và `thu-viec` không vào chuỗi.
+- `thu-viec` chỉ chạy khi spec gọi đích danh `executor: <id>`, và phải có adapter trong `ADAPTERS`.
+- Spec ghi `ky_nang: [code]` thay cho `executor`: chỉ chọn executor `chinh-thuc` có đủ mọi kỹ năng đã ghi, giữ thứ tự chuỗi. Không ai đủ → lỗi.
+- Spec ghi `read: [...]`: thư mục được đọc thêm (tương đối với `claude-workspace`), không được ghi.
+- Mức dữ liệu: `policy.muc_du_lieu.thu_muc` gán mức theo thư mục (mặc định `internal`); executor có mức thấp hơn bị loại. Executor ngoài tối đa `internal`, nên `stlab/parent-reports` (customer) bị từ chối.
+- Tuan 2026-10-27: mọi dự án trong `maker/` là việc bình thường. "customer" chỉ là thông tin cá nhân: học sinh/phụ huynh, tên-địa chỉ-SĐT khách, mật khẩu.
+- Thêm nhân viên: hồ sơ `trang_thai: thu-viec` trong `agents.yaml` + adapter trong `ADAPTERS` → `python tools/org/check_org.py` PASS → bài thử có gate → Tuan duyệt → `chinh-thuc`.
+- Kiểm: `python tests/test_registry.py` (chạy từ `tools/delegate`), không gọi executor thật. Bài này Codex viết qua delegate.py; Claude sửa thêm `--status` (chỉ liệt kê executor có adapter) và dọn thư mục tạm của test.
 
 ## Cách dùng
 
@@ -47,7 +62,7 @@ Thời gian chờ hết hạn mức (`COOLDOWN_H` trong `delegate.py`): codex 5 
    - `cwd`: thư mục executor được làm việc (tương đối với `claude-workspace`).
    - `allow`: glob các file được tạo/sửa, tương đối theo `cwd`.
    - `gate`: lệnh kiểm, exit 0 = PASS.
-   - `timeout_min` (mặc định 15), `max_rounds` (mặc định 2), `executor` (`auto` | `codex` | `opencode` | `agy`).
+   - `timeout_min` (mặc định 15), `max_rounds` (mặc định 2), `executor` (`auto` | id trong `org/agents.yaml`), hoặc `ky_nang` thay cho `executor`.
 2. Claude viết test hoặc gate **trước**, chạy thử để chắc gate FAIL khi chưa có code.
 3. Chạy từ `claude-workspace`:
 
@@ -59,7 +74,10 @@ Thời gian chờ hết hạn mức (`COOLDOWN_H` trong `delegate.py`): codex 5 
    `%LOCALAPPDATA%\stlab-usage\delegate-runs\<thời-gian>-<task>\`
    (gồm `prompt-N.txt`, `<executor>-N.log`, `gate-N.log`, `result.json`).
 
-Các trường trong `result.json`: `verdict` (PASS/WARN/FAIL), `passed`, `rounds`, `changed`, `forbidden_touched`, `outside_allow`, `skipped`, `error`.
+Các trường trong `result.json`: `verdict` (PASS/WARN/FAIL/ESCALATE), `passed`, `rounds`, `changed`, `forbidden_touched`, `outside_allow`, `skipped`, `error`.
+
+- `ESCALATE: <việc cần làm và lý do>` là dòng cuối của executor khi thiếu quyền hoặc việc nằm ngoài spec: dừng, không giao lại.
+- Kết quả: `verdict` = ESCALATE, exit 2, có `handoff.md` trong run_dir. Claude quyết bước tiếp.
 
 Gate nhiều bước: `gate.py` của `cad-delegation` luôn exit 0, nên phải nối thêm `json_ok.py`:
 
@@ -72,7 +90,7 @@ Xem `tools/cad-delegation/pilot-opencode/knuckle/task.md` làm mẫu.
 ## An toàn
 
 - Từ chối `cwd` nằm trong `stlab/parent-reports` hoặc `community` (dữ liệu không được gửi ra ngoài, nguồn ghim không được sửa).
-- **FAIL** nếu executor đụng `.FCStd`, `print.yaml`, `community/`, `.env` hoặc `parent-reports/`.
+- **FAIL** nếu executor đụng file theo `policy.duong_cam` (hiện: `.FCStd`, `print.yaml`, `community/`, `.env`, `parent-reports/`, `org/`).
 - **WARN** nếu executor sửa file ngoài `allow`. Claude kiểm tay trước khi nhận.
 - OpenCode **không có sandbox hệ điều hành** trên Windows. Bù bằng `opencode.json`: cấm ghi ngoài cwd, cấm `.FCStd`, cấm `git commit/push/reset/checkout`. Đã thử thật (2026-10-27): luật cấm có hiệu lực.
 - Script không tự hoàn tác thay đổi. Kiểm `git status` sau mỗi lần chạy.

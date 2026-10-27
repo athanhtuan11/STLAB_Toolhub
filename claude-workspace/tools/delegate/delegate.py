@@ -5,7 +5,8 @@
 #   python tools/delegate/delegate.py --clear-limit codex # xoa danh dau het han muc
 #   python tools/delegate/delegate.py --resume <run>      # chay lai run bi cat ngang (run_dir moi, prompt them ngu canh)
 #   Run khong PASS -> handoff.md trong run_dir (tom tat vong, gate, file thay doi, buoc tiep).
-# Spec: front matter YAML (task, cwd, allow, gate, timeout_min, max_rounds, executor) + noi dung Markdown,
+# Spec: front matter YAML (task, cwd, allow, gate, timeout_min, max_rounds, executor, ky_nang) + Markdown.
+# Nhan su, ky_nang, model va chinh sach lay tu claude-workspace/org/agents.yaml + policy.yaml.
 # mau o templates/spec.md. Duong dan tuong doi tinh tu claude-workspace/.
 # Run: %LOCALAPPDATA%/stlab-usage/delegate-runs/<thoi-gian>-<task>/
 #      {prompt-N.txt, <executor>-N.log, gate-N.log, result.json}
@@ -17,14 +18,51 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 WS = os.path.abspath(os.path.join(HERE, "..", ".."))
 USAGE = os.path.join(os.environ.get("LOCALAPPDATA", os.path.expanduser("~")), "stlab-usage")
 LIMITS = os.path.join(USAGE, "executors.json")
-ORDER = ["codex", "opencode", "agy"]
-COOLDOWN_H = {"codex": 5, "opencode": 1, "agy": 24}   # TODO: chua biet chu ky reset that cua Codex Free/Zen free
-OPENCODE_MODEL = "opencode/deepseek-v4.1-flash-free"
-AGY_MODEL = "gemini-3.8-flash-high"
+ADAPTERS = {"codex": "codex", "opencode": "opencode", "agy": "agy"}
+
+def load_org(org_dir=None):
+    """Nap so nhan su va policy; loi/hong so phai duoc bao ro."""
+    org_dir = org_dir or os.path.join(WS, "org")
+    try:
+        with open(os.path.join(org_dir, "agents.yaml"), encoding="utf-8") as f:
+            doc = yaml.safe_load(f)
+        with open(os.path.join(org_dir, "policy.yaml"), encoding="utf-8") as f:
+            policy = yaml.safe_load(f)
+    except (OSError, yaml.YAMLError) as e:
+        raise ValueError(f"khong doc duoc so org: {e}") from e
+    if not isinstance(doc, dict) or not isinstance(doc.get("agents"), list) or not isinstance(policy, dict):
+        raise ValueError("so org sai cau truc")
+    agents = {a.get("id"): a for a in doc["agents"] if isinstance(a, dict) and a.get("id")}
+    ex = {i: a for i, a in agents.items() if a.get("loai") == "cli-executor" and a.get("chi_phi") != "tra-phi"}
+    for ident, a in ex.items():
+        if a.get("trang_thai") == "chinh-thuc" and ident not in ADAPTERS:
+            raise ValueError(f"executor chinh-thuc khong co ADAPTERS: {ident}")
+    incoming = {a.get("khi_het_han_muc") for a in ex.values() if a.get("khi_het_han_muc") in ex}
+    starts = [i for i in ex if ex[i].get("trang_thai") == "chinh-thuc" and i not in incoming]
+    if len(starts) != 1:
+        raise ValueError("chuoi khi_het_han_muc khong co diem bat dau duy nhat")
+    order, seen, ident = [], set(), starts[0]
+    while ident is not None:
+        if ident in seen:
+            break
+        if ident not in ex:
+            raise ValueError(f"chuoi khi_het_han_muc khong hop le tai {ident}")
+        seen.add(ident)
+        a = ex[ident]
+        if a.get("trang_thai") == "chinh-thuc":
+            if ident not in ADAPTERS:
+                raise ValueError(f"executor chinh-thuc khong co ADAPTERS: {ident}")
+            order.append(ident)
+        ident = a.get("khi_het_han_muc")
+    return dict(order=order, cooldown={i: a.get("cooldown_h") for i, a in ex.items()},
+                model={i: a.get("model") for i, a in agents.items()}, forbidden=policy.get("duong_cam"),
+                agents=agents, policy=policy)
+
+ORG = load_org()
+ORDER, COOLDOWN_H, FORBIDDEN = ORG["order"], ORG["cooldown"], ORG["forbidden"]
 # Khong giao ra ngoai: du lieu phu huynh, nguon cong dong ghim
 REFUSE_CWD = ["stlab/parent-reports", "community"]
 # Executor khong duoc dong toi (kiem bang git status sau khi chay)
-FORBIDDEN = ["*.FCStd", "*/print.yaml", "print.yaml", "community/*", "*.env", ".env", "*/parent-reports/*", "org/*"]
 LIMIT_RE = re.compile(r"\b429\b|rate.?limit|usage limit|quota (?:reached|exceeded)|exceeded your|too many requests|"
                       r"individual quota", re.I)
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
@@ -248,25 +286,78 @@ def parse_spec(path):
     meta.setdefault("timeout_min", 15)
     meta.setdefault("max_rounds", 2)
     meta.setdefault("executor", "auto")
+    meta.setdefault("ky_nang", None)
     meta.setdefault("read", [])                          # thu muc duoc DOC them (tuong doi claude-workspace), khong ghi
     return meta, m.group(2).strip()
 
 
-def command(name, prompt):
-    """(argv, stdin) cho tung executor. Lenh da thu that 2026-10-26/27 tren Windows."""
+def _codex(prompt):
+    """Dung lenh Codex hien tai."""
+    name = "codex"
     if name == "codex":
         exe = shutil.which("codex.cmd") or shutil.which("codex")
         return [exe, "exec", "--sandbox", "workspace-write", "--skip-git-repo-check",
                 "-c", "features.prefer_mxc=true", "-"], prompt
+    return None, None
+
+def _opencode(prompt):
+    name = "opencode"
     if name == "opencode":
         exe = os.path.join(os.environ.get("APPDATA", ""), "npm", "node_modules", "opencode-ai", "bin", "opencode.exe")
         exe = exe if os.path.exists(exe) else shutil.which("opencode")
-        return [exe, "run", "--model", OPENCODE_MODEL], prompt
-    if name == "agy":
-        return [shutil.which("agy"), "-p", prompt, "--model", AGY_MODEL,
-                "--dangerously-skip-permissions", "--sandbox"], None
-    raise ValueError(name)
+        return [exe, "run", "--model", ORG["model"][name]], prompt
+    return None, None
 
+def _agy(prompt):
+    name = "agy"
+    if name == "agy":
+        return [shutil.which("agy"), "-p", prompt, "--model", ORG["model"][name],
+                "--dangerously-skip-permissions", "--sandbox"], None
+    return None, None
+
+ADAPTERS.update(codex=_codex, opencode=_opencode, agy=_agy)
+
+def command(name, prompt):
+    try:
+        return ADAPTERS[name](prompt)
+    except KeyError as e:
+        raise ValueError(name) from e
+
+
+def pick_queue(meta, cwd_rel, org):
+    """Chon executor theo ky_nang/chi dinh va gioi han muc du lieu."""
+    agents, policy = org["agents"], org["policy"]
+    choice = meta.get("executor", "auto")
+    if choice not in (None, "auto"):
+        if choice not in agents or choice not in ADAPTERS:
+            raise ValueError(f"executor khong hop le: {choice}")
+        if agents[choice].get("trang_thai") == "nghi":
+            raise ValueError(f"executor da nghi viec: {choice} (doi trang_thai trong org/agents.yaml neu can)")
+        queue = [choice]
+    elif meta.get("ky_nang") is not None:
+        skills = meta["ky_nang"]
+        skills = [skills] if isinstance(skills, str) else skills
+        if not isinstance(skills, list) or not skills:
+            raise ValueError("ky_nang phai la chuoi hoac danh sach khong rong")
+        queue = [i for i in org["order"] if set(skills) <= set(agents[i].get("ky_nang") or [])]
+        if not queue:
+            raise ValueError("khong co executor du ky_nang")
+    else:
+        queue = list(org["order"])
+    data = policy.get("muc_du_lieu") or {}
+    folders = data.get("thu_muc") or {}
+    level = data.get("mac_dinh")
+    for folder, value in folders.items():
+        folder = str(folder).strip("/")
+        if (cwd_rel == folder or cwd_rel.startswith(folder + "/")) and len(folder) > len(next((x for x in folders if (cwd_rel == x or cwd_rel.startswith(str(x).strip("/") + "/")) and len(str(x)) > len(folder)), "")):
+            level = value
+    levels = data.get("thu_tu") or []
+    if level not in levels:
+        raise ValueError(f"muc du lieu khong hop le: {level}")
+    queue = [i for i in queue if agents[i].get("muc_du_lieu") in levels and levels.index(agents[i]["muc_du_lieu"]) >= levels.index(level)]
+    if not queue:
+        raise ValueError("khong executor nao du muc du lieu")
+    return queue
 
 def installed(name):
     return command(name, "")[0][0] is not None
@@ -330,7 +421,9 @@ def main():
         if a.clear_limit:
             lim.pop(a.clear_limit, None)
             save_limits(lim)
-        st = {n: dict(installed=installed(n), limited=is_limited(n, lim), **lim.get(n, {})) for n in ORDER}
+        # chi executor co adapter (agent Claude/tu van khong goi qua delegate)
+        ids = dict.fromkeys(ORDER + [n for n in ORG["agents"] if n in ADAPTERS])
+        st = {n: dict(installed=installed(n), limited=is_limited(n, lim), **lim.get(n, {})) for n in ids}
         st["runs_without_result"] = run_states()
         print(json.dumps(st, ensure_ascii=False))
         return
@@ -356,7 +449,12 @@ def main():
 
     choice = a.executor or meta["executor"]
     simulated = {x for x in a.simulate_limit.split(",") if x}
-    queue = ORDER if choice == "auto" else [choice]
+    meta["executor"] = choice
+    try:
+        queue = pick_queue(meta, cwd_rel, ORG)
+    except ValueError as e:
+        print(f"LOI: {e}", file=sys.stderr)
+        sys.exit(1)
 
     run_dir = os.path.join(USAGE, "delegate-runs", now().strftime("%Y%m%d-%H%M%S") + "-" + meta["task"])
     os.makedirs(run_dir, exist_ok=True)

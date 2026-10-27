@@ -91,7 +91,8 @@ dùng nó để tra web hoặc dán đoạn mã vào prompt; đọc mã/repo gia
 Nguyên tắc cứng:
 - Model free (Gemini, Codex, OpenCode) **không quyết** kích thước, khe, thông số linh kiện, an toàn điện/pin/nhiệt. Số liệu từ chúng
   phải được phiên chính hoặc script kiểm; không có nguồn → `TODO`.
-- **Không gửi ra ngoài** (Gemini, Codex, OpenCode): `stlab/parent-reports/`, dữ liệu khách (`maker/pump-control/` phần khách),
+- **Không gửi ra ngoài** (Gemini, Codex, OpenCode): `stlab/parent-reports/`, thông tin cá nhân của khách (tên, địa chỉ, SĐT, mật khẩu Wi-Fi/tài khoản – KHÔNG phải
+  bản thân dự án: mọi dự án trong `maker/` là việc bình thường, giao executor được; Tuan 2026-10-27),
   `.env`/key/mật khẩu, ảnh có người. Chỉ tài liệu kỹ thuật, mã nguồn của workspace.
 - `/codex:rescue` (Codex được ghi file, sandbox `workspace-write`) chỉ dùng khi Tuan đồng ý; cấm cho đụng `.FCStd`,
   `print.yaml`, `community/`. Không bật cổng review khi dừng (`/codex:setup` → stop gate giữ **tắt**).

@@ -16,8 +16,9 @@ muc_du_lieu:
   thu_tu: [public-tech, internal, customer]
   mac_dinh: internal
   thu_muc:
+    # Tuan 2026-10-27: moi du an trong maker/ la viec binh thuong (internal). "customer" = du lieu ca nhan
+    # (hoc sinh/phu huynh, ten-dia chi-SDT khach, mat khau Wi-Fi/tai khoan) – khong phai ban than du an.
     stlab/parent-reports: customer
-    maker/pump-control: customer
     community: public-tech
 
 # Nha cung cap ngoai (chi_phi free, loai cli-executor/mcp-advisor) toi da muc nay
