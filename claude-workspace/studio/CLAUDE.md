@@ -1,9 +1,9 @@
 # studio – mở ứng dụng và nối MCP
 
-Một chỗ để mở FreeCAD, Blender, LightCraft, PhotoCraft (đã bật cổng MCP) và làm việc với Claude Code
-qua cả 4 MCP server trong `.mcp.json`.
+Một chỗ để mở FreeCAD, Blender, FilmCraft, LightCraft, PhotoCraft (đã bật cổng MCP) và làm việc với Claude Code
+qua cả 5 MCP server trong `.mcp.json`.
 
-> Tự viết vì chưa tìm thấy launcher cộng đồng nào cho bộ 4 ứng dụng này (2026-10-21).
+> Tự viết vì chưa tìm thấy launcher cộng đồng nào cho bộ 5 ứng dụng này (2026-10-21).
 > Chỉ dùng thư viện chuẩn và Flask (`uv.lock` ghim 3.1.3).
 
 ## Thành phần
@@ -17,16 +17,19 @@ qua cả 4 MCP server trong `.mcp.json`.
   nạp sau qua `/api/health`), hàng ứng dụng (đèn + Mở), thẻ dự án in 3D (kết quả Chuẩn bị in + nút), dự án khác thu gọn.
   Thêm trang mới: đặt vào "Thêm" trừ khi dùng hằng ngày. Trang chính phải hiện ngay – việc chậm (git, tasklist) nạp bằng JS.
   - Trang **Sửa ảnh** (photolab, LUT/preset) đã gỡ 2026-10-25 – Tuan: tập trung CAD + Blender, ảnh/video mảng robotics.
-  - Ô **Hạn mức AI** (2026-10-26) ở trang chính, nạp sau qua `/api/usage` (`toolhub/usage.py`, chỉ đọc file trên máy):
-    Codex = `rate_limits` mới nhất trong `~/.codex/sessions` (trường không có trong docs, có thể đổi); Gemini = ảnh chụp
-    `%LOCALAPPDATA%/stlab-usage/agy.json` do `custom/statusline/agy_statusline.py` ghi khi mở TUI agy; Claude chỉ nhắc `/usage`.
+  - Ô **Nhân sự AI** ở trang chính (thay ô Hạn mức AI), nạp sau qua `/api/org` (`toolhub/usage.py`, đọc
+    `org/agents.yaml` và file local, không gọi mạng): mục Hạn mức theo nguồn, Cần chú ý và sơ đồ nhân sự (gập sẵn).
+    Test: `tests/test_org_board.py`. `/api/usage` vẫn còn nhưng trang chính không gọi nữa.
+    Nguồn hạn mức: Codex = `rate_limits` mới nhất trong `~/.codex/sessions` (trường không có trong docs, có thể đổi);
+    Gemini = ảnh chụp `%LOCALAPPDATA%/stlab-usage/agy.json` do `custom/statusline/agy_statusline.py` ghi khi mở TUI agy;
+    Claude = `%LOCALAPPDATA%/stlab-usage/claude.json` do `custom/statusline/claude_statusline.py` ghi khi chạy `claude` trong terminal.
   - `toolhub/workspace.py`: đọc pins/links/reports/CLAUDE.md (chỉ đọc). `toolhub/views.py`: trang + API.
   - `toolhub/printprep.py` (trang Dự án, dự án có `print/print.yaml`): nút **Chuẩn bị in** và **Tự chạy khi Lưu**
     gọi `tools/robotics-cad/scripts/prepare-print.py` / `watch.py` bằng Python của FreeCAD, chạy nền (PID ở
     `print/_*.pid`). Chỉ đọc file FreeCAD đã lưu; ảnh chỉ trả `.png` mà `_prepare-print-result.json` trỏ tới. POST cần `X-Studio`.
 - **Hệ thiết kế** (2026-10-24): `design/tokens.json` là nguồn màu/chữ duy nhất cho Toolhub + workbench FreeCAD + trang ESP32; `python design/build_tokens.py` sinh `toolhub/static/tokens.css` và kiểm tương phản. Font Be Vietnam Pro (OFL) lưu tại `toolhub/static/fonts/`. Không đặt hex trong `style.css`/template. Xem `design/DESIGN.md`.
 - `bat/`: nhấp đúp để chạy (`open-toolhub`, `open-freecad`, `open-blender`, `open-lightcraft`, `open-photocraft`,
-  `open-all`, `open-claude`, `check-mcp`).
+  `open-all`, `open-claude`, `check-mcp`, `sync-claude-desktop`). Chưa có `open-filmcraft.bat`.
 - `scripts/freecad_start_rpc.py`: bật RPC server cho phiên FreeCAD do launcher mở.
 - MCP `freecad` chạy với `--freecadcmd "C:/Program Files/FreeCAD 1.1/bin/freecadcmd.exe"` (`freecadcmd` không có trong
   PATH → thiếu cờ này thì `execute_code_headless` không chạy). Việc nặng phải ra headless, xem skill `robotics-cad`
@@ -37,7 +40,7 @@ qua cả 4 MCP server trong `.mcp.json`.
 ## Ứng dụng + Claude Desktop cạnh nhau
 - `launcher.py start <id>` mở app, chờ cổng MCP, rồi `winlayout.py` xếp app một bên và Claude Desktop
   (bản MSIX, tự mở nếu chưa chạy) bên còn lại. Cấu hình ở `apps.json` → `layout`.
-- `launcher.py layout <id>`: chỉ xếp lại. `desktop-status` / `desktop-sync`: so sánh và đồng bộ 4 MCP server
+- `launcher.py layout <id>`: chỉ xếp lại. `desktop-status` / `desktop-sync`: so sánh và đồng bộ 5 MCP server
   sang `claude_desktop_config.json` của Desktop. Desktop **phải thoát hẳn** trước khi sync (nó có thể ghi đè file);
   sync luôn sao lưu và không đụng tới server/cài đặt khác.
 - MCP server bắt tay được cả khi app đang tắt và chỉ nối vào app khi có lệnh gọi, nên mở app sau Desktop vẫn được.
@@ -47,6 +50,7 @@ qua cả 4 MCP server trong `.mcp.json`.
 |---|---|---|
 | FreeCAD | 9875 | RPC chạy Python tùy ý; chỉ bật khi mở qua launcher |
 | Blender | 9876 | Addon tự bật mỗi lần mở Blender; sandbox `BLENDER_MCP_SAFE_MODE=1` |
+| FilmCraft | 7920 | **Không có token** (như LightCraft); MCP `filmcraft` nối qua `--bridge 127.0.0.1:7920` |
 | LightCraft | 7980 | **Không có token**: mọi tiến trình trên máy đều điều khiển được khi app mở bằng launcher |
 | PhotoCraft | 7878 | Dùng cấu hình có sẵn của Tuan: token `~\.photocraft\control.token` (ngoài repo); chỉ đọc/ghi `%USERPROFILE%\Pictures\stlab-studio` |
 | Web Toolhub | 5050 | Kiểm tra Host + header `X-Studio` (chống DNS rebinding/CSRF); "Mở VS Code" chỉ nhận dự án đã biết |

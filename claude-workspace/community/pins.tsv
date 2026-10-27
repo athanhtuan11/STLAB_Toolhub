@@ -48,3 +48,4 @@ cadquery-cadquery	https://github.com/CadQuery/cadquery.git	sha	-	8178185a24a035c
 gumyr-build123d	https://github.com/gumyr/build123d.git	sha	-	c49a0493ad0003ae2bf940be1d59b6d1f41d0788	-	no	off	Apache-2.0
 pan-chera-multi-agent-cad	https://github.com/Pan-Chera/Multi-Agent-CAD.git	sha	-	7e4cf4b71d96188cfbaa9076ed8b8554e484763b	-	no	off	MIT
 orcaslicer-orcaslicer	https://github.com/OrcaSlicer/OrcaSlicer.git	sha	-	e28af4e5f2112fecc96e43db99967dd2fa4bd350	-	no	off	AGPL-3.0
+anthropics-claude-plugins-official	https://github.com/anthropics/claude-plugins-official.git	sha	-	41f619d61b999adec1a1c8deb97d1a5b6ac35bb6	-	no	off	Apache-2.0

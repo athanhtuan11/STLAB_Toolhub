@@ -1,0 +1,5 @@
+# Chi lay plugin claude-code-setup (goi y tu dong hoa Claude Code cho repo) + README/LICENSE goc.
+/README.md
+/LICENSE*
+/.claude-plugin/
+/plugins/claude-code-setup/
