@@ -15,6 +15,7 @@ File này ghi cách cài, cách dùng, lý do chọn và cách gỡ.
 | 2 | Subagent `check-runner`, `doc-writer`, `git-scribe` (`model: haiku`) | Quota Claude Pro, ít hơn Opus nhiều | Chạy kiểm, viết file, commit – giữ log/diff dài ngoài phiên chính |
 | 3a | Plugin **deliberation** → Gemini qua **Antigravity CLI `agy`** (đăng nhập tài khoản Google) | 0 đ (hạn mức tuần của gói free; Google AI Pro thì nạp lại mỗi 5 giờ) | Viết nháp tiếng Việt, tóm tắt tài liệu dài, `consensus` Gemini + GPT |
 | 3b | Plugin **Codex chính hãng** (`openai/codex-plugin-cc`) + tài khoản **ChatGPT Free** | 0 đ (hạn mức Codex gói Free, không công bố) | `/codex:review`, `/codex:adversarial-review` cho script Python/FreeCAD |
+| 3c | **OpenCode** (`opencode-ai@1.19.4`) + model Zen free `opencode/deepseek-v4.1-flash-free` (thêm 2026-10-27) | 0 đ (Zen free, không cần đăng nhập; hạn mức TODO) | Code/script giao qua `tools/delegate/` khi Codex hết hạn mức (xem mục cuối file) |
 
 Phần tiết kiệm chính là **tầng 2**: phiên Opus không phải đọc log `prepare-print`, diff dài hay bản nháp tài liệu.
 Tầng 3 bớt thêm phần viết chữ và review.
@@ -113,6 +114,7 @@ Hook tự động (`~/.claude/settings.json`, bản lưu `settings.json.bak-2026
 | Plugin Codex v1.0.6 | `community/openai-codex-plugin-cc` → plugin `codex@openai-codex` (user) | Claude đọc thẳng từ bản ghim |
 | Luật chặn | `~/.claude/settings.json` `permissions.deny` (bản lưu `settings.json.bak-2026-10-26`) | Server `deliberation-gemini/-grok/-openrouter` |
 | 3 agent | `custom/agents/*.md` → symlink `~/.claude/agents/` (`links.tsv`) | `model: haiku` |
+| OpenCode 1.19.4 (thêm 2026-10-27) | npm global, `%APPDATA%\npm\node_modules\opencode-ai` | Executor tầng 2 của `tools/delegate/`; luật trong `tools/delegate/opencode.json` |
 
 Config deliberation (dựng lại trên máy mới, chép nguyên):
 
@@ -164,3 +166,47 @@ Remove-Item -Recurse "$env:APPDATA\deliberation", "$env:LOCALAPPDATA\agy", "D:\0
 
 Rồi: xóa 3 luật `deny` `mcp__plugin_deliberation_*` trong `~/.claude/settings.json`, bỏ `%LOCALAPPDATA%\agy\bin`
 khỏi PATH người dùng, xóa 3 dòng agent trong `community/links.tsv` + symlink trong `~/.claude/agents/`.
+
+## Phân quyền 3 tầng + OpenCode (2026-10-27)
+
+Đánh số lại cho rõ vai trò: tầng 0 là Claude làm tổng giám đốc, tầng 1 là Haiku quản lý, tầng 2 là executor free.
+Số tầng ở các mục trên (1–3) là cách gọi cũ, vẫn đúng với phần đã ghi.
+
+| Tầng | Ai | Việc | Ghi chú |
+|---|---|---|---|
+| 0 Tổng giám đốc | Claude Opus (phiên chính) | Quyết định; viết spec + gate; hình học khó; an toàn; duyệt | Quota Claude Pro |
+| 1 Quản lý | Haiku: `check-runner`, `doc-writer`, `git-scribe` | Chạy kiểm, viết tài liệu, commit | Giữ log/diff dài ngoài phiên chính |
+| 2 Thực thi | `tools/delegate/delegate.py` → Codex exec → OpenCode Zen free → agy | Viết và chạy code/script tới khi gate PASS | Claude chỉ đọc dòng JSON cuối |
+| Tư vấn | `ask-gpt`, `ask-gemini` (deliberation, chỉ đọc) | Nháp văn, tóm tắt, ý kiến thứ hai | Không ghi file; chỉ gửi bản chép |
+
+Thứ tự executor tầng 2 (`executor: auto`): **Codex exec** (chính) → **OpenCode Zen free** → **agy** (dự phòng).
+Gặp 429 hoặc hết hạn mức thì tự chuyển sang executor kế tiếp. Trạng thái lưu ở `%LOCALAPPDATA%\stlab-usage\executors.json`.
+agy đang hết hạn mức tới ~2026-11-02; Tuan đánh dấu bằng `python tools/delegate/delegate.py --mark-limit agy 2026-11-02T12:00`.
+
+Lý do thêm OpenCode: Codex và agy đều có hạn mức, cần thêm một đường free có thể thay thế. Thử 2026-10-27:
+
+- `selftest` (`calc.py` + `test_calc.py`): Codex PASS 19 s; OpenCode PASS 24 s.
+- Giả lập Codex hết hạn mức: auto chuyển sang OpenCode đúng.
+- Pilot CAD Knuckle_L qua OpenCode: gate 26/26 PASS vòng 1, 147 s, `compare.py` lệch 0,00 % so với mẫu.
+
+Chi tiết cách dùng, spec, `result.json` và giới hạn: `tools/delegate/README.md`.
+
+### Cài OpenCode
+
+```powershell
+npm i -g opencode-ai@1.19.4 --allow-scripts=opencode-ai
+opencode models opencode        # liệt kê model Zen free
+```
+
+- Cờ `--allow-scripts=opencode-ai` là bắt buộc: postinstall mới chép binary Windows. Thiếu cờ, `opencode.exe` báo "not a valid application".
+- Model ghim: `opencode/deepseek-v4.1-flash-free`. Zen free chạy không cần đăng nhập.
+- Hạn mức Zen free: TODO. Chu kỳ cooldown trong `delegate.py` (`COOLDOWN_H`) là ước lượng: TODO.
+
+### Gỡ OpenCode
+
+```powershell
+npm uninstall -g opencode-ai
+Remove-Item -Recurse "$env:USERPROFILE\.local\share\opencode"
+```
+
+Sau khi gỡ, `delegate.py` tự bỏ qua OpenCode (kiểm `--status`) và chạy Codex, agy như cũ.

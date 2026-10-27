@@ -1,0 +1,202 @@
+{
+ "spec": "Knuckle_L",
+ "checks": [
+  {
+   "name": "output ton tai",
+   "ok": true,
+   "path": "part.step"
+  },
+  {
+   "name": "hop le + 1 solid",
+   "ok": true,
+   "valid": true,
+   "solids": 1,
+   "volume": 1336.9
+  },
+  {
+   "name": "bao ngoai",
+   "ok": true,
+   "got": [
+    132.11,
+    15.38,
+    10.6,
+    151.0,
+    29.05,
+    22.8
+   ],
+   "want": [
+    132.11,
+    15.38,
+    10.6,
+    151.0,
+    29.05,
+    22.8
+   ],
+   "err": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "tol": 0.3
+  },
+  {
+   "name": "rong: lo chot lai 2.7",
+   "ok": true,
+   "overlap_mm3": 0.0
+  },
+  {
+   "name": "rong: lo truc banh (tron)",
+   "ok": true,
+   "overlap_mm3": 0.0
+  },
+  {
+   "name": "rong: lo truc banh (mui giot nuoc)",
+   "ok": true,
+   "overlap_mm3": 0.0
+  },
+  {
+   "name": "rong: lo moi vit thanh giang 2.1",
+   "ok": true,
+   "overlap_mm3": 0.0
+  },
+  {
+   "name": "rong: khoang giua 2 dai",
+   "ok": true,
+   "overlap_mm3": 0.0
+  },
+  {
+   "name": "dac: than chot lai",
+   "ok": true,
+   "frac": 1.0,
+   "min_frac": 0.98
+  },
+  {
+   "name": "dac: khoi giu truc (vach sau lo)",
+   "ok": true,
+   "frac": 1.0,
+   "min_frac": 0.98
+  },
+  {
+   "name": "dac: khoi giu truc (tren lo)",
+   "ok": true,
+   "frac": 1.0,
+   "min_frac": 0.98
+  },
+  {
+   "name": "dac: dai duoi",
+   "ok": true,
+   "frac": 1.0,
+   "min_frac": 0.98
+  },
+  {
+   "name": "dac: dai tren",
+   "ok": true,
+   "frac": 1.0,
+   "min_frac": 0.98
+  },
+  {
+   "name": "dac: tay lai (giua)",
+   "ok": true,
+   "frac": 1.0,
+   "min_frac": 0.98
+  },
+  {
+   "name": "dac: dau tay lai",
+   "ok": true,
+   "frac": 1.0,
+   "min_frac": 0.98
+  },
+  {
+   "name": "lan can: Chassis",
+   "ok": true,
+   "overlap_mm3": 0.0,
+   "gap": 0.2,
+   "min_gap": 0.15,
+   "max_gap": null
+  },
+  {
+   "name": "lan can: Wheel_FL",
+   "ok": true,
+   "overlap_mm3": 0.0,
+   "gap": 0.2,
+   "min_gap": 0.15,
+   "max_gap": null
+  },
+  {
+   "name": "lan can: CB_Tire_FL",
+   "ok": true,
+   "overlap_mm3": 0.0,
+   "gap": 3.67,
+   "min_gap": 0.05,
+   "max_gap": null
+  },
+  {
+   "name": "lan can: Washer_axle_L",
+   "ok": true,
+   "overlap_mm3": 0.0,
+   "gap": 0.036,
+   "min_gap": 0.02,
+   "max_gap": null
+  },
+  {
+   "name": "lan can: Tie_rod",
+   "ok": true,
+   "overlap_mm3": 0.0,
+   "gap": 0.2,
+   "min_gap": 0.15,
+   "max_gap": null
+  },
+  {
+   "name": "lan can: M2_5x16_kingpin_L",
+   "ok": true,
+   "overlap_mm3": 0.0,
+   "gap": 0.0,
+   "min_gap": 0.0,
+   "max_gap": null
+  },
+  {
+   "name": "chuyen dong: lai trai 20 do",
+   "ok": true,
+   "total": 20
+  },
+  {
+   "name": "chuyen dong: lai phai 20 do",
+   "ok": true,
+   "total": 20
+  },
+  {
+   "name": "chuyen dong: rut banh ra theo +Y",
+   "ok": true,
+   "total": 12
+  },
+  {
+   "name": "in: khong can support",
+   "ok": true,
+   "vung": []
+  },
+  {
+   "name": "in: kiem lop (khong co cum roi)",
+   "ok": true,
+   "loi": []
+  }
+ ],
+ "warnings": [
+  {
+   "name": "in: vuon ra theo lop (xem, khong bat buoc sua)",
+   "loai": "vuon ra",
+   "z_mm": 10.5,
+   "mm2": 26.9,
+   "bao_xy": [
+    -144.1,
+    20.0,
+    -136.0,
+    23.7
+   ]
+  }
+ ],
+ "passed": true,
+ "summary": "26/26 PASS"
+}
