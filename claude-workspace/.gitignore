@@ -49,3 +49,6 @@ credentials*.json
 /custom/freecad/robotcad-overlay/
 /maker/*/freecad/images/assembly/raw/
 /maker/*/print/stl-*/
+
+# Thu muc tam cua executor (tools/delegate/delegate.py), xoa sau moi run
+.delegate-tmp/

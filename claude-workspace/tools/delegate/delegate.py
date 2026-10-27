@@ -3,6 +3,7 @@
 #   python tools/delegate/delegate.py <spec.md> [--executor auto|codex|opencode|agy] [--simulate-limit codex]
 #   python tools/delegate/delegate.py --status            # executor nao dang het han muc
 #   python tools/delegate/delegate.py --clear-limit codex # xoa danh dau het han muc
+#   python tools/delegate/delegate.py --stats [--rebuild] # thanh tich tung executor (JSON: gate_pass/rounds)
 #   python tools/delegate/delegate.py --resume <run>      # chay lai run bi cat ngang (run_dir moi, prompt them ngu canh)
 #   Run khong PASS -> handoff.md trong run_dir (tom tat vong, gate, file thay doi, buoc tiep).
 # Spec: front matter YAML (task, cwd, allow, gate, timeout_min, max_rounds, executor, ky_nang) + Markdown.
@@ -11,6 +12,8 @@
 # Run: %LOCALAPPDATA%/stlab-usage/delegate-runs/<thoi-gian>-<task>/
 #      {prompt-N.txt, <executor>-N.log, gate-N.log, result.json}
 # Han muc: %LOCALAPPDATA%/stlab-usage/executors.json {executor: {limited_until, reason}}
+# Thanh tich: %LOCALAPPDATA%/stlab-usage/agent-stats.json {executor: {rounds, gate_pass, pass_round1,
+#      limited, escalate, seconds}}; update_stats moi run, --stats --rebuild tinh lai tu lich su run.
 import argparse, datetime as dt, fnmatch, json, os, re, shutil, subprocess, sys, time
 import yaml
 
@@ -19,6 +22,7 @@ WS = os.path.abspath(os.path.join(HERE, "..", ".."))
 USAGE = os.path.join(os.environ.get("LOCALAPPDATA", os.path.expanduser("~")), "stlab-usage")
 LIMITS = os.path.join(USAGE, "executors.json")
 ADAPTERS = {"codex": "codex", "opencode": "opencode", "agy": "agy"}
+STAT_FIELDS = ("rounds", "gate_pass", "pass_round1", "limited", "escalate", "seconds")
 
 def load_org(org_dir=None):
     """Nap so nhan su va policy; loi/hong so phai duoc bao ro."""
@@ -113,6 +117,106 @@ def mark_limited(name, reason, until=None):
     until = until or now() + dt.timedelta(hours=COOLDOWN_H[name])
     lim[name] = dict(limited_until=until.isoformat(timespec="minutes"), reason=reason[:200])
     save_limits(lim)
+
+
+def stats_path():
+    return os.path.join(USAGE, "agent-stats.json")
+
+
+def load_stats():
+    try:
+        with open(stats_path(), encoding="utf-8") as f:
+            doc = json.load(f)
+        return doc if isinstance(doc, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def save_stats(stats):
+    os.makedirs(USAGE, exist_ok=True)
+    with open(stats_path(), "w", encoding="utf-8") as f:
+        json.dump(stats, f, indent=1, ensure_ascii=False)
+
+
+def new_stats():
+    return dict.fromkeys(STAT_FIELDS, 0)
+
+
+def tally(stats, result):
+    """Cong don 1 run vao stats (dung chung cho update_stats va rebuild_stats)."""
+    rounds = result.get("rounds") or []
+    for i, r in enumerate(rounds):
+        name = r.get("executor")
+        if not name:
+            continue
+        s = stats.setdefault(name, new_stats())
+        if r.get("limited"):
+            s["limited"] += 1
+            continue
+        s["rounds"] += 1
+        if r.get("gate_exit") == 0:
+            s["gate_pass"] += 1
+            if i == 0:                                  # vong 1 cua run da dat ngay
+                s["pass_round1"] += 1
+        secs = r.get("seconds")
+        if isinstance(secs, (int, float)):
+            s["seconds"] += int(secs)
+    if rounds and result.get("verdict") == "ESCALATE":
+        name = rounds[-1].get("executor")
+        if name:                                        # run bao len tren, vong cuoi cua ai thi tinh cho nguoi do
+            stats.setdefault(name, new_stats())["escalate"] += 1
+
+
+def update_stats(result):
+    """Cong don 1 run vao agent-stats.json."""
+    stats = load_stats()
+    tally(stats, result)
+    save_stats(stats)
+    return stats
+
+
+def run_roots():
+    """Thu muc chua cac run: USAGE/delegate-runs; chua co thi tim delegate-runs canh thu muc cha."""
+    primary = os.path.join(USAGE, "delegate-runs")
+    if os.path.isdir(primary):
+        return [primary]
+    parent = os.path.join(os.path.dirname(os.path.normpath(USAGE)), "delegate-runs")
+    if os.path.isdir(parent) and os.path.normcase(os.path.abspath(parent)) != os.path.normcase(os.path.abspath(primary)):
+        return [parent]
+    return [primary]
+
+
+def rebuild_stats():
+    """Tinh lai thanh tich TU DAU tu moi <run>/result.json (idempotent)."""
+    stats = {}
+    for root in run_roots():
+        if not os.path.isdir(root):
+            continue
+        for name in sorted(os.listdir(root)):
+            p = os.path.join(root, name, "result.json")
+            try:
+                with open(p, encoding="utf-8") as f:
+                    result = json.load(f)
+            except (OSError, ValueError):
+                continue
+            if isinstance(result, dict):
+                tally(stats, result)
+    save_stats(stats)
+    return stats
+
+
+def rank_by_stats(queue, stats, min_rounds=3):
+    """Executor du >= min_rounds vong xep theo gate_pass/rounds giam dan, roi moi nguoi con lai.
+    Bang nhau (va nguoi < min_rounds) giu thu tu goc."""
+    def rate(name):
+        s = stats.get(name) or {}
+        rounds = s.get("rounds") or 0
+        return rounds, (s.get("gate_pass") or 0) / rounds if rounds else 0
+
+    ready = [n for n in queue if rate(n)[0] >= min_rounds]
+    rest = [n for n in queue if rate(n)[0] < min_rounds]
+    ready.sort(key=lambda n: rate(n)[1], reverse=True)   # sort on dinh: bang nhau giu thu tu goc
+    return ready + rest
 
 
 def pid_alive(pid):
@@ -407,12 +511,25 @@ def main():
     ap.add_argument("--executor")
     ap.add_argument("--simulate-limit", default="", help="danh sach executor gia lap het han muc (thu nghiem)")
     ap.add_argument("--status", action="store_true")
+    ap.add_argument("--stats", action="store_true", help="in thanh tich tung executor (JSON)")
+    ap.add_argument("--rebuild", action="store_true", help="tinh lai thanh tich tu lich su run (dung voi --stats)")
     ap.add_argument("--clear-limit")
     ap.add_argument("--resume", metavar="RUN", help="chay lai run bi cat ngang (ten hoac duong dan run_dir)")
     ap.add_argument("--mark-limit", nargs=2, metavar=("EXECUTOR", "UNTIL"),
                     help="danh dau het han muc toi thoi diem ISO, vd: agy 2026-11-02T12:00")
     a = ap.parse_args()
 
+    if a.stats or a.rebuild:
+        stats = load_stats()
+        if a.rebuild or not stats:                      # chua co so lieu thi dung lai tu lich su run
+            stats = rebuild_stats()
+        out = {}
+        for name, s in stats.items():
+            row = {k: s.get(k, 0) for k in STAT_FIELDS}
+            row["pass_rate"] = row["gate_pass"] / row["rounds"] if row["rounds"] else 0
+            out[name] = row
+        print(json.dumps(out, ensure_ascii=False, indent=1))
+        return
     if a.status or a.clear_limit or a.mark_limit:
         if a.mark_limit:
             until = dt.datetime.fromisoformat(a.mark_limit[1]).astimezone()
@@ -455,6 +572,8 @@ def main():
     except ValueError as e:
         print(f"LOI: {e}", file=sys.stderr)
         sys.exit(1)
+    if str(meta.get("uu_tien") or "") == "thanh-tich":
+        queue = rank_by_stats(queue, load_stats())      # mac dinh giu chuoi trong so nhan su
 
     run_dir = os.path.join(USAGE, "delegate-runs", now().strftime("%Y%m%d-%H%M%S") + "-" + meta["task"])
     os.makedirs(run_dir, exist_ok=True)
@@ -472,7 +591,11 @@ def main():
 
 
 def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resumed_from=None, resume_ctx=""):
-    env = dict(os.environ, OPENCODE_CONFIG=os.path.join(HERE, "opencode.json"))
+    # Thu muc tam rieng trong cwd: sandbox Codex chi cho ghi trong cwd -> test dung tempfile/LOCALAPPDATA khong bi chan
+    # (ESCALATE 2 lan 2026-10-27). Git bo qua (.gitignore), xoa khi xong.
+    tmpdir = os.path.join(cwd, ".delegate-tmp")
+    os.makedirs(tmpdir, exist_ok=True)
+    env = dict(os.environ, OPENCODE_CONFIG=os.path.join(HERE, "opencode.json"), TMP=tmpdir, TEMP=tmpdir, TMPDIR=tmpdir)
     before = {f: file_sig(f) for f in git_changed(cwd)}
     result = dict(task=meta["task"], cwd=cwd_rel, run_dir=run_dir, rounds=[], skipped=[], passed=False)
     if resumed_from:
@@ -522,6 +645,7 @@ def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resu
         prompt += RETRY.format(n=rnd + 1, tail=tail(gout))
 
     # Kiem file thay doi: cam + ngoai allow (so voi truoc khi chay)
+    shutil.rmtree(tmpdir, ignore_errors=True)
     after = git_changed(cwd)
     touched = sorted(f for f in after if before.get(f, "new") != file_sig(f))
     def rel(f):
@@ -539,6 +663,7 @@ def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resu
                          "PASS" if result["passed"] and not outside else "WARN" if result["passed"] else "FAIL")
     if result["verdict"] != "PASS":
         result["handoff"] = write_handoff(run_dir, result)
+    update_stats(result)                                # ghi thanh tich truoc khi chot result.json
     json.dump(result, open(os.path.join(run_dir, "result.json"), "w", encoding="utf-8"), indent=1, ensure_ascii=False)
     print(json.dumps(result, ensure_ascii=False))
     sys.exit({"FAIL": 1, "ESCALATE": 2}.get(result["verdict"], 0))

@@ -59,6 +59,25 @@ quản lý/giám đốc → Tuan); không tự làm thay, không nhờ agent kh�
 dừng, `verdict: ESCALATE` (exit 2) + `handoff.md`; agent Haiku ghi `BÁO LÊN TRÊN:` ở dòng đầu báo cáo. Phiên chính
 gặp việc vượt quyền mình (quyền hệ thống, việc của phiên khác, quyết định của Tuan) → hỏi Tuan.
 
+Sổ nhân sự (sinh tự động – sửa `org/agents.yaml` rồi chạy `python tools/org/gen_table.py --write`):
+
+<!-- org-table:start -->
+| Tầng | Chức danh | Agent | Model | Chi phí | Kỹ năng | Báo cáo cho | Trạng thái |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 0 – Giám đốc | Tổng giám đốc | `claude-main` | opus | claude-quota | quyet-dinh, spec, gate, cad-hinh-hoc, an-toan, duyet | tuan | chinh-thuc |
+| 1 – Quản lý | Quản lý kiểm tra | `check-runner` | haiku | claude-quota | test, kiem-in, doc-log | claude-main | chinh-thuc |
+| 1 – Quản lý | Quản lý tài liệu | `doc-writer` | haiku | claude-quota | tai-lieu | claude-main | chinh-thuc |
+| 1 – Quản lý | Quản lý git | `git-scribe` | haiku | claude-quota | commit, push | claude-main | chinh-thuc |
+| 2 – Nhân viên | Nhân viên lập trình (chính) | `codex` | codex-chatgpt-free | free | code, cad-script, doc-ma, bao-cao | claude-main | chinh-thuc |
+| 2 – Nhân viên | Nhân viên lập trình | `opencode` | opencode/deepseek-v4.1-flash-free | free | code, cad-script | claude-main | chinh-thuc |
+| 2 – Nhân viên | Nhân viên lập trình (dự phòng) | `agy` | gemini-3.8-flash-high | free | code, cad-script, doc-ma | claude-main | chinh-thuc |
+| Tư vấn | Tư vấn tra web | `ask-gpt` | codex-chatgpt-free | free | tra-web | claude-main | chinh-thuc |
+| Tư vấn | Tư vấn đọc tài liệu | `ask-gemini` | gemini-3.8-flash-medium | free | doc-tai-lieu, tom-tat, dich | claude-main | chinh-thuc |
+_Sinh tự động từ org/agents.yaml bằng tools/org/gen_table.py – không sửa tay._
+<!-- org-table:end -->
+
+Mô tả công việc:
+
 | Tầng | Ai | Làm gì |
 |---|---|---|
 | 0 – Tổng giám đốc | Phiên chính (Opus) | Kiến trúc, quyết định, **viết spec + gate** (tiêu chí nghiệm thu đo được), hình học/khe/động học khó, `safe_edit.py`, hướng in/support `print.yaml`, an toàn, duyệt ảnh + `result.json` |
