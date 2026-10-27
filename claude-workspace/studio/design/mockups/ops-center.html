@@ -1,0 +1,78 @@
+<!doctype html>
+<!-- Mockup trang "Dieu hanh" (/ops) – du lieu mau tu viec that 2026-10-27. Chi de duyet bang anh, khong phai san pham. -->
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../../toolhub/static/fonts.css"><link rel="stylesheet" href="../../toolhub/static/tokens.css">
+<link rel="stylesheet" href="../../toolhub/static/style.css">
+<style>
+main{max-width:1200px;margin:0 auto;padding:16px}
+.sum{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 14px}
+.sum a{padding:8px 12px;border:1px solid var(--line);border-radius:var(--r-card);background:var(--card);text-decoration:none;color:var(--text)}
+.ops{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:12px}
+.w{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.w.wide{grid-column:1/-1}
+.wh{display:flex;align-items:center;gap:8px}.wh h3{margin:0;flex:1;font-size:1rem}
+.wh button{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:6px;padding:2px 7px;font:inherit;font-size:.8rem}
+.it{border-top:1px solid var(--line);padding-top:8px;display:flex;flex-direction:column;gap:4px}
+.it:first-of-type{border-top:0}
+.acts{display:flex;gap:6px}
+.kb{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.col{border:1px dashed var(--line);border-radius:8px;padding:6px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.col b{font-size:.85rem}.tk{border:1px solid var(--line);border-radius:6px;padding:5px 6px;font-size:.8rem;overflow-wrap:anywhere}
+.tl{display:grid;grid-template-columns:52px 1fr;gap:4px 10px;font-size:.88rem}
+.tl .t{color:var(--muted)}
+.cfg{display:flex;gap:8px;flex-wrap:wrap;font-size:.85rem}
+@media (max-width:520px){.kb{grid-template-columns:1fr}}
+</style></head><body>
+<header class="top"><div class="brand"><span class="mark"></span><b>STLAB</b> Toolhub</div>
+<nav><a>Trang chính</a><a class="on">Điều hành</a><a>Dự án</a><a>Linh kiện</a><a>Thêm ▾</a></nav></header>
+<main>
+<h2>Trung tâm điều hành</h2>
+<div class="sum"><a><b>2</b> cần anh duyệt</a><a><b>1</b> đang chạy</a><a><b>0</b> lỗi hôm nay</a><a><b>24</b> việc xong hôm nay</a>
+  <span class="grow"></span><button class="btn">Tùy biến khung</button></div>
+<div class="cfg muted">Khung đang hiện: ☑ Cần duyệt ☑ Đang chạy ☑ Bảng việc ☑ Dòng thời gian ☑ Nhân sự AI ☐ Commit (bấm ↑↓ để đổi thứ tự, ✕ để ẩn)</div>
+<section class="ops" style="margin-top:10px">
+
+<article class="w"><div class="wh"><h3>Cần anh duyệt (2)</h3><button>↑</button><button>↓</button><button>✕</button></div>
+ <div class="it"><div><span class="badge warn">Quyết định</span> robotic arm: hướng A / B / C?</div>
+  <div class="muted">claude-main · 15:42 · maker/cyberbrick-arm/design/brief.md</div>
+  <div class="acts"><button class="primary">Duyệt A</button><button class="btn">B</button><button class="btn">C</button><button class="btn">Ghi chú…</button></div></div>
+ <div class="it"><div><span class="badge bad">Báo lên trên</span> codex: "Cần quyền cho gate tạo dữ liệu tạm"</div>
+  <div class="muted">delegate · toolhub-org-board · 14:58 · handoff.md</div>
+  <div class="acts"><button class="primary">Đã xử lý</button><button class="btn">Xem handoff</button></div></div>
+</article>
+
+<article class="w"><div class="wh"><h3>Đang chạy (1)</h3><button>↑</button><button>↓</button><button>✕</button></div>
+ <div class="it"><div><b>codex</b> · study-agent-dashboard <span class="badge plain">vòng 1/3</span></div>
+  <div class="muted">Nhân viên lập trình (chính) · 5 phút 40 s · docs/reports</div></div>
+ <div class="it"><div><b>claude-main</b> · phiên VS Code <span class="badge ok">đang mở</span></div>
+  <div class="muted">Tổng giám đốc · từ 07:12 · 3 agent Haiku đã gọi hôm nay</div></div>
+</article>
+
+<article class="w wide"><div class="wh"><h3>Bảng việc</h3><button>↑</button><button>↓</button><button>✕</button></div>
+ <div class="kb">
+  <div class="col"><b>Chờ (1)</b><div class="tk">cyberbrick-arm khung lắp ráp<br><span class="muted">claude-main · chờ duyệt A/B/C</span></div></div>
+  <div class="col"><b>Đang chạy (1)</b><div class="tk">study-agent-dashboard<br><span class="muted">codex</span></div></div>
+  <div class="col"><b>Xong (24)</b><div class="tk">toolhub-org-board <span class="badge ok">PASS</span></div><div class="tk">delegate-stats <span class="badge ok">PASS</span></div><div class="tk muted">+22 việc…</div></div>
+  <div class="col"><b>Lỗi (0)</b></div>
+  <div class="col"><b>Báo lên trên (2)</b><div class="tk">org-gen-table <span class="badge warn">ESCALATE</span></div><div class="tk">toolhub-org-board <span class="badge warn">ESCALATE</span></div></div>
+ </div></article>
+
+<article class="w"><div class="wh"><h3>Dòng thời gian</h3><button>↑</button><button>↓</button><button>✕</button></div>
+ <div class="cfg"><span class="chip">Tất cả</span><span class="chip">Giám đốc</span><span class="chip">Quản lý</span><span class="chip">Nhân viên</span><span class="chip">Hàng rào</span></div>
+ <div class="tl">
+  <span class="t">15:44</span><span><b>git-scribe</b> push 4 commit <span class="badge ok">OK</span></span>
+  <span class="t">15:41</span><span><b>hàng rào</b> chặn ghi community/mikedh-trimesh/… <span class="badge bad">chặn</span></span>
+  <span class="t">15:38</span><span><b>doc-writer</b> sửa studio/CLAUDE.md</span>
+  <span class="t">15:33</span><span><b>codex</b> claude-code-setup-audit <span class="badge ok">PASS</span> 195 s</span>
+  <span class="t">15:20</span><span><b>codex</b> báo lên trên: thiếu công cụ ghi file <span class="badge warn">ESCALATE</span></span>
+  <span class="t">15:16</span><span><b>claude-main</b> giao 3 việc song song</span>
+ </div></article>
+
+<article class="w"><div class="wh"><h3>Nhân sự AI</h3><button>↑</button><button>↓</button><button>✕</button></div>
+ <div class="it"><div><b>Claude Pro</b> <span class="muted">chưa có số (chạy claude trong terminal)</span></div>
+  <div><b>Codex</b> còn 76 % · <b>Gemini</b> <span class="badge warn">hết tới 02/11</span> · <b>OpenCode</b> sẵn sàng</div>
+  <div class="muted">Thành tích: opencode 80 % (10 vòng) · codex 71 % (14 vòng)</div></div>
+ <div class="it"><a class="btn">Mở sơ đồ nhân sự (9)</a></div>
+</article>
+
+</section></main></body></html>
