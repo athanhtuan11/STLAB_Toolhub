@@ -13,14 +13,19 @@ def mat(s):
 def tr(v,m):return v@m[:3,:3]+m[3,:3]
 def clean(s):return re.sub(r'-+','-',re.sub(r'[^a-zA-Z0-9]+','-',re.sub(r'\.[^.]+$','',s))).strip('-').lower() or 'part'
 def parse(path):
- z=zipfile.ZipFile(path); root=ET.fromstring(z.read('3D/3dmodel.model')); objs={at(x).get('id'):x for x in root.iter() if tag(x)=='object'}; names={}
+ z=zipfile.ZipFile(path); root=ET.fromstring(z.read('3D/3dmodel.model')); objs={at(x).get('id'):x for x in root.iter() if tag(x)=='object'}; names={}; settings={}
  if 'Metadata/model_settings.config' in z.namelist():
   cfg=ET.fromstring(z.read('Metadata/model_settings.config'))
-  for o in cfg.iter():
+  for o in cfg:
    if tag(o)=='object':
-    for md in o.iter():
+    values={}
+    for md in o:
      a=at(md)
-     if tag(md)=='metadata' and a.get('key')=='name':names.setdefault(at(o).get('id'),a.get('value',''))
+     if tag(md)=='metadata' and a.get('key'):values[a['key']]=a.get('value','')
+    oid=at(o).get('id')
+    if oid is not None:
+     if 'name' in values:names.setdefault(oid,values['name'])
+     settings[oid]={'support':values.get('enable_support',''),'support_type':values.get('support_type',''),'print_settings':{k:v for k,v in sorted(values.items()) if k!='name'}}
  cache={}
  def mesh(oid,stack=()):
   oid=str(oid)
@@ -44,6 +49,9 @@ def parse(path):
     for v,f in mesh(child,stack+(oid,)):res.append((tr(v,mat(a.get('transform'))),f.copy()))
   cache[oid]=[(v.copy(),f.copy()) for v,f in res];return res
  plnames=defaultdict(deque)
+ support_types={}
+ for oid,st in settings.items():
+  if st['support_type'] and names.get(oid):support_types.setdefault(names[oid],st['support_type'])
  for n in z.namelist():
   m=re.fullmatch(r'Metadata/plate_(\d+)\.json',n)
   if m:
@@ -67,7 +75,9 @@ def parse(path):
   for v,f in pieces:vs.append(tr(v,mat(a.get('transform'))));fs.append(f+offset);offset+=len(v)
   name=names.get(oid,'object-'+oid); plate=direct.get(oid)
   if plate is None:plate=plnames[name].popleft() if plnames[name] else 0
-  out.append((name,plate,np.concatenate(vs),np.concatenate(fs)))
+  st=settings.get(str(oid),{'support':'','support_type':'','print_settings':{}}).copy()
+  if st['support']=='1' and not st['support_type']:st['support_type']=support_types.get(name,'(mặc định)')
+  out.append((name,plate,np.concatenate(vs),np.concatenate(fs),st))
  return out
 def readstl(p):
  d=open(p,'rb').read()
@@ -86,19 +96,19 @@ def closed(f):
 def main():
  if len(sys.argv)!=3:raise SystemExit('Usage: study_3mf.py input output')
  src,out=sys.argv[1:]
- if os.path.isdir(src): items=[(os.path.basename(p),0,*readstl(p)) for p in sorted(os.path.join(src,x) for x in os.listdir(src) if x.lower().endswith('.stl'))]
+ if os.path.isdir(src): items=[(os.path.basename(p),0,*readstl(p),{'support':'','support_type':'','print_settings':{}}) for p in sorted(os.path.join(src,x) for x in os.listdir(src) if x.lower().endswith('.stl'))]
  else:items=parse(src)
  if not items:raise ValueError('no meshes found')
  pd=os.path.join(out,'parts');os.makedirs(pd,exist_ok=True);rows=[];renders=[]
- for i,(name,plate,v,f) in enumerate(items,1):
+ for i,(name,plate,v,f,settings) in enumerate(items,1):
   v=v.copy();f=f.copy();lo=v.min(0);hi=v.max(0);v[:,:2]-=(lo[:2]+hi[:2])/2;v[:,2]-=lo[2];tri=v[f]
   cr=np.cross(tri[:,1]-tri[:,0],tri[:,2]-tri[:,0]);nn=np.linalg.norm(cr,axis=1);norm=np.divide(cr,nn[:,None],out=np.zeros_like(cr),where=nn[:,None]>0)
   vol=abs(float(np.einsum('ij,ij->i',tri[:,0],np.cross(tri[:,1],tri[:,2])).sum()/6));fn=f'{i:02d}-{clean(name)}.stl';dest=os.path.join(pd,fn)
   with open(dest,'wb') as fp:
    fp.write(b'Claude study mesh'.ljust(80,b'\0'));fp.write(struct.pack('<I',len(f)))
    for t,n in zip(tri,norm):fp.write(struct.pack('<12fH',*(list(n)+list(t.reshape(-1))+[0])))
-  size=hi-lo;r={'idx':i,'name':name,'plate':plate,'file':os.path.relpath(dest,out).replace('\\','/'),'triangles':len(f),'size_x':f'{size[0]:.2f}','size_y':f'{size[1]:.2f}','size_z':f'{size[2]:.2f}','z_min':f'{v[:,2].min():.6f}','volume_mm3':f'{vol:.2f}','watertight':str(closed(f)).lower()};rows.append(r);renders.append((tri,norm,r))
- cols=['idx','name','plate','file','triangles','size_x','size_y','size_z','z_min','volume_mm3','watertight']
+  size=hi-lo;r={'idx':i,'name':name,'plate':plate,'file':os.path.relpath(dest,out).replace('\\','/'),'triangles':len(f),'size_x':f'{size[0]:.2f}','size_y':f'{size[1]:.2f}','size_z':f'{size[2]:.2f}','z_min':f'{v[:,2].min():.6f}','volume_mm3':f'{vol:.2f}','watertight':str(closed(f)).lower(),'support':settings['support'],'support_type':settings['support_type'],'print_settings':json.dumps(settings['print_settings'],ensure_ascii=False,sort_keys=True,separators=(',',':'))};rows.append(r);renders.append((tri,norm,r))
+ cols=['idx','name','plate','file','triangles','size_x','size_y','size_z','z_min','volume_mm3','watertight','support','support_type','print_settings']
  with open(os.path.join(out,'parts.csv'),'w',newline='',encoding='utf-8') as fp:w=csv.DictWriter(fp,fieldnames=cols);w.writeheader();w.writerows(rows)
  import matplotlib;matplotlib.use('Agg');import matplotlib.pyplot as plt
  from render import render_iso
@@ -113,5 +123,21 @@ def main():
   for p,(count,vol) in sorted(totals.items(),key=lambda x:int(x[0])):fp.write(f'| {p} | {count} | {vol:.2f} |\n')
   fp.write('\n| idx | name | plate | file | triangles | size_x | size_y | size_z | z_min | volume_mm3 | watertight |\n|---:|---|---:|---|---:|---:|---:|---:|---:|---:|---|\n')
   for r in rows:fp.write('| '+' | '.join(str(r[k]) for k in cols)+' |\n')
+  fp.write('\n## Cau hinh in cua tac gia\n\n### Chi tiet bat support\n\n')
+  supported=[r for r in rows if r['support']=='1']
+  if supported:
+   fp.write('| idx | name | plate | support_type |\n|---:|---|---:|---|\n')
+   for r in supported:fp.write(f"| {r['idx']} | {r['name']} | {r['plate']} | {r['support_type']} |\n")
+  else:fp.write('Khong co chi tiet nao bat support.\n')
+  parsed={r['idx']:json.loads(r['print_settings']) for r in rows}
+  keys=sorted({k for ps in parsed.values() for k in ps})
+  differing=[k for k in keys if len({json.dumps(ps.get(k),ensure_ascii=False,sort_keys=True) for ps in parsed.values()})>1]
+  fp.write('\n### Key in khac biet giua cac chi tiet\n\n')
+  if differing:
+   fp.write('| key | idx: name = value |\n|---|---|\n')
+   for k in differing:
+    vals=[f"{r['idx']}: {r['name']} = {parsed[r['idx']].get(k,'(khong co)')}" for r in rows if k in parsed[r['idx']]]
+    fp.write(f"| {k} | {'; '.join(vals)} |\n")
+  else:fp.write('Khong co key in khac biet.\n')
 if __name__=='__main__':main()
 
