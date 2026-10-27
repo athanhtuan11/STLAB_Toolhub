@@ -3,6 +3,8 @@
 #   python tools/delegate/delegate.py <spec.md> [--executor auto|codex|opencode|agy] [--simulate-limit codex]
 #   python tools/delegate/delegate.py --status            # executor nao dang het han muc
 #   python tools/delegate/delegate.py --clear-limit codex # xoa danh dau het han muc
+#   python tools/delegate/delegate.py --resume <run>      # chay lai run bi cat ngang (run_dir moi, prompt them ngu canh)
+#   Run khong PASS -> handoff.md trong run_dir (tom tat vong, gate, file thay doi, buoc tiep).
 # Spec: front matter YAML (task, cwd, allow, gate, timeout_min, max_rounds, executor) + noi dung Markdown,
 # mau o templates/spec.md. Duong dan tuong doi tinh tu claude-workspace/.
 # Run: %LOCALAPPDATA%/stlab-usage/delegate-runs/<thoi-gian>-<task>/
@@ -105,6 +107,36 @@ def take_lock(cwd_rel, task, run_dir):
     return p
 
 
+def _pid_ok(pid):
+    try:
+        return bool(pid) and pid_alive(pid)
+    except (TypeError, ValueError, OSError):
+        return False
+
+
+def _same_dir(a, b):
+    return bool(a) and os.path.normcase(os.path.abspath(a)) == os.path.normcase(os.path.abspath(b))
+
+
+def _lock_alive(rd):
+    """Khoa con song trong USAGE/locks/*.json co run_dir trung run nay (state.json mat/thieu pid)."""
+    ldir = os.path.join(USAGE, "locks")
+    try:
+        names = os.listdir(ldir)
+    except OSError:
+        return False
+    for f in names:
+        if not f.endswith(".json"):
+            continue
+        try:
+            lk = json.load(open(os.path.join(ldir, f), encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if _same_dir(lk.get("run_dir"), rd) and _pid_ok(lk.get("pid")):
+            return True
+    return False
+
+
 def run_states():
     """Cac run khong co result.json: dang chay (pid song) hoac bi cat ngang (pid chet: mat dien, bi kill)."""
     root = os.path.join(USAGE, "delegate-runs")
@@ -117,9 +149,86 @@ def run_states():
             st = json.load(open(os.path.join(rd, "state.json"), encoding="utf-8"))
         except (OSError, ValueError):
             st = {}
-        alive = bool(st.get("pid")) and pid_alive(st["pid"])
+        alive = _pid_ok(st.get("pid")) or _lock_alive(rd)
         out.append(dict(run=d, state="running" if alive else "interrupted", spec=st.get("spec")))
     return out
+
+
+def read_tail(path, n=40):
+    try:
+        with open(path, encoding="utf-8", errors="replace") as f:
+            return tail(f.read(), n)
+    except OSError:
+        return ""
+
+
+def build_resume(run_dir):
+    """(spec_path, context) de chay lai run bi cat ngang; loi -> ValueError."""
+    root = os.path.join(USAGE, "delegate-runs")
+    rd = os.path.abspath(run_dir if os.path.isdir(run_dir) else os.path.join(root, run_dir))
+    if not os.path.isdir(rd):
+        raise ValueError(f"run khong ton tai: {run_dir}")
+    if os.path.exists(os.path.join(rd, "result.json")):
+        raise ValueError("run da xong (co result.json)")
+    try:
+        st = json.load(open(os.path.join(rd, "state.json"), encoding="utf-8"))
+    except (OSError, ValueError):
+        st = {}
+    if _pid_ok(st.get("pid")) or _lock_alive(rd):
+        raise ValueError("run van dang chay (pid con song) – khong resume de tranh chay trung")
+    spec = st.get("spec")
+    if not spec:
+        raise ValueError("state.json thieu 'spec'")
+
+    # Log executor vong cuoi: <executor>-N.log co N lon nhat (bo qua gate-N.log).
+    logs = []
+    for f in os.listdir(rd):
+        m = re.match(r"^(.+)-(\d+)\.log$", f)
+        if m and m.group(1) != "gate":
+            logs.append((int(m.group(2)), os.path.getmtime(os.path.join(rd, f)), f, m.group(1)))
+    name = os.path.basename(os.path.normpath(rd))
+    parts = [f"=== Lan chay truoc bi cat ngang (resume tu run {name}) ==="]
+    if logs:
+        top = max(logs)
+        n, f = top[0], top[2]
+        parts += [f"--- {f} (duoi 40 dong) ---", read_tail(os.path.join(rd, f))]
+        g = f"gate-{n}.log"
+        if os.path.exists(os.path.join(rd, g)):
+            parts += [f"--- {g} (duoi 40 dong) ---", read_tail(os.path.join(rd, g))]
+    else:
+        parts.append("(khong thay log executor)")
+    return spec, "\n".join(parts)
+
+
+def write_handoff(run_dir, result):
+    """Ghi handoff.md (tieng Viet) khi run khong PASS; tra duong dan file."""
+    p = os.path.join(run_dir, "handoff.md")
+    tasks = result.get("task", "?")
+    lines = [f"# Handoff: {tasks}", "",
+             f"- Task: `{tasks}`",
+             f"- Verdict: **{result.get('verdict', '?')}**",
+             f"- Run: `{os.path.basename(os.path.normpath(run_dir))}`"]
+    if result.get("resumed_from"):
+        lines.append(f"- Tiep tu run: `{result['resumed_from']}`")
+    if result.get("error"):
+        lines.append(f"- Loi: {result['error']}")
+    lines += ["", "## Tung vong"]
+    for r in result.get("rounds", []):
+        lines += [f"### Vong {r.get('round', '?')} - {r.get('executor', '?')}",
+                  f"- Thoi gian: {r.get('seconds', '?')} s",
+                  f"- Dong cuoi: {r.get('last_line', '')}",
+                  f"- Gate exit: {r.get('gate_exit', '?')}",
+                  "- Gate tail:",
+                  "```",
+                  str(r.get("gate_tail", "")),
+                  "```"]
+    lines += ["", "## File thay doi"]
+    for title, key in (("Da doi", "changed"), ("File cam", "forbidden_touched"), ("Ngoai allow", "outside_allow")):
+        vals = result.get(key) or []
+        lines.append(f"- {title}: " + (", ".join(f"`{v}`" for v in vals) if vals else "(khong co)"))
+    lines += ["", "Bước tiếp: `python tools/delegate/delegate.py --resume <ten run>` hoặc Claude sửa spec"]
+    open(p, "w", encoding="utf-8").write("\n".join(lines) + "\n")
+    return p
 
 
 def parse_spec(path):
@@ -203,6 +312,7 @@ def main():
     ap.add_argument("--simulate-limit", default="", help="danh sach executor gia lap het han muc (thu nghiem)")
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--clear-limit")
+    ap.add_argument("--resume", metavar="RUN", help="chay lai run bi cat ngang (ten hoac duong dan run_dir)")
     ap.add_argument("--mark-limit", nargs=2, metavar=("EXECUTOR", "UNTIL"),
                     help="danh dau het han muc toi thoi diem ISO, vd: agy 2026-11-02T12:00")
     a = ap.parse_args()
@@ -219,6 +329,14 @@ def main():
         st["runs_without_result"] = run_states()
         print(json.dumps(st, ensure_ascii=False))
         return
+    resume_from, resume_ctx = None, ""
+    if a.resume:
+        try:
+            a.spec, resume_ctx = build_resume(a.resume)
+        except ValueError as e:
+            print(f"LOI: {e}", file=sys.stderr)
+            sys.exit(1)
+        resume_from = os.path.basename(os.path.normpath(a.resume.rstrip("/\\")))
     if not a.spec:
         ap.error("thieu spec")
 
@@ -241,7 +359,8 @@ def main():
     json.dump(dict(state="running", pid=os.getpid(), spec=os.path.abspath(a.spec)),
               open(os.path.join(run_dir, "state.json"), "w", encoding="utf-8"), ensure_ascii=False)
     try:
-        run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir)
+        run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir,
+                 resumed_from=resume_from, resume_ctx=resume_ctx)
     finally:
         try:
             os.remove(lock)
@@ -249,11 +368,15 @@ def main():
             pass
 
 
-def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir):
+def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resumed_from=None, resume_ctx=""):
     env = dict(os.environ, OPENCODE_CONFIG=os.path.join(HERE, "opencode.json"))
     before = {f: file_sig(f) for f in git_changed(cwd)}
     result = dict(task=meta["task"], cwd=cwd_rel, run_dir=run_dir, rounds=[], skipped=[], passed=False)
+    if resumed_from:
+        result["resumed_from"] = resumed_from
     prompt = RULES.format(allow=", ".join(allow), gate=meta["gate"], task=meta["task"], body=body)
+    if resume_ctx:
+        prompt += "\n\n" + resume_ctx
 
     rnd = 0
     while rnd < int(meta["max_rounds"]):
@@ -302,6 +425,8 @@ def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir):
         result["passed"] = False
         result["error"] = "executor dong vao file cam – Claude kiem tay, KHONG commit"
     result["verdict"] = "PASS" if result["passed"] and not outside else "WARN" if result["passed"] else "FAIL"
+    if result["verdict"] != "PASS":
+        result["handoff"] = write_handoff(run_dir, result)
     json.dump(result, open(os.path.join(run_dir, "result.json"), "w", encoding="utf-8"), indent=1, ensure_ascii=False)
     print(json.dumps(result, ensure_ascii=False))
     sys.exit(0 if result["verdict"] != "FAIL" else 1)

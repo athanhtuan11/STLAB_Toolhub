@@ -89,6 +89,11 @@ Cách xử lý hiện tại:
 - **Kiểm pid trên Windows** dùng `OpenProcess`/`GetExitCodeProcess`, vì `os.kill(pid, 0)` trên Windows sẽ giết tiến trình.
 - **Dừng tay một run:** `taskkill /T /F /PID <pid trong file khóa>`, rồi xóa file khóa. Không kill `codex.exe` theo tên vì có thể là của phiên khác.
 - **In tiếng Việt khi stdout bị pipe (cp1252):** đã sửa. Đã thử thật: selftest OpenCode PASS 29 s; khóa có pid sống bị từ chối, khóa pid chết được vượt.
+- **Resume run bị cắt ngang:** `python tools/delegate/delegate.py --resume <tên run hoặc đường dẫn run_dir>` chạy lại spec đã lưu trong `state.json` vào một `run_dir` MỚI. Prompt vòng 1 thêm đuôi ~40 dòng log executor và gate của lần trước; `result.json` có khóa `resumed_from`. Từ chối nếu run đã có `result.json`, thiếu `spec`, hoặc tiến trình còn sống (tránh chạy trùng).
+- **`--status` với run thiếu `state.json`/pid:** nếu vẫn có khóa còn sống trỏ tới `run_dir` đó thì báo `running`. Trước đây báo nhầm `interrupted` (lỗi gặp thật 2026-10-27).
+- **Run không PASS:** ghi `handoff.md` trong `run_dir` (task, verdict, từng vòng: executor, giây, dòng cuối, gate exit và đuôi gate, file đã đổi/cấm/ngoài allow, bước tiếp theo). `result.json` có khóa `handoff` trỏ tới file này.
+- **Kiểm:** `python tests/test_delegate.py` (chạy từ `tools/delegate`), không gọi executor thật. OpenCode viết qua delegate.py, vòng 1 PASS 100 s; Claude thêm chặn resume khi run còn sống.
+- Ý tưởng lấy từ `docs/reports/agent-orchestration-ai-memory-ruflo.md` mục 6.
 
 ## Cài OpenCode
 
