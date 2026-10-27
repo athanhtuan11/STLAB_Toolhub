@@ -11,6 +11,20 @@ duong_cam:
   - "*/parent-reports/*"
   - "org/*"
 
+# Hang rao cho MOI phien Claude + agent (hook PreToolUse custom/hooks/guard_paths.py, Tuan 2026-10-27).
+# Ap cho cong cu Edit/Write/MultiEdit/NotebookEdit; duong dan tuong doi claude-workspace (fnmatch, '*' qua ca '/').
+hang_rao:
+  cam:                      # tu choi han
+    - "community/*/*"       # ma nguon cong dong da clone (pins.tsv, links.tsv, *.sparse van sua duoc)
+    - "*.FCStd"             # chi sua qua safe_edit.py
+    - "*.env"
+    - ".env"
+  hoi:                      # hoi Tuan truoc khi ghi
+    - "org/*"
+    - "*/print.yaml"
+    - "print.yaml"
+    - "stlab/parent-reports/*"
+
 # Phan loai du lieu theo thu muc (tuong doi claude-workspace). Agent chi lam viec o thu muc co muc <= muc_du_lieu cua no.
 muc_du_lieu:
   thu_tu: [public-tech, internal, customer]
