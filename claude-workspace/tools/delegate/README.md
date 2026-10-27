@@ -77,6 +77,19 @@ Xem `tools/cad-delegation/pilot-opencode/knuckle/task.md` làm mẫu.
 - OpenCode **không có sandbox hệ điều hành** trên Windows. Bù bằng `opencode.json`: cấm ghi ngoài cwd, cấm `.FCStd`, cấm `git commit/push/reset/checkout`. Đã thử thật (2026-10-27): luật cấm có hiệu lực.
 - Script không tự hoàn tác thay đổi. Kiểm `git status` sau mỗi lần chạy.
 
+## Chạy song song, mất điện
+
+Sự cố 2026-10-27: hai phiên Claude cùng giao việc vào `tools/model-study` (một phiên "holes", một phiên "fits", trùng nhau), rồi cúp điện cắt ngang. Run không có `result.json`; hai bên ghi đè `_out/arm` của nhau, và `delegate.py` tưởng file do phiên kia ghi là executor sửa nên báo WARN sai.
+
+Cách xử lý hiện tại:
+
+- **Khóa theo cwd:** `%LOCALAPPDATA%\stlab-usage\locks\<cwd>.json` (ghi pid, task, start, run_dir). Pid còn sống → từ chối giao thêm vào cwd đó, báo tác vụ đang chạy.
+- **Khóa mồ côi:** pid đã chết (mất điện, bị kill) → khóa được ghi đè. Khóa tự xóa khi chạy xong.
+- **Trạng thái run:** mỗi run ghi `state.json` (state `running`, pid, spec). `--status` có thêm `runs_without_result`: `running` (pid còn sống) hoặc `interrupted` (pid đã chết) → chạy lại spec đó.
+- **Kiểm pid trên Windows** dùng `OpenProcess`/`GetExitCodeProcess`, vì `os.kill(pid, 0)` trên Windows sẽ giết tiến trình.
+- **Dừng tay một run:** `taskkill /T /F /PID <pid trong file khóa>`, rồi xóa file khóa. Không kill `codex.exe` theo tên vì có thể là của phiên khác.
+- **In tiếng Việt khi stdout bị pipe (cp1252):** đã sửa. Đã thử thật: selftest OpenCode PASS 29 s; khóa có pid sống bị từ chối, khóa pid chết được vượt.
+
 ## Cài OpenCode
 
 ```powershell

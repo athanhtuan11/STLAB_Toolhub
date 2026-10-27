@@ -73,6 +73,55 @@ def mark_limited(name, reason, until=None):
     save_limits(lim)
 
 
+def pid_alive(pid):
+    """Windows: OpenProcess + GetExitCodeProcess (os.kill(pid, 0) tren Windows se GIET tien trinh)."""
+    import ctypes
+    k = ctypes.windll.kernel32
+    h = k.OpenProcess(0x1000, False, int(pid))          # PROCESS_QUERY_LIMITED_INFORMATION
+    if not h:
+        return False
+    code = ctypes.c_ulong()
+    ok = k.GetExitCodeProcess(h, ctypes.byref(code))
+    k.CloseHandle(h)
+    return bool(ok) and code.value == 259               # STILL_ACTIVE
+
+
+def lock_path(cwd_rel):
+    return os.path.join(USAGE, "locks", re.sub(r"[^A-Za-z0-9_-]+", "_", cwd_rel) + ".json")
+
+
+def take_lock(cwd_rel, task, run_dir):
+    """1 tac vu / cwd: 2 phien Claude giao trung thu muc thi tu choi. Khoa cua tien trinh da chet (mat dien) = mo coi."""
+    p = lock_path(cwd_rel)
+    try:
+        old = json.load(open(p, encoding="utf-8"))
+        if pid_alive(old["pid"]):
+            sys.exit(f"TU CHOI: cwd '{cwd_rel}' dang chay tac vu '{old['task']}' (pid {old['pid']}, tu {old['start']})")
+    except (OSError, ValueError, KeyError):
+        pass
+    os.makedirs(os.path.dirname(p), exist_ok=True)
+    json.dump(dict(pid=os.getpid(), task=task, start=now().isoformat(timespec="seconds"), run_dir=run_dir),
+              open(p, "w", encoding="utf-8"), ensure_ascii=False)
+    return p
+
+
+def run_states():
+    """Cac run khong co result.json: dang chay (pid song) hoac bi cat ngang (pid chet: mat dien, bi kill)."""
+    root = os.path.join(USAGE, "delegate-runs")
+    out = []
+    for d in sorted(os.listdir(root)) if os.path.isdir(root) else []:
+        rd = os.path.join(root, d)
+        if os.path.exists(os.path.join(rd, "result.json")):
+            continue
+        try:
+            st = json.load(open(os.path.join(rd, "state.json"), encoding="utf-8"))
+        except (OSError, ValueError):
+            st = {}
+        alive = bool(st.get("pid")) and pid_alive(st["pid"])
+        out.append(dict(run=d, state="running" if alive else "interrupted", spec=st.get("spec")))
+    return out
+
+
 def parse_spec(path):
     text = open(path, encoding="utf-8").read()
     m = re.match(r"^---\s*\n(.*?)\n---\s*\n(.*)$", text, re.S)
@@ -147,6 +196,7 @@ def tail(text, n=40):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")            # pipe tren Windows mac dinh cp1252 -> loi khi in tieng Viet
     ap = argparse.ArgumentParser()
     ap.add_argument("spec", nargs="?")
     ap.add_argument("--executor")
@@ -165,8 +215,9 @@ def main():
         if a.clear_limit:
             lim.pop(a.clear_limit, None)
             save_limits(lim)
-        print(json.dumps({n: dict(installed=installed(n), limited=is_limited(n, lim), **lim.get(n, {}))
-                          for n in ORDER}, ensure_ascii=False))
+        st = {n: dict(installed=installed(n), limited=is_limited(n, lim), **lim.get(n, {})) for n in ORDER}
+        st["runs_without_result"] = run_states()
+        print(json.dumps(st, ensure_ascii=False))
         return
     if not a.spec:
         ap.error("thieu spec")
@@ -186,6 +237,19 @@ def main():
 
     run_dir = os.path.join(USAGE, "delegate-runs", now().strftime("%Y%m%d-%H%M%S") + "-" + meta["task"])
     os.makedirs(run_dir, exist_ok=True)
+    lock = take_lock(cwd_rel, meta["task"], run_dir)
+    json.dump(dict(state="running", pid=os.getpid(), spec=os.path.abspath(a.spec)),
+              open(os.path.join(run_dir, "state.json"), "w", encoding="utf-8"), ensure_ascii=False)
+    try:
+        run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir)
+    finally:
+        try:
+            os.remove(lock)
+        except OSError:
+            pass
+
+
+def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir):
     env = dict(os.environ, OPENCODE_CONFIG=os.path.join(HERE, "opencode.json"))
     before = {f: file_sig(f) for f in git_changed(cwd)}
     result = dict(task=meta["task"], cwd=cwd_rel, run_dir=run_dir, rounds=[], skipped=[], passed=False)
