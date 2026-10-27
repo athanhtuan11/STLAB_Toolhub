@@ -77,6 +77,12 @@ Rules:
 - Create/modify ONLY files matching: {allow}
 - NEVER touch: *.FCStd, print.yaml, community/, .env, keys/passwords. Never git commit/push/reset/checkout.
 - Do NOT invent dimensions, component specs or safety values. If the spec lacks a number, write TODO and stop.
+- Text files are UTF-8 WITHOUT BOM and keep Vietnamese diacritics. On this Windows machine PowerShell 5.1
+  turns every non-ASCII letter into '?' when text goes through a pipe (`@'...'@ | python`, `echo ... |`),
+  Set-Content, Out-File or `>`. NEVER pass Vietnamese text through PowerShell. Write files with your
+  file-editing tool (apply_patch / edit). If that tool is unavailable, write via Python whose COMMAND IS PURE
+  ASCII: encode every non-ASCII char as \\uXXXX, e.g. python -c "open('r.md','w',encoding='utf-8').write('Ki\\u1ec3m')".
+  A file with letters replaced by '?' is rejected.
 - When done, run the gate command yourself: `{gate}` (exit 0 = PASS). Fix and rerun until it passes.
 - If a step needs a permission you do not have, or is not your job (outside this spec), STOP and do not work
   around it: last line `ESCALATE: <what is needed and why>` – Claude (your manager) will decide.
@@ -500,6 +506,21 @@ def file_sig(f):
         return None
 
 
+TEXT_EXT = (".py", ".md", ".html", ".css", ".js", ".json", ".yaml", ".yml", ".txt", ".csv", ".c", ".h", ".cpp", ".ino")
+
+
+def mojibake(path, min_hits=3):
+    """File text khong doc duoc UTF-8, hoac >= min_hits cho chu cai bi thay bang dau hoi (vd 'Kiem' thanh 'Ki' + '?' + 'm')."""
+    if not path.lower().endswith(TEXT_EXT) or not os.path.isfile(path):
+        return False
+    try:
+        text = open(path, "rb").read().decode("utf-8")
+    except UnicodeDecodeError:
+        return True
+    text = re.sub(r"https?://\S+", "", text)            # bo URL (view.php?id=...) khoi dem
+    return len(re.findall(r"[^\W\d_]\?[^\W\d_]", text)) >= min_hits
+
+
 def tail(text, n=40):
     return "\n".join(text.strip().splitlines()[-n:])
 
@@ -595,7 +616,8 @@ def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resu
     # (ESCALATE 2 lan 2026-10-27). Git bo qua (.gitignore), xoa khi xong.
     tmpdir = os.path.join(cwd, ".delegate-tmp")
     os.makedirs(tmpdir, exist_ok=True)
-    env = dict(os.environ, OPENCODE_CONFIG=os.path.join(HERE, "opencode.json"), TMP=tmpdir, TEMP=tmpdir, TMPDIR=tmpdir)
+    env = dict(os.environ, OPENCODE_CONFIG=os.path.join(HERE, "opencode.json"), TMP=tmpdir, TEMP=tmpdir, TMPDIR=tmpdir,
+               PYTHONUTF8="1", PYTHONIOENCODING="utf-8")
     before = {f: file_sig(f) for f in git_changed(cwd)}
     result = dict(task=meta["task"], cwd=cwd_rel, run_dir=run_dir, rounds=[], skipped=[], passed=False)
     if resumed_from:
@@ -639,9 +661,14 @@ def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resu
         open(os.path.join(run_dir, f"gate-{rnd}.log"), "w", encoding="utf-8").write(gout)
         r.update(gate_exit=gcode, gate_seconds=gsecs, gate_tail=tail(gout, 5))
         result["rounds"].append(r)
-        if gcode == 0:
+        bad = [f for f in git_changed(cwd) if before.get(f, "new") != file_sig(f) and mojibake(os.path.join(WS, f))]
+        if gcode == 0 and not bad:
             result["passed"] = True
             break
+        if bad:                                         # gate dat nhung file hong ma hoa -> giao lai kem nhac
+            r["encoding_broken"] = bad
+            gout = (f"ENCODING BROKEN in {bad}: Vietnamese letters became '?'. Rewrite these files with your "
+                    "file-editing tool only (apply_patch), never through a PowerShell pipe/Set-Content.\n" + gout)
         prompt += RETRY.format(n=rnd + 1, tail=tail(gout))
 
     # Kiem file thay doi: cam + ngoai allow (so voi truoc khi chay)
@@ -656,6 +683,12 @@ def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resu
     outside = [f for f in touched if f not in forbidden and
                (rel(f).startswith("..") or not any(fnmatch.fnmatch(rel(f), p) for p in allow))]
     result.update(changed=touched, forbidden_touched=forbidden, outside_allow=outside)
+    broken = [f for f in touched if mojibake(os.path.join(WS, f))]
+    if broken:
+        # Loi ma hoa (3 lan 2026-10-27: Codex ghi file ANSI, chu tieng Viet thanh '?') -> khong nhan ket qua
+        result["passed"] = False
+        result["encoding_broken"] = broken
+        result["error"] = "file bi loi ma hoa (chu thanh '?' hoac khong phai UTF-8) – giao lai, nhac ghi UTF-8"
     if forbidden:
         result["passed"] = False
         result["error"] = "executor dong vao file cam – Claude kiem tay, KHONG commit"
