@@ -13,7 +13,8 @@
       "**/print.yaml": "deny",
       "**/community/**": "deny",
       "**/.env": "deny",
-      "**/parent-reports/**": "deny"
+      "**/parent-reports/**": "deny",
+      "**/org/*.yaml": "deny"
     },
     "bash": {
       "*": "allow",

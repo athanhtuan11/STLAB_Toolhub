@@ -1,0 +1,160 @@
+# So nhan su agent STLab – MOT NGUON DUY NHAT (thiet ke: docs/reports/agent-org-roles-permissions.md muc 7).
+# Chi Claude phien chinh (tang 0) sua file nay, Tuan duyet. Executor/agent KHONG duoc sua org/**.
+# Kiem khop voi custom/agents/*.md va tools/delegate/delegate.py:  python tools/org/check_org.py
+#
+# tang: 0 giam doc | 1 quan ly | 2 nhan vien | tu-van
+# loai: claude-session | claude-subagent | cli-executor | mcp-advisor
+# chi_phi: claude-quota | free   (tra-phi = CAM: chi tra Claude Pro)
+# muc_du_lieu (cao nhat duoc xem): public-tech < internal < customer   (xem org/policy.yaml)
+# trang_thai: thu-viec | chinh-thuc | nghi
+
+agents:
+  - id: claude-main
+    chuc_danh: Tổng giám đốc
+    tang: 0
+    bao_cao_cho: tuan
+    loai: claude-session
+    model: opus
+    chi_phi: claude-quota
+    ky_nang: [quyet-dinh, spec, gate, cad-hinh-hoc, an-toan, duyet]
+    mang: web-search
+    muc_du_lieu: customer
+    nguoi_duyet: tuan
+    gate: tuy-viec
+    khi_het_han_muc: null
+    trang_thai: chinh-thuc
+    tu_ngay: 2026-10-26
+
+  - id: check-runner
+    chuc_danh: Quản lý kiểm tra
+    tang: 1
+    bao_cao_cho: claude-main
+    loai: claude-subagent
+    model: haiku
+    chi_phi: claude-quota
+    ky_nang: [test, kiem-in, doc-log]
+    tool: [Bash, Read, Grep, Glob]
+    mang: none
+    muc_du_lieu: internal
+    nguoi_duyet: claude-main
+    gate: khong
+    khi_het_han_muc: claude-main
+    trang_thai: chinh-thuc
+    tu_ngay: 2026-10-26
+
+  - id: doc-writer
+    chuc_danh: Quản lý tài liệu
+    tang: 1
+    bao_cao_cho: claude-main
+    loai: claude-subagent
+    model: haiku
+    chi_phi: claude-quota
+    ky_nang: [tai-lieu]
+    tool: [Read, Write, Edit, Glob, Grep, Bash, mcp__plugin_deliberation_deliberation__ask-gemini]
+    mang: none
+    muc_du_lieu: internal
+    nguoi_duyet: claude-main
+    gate: khong
+    khi_het_han_muc: claude-main
+    trang_thai: chinh-thuc
+    tu_ngay: 2026-10-26
+
+  - id: git-scribe
+    chuc_danh: Quản lý git
+    tang: 1
+    bao_cao_cho: claude-main
+    loai: claude-subagent
+    model: haiku
+    chi_phi: claude-quota
+    ky_nang: [commit, push]
+    tool: [Bash, Read, Grep]
+    mang: none
+    muc_du_lieu: internal
+    nguoi_duyet: claude-main
+    gate: khong
+    khi_het_han_muc: claude-main
+    trang_thai: chinh-thuc
+    tu_ngay: 2026-10-26
+
+  - id: codex
+    chuc_danh: Nhân viên lập trình (chính)
+    tang: 2
+    bao_cao_cho: claude-main
+    loai: cli-executor
+    model: codex-chatgpt-free
+    chi_phi: free
+    ky_nang: [code, cad-script, doc-ma, bao-cao]
+    mang: none
+    muc_du_lieu: internal
+    nguoi_duyet: claude-main
+    gate: bat-buoc
+    khi_het_han_muc: opencode
+    cooldown_h: 5
+    trang_thai: chinh-thuc
+    tu_ngay: 2026-10-26
+
+  - id: opencode
+    chuc_danh: Nhân viên lập trình
+    tang: 2
+    bao_cao_cho: claude-main
+    loai: cli-executor
+    model: opencode/deepseek-v4.1-flash-free
+    chi_phi: free
+    ky_nang: [code, cad-script]
+    mang: none
+    muc_du_lieu: internal
+    nguoi_duyet: claude-main
+    gate: bat-buoc
+    khi_het_han_muc: agy
+    cooldown_h: 1
+    trang_thai: chinh-thuc
+    tu_ngay: 2026-10-27
+
+  - id: agy
+    chuc_danh: Nhân viên lập trình (dự phòng)
+    tang: 2
+    bao_cao_cho: claude-main
+    loai: cli-executor
+    model: gemini-3.8-flash-high
+    chi_phi: free
+    ky_nang: [code, cad-script, doc-ma]
+    mang: none
+    muc_du_lieu: internal
+    nguoi_duyet: claude-main
+    gate: bat-buoc
+    khi_het_han_muc: null
+    cooldown_h: 24
+    trang_thai: chinh-thuc
+    tu_ngay: 2026-10-26
+
+  - id: ask-gpt
+    chuc_danh: Tư vấn tra web
+    tang: tu-van
+    bao_cao_cho: claude-main
+    loai: mcp-advisor
+    model: codex-chatgpt-free
+    chi_phi: free
+    ky_nang: [tra-web]
+    mang: web-search
+    muc_du_lieu: public-tech
+    nguoi_duyet: claude-main
+    gate: khong
+    khi_het_han_muc: claude-main
+    trang_thai: chinh-thuc
+    tu_ngay: 2026-10-26
+
+  - id: ask-gemini
+    chuc_danh: Tư vấn đọc tài liệu
+    tang: tu-van
+    bao_cao_cho: claude-main
+    loai: mcp-advisor
+    model: gemini-3.8-flash-medium
+    chi_phi: free
+    ky_nang: [doc-tai-lieu, tom-tat, dich]
+    mang: web-search
+    muc_du_lieu: internal
+    nguoi_duyet: claude-main
+    gate: khong
+    khi_het_han_muc: claude-main
+    trang_thai: chinh-thuc
+    tu_ngay: 2026-10-26

@@ -24,7 +24,7 @@ AGY_MODEL = "gemini-3.8-flash-high"
 # Khong giao ra ngoai: du lieu phu huynh, nguon cong dong ghim
 REFUSE_CWD = ["stlab/parent-reports", "community"]
 # Executor khong duoc dong toi (kiem bang git status sau khi chay)
-FORBIDDEN = ["*.FCStd", "*/print.yaml", "print.yaml", "community/*", "*.env", ".env", "*/parent-reports/*"]
+FORBIDDEN = ["*.FCStd", "*/print.yaml", "print.yaml", "community/*", "*.env", ".env", "*/parent-reports/*", "org/*"]
 LIMIT_RE = re.compile(r"\b429\b|rate.?limit|usage limit|quota (?:reached|exceeded)|exceeded your|too many requests|"
                       r"individual quota", re.I)
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")

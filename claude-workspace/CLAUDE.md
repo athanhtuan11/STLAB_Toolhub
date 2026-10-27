@@ -50,6 +50,10 @@ file này; mỗi dự án con có CLAUDE.md riêng và tự nạp file này theo
 Chi tiết, cài đặt, gỡ bỏ: `docs/model-routing.md`.
 
 **Phân quyền 3 tầng (Tuan 2026-10-27):** Claude = tổng giám đốc: quyết định + viết đặc tả/gate, giao cấp dưới làm.
+**Sổ nhân sự `org/agents.yaml` + `org/policy.yaml` là nguồn duy nhất** về agent (vai trò, model, chi phí, quyền, mức dữ
+liệu, người duyệt, chuyển khi hết hạn mức). Thêm/đổi agent: sửa sổ (chỉ phiên chính, Tuan duyệt) → `python
+tools/org/check_org.py` phải PASS. Agent mới vào `thu-viec`, qua bài thử có gate mới `chinh-thuc`. Executor không được sửa `org/`.
+Thiết kế + lộ trình: `docs/reports/agent-org-roles-permissions.md` mục 7 (đã xong bước 1).
 
 | Tầng | Ai | Làm gì |
 |---|---|---|

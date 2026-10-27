@@ -1,0 +1,32 @@
+# Quy tac chung cho moi agent trong org/agents.yaml. Chi Claude phien chinh sua, Tuan duyet.
+
+# Duong cam ghi voi moi executor (phai bao trum FORBIDDEN trong tools/delegate/delegate.py)
+duong_cam:
+  - "*.FCStd"
+  - "*/print.yaml"
+  - "print.yaml"
+  - "community/*"
+  - "*.env"
+  - ".env"
+  - "*/parent-reports/*"
+  - "org/*"
+
+# Phan loai du lieu theo thu muc (tuong doi claude-workspace). Agent chi lam viec o thu muc co muc <= muc_du_lieu cua no.
+muc_du_lieu:
+  thu_tu: [public-tech, internal, customer]
+  mac_dinh: internal
+  thu_muc:
+    stlab/parent-reports: customer
+    maker/pump-control: customer
+    community: public-tech
+
+# Nha cung cap ngoai (chi_phi free, loai cli-executor/mcp-advisor) toi da muc nay
+nha_cung_cap_ngoai_toi_da: internal
+
+quy_tac:
+  - Chỉ tầng 0 (claude-main) quyết kích thước, khe, thông số linh kiện, an toàn điện/pin/nhiệt.
+  - Không agent nào tự duyệt việc của mình (nguoi_duyet khác id).
+  - Chỉ git-scribe commit/push; executor không chạy git commit/push/reset/checkout.
+  - Executor không sửa org/**; tuyển/đổi quyền agent do Claude đề xuất, Tuan duyệt.
+  - Không dịch vụ trả phí ngoài Claude Pro (chi_phi tra-phi bị cấm).
+  - Agent mới vào trang_thai thu-viec, qua bài thử có gate mới lên chinh-thuc.
