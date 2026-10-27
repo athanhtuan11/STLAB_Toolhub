@@ -3,7 +3,9 @@
     "allow": [
       "Bash(tasklist)",
       "Bash(tasklist *)",
-	  "Bash(agy -p *)"
+	  "Bash(agy -p *)",
+	  "Bash(opencode run *)",
+	  "Bash(python tools/delegate/delegate.py *)"
     ]
   }
 }
