@@ -107,3 +107,34 @@ details.others summary { cursor: pointer; color: var(--muted); font-size: 14px; 
 .u-bar i { display: block; height: 100%; background: var(--ok); }
 .u-bar i.warn { background: var(--warn); } .u-bar i.bad { background: var(--err); }
 .u-upd { margin-top: auto; font-size: 12px; }
+
+
+/* Nhan su AI tren trang chinh */
+.org-subhead { font-size: 14px; margin: 8px 0 6px; }
+.org-used-by { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 4px; }
+.org-attention { display: grid; gap: 8px; list-style: none; padding: 0; margin: 0; }
+.org-alert { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 8px; padding: 10px 12px; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-card); overflow-wrap: anywhere; }
+.org-alert.warn { border-left: 3px solid var(--warn); }
+.org-alert.bad { border-left: 3px solid var(--err); }
+.org-chart { margin-top: 16px; }
+.org-chart summary { display: inline-block; cursor: pointer; color: var(--text); border: 1px solid var(--line); border-radius: var(--r-control); background: var(--card); padding: 7px 12px; }
+.org-tiers { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+.org-tier { min-width: 0; }
+.org-tier h4 { margin: 0 0 8px; font-size: 14px; }
+.org-agent { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 10px; margin-bottom: 8px; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-card); }
+.org-title, .org-meta, .org-stats { max-width: 100%; overflow-wrap: anywhere; }
+.org-agent .chips { margin-top: 0; }
+.org-agent .chip { overflow-wrap: anywhere; }
+@media (max-width: 520px) {
+  .org-tiers { grid-template-columns: minmax(0, 1fr); }
+  .org-chart summary { max-width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}
+
+/* Keep the org board readable when labels and identifiers wrap on narrow screens. */
+.org-providers { min-width: 0; }
+.u-card { min-width: 0; overflow-wrap: anywhere; }
+.org-agent .badge { white-space: normal; }
+.org-chart summary { max-width: 100%; }

@@ -61,6 +61,12 @@ def api_health():
     return jsonify([{"text": t, "url": url_for(ep)} for t, ep in issues])
 
 
+@bp.get("/api/org")
+def api_org():
+    """Nhan su AI, han muc va can chu y tu so nhan su + file local."""
+    return jsonify(usage.org_board())
+
+
 @bp.get("/api/usage")
 def api_usage():
     """Han muc Claude/Codex/Gemini cho o "Han muc AI" o trang chinh (chi doc file tren may - toolhub/usage.py)."""

@@ -18,8 +18,17 @@
   {% endfor %}
 </section>
 
-<h2>Hạn mức AI</h2>
-<section id="usage" class="usage"><span class="muted">Đang đọc…</span></section>
+<h2>Nhân sự AI</h2>
+<h3 class="org-subhead">Hạn mức theo nguồn</h3>
+<section id="org-providers" class="usage"><span class="muted">Đang đọc…</span></section>
+<section id="org-attention-section" hidden>
+  <h3 class="org-subhead">Cần chú ý</h3>
+  <ul id="org-attention-list" class="org-attention"></ul>
+</section>
+<details class="org-chart">
+  <summary id="org-summary">Sơ đồ nhân sự</summary>
+  <div id="org-tiers" class="org-tiers"></div>
+</details>
 
 <h2>Đang làm</h2>
 <section class="grid wide">
@@ -67,29 +76,56 @@ fetch("/api/health").then(r => r.json()).then(xs => {
   });
 }).catch(() => { document.getElementById("health").textContent = ""; });
 
-// "Han muc AI": doc file tren may (toolhub/usage.py); thanh = % DA DUNG, mau theo muc con lai
-fetch("/api/usage").then(r => r.json()).then(xs => {
-  const box = document.getElementById("usage");
-  box.textContent = "";
-  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; };
-  xs.forEach(a => {
-    const c = el("div", "u-card");
+// Nhan su AI: doc so nhan su va trang thai tu may.
+fetch("/api/org").then(r => r.json()).then(data => {
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+  const providers = document.getElementById("org-providers");
+  providers.textContent = "";
+  data.providers.forEach(p => {
+    const c = el("article", "u-card");
     const h = el("div", "row");
-    h.append(el("b", "grow", a.name), el("span", "badge plain", a.plan));
-    c.append(h);
-    a.bars.forEach(b => {
-      const left = 100 - b.used;
-      const lv = left > 50 ? "ok" : left > 20 ? "warn" : "bad";
+    h.append(el("b", "grow", p.name), el("span", "badge plain", p.plan)); c.append(h);
+    p.bars.forEach(b => {
+      const left = 100 - b.used, level = left > 50 ? "ok" : left > 20 ? "warn" : "bad";
       const line = el("div", "u-line");
-      line.append(el("span", "u-label", b.label), el("span", "u-val " + lv, "còn " + Math.round(left) + "%"));
-      const bar = el("div", "u-bar"); const fill = el("i", lv); fill.style.width = Math.min(100, b.used) + "%"; bar.append(fill);
-      c.append(line, bar);
+      line.append(el("span", "u-label", b.label), el("span", "u-val " + level, "còn " + Math.round(left) + "%"));
+      const bar = el("div", "u-bar"), fill = el("i", level); fill.style.width = Math.max(0, Math.min(100, b.used)) + "%"; bar.append(fill); c.append(line, bar);
       if (b.reset) c.append(el("div", "muted", "reset " + b.reset));
     });
-    if (a.note) c.append(el("div", "muted", a.note));
-    if (a.updated) c.append(el("div", "muted u-upd", "cập nhật " + a.updated));
-    box.append(c);
+    if (p.note) c.append(el("div", "muted", p.note));
+    c.append(el("div", "muted org-used-by", "Dùng cho: "));
+    const used = c.lastChild; p.agents.forEach((id, i) => { used.append(el("span", "chip", id)); });
+    if (p.limited_until) c.append(el("span", "badge warn wrap", "Hết hạn mức tới " + p.limited_until));
+    if (p.updated) c.append(el("div", "muted u-upd", "Cập nhật " + p.updated));
+    providers.append(c);
   });
-}).catch(() => { document.getElementById("usage").textContent = ""; });
+  if (data.attention.length) {
+    const section = document.getElementById("org-attention-section"), list = document.getElementById("org-attention-list");
+    section.hidden = false;
+    data.attention.forEach(item => {
+      const li = el("li", "org-alert " + item.level);
+      li.append(el("span", "badge " + item.level, item.level === "bad" ? "Lỗi" : "Cảnh báo"), document.createTextNode(item.text));
+      list.append(li);
+    });
+  }
+  const count = data.tiers.reduce((n, tier) => n + tier.agents.length, 0);
+  document.getElementById("org-summary").textContent = "Sơ đồ nhân sự (" + count + ")";
+  const tiers = document.getElementById("org-tiers");
+  data.tiers.forEach(tier => {
+    const col = el("section", "org-tier"); col.append(el("h4", "", tier.label));
+    tier.agents.forEach(a => {
+      const card = el("article", "org-agent");
+      card.append(el("b", "org-title", a.chuc_danh), el("div", "muted org-meta", a.id + " · " + a.model));
+      card.append(el("span", "badge " + (a.status === "het-han-muc" ? "warn" : a.status === "nghi" ? "plain" : "ok"), a.status_text));
+      const chips = el("div", "chips"); a.ky_nang.forEach(skill => chips.append(el("span", "chip", skill))); card.append(chips);
+      if (a.stats) {
+        const rate = a.stats.pass_rate === undefined ? 0 : Math.round(a.stats.pass_rate * 100);
+        card.append(el("div", "muted org-stats", a.stats.rounds + " vòng · đạt " + rate + "% · vòng 1 đạt " + a.stats.pass_round1));
+      }
+      col.append(card);
+    });
+    tiers.append(col);
+  });
+}).catch(() => { document.getElementById("org-providers").textContent = "Chưa đọc được sổ nhân sự."; });
 </script>
 {% endblock %}
