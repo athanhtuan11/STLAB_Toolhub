@@ -253,7 +253,7 @@ Các bản clone có `__pycache__/`, `*.pyc`, `build/`, `*.egg-info/`, `logs/` t
 
 ## Repo nghiên cứu (chỉ đọc, chưa liên kết)
 
-Ngày 2026-10-27, Tuan lưu từ 2 bài Facebook để học/nghiên cứu. Ghim trong `community/pins.tsv` (17 dòng cuối).
+Ngày 2026-10-27, Tuan lưu từ 2 bài Facebook để học/nghiên cứu. Ghim trong `community/pins.tsv` (22 dòng cuối).
 Sao và ngày push kiểm bằng GitHub API ngày 2026-10-27.
 
 Quy tắc:
@@ -288,6 +288,18 @@ Quy tắc:
 | [Comfy-Org/ComfyUI](https://github.com/Comfy-Org/ComfyUI) | `comfy-org-comfyui` | `426f5eea52a7` | GPL-3.0 | Cộng đồng, 143k★ | 2026-10-27 | Tạo ảnh/video AI theo node. Cần GPU mạnh, máy STLab yếu → chỉ tham khảo |
 | [akitaonrails/ai-memory](https://github.com/akitaonrails/ai-memory) | `akitaonrails-ai-memory` | `0e5488073d70` | MIT | Cộng đồng, 14k★ | 2026-10-27 | Bộ nhớ dài hạn chung cho agent (Rust, markdown + git) |
 | [ruvnet/ruflo](https://github.com/ruvnet/ruflo) | `ruvnet-ruflo` | `62ca16bcf3b3` | MIT | Cộng đồng, 80k★ | 2026-10-27 | Lớp điều phối agent quanh Claude Code/Codex. README tự cảnh báo mod chạy với quyền tài khoản → **KHÔNG cài** |
+
+### Nhóm C – Đọc STL/CAD/in 3D (5 repo, 2026-10-27)
+
+| Repo | Thư mục (`pins.tsv`) | Ghim | License | Tin cậy | Kiểm tra | Ghi chú |
+|---|---|---|---|---|---|---|
+| [mikedh/trimesh](https://github.com/mikedh/trimesh) | `mikedh-trimesh` | `6c158cce2265` | MIT | Cộng đồng, 3,7k★ | 2026-10-27 | Đọc STL/3MF, kiểm kín (watertight), cắt lát, ray casting |
+| [CadQuery/cadquery](https://github.com/CadQuery/cadquery) | `cadquery-cadquery` | `8178185a24a0` | Apache-2.0 | Cộng đồng, 6,0k★ | 2026-10-27 | CAD Python trên OCCT, đọc STEP |
+| [gumyr/build123d](https://github.com/gumyr/build123d) | `gumyr-build123d` | `c49a0493ad00` | Apache-2.0 | Cộng đồng, 3,5k★ | 2026-10-27 | CAD Python trên OCCT |
+| [Pan-Chera/Multi-Agent-CAD](https://github.com/Pan-Chera/Multi-Agent-CAD) | `pan-chera-multi-agent-cad` | `7e4cf4b71d96` | MIT | Cộng đồng, 1,1k★ | 2026-10-27 | Nhiều agent dựng CAD (brief → sinh → kiểm → Judge → sửa); dùng API DashScope → **không cài** |
+| [OrcaSlicer/OrcaSlicer](https://github.com/OrcaSlicer/OrcaSlicer) | `orcaslicer-orcaslicer` (sparse: `orcaslicer-orcaslicer.sparse`) | `e28af4e5f211` | **AGPL-3.0** | Cộng đồng, 16k★ | 2026-10-27 | **Chỉ** `src/libslic3r/Format/` + `Support/` (đọc 3MF Bambu, dò support); chỉ học ý tưởng, **không chép mã** |
+
+Báo cáo: `docs/reports/cad-mesh-libs-study.md`. Mục 7: FreeCAD đọc mặt trụ STEP chính xác, **không cần cài CadQuery/build123d**.
 
 Việc tiếp:
 
@@ -341,6 +353,7 @@ Khi chuyển sang thương mại, rà bảng này trước (và cột License �
 | [DavidHDev/canvas-ui](https://github.com/DavidHDev/canvas-ui) | MIT + Commons Clause: được dùng trong sản phẩm kể cả thương mại, **không được bán lại chính phần mềm** | Repo nghiên cứu (chưa liên kết) |
 | [Comfy-Org/ComfyUI](https://github.com/Comfy-Org/ComfyUI) | GPL-3.0 | Repo nghiên cứu (chỉ tham khảo) |
 | [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) | Không có license (mặc định: giữ mọi quyền) | Repo nghiên cứu (chỉ đọc) |
+| [OrcaSlicer/OrcaSlicer](https://github.com/OrcaSlicer/OrcaSlicer) | AGPL-3.0 (copyleft mạnh, kể cả chạy qua mạng khi đã sửa) | Repo nghiên cứu (chỉ đọc, sparse 2 thư mục) |
 
 ## Chính sách cập nhật (tóm tắt)
 1. Ghim tag/SHA, không bám `main`. Nâng cấp từng repo một, giữ `prev_sha` để rollback.

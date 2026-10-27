@@ -31,7 +31,7 @@ ANSI_RE = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
 
 RULES = """You are an executor working for Claude (the lead engineer). Follow the spec exactly.
 Rules:
-- Work ONLY inside the current directory. Do not read or write outside it.
+- WRITE only inside the current directory. READ only inside the current directory{read}.
 - Create/modify ONLY files matching: {allow}
 - NEVER touch: *.FCStd, print.yaml, community/, .env, keys/passwords. Never git commit/push/reset/checkout.
 - Do NOT invent dimensions, component specs or safety values. If the spec lacks a number, write TODO and stop.
@@ -244,6 +244,7 @@ def parse_spec(path):
     meta.setdefault("timeout_min", 15)
     meta.setdefault("max_rounds", 2)
     meta.setdefault("executor", "auto")
+    meta.setdefault("read", [])                          # thu muc duoc DOC them (tuong doi claude-workspace), khong ghi
     return meta, m.group(2).strip()
 
 
@@ -374,7 +375,9 @@ def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resu
     result = dict(task=meta["task"], cwd=cwd_rel, run_dir=run_dir, rounds=[], skipped=[], passed=False)
     if resumed_from:
         result["resumed_from"] = resumed_from
-    prompt = RULES.format(allow=", ".join(allow), gate=meta["gate"], task=meta["task"], body=body)
+    extra = [os.path.join(WS, p) for p in meta["read"]]
+    read = (" and these READ-ONLY paths: " + ", ".join(extra)) if extra else ""
+    prompt = RULES.format(allow=", ".join(allow), gate=meta["gate"], task=meta["task"], body=body, read=read)
     if resume_ctx:
         prompt += "\n\n" + resume_ctx
 

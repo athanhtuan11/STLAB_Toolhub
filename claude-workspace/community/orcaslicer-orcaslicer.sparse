@@ -1,0 +1,5 @@
+# Chi lay phan doc dinh dang (3MF Bambu, STL, STEP) va do/tao support cua OrcaSlicer (repo goc C++ rat lon, AGPL-3.0).
+/LICENSE*
+/README.md
+/src/libslic3r/Format/
+/src/libslic3r/Support/
