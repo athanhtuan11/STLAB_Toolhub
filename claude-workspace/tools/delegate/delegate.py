@@ -36,7 +36,9 @@ Rules:
 - NEVER touch: *.FCStd, print.yaml, community/, .env, keys/passwords. Never git commit/push/reset/checkout.
 - Do NOT invent dimensions, component specs or safety values. If the spec lacks a number, write TODO and stop.
 - When done, run the gate command yourself: `{gate}` (exit 0 = PASS). Fix and rerun until it passes.
-- Last line of your reply: `DONE` if the gate passes, otherwise `BLOCKED: <one-line reason>`.
+- If a step needs a permission you do not have, or is not your job (outside this spec), STOP and do not work
+  around it: last line `ESCALATE: <what is needed and why>` – Claude (your manager) will decide.
+- Last line of your reply: `DONE` if the gate passes, otherwise `BLOCKED: <one-line reason>` or `ESCALATE: ...`.
 
 === SPEC: {task} ===
 {body}
@@ -212,6 +214,8 @@ def write_handoff(run_dir, result):
         lines.append(f"- Tiep tu run: `{result['resumed_from']}`")
     if result.get("error"):
         lines.append(f"- Loi: {result['error']}")
+    if result.get("escalate"):
+        lines.append(f"- BAO LEN TREN (executor thieu quyen/ngoai viec, Claude quyet): {result['escalate']}")
     lines += ["", "## Tung vong"]
     for r in result.get("rounds", []):
         lines += [f"### Vong {r.get('round', '?')} - {r.get('executor', '?')}",
@@ -396,8 +400,14 @@ def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resu
         out, code, secs = run_proc(argv, cwd, stdin, int(meta["timeout_min"]) * 60, env)
         open(os.path.join(run_dir, f"{name}-{rnd}.log"), "w", encoding="utf-8").write(out)
         lines = [x.strip() for x in ANSI_RE.sub("", out).splitlines() if x.strip()]
-        last = next((x for x in reversed(lines) if re.match(r"`?(DONE|BLOCKED)", x)), (lines or [""])[-1])[:200]
+        last = next((x for x in reversed(lines) if re.match(r"`?(DONE|BLOCKED|ESCALATE)", x)),
+                    (lines or [""])[-1])[:200]
         r = dict(round=rnd, executor=name, exit=code, seconds=secs, last_line=last)
+        if re.match(r"`?ESCALATE", last):
+            # Bao len tren: executor thieu quyen/ngoai viec -> dung han, KHONG giao lai, Claude quyet (org/policy.yaml)
+            result["rounds"].append(r)
+            result["escalate"] = last.split(":", 1)[-1].strip(" `")
+            break
         if code != 0 and LIMIT_RE.search(out[-4000:]):
             mark_limited(name, tail(out, 3))
             r["limited"] = True
@@ -427,12 +437,13 @@ def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resu
     if forbidden:
         result["passed"] = False
         result["error"] = "executor dong vao file cam – Claude kiem tay, KHONG commit"
-    result["verdict"] = "PASS" if result["passed"] and not outside else "WARN" if result["passed"] else "FAIL"
+    result["verdict"] = ("ESCALATE" if result.get("escalate") and not forbidden else
+                         "PASS" if result["passed"] and not outside else "WARN" if result["passed"] else "FAIL")
     if result["verdict"] != "PASS":
         result["handoff"] = write_handoff(run_dir, result)
     json.dump(result, open(os.path.join(run_dir, "result.json"), "w", encoding="utf-8"), indent=1, ensure_ascii=False)
     print(json.dumps(result, ensure_ascii=False))
-    sys.exit(0 if result["verdict"] != "FAIL" else 1)
+    sys.exit({"FAIL": 1, "ESCALATE": 2}.get(result["verdict"], 0))
 
 
 if __name__ == "__main__":

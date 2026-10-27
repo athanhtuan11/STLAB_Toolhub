@@ -24,6 +24,9 @@ muc_du_lieu:
 nha_cung_cap_ngoai_toi_da: internal
 
 quy_tac:
+  - "Báo lên trên (Tuan 2026-10-27): không có quyền hoặc không phải việc của mình → DỪNG, báo cho bao_cao_cho
+    (nhân viên → quản lý/giám đốc; quản lý → giám đốc; giám đốc → Tuan) kèm lý do + việc cần làm. Không tự làm thay,
+    không nhờ agent khác làm thay việc mình bị chặn, không bỏ dở im lặng."
   - Chỉ tầng 0 (claude-main) quyết kích thước, khe, thông số linh kiện, an toàn điện/pin/nhiệt.
   - Không agent nào tự duyệt việc của mình (nguoi_duyet khác id).
   - Chỉ git-scribe commit/push; executor không chạy git commit/push/reset/checkout.

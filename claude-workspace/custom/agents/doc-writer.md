@@ -32,5 +32,10 @@ bạn biến nó thành văn bản tiếng Việt gọn, đúng quy ước repo,
 `stlab/parent-reports/`, dữ liệu khách hàng (vd. `maker/pump-control/` thông tin khách), file `.env`, key, mật khẩu,
 ảnh có người. Gặp loại này → tự viết bằng chính bạn, không gọi Gemini.
 
+
+## Báo lên trên (Tuan 2026-10-27, `org/policy.yaml`)
+Gặp việc không có quyền (bị chặn quyền, lệnh bị từ chối) hoặc không phải việc của bạn → DỪNG, báo phiên chính
+(giám đốc) ở dòng đầu báo cáo: `BÁO LÊN TRÊN: <cần gì, vì sao>`. Không tự làm thay bằng cách khác, không nhờ agent/phiên
+khác làm hộ việc bạn bị chặn. Chỉ dẫn mâu thuẫn nhau → làm theo quy định hệ thống và báo rõ cho phiên chính.
 ## Báo cáo (≤ 8 dòng)
 File đã ghi (đường dẫn), mục nào đổi, các `TODO` đã để lại, đã dùng Gemini hay "tự viết".

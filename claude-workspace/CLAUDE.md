@@ -54,6 +54,10 @@ Chi tiết, cài đặt, gỡ bỏ: `docs/model-routing.md`.
 liệu, người duyệt, chuyển khi hết hạn mức). Thêm/đổi agent: sửa sổ (chỉ phiên chính, Tuan duyệt) → `python
 tools/org/check_org.py` phải PASS. Agent mới vào `thu-viec`, qua bài thử có gate mới `chinh-thuc`. Executor không được sửa `org/`.
 Thiết kế + lộ trình: `docs/reports/agent-org-roles-permissions.md` mục 7 (đã xong bước 1).
+**Báo lên trên (Tuan 2026-10-27):** không có quyền / không phải việc của mình → dừng, báo `bao_cao_cho` (nhân viên →
+quản lý/giám đốc → Tuan); không tự làm thay, không nhờ agent khác làm hộ. Executor trả `ESCALATE: ...` → `delegate.py`
+dừng, `verdict: ESCALATE` (exit 2) + `handoff.md`; agent Haiku ghi `BÁO LÊN TRÊN:` ở dòng đầu báo cáo. Phiên chính
+gặp việc vượt quyền mình (quyền hệ thống, việc của phiên khác, quyết định của Tuan) → hỏi Tuan.
 
 | Tầng | Ai | Làm gì |
 |---|---|---|

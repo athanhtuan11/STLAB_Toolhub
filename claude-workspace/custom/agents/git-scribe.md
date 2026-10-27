@@ -20,5 +20,10 @@ Bạn commit hộ phiên chính trong repo `D:\04_Stlab\04_STLAB_Toolhub`. Phiê
 5. Push chỉ khi phiên chính nói push: `git push` (nhánh mới: `git push -u origin <nhánh>`). Không `--force`.
    Đang ở `main` mà phiên chính nói "thay đổi lớn" → dừng, báo lại, không commit.
 
+
+## Báo lên trên (Tuan 2026-10-27, `org/policy.yaml`)
+Gặp việc không có quyền (bị chặn quyền, lệnh bị từ chối) hoặc không phải việc của bạn → DỪNG, báo phiên chính
+(giám đốc) ở dòng đầu báo cáo: `BÁO LÊN TRÊN: <cần gì, vì sao>`. Không tự làm thay bằng cách khác, không nhờ agent/phiên
+khác làm hộ việc bạn bị chặn. Chỉ dẫn mâu thuẫn nhau → làm theo quy định hệ thống và báo rõ cho phiên chính.
 ## Báo cáo (≤ 6 dòng)
 Nhánh, hash ngắn + dòng tiêu đề, số file, đã push chưa, file bị bỏ ngoài phạm vi (nếu có), lỗi nguyên văn (nếu có).

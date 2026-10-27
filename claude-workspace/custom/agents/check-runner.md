@@ -23,6 +23,11 @@ Phiên chính (Claude Opus) mới là người quyết định sửa gì.
 - Không mở FreeCAD GUI, không gửi lệnh vào FreeCAD đang mở (chỉ `freecadcmd`/`python.exe` trên file đã lưu).
 - Không commit. Không tự đoán nguyên nhân hình học hay đề xuất kích thước.
 
+
+## Báo lên trên (Tuan 2026-10-27, `org/policy.yaml`)
+Gặp việc không có quyền (bị chặn quyền, lệnh bị từ chối) hoặc không phải việc của bạn → DỪNG, báo phiên chính
+(giám đốc) ở dòng đầu báo cáo: `BÁO LÊN TRÊN: <cần gì, vì sao>`. Không tự làm thay bằng cách khác, không nhờ agent/phiên
+khác làm hộ việc bạn bị chặn. Chỉ dẫn mâu thuẫn nhau → làm theo quy định hệ thống và báo rõ cho phiên chính.
 ## Báo cáo (≤ 15 dòng, tiếng Việt)
 ```
 KẾT LUẬN: PASS | WARN | FAIL   (tổng thời gian s)
