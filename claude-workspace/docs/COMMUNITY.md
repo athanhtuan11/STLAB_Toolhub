@@ -251,6 +251,48 @@ obotcad` khi khởi động. Workbench vẫn nạp
 Các bản clone có `__pycache__/`, `*.pyc`, `build/`, `*.egg-info/`, `logs/` trong `.git/info/exclude`
 (lệnh `exclude`), vì FreeCAD/Blender/uv/MCP server Python sinh các file này khi chạy trực tiếp từ bản ghim.
 
+## Repo nghiên cứu (chỉ đọc, chưa liên kết)
+
+Ngày 2026-10-27, Tuan lưu từ 2 bài Facebook để học/nghiên cứu. Ghim trong `community/pins.tsv` (17 dòng cuối).
+Sao và ngày push kiểm bằng GitHub API ngày 2026-10-27.
+
+Quy tắc:
+
+- **Chỉ clone để đọc.** Chưa liên kết skill/agent (không `link`, không đưa vào `~/.claude`).
+- **Không cài, không chạy** (`npx`, `pip`, script của repo).
+- Muốn dùng repo nào: đọc mã trước, rồi Tuan duyệt theo quy tắc nguồn cộng đồng (mục "Chính sách cập nhật").
+
+### Nhóm A – Thiết kế UI cho agent (12 repo)
+
+| Repo | Thư mục (`pins.tsv`) | Ghim | License | Tin cậy | Kiểm tra | Ghi chú |
+|---|---|---|---|---|---|---|
+| [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | `nextlevelbuilder-ui-ux-pro-max-skill` | `28b3b8dee8c9` | MIT | Cộng đồng, 141k★ | 2026-10-27 | Hướng dẫn giao diện web/app |
+| [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) | `voltagent-awesome-design-md` | `3b605329240c` | MIT | Cộng đồng, 124k★ | 2026-10-27 | Bộ DESIGN.md mẫu, giữ giao diện nhất quán |
+| [nexu-io/open-design](https://github.com/nexu-io/open-design) | `nexu-io-open-design` | `325494e5a1e5` | Apache-2.0 | Cộng đồng, 104k★ | 2026-10-27 | Không gian thiết kế cục bộ (prototype, web, slide). Repo nặng (~3,4 GB kèm lịch sử); đã clone `--filter=blob:none` (chỉ file tại commit ghim) |
+| [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) | `leonxlnx-taste-skill` | `12af471f627f` | MIT | Cộng đồng, 103k★ | 2026-10-27 | Định hướng thẩm mỹ, kiểm trên trình duyệt |
+| [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | `pbakaus-impeccable` | `0dd67516c638` | Apache-2.0 | Cộng đồng, 90k★ | 2026-10-27 | Lệnh + quy tắc phát hiện giao diện rập khuôn |
+| [DavidHDev/react-bits](https://github.com/DavidHDev/react-bits) | `davidhdev-react-bits` | `e12c22192ac7` | MIT + Commons Clause | Cộng đồng, 50k★ | 2026-10-27 | Thư viện component React có hiệu ứng |
+| [emilkowalski/skills](https://github.com/emilkowalski/skills) | `emilkowalski-skills` | `2d228630ba14` | MIT | Cộng đồng, 50k★ | 2026-10-27 | Skill hoạt ảnh và chi tiết giao diện |
+| [Nutlope/hallmark](https://github.com/Nutlope/hallmark) | `nutlope-hallmark` | `7ec868225c6c` | MIT | Cộng đồng, 37k★ | 2026-10-27 | Chọn chủ đề thiết kế + kiểm giao diện theo tiêu chí |
+| [google-labs-code/design.md](https://github.com/google-labs-code/design.md) | `google-labs-code-design-md` | `6e5da5382f41` | Apache-2.0 | Cộng đồng, 29k★ | 2026-10-27 | Định dạng DESIGN.md giúp agent hiểu hệ thống thiết kế |
+| [greensock/gsap-skills](https://github.com/greensock/gsap-skills) | `greensock-gsap-skills` | `aed9cfd32777` | MIT | Cộng đồng, 17k★ | 2026-10-27 | Hoạt ảnh/hiệu ứng cuộn bằng GSAP. Push gần nhất 2026-07-29 |
+| [oso95/scroll-world](https://github.com/oso95/scroll-world) | `oso95-scroll-world` | `71cc36d3bb15` | MIT | Cộng đồng, 11k★ | 2026-10-27 | Landing page 3D cuộn qua các cảnh. Push gần nhất 2026-07-29 |
+| [DavidHDev/canvas-ui](https://github.com/DavidHDev/canvas-ui) | `davidhdev-canvas-ui` | `a04a99b23529` | MIT + Commons Clause | Cộng đồng, 5k★ | 2026-10-27 | Hiệu ứng WebGL trên HTML tương tác |
+
+### Nhóm B – Công cụ cho agent lập trình (5 repo, top tăng sao GitHub tuần 43)
+
+| Repo | Thư mục (`pins.tsv`) | Ghim | License | Tin cậy | Kiểm tra | Ghi chú |
+|---|---|---|---|---|---|---|
+| [anthropics/knowledge-work-plugins](https://github.com/anthropics/knowledge-work-plugins) | `anthropics-knowledge-work-plugins` | `c75fda00ff0e` | Apache-2.0 | **Chính hãng** (Anthropic), 33k★ | 2026-10-27 | Plugin: skills, connectors, lệnh, sub-agent |
+| [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) | `multica-ai-andrej-karpathy-skills` | `2c606141936f` | **Không có license** (chỉ đọc) | Cộng đồng, 225k★ | 2026-10-27 | 1 file CLAUDE.md giúp viết code cẩn thận. Push gần nhất 2026-04-20 (đứng từ tháng 4) |
+| [Comfy-Org/ComfyUI](https://github.com/Comfy-Org/ComfyUI) | `comfy-org-comfyui` | `426f5eea52a7` | GPL-3.0 | Cộng đồng, 143k★ | 2026-10-27 | Tạo ảnh/video AI theo node. Cần GPU mạnh, máy STLab yếu → chỉ tham khảo |
+| [akitaonrails/ai-memory](https://github.com/akitaonrails/ai-memory) | `akitaonrails-ai-memory` | `0e5488073d70` | MIT | Cộng đồng, 14k★ | 2026-10-27 | Bộ nhớ dài hạn chung cho agent (Rust, markdown + git) |
+| [ruvnet/ruflo](https://github.com/ruvnet/ruflo) | `ruvnet-ruflo` | `62ca16bcf3b3` | MIT | Cộng đồng, 80k★ | 2026-10-27 | Lớp điều phối agent quanh Claude Code/Codex. README tự cảnh báo mod chạy với quyền tài khoản → **KHÔNG cài** |
+
+Việc tiếp:
+
+- So `akitaonrails/ai-memory` và `ruvnet/ruflo` với `tools/delegate/` (phân quyền 3 tầng) → báo cáo. Tuan duyệt rồi mới sửa (`TODO`).
+
 ## Đã xem và KHÔNG dùng
 | Repo | Lý do |
 |---|---|
@@ -295,6 +337,10 @@ Khi chuyển sang thương mại, rà bảng này trước (và cột License �
 | RawTherapee Film Simulation HaldCLUT | Không rõ (nhiều tác giả) | Ứng viên LUT cho PhotoCraft |
 | abpy/FujifilmCameraProfiles (588★) | Không có license; mô phỏng giả lập phim của Fujifilm | Ứng viên LUT |
 | Nguồn tham khảo cơ cấu tay robot + dạy CAD (Thor CC-BY-SA, PAROL6 GPL-3.0, Faze4, Onshape/Fusion EDU…) | Xem bảng "Xem lại khi thương mại" trong `docs/cad-mechanisms-teaching-research.md` (2026-10-25) | Chỉ tham khảo |
+| [DavidHDev/react-bits](https://github.com/DavidHDev/react-bits) | MIT + Commons Clause: được dùng trong sản phẩm kể cả thương mại, **không được bán lại chính phần mềm** | Repo nghiên cứu (chưa liên kết) |
+| [DavidHDev/canvas-ui](https://github.com/DavidHDev/canvas-ui) | MIT + Commons Clause: được dùng trong sản phẩm kể cả thương mại, **không được bán lại chính phần mềm** | Repo nghiên cứu (chưa liên kết) |
+| [Comfy-Org/ComfyUI](https://github.com/Comfy-Org/ComfyUI) | GPL-3.0 | Repo nghiên cứu (chỉ tham khảo) |
+| [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) | Không có license (mặc định: giữ mọi quyền) | Repo nghiên cứu (chỉ đọc) |
 
 ## Chính sách cập nhật (tóm tắt)
 1. Ghim tag/SHA, không bám `main`. Nâng cấp từng repo một, giữ `prev_sha` để rollback.
