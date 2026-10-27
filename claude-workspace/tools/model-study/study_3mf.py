@@ -101,11 +101,10 @@ def main():
  cols=['idx','name','plate','file','triangles','size_x','size_y','size_z','z_min','volume_mm3','watertight']
  with open(os.path.join(out,'parts.csv'),'w',newline='',encoding='utf-8') as fp:w=csv.DictWriter(fp,fieldnames=cols);w.writeheader();w.writerows(rows)
  import matplotlib;matplotlib.use('Agg');import matplotlib.pyplot as plt
- from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+ from render import render_iso
  n=len(rows);nc=min(5,max(1,math.ceil(math.sqrt(n))));nr=math.ceil(n/nc);fig=plt.figure(figsize=(nc*3.2,nr*3))
  for i,(tri,norm,r) in enumerate(renders,1):
-  ax=fig.add_subplot(nr,nc,i,projection='3d');step=max(1,math.ceil(len(tri)/20000));tt=tri[::step];nn=norm[::step];light=np.array([.35,-.45,.82]);light/=np.linalg.norm(light);shade=np.clip(.35+.65*np.maximum(0,nn@light),.25,1);colors=np.column_stack((.30*shade,.58*shade,.78*shade,np.ones(len(shade))));ax.add_collection3d(Poly3DCollection(tt,facecolors=colors,edgecolors='none'))
-  flat=tt.reshape(-1,3);lo=flat.min(0);hi=flat.max(0);c=(lo+hi)/2;s=max((hi-lo).max(),.1);ax.set_xlim(c[0]-s/2,c[0]+s/2);ax.set_ylim(c[1]-s/2,c[1]+s/2);ax.set_zlim(c[2]-s/2,c[2]+s/2);ax.set_box_aspect((1,1,1));ax.view_init(elev=28,azim=45);ax.set_axis_off();ax.set_title(f"{i:02d} {clean(r['name'])}  {r['size_x']}×{r['size_y']}×{r['size_z']} mm  P{r['plate']}",fontsize=8,pad=2)
+  ax=fig.add_subplot(nr,nc,i);ax.imshow(render_iso(tri));ax.set_axis_off();ax.set_title(f"{i:02d} {clean(r['name'])}  {r['size_x']}×{r['size_y']}×{r['size_z']} mm  P{r['plate']}",fontsize=8,pad=2)
  fig.tight_layout(pad=.6);fig.savefig(os.path.join(out,'contact-sheet.png'),dpi=110);plt.close(fig)
  totals=defaultdict(lambda:[0,0.])
  for r in rows:totals[str(r['plate'])][0]+=1;totals[str(r['plate'])][1]+=float(r['volume_mm3'])
