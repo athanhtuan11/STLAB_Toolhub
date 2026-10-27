@@ -13,7 +13,7 @@ Làm TRƯỚC cơ khí (Tuan 2026-10-24). Mức **A** (robot có vỏ nhìn th�
 
 ## Brief
 - **Sản phẩm:** tay máy 3 khớp + kẹp 3 ngón, điều khiển bằng remote CyberBrick. Dùng ở STLab (Open Lab, lớp robot).
-  Đối tượng học sinh: `TODO` (Tuan chọn cấp học).
+  Đối tượng: **học sinh lớp 6** (Tuan 2026-10-27).
 - **Cảm giác:** gọn – chắc – dễ tháo lắp (học sinh tự ráp, nhìn thấy cơ cấu).
 - **Cơ cấu (theo bản gốc):** đế xoay = motor 030 + hộp số CyberBrick (cổng M2) đi quanh vành răng trong cố định;
   vai/khuỷu = 2 servo 9g 180° có ly hợp (S1, S2); kẹp = servo 9g 360° (S3) quay trục vít, ăn bánh răng 3 ngón L/R/D
@@ -21,7 +21,7 @@ Làm TRƯỚC cơ khí (Tuan 2026-10-24). Mức **A** (robot có vỏ nhìn th�
 - **Kích thước bao (bản gốc):** đế Ø70,6 mm, khung đế 74×74 mm; chiều cao/tầm với: `TODO` đo khi dựng lắp ráp.
 - **Linh kiện bắt buộc:** motor 030 + hộp số, 2× servo 9g 180° ly hợp, 1× servo 9g 360° ly hợp, bộ thu CyberBrick,
   module công tắc nguồn (XH2.54), pin Li-ion 14500 7,4 V 800 mAh, vít M2.5×6 BHCS.
-- **Nhựa:** Bambu PETG Basic (mặc định STLab). Màu (≤ 3 cuộn có thật): `TODO` – bản gốc trắng/xám/cam.
+- **Nhựa:** Bambu PETG Basic (mặc định STLab). Màu: Tuan tự chọn khi in (bản gốc trắng/xám/cam – chỉ để tham khảo).
 
 ## An toàn (ghi vào ASSEMBLY.md)
 - Pin Li-ion 7,4 V: không để chập 2 cực khi luồn dây qua lỗ vỏ; khoang pin không ép dây vào mép nhựa; không sạc khi
@@ -42,3 +42,8 @@ Làm TRƯỚC cơ khí (Tuan 2026-10-24). Mức **A** (robot có vỏ nhìn th�
 
 ## Quyết định
 <!-- Tuan chọn: ngày | hướng A/B/C | màu | cấp học -->
+- 2026-10-27 | Tuan: **cấp học lớp 6**; **màu Tuan tự chọn lúc in** (model không gán màu, chỉ tách chi tiết theo màu
+  bản gốc để gợi ý) | Hướng: **A** (Claude khuyên, Tuan "làm toàn bộ" – chưa chọn B/C; đổi được sau vì có tham số).
+- Hệ quả cho lớp 6: ráp được bằng tay + tua vít nhỏ, chốt/khớp có **khắc dấu lắp** và chiều lắp một chiều (không lắp
+  ngược), cạnh bo tròn (không cạnh sắc), vít ít loại nhất (M2.5×6 BHCS như bản gốc), hướng dẫn lắp bằng ảnh từng bước.
+  An toàn pin Li-ion 7,4 V: khoang pin đóng kín, giáo viên lắp/tháo pin.
