@@ -49,14 +49,30 @@ file này; mỗi dự án con có CLAUDE.md riêng và tự nạp file này theo
 ## Phân việc theo model (Tuan 2026-10-26: chỉ trả Claude Pro, còn lại free)
 Chi tiết, cài đặt, gỡ bỏ: `docs/model-routing.md`.
 
-| Ai | Làm gì |
-|---|---|
-| Phiên chính (Opus) | Hình học, khe/dung sai, động học, va chạm, `safe_edit.py`, script FreeCAD tham số, hướng in/support trong `print.yaml`, thứ tự lắp, ghi chú an toàn, duyệt ảnh, quyết định cuối |
-| Agent `check-runner` (Haiku) | Sau mỗi lần sửa model đã Lưu: chạy `prepare-print.py` + test, trả tóm tắt ≤ 15 dòng. **Không tự đọc log dài trong phiên chính** |
-| Agent `doc-writer` (Haiku + Gemini free) | README, văn xuôi ASSEMBLY.md, ghi chú nghiên cứu, caption, lịch sử sửa – từ gạch đầu dòng phiên chính đưa |
-| Agent `git-scribe` (Haiku) | Soạn commit + push khi kiểm đạt (đưa kèm phạm vi file + kết quả kiểm) |
-| deliberation `ask-gemini` (Gemini qua Antigravity `agy`) | Tóm tắt tài liệu/trang web dài (> ~300 dòng) trước khi Claude đọc; dịch; đổi giọng văn |
-| `/codex:review` (ChatGPT Free); deliberation `consensus` (Gemini + GPT) | Review lần 2 script Python/FreeCAD lớn trước khi commit; `consensus`/`/codex:adversarial-review` khi phân vân thiết kế code |
+**Phân quyền 3 tầng (Tuan 2026-10-27):** Claude = tổng giám đốc: quyết định + viết đặc tả/gate, giao cấp dưới làm.
+
+| Tầng | Ai | Làm gì |
+|---|---|---|
+| 0 – Tổng giám đốc | Phiên chính (Opus) | Kiến trúc, quyết định, **viết spec + gate** (tiêu chí nghiệm thu đo được), hình học/khe/động học khó, `safe_edit.py`, hướng in/support `print.yaml`, an toàn, duyệt ảnh + `result.json` |
+| 2 – Thực thi (free) | `tools/delegate/delegate.py` → Codex exec (chính) → OpenCode Zen free → agy (dự phòng) | Viết + chạy code/script theo `spec.md` tới khi gate PASS: script Python, firmware, Toolhub, script FreeCAD theo spec (`tools/cad-delegation/`) |
+| 1 – Quản lý | Agent `check-runner` (Haiku) | Sau mỗi lần sửa model đã Lưu: chạy `prepare-print.py` + test, trả tóm tắt ≤ 15 dòng. **Không tự đọc log dài trong phiên chính** |
+| 1 – Quản lý | Agent `doc-writer` (Haiku + Gemini free) | README, văn xuôi ASSEMBLY.md, ghi chú nghiên cứu, caption, lịch sử sửa – từ gạch đầu dòng phiên chính đưa |
+| 1 – Quản lý | Agent `git-scribe` (Haiku) | Soạn commit + push khi kiểm đạt (đưa kèm phạm vi file + kết quả kiểm) |
+| Tư vấn | deliberation `ask-gemini` (Gemini qua Antigravity `agy`) | Tóm tắt tài liệu/trang web dài (> ~300 dòng) trước khi Claude đọc; dịch; đổi giọng văn |
+| Tư vấn | `/codex:review` (ChatGPT Free); deliberation `consensus` (Gemini + GPT) | Review lần 2 script Python/FreeCAD lớn trước khi commit; `consensus`/`/codex:adversarial-review` khi phân vân thiết kế code |
+
+Giao việc code (thay cho Claude tự viết code dài): chép `tools/delegate/templates/spec.md` → điền mục tiêu, `cwd`,
+`allow`, `gate` (Claude viết test/gate TRƯỚC) → chạy nền `python tools/delegate/delegate.py <spec.md>` → chỉ đọc dòng
+JSON cuối (`verdict`, `rounds`, `changed`, `forbidden_touched`). Log dài nằm ở `run_dir`, không đọc trừ khi FAIL.
+`delegate.py` tự chuyển executor khi gặp 429/hết hạn mức (`--status` xem, `--mark-limit agy <ISO>` đánh dấu tay),
+và báo FAIL nếu executor đụng `.FCStd`/`print.yaml`/`community/`/`.env`. OpenCode chạy với
+`tools/delegate/opencode.json` (cấm ghi ngoài `cwd`, cấm `.FCStd`/git commit/push). Claude chỉ tự viết code khi
+việc nhỏ hơn việc viết spec (≲ 30 dòng) hoặc là hình học/khe/an toàn.
+
+**Quy tắc cứng (Tuan 2026-10-26, nhắc 2 lần):** phiên chính KHÔNG tự đọc tài liệu/BOM/log/file mẫu, KHÔNG tự viết tài
+liệu, KHÔNG tự commit – đọc/tóm tắt → agy (`ask-gemini`), tra web → Codex (`ask-gpt`), viết tài liệu → `doc-writer`,
+kiểm/test → `check-runner`, commit → `git-scribe`. Claude chỉ tự làm CAD (script dựng hình/ảnh, khe, động học), an toàn,
+quyết định; tự đọc tối đa vài dòng khi đang viết code CAD.
 
 Gọi Gemini qua deliberation: chép file cần đọc vào `D:\04_Stlab\agy-scratch\<ten-viec>\` (ngoài repo), `cwd` = thư
 mục đó, prompt ghi "chỉ đọc file trong thư mục làm việc, không chạy lệnh terminal"; xong xóa thư mục. **Không** dùng
@@ -65,9 +81,9 @@ Codex `ask-gpt` (deliberation) trên Windows **không đọc được file** –
 dùng nó để tra web hoặc dán đoạn mã vào prompt; đọc mã/repo giao Gemini (agy). `/codex:review`: `TODO` thử lại trên Windows.
 
 Nguyên tắc cứng:
-- Model free (Gemini, Codex) **không quyết** kích thước, khe, thông số linh kiện, an toàn điện/pin/nhiệt. Số liệu từ chúng
+- Model free (Gemini, Codex, OpenCode) **không quyết** kích thước, khe, thông số linh kiện, an toàn điện/pin/nhiệt. Số liệu từ chúng
   phải được phiên chính hoặc script kiểm; không có nguồn → `TODO`.
-- **Không gửi ra ngoài** (Gemini, Codex): `stlab/parent-reports/`, dữ liệu khách (`maker/pump-control/` phần khách),
+- **Không gửi ra ngoài** (Gemini, Codex, OpenCode): `stlab/parent-reports/`, dữ liệu khách (`maker/pump-control/` phần khách),
   `.env`/key/mật khẩu, ảnh có người. Chỉ tài liệu kỹ thuật, mã nguồn của workspace.
 - `/codex:rescue` (Codex được ghi file, sandbox `workspace-write`) chỉ dùng khi Tuan đồng ý; cấm cho đụng `.FCStd`,
   `print.yaml`, `community/`. Không bật cổng review khi dừng (`/codex:setup` → stop gate giữ **tắt**).
