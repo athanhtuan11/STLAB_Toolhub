@@ -40,23 +40,45 @@
       "source": "Giả định 6 phút/bàn: đợi nguội, gỡ chi tiết, bỏ brim/support, lau bàn"
     },
     "failure_pct": {
-      "value": 0.3,
+      "value": 0.15,
       "gia_dinh": true,
-      "source": "Tham chiếu printcalc: nhựa ×1,5 (hao, xả, in hỏng), giờ máy ×1,3 – ở đây gộp +30 % trên nhựa + điện + khấu hao",
+      "source": "Tuan chốt 2026-10-28 (in mẫu có sẵn là chính, quy trình ổn định): +15 % trên nhựa + điện + khấu hao. Trước là 30 % theo printcalc (nhựa ×1,5, giờ máy ×1,3). TODO: ghi tỷ lệ in hỏng thật ~1 tháng rồi chỉnh",
       "url": "community/printcalc/PRICING.md"
     },
     "pricing_method": {
       "value": "markup",
-      "source": "markup 100 % = biên lợi nhuận 50 % (mức thấp nhất printcalc gợi ý: 50/60/70 %)"
+      "source": "markup = giá bán là giá vốn × (1 + hệ số)"
     },
     "pricing_value": {
-      "value": 1.0,
+      "value": 0.6,
       "gia_dinh": true,
-      "source": "Giá bán = 2 × giá vốn (biên 50 %, mức thấp nhất printcalc gợi ý)",
-      "url": "community/printcalc/PRICING.md"
+      "source": "Tuan chốt 2026-10-28 sau khi so bảng giá đối thủ (86 mẫu, giá đã gồm ship): PETG Bambu + hỏng 15 % + markup 60 % ≈ 0,89 × giá đối thủ (mắt lé 0,94 ×, móc khóa 0,79 ×). Markup 100 % cũ = 1,23 ×"
     },
-    "round_to_vnd": { "value": 1000, "source": "Làm tròn lên 1.000 đ mỗi sản phẩm" },
-    "valid_days": { "value": 7, "gia_dinh": true, "source": "Hiệu lực báo giá 7 ngày (giá nhựa hay đổi)" }
+    "bulk1_min_qty": {
+      "value": 50,
+      "source": "Bậc sỉ 1 – mốc số lượng theo bảng giá đối thủ (móc khóa, clicky: 50 cái)"
+    },
+    "bulk1_discount_pct": {
+      "value": 0.1,
+      "source": "Học từ bảng giá đối thủ 2026-10-28: móc khóa lẻ 18.000 → 50 cái 16.000 đ (−11 %); clicky 19.000–20.000 → 18.000 đ (−5…−10 %)"
+    },
+    "bulk2_min_qty": {
+      "value": 100,
+      "source": "Bậc sỉ 2 – mốc số lượng theo bảng giá đối thủ (100 cái)"
+    },
+    "bulk2_discount_pct": {
+      "value": 0.15,
+      "source": "Học từ bảng giá đối thủ 2026-10-28: móc khóa 100 cái 15.000 đ (−17 %); clicky 16.500–17.000 đ (−13…−15 %)"
+    },
+    "round_to_vnd": {
+      "value": 1000,
+      "source": "Làm tròn lên 1.000 đ mỗi sản phẩm"
+    },
+    "valid_days": {
+      "value": 7,
+      "gia_dinh": true,
+      "source": "Hiệu lực báo giá 7 ngày (giá nhựa hay đổi)"
+    }
   },
   "materials": {
     "PETG": {

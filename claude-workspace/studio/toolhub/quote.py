@@ -28,6 +28,7 @@ SETTINGS_KEYS = (
     "labor_rate_vnd_per_hour", "setup_hours_per_job", "post_hours_per_plate", "failure_pct",
     "pricing_method", "pricing_value", "round_to_vnd",
 )
+BULK_KEYS = ("bulk1_min_qty", "bulk1_discount_pct", "bulk2_min_qty", "bulk2_discount_pct")
 SHOP_KEYS = ("shop_phone", "shop_contact", "payment_note", "valid_days")
 DEFAULTS_FILE = Path(__file__).resolve().parent / "quote_defaults.json"
 WORK_ENV = "STLAB_QUOTES_WORK"
@@ -391,7 +392,7 @@ def get_pricing(conn):
 
 
 def save_settings(conn, data):
-    allowed = set(SETTINGS_KEYS) | set(SHOP_KEYS)
+    allowed = set(SETTINGS_KEYS) | set(BULK_KEYS) | set(SHOP_KEYS)
     now = datetime.now().isoformat()
     for k, v in data.items():
         if k not in allowed:
@@ -464,6 +465,39 @@ def _resolve_materials(grams, mats, mapping):
     return out
 
 
+def _bulk_tiers(settings):
+    """Cac bac si hop le (min_qty, discount_pct); bo bac thieu so hoac <= 0."""
+    out = []
+    for i in range(0, len(BULK_KEYS), 2):
+        try:
+            mn = float(settings[BULK_KEYS[i]])
+            dc = float(settings[BULK_KEYS[i + 1]])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if mn <= 0 or dc <= 0:
+            continue
+        out.append((mn, dc))
+    return out
+
+
+def bulk_tier(settings, quantity):
+    """Bac si ap dung: bac co min_qty lon nhat ma quantity >= min_qty; khong co -> None."""
+    best = None
+    for mn, dc in _bulk_tiers(settings or {}):
+        if quantity >= mn and (best is None or mn > best[0]):
+            best = (mn, dc)
+    return best
+
+
+def _next_bulk_tier(settings, quantity):
+    """Bac ke tiep co min_qty > quantity (bac gan nhat); khong co -> None."""
+    best = None
+    for mn, dc in _bulk_tiers(settings or {}):
+        if mn > quantity and (best is None or mn < best[0]):
+            best = (mn, dc)
+    return best
+
+
 def compute(parsed, pricing, quantity=1, extras=None, other_fee_vnd=0, materials_map=None):
     s = pricing.get("settings", {})
     mats = pricing.get("materials", {})
@@ -480,32 +514,60 @@ def compute(parsed, pricing, quantity=1, extras=None, other_fee_vnd=0, materials
         raise QuoteError("Số lượng phải ≥ 1")
     h = float(parsed["hours"])
     n = len(parsed["plates"])
-    filament = sum(g * mats[t]["spool_price_vnd"] / mats[t]["spool_weight_g"]
-                   for t, g in grams.items()) * q
-    electricity = s["printer_power_w"] / 1000 * h * s["electricity_price_vnd_per_kwh"] * q
-    depreciation = s["machine_price_vnd"] / s["machine_lifetime_hours"] * h * q
-    labor = s["labor_rate_vnd_per_hour"] * (s["setup_hours_per_job"] + s["post_hours_per_plate"] * n * q)
     prices = {x["id"]: x["price_vnd"] for x in pricing.get("extras", [])}
-    ex = sum(prices.get(int(i), 0) * int(v) for i, v in (extras or {}).items()) * q
-    failure = s["failure_pct"] * (filament + electricity + depreciation)
-    lines = {"filament": filament, "electricity": electricity, "depreciation": depreciation,
-             "labor": labor, "extras": ex, "failure": failure}
-    cost = sum(lines.values())
+    ex1 = sum(prices.get(int(i), 0) * int(v) for i, v in (extras or {}).items())
     method = s["pricing_method"]
     value = s["pricing_value"]
-    if method == "margin":
-        if value >= 1:
-            raise QuoteError("Giá theo biên (margin) phải có hệ số nhỏ hơn 1")
-        price = cost / (1 - value)
-    else:
-        price = cost * (1 + value)
+
+    def _bundle(qq):
+        """Gia von + gia ban cho so luong qq (cong thuc cu, khong de quy)."""
+        filament = sum(g * mats[t]["spool_price_vnd"] / mats[t]["spool_weight_g"]
+                       for t, g in grams.items()) * qq
+        electricity = s["printer_power_w"] / 1000 * h * s["electricity_price_vnd_per_kwh"] * qq
+        depreciation = s["machine_price_vnd"] / s["machine_lifetime_hours"] * h * qq
+        labor = s["labor_rate_vnd_per_hour"] * (s["setup_hours_per_job"] + s["post_hours_per_plate"] * n * qq)
+        ex = ex1 * qq
+        failure = s["failure_pct"] * (filament + electricity + depreciation)
+        ln = {"filament": filament, "electricity": electricity, "depreciation": depreciation,
+              "labor": labor, "extras": ex, "failure": failure}
+        c = sum(ln.values())
+        if method == "margin":
+            if value >= 1:
+                raise QuoteError("Giá theo biên (margin) phải có hệ số nhỏ hơn 1")
+            p = c / (1 - value)
+        else:
+            p = c * (1 + value)
+        return ln, c, p
+
+    lines, cost, price = _bundle(q)
+    price_1 = _bundle(1)[2]
     step = s["round_to_vnd"]
-    unit_price = math.ceil(price / q / step - 1e-9) * step
+    tier = bulk_tier(s, q)
+    disc = tier[1] if tier else 0
+    price_q = price_1
+    floor = cost / q
+    raw = price_q * (1 - disc)
+    bulk_floor = raw < floor
+    if bulk_floor:
+        raw = floor
+    unit_price = math.ceil(raw / step - 1e-9) * step
+    list_raw = max(price_1, floor)
+    unit_price_list = math.ceil(list_raw / step - 1e-9) * step
     subtotal = unit_price * q
+    nxt = _next_bulk_tier(s, q)
+    next_bulk = None
+    if nxt:
+        nq = int(math.ceil(nxt[0])) or 1
+        ncalc = compute(parsed, pricing, quantity=nq, extras=extras, other_fee_vnd=other_fee_vnd,
+                        materials_map=materials_map)
+        next_bulk = {"min_qty": _num(nxt[0]), "discount_pct": nxt[1],
+                     "unit_price": ncalc["unit_price"]}
     return {"lines": lines, "cost": cost, "price": price, "unit_price": unit_price,
             "subtotal": subtotal, "other_fee": other_fee_vnd, "total": subtotal + other_fee_vnd,
             "quantity": q, "hours": h, "grams": parsed.get("grams", {}), "materials": grams,
-            "materials_map": dict(mapping), "method": method, "value": value}
+            "materials_map": dict(mapping), "method": method, "value": value,
+            "bulk_discount_pct": disc, "bulk_floor": bulk_floor, "unit_price_list": unit_price_list,
+            "next_bulk": next_bulk}
 
 
 def fmt_vnd(n):
@@ -530,6 +592,8 @@ def save_quote(conn, customer_name, customer_phone, title, parsed, calc, note, m
     pr = get_pricing(conn)
     mapping = materials_map or {}
     data = dict(calc)
+    data["bulk_discount_pct"] = calc.get("bulk_discount_pct") or 0
+    data["unit_price_list"] = calc.get("unit_price_list", calc.get("unit_price"))
     data["materials_map"] = dict(mapping)
     data["materials"] = calc.get("materials") or {}
     data["plates"] = [{"index": p["index"], "seconds": p["seconds"],

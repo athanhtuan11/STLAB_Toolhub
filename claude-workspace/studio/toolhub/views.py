@@ -327,7 +327,11 @@ def _plates_json(parsed):
 
 def _texts(calc):
     calc.update({k + "_text": quote_lib.fmt_vnd(calc[k])
-                 for k in ("total", "unit_price", "cost", "subtotal")})
+                 for k in ("total", "unit_price", "cost", "subtotal", "unit_price_list")
+                 if k in calc})
+    nb = calc.get("next_bulk")
+    if isinstance(nb, dict) and "unit_price" in nb:
+        nb["unit_price_text"] = quote_lib.fmt_vnd(nb["unit_price"])
     return calc
 
 
@@ -393,8 +397,21 @@ def _page(id):
         f"Bàn {p['index']}: {_vi(p['seconds'] / 3600)} h, "
         + ", ".join(f"{k} {_vi(v, 1)} g" for k, v in (p.get("grams") or {}).items())
         for p in (data.get("plates") or []))
+    bulk_min, bulk_pct = None, 0
+    try:
+        bulk_pct = float(data.get("bulk_discount_pct") or 0)
+    except (TypeError, ValueError):
+        bulk_pct = 0
+    if bulk_pct > 0:
+        tier = quote_lib.bulk_tier(settings, int(data.get("quantity") or 1))
+        if tier:
+            bulk_min, bulk_pct = tier[0], tier[1]
+        else:
+            bulk_pct = 0
     return {"q": qd, "data": data, "settings": settings, "created": created, "valid_until": valid,
-            "extras_text": extras_text, "materials_text": materials_text, "plates_text": plates_text}
+            "extras_text": extras_text, "materials_text": materials_text, "plates_text": plates_text,
+            "bulk_min_qty": bulk_min, "bulk_discount_pct": bulk_pct,
+            "bulk_discount_text": _vi(bulk_pct * 100)}
 
 
 def _font_css():
@@ -513,9 +530,7 @@ def api_quote_calc():
         calc = _calc(request.get_json(silent=True) or {})
     except quote_lib.QuoteError as e:
         return jsonify({"error": str(e)}), 400
-    calc.update({k + "_text": quote_lib.fmt_vnd(calc[k])
-                 for k in ("total", "unit_price", "cost", "subtotal")})
-    return jsonify(calc)
+    return jsonify(_texts(calc))
 
 
 @bp.post("/api/quote/upload")

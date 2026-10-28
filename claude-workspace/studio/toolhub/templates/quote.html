@@ -28,6 +28,9 @@
 #quote-page .final b { display: block; font-size: 34px; line-height: 1.15; color: var(--highlight);
   font-variant-numeric: tabular-nums; }
 #quote-page .sub { font-size: 13.5px; color: var(--muted); margin: 4px 0 0; }
+#quote-page .bulk-note { color: var(--accent); }
+#quote-page .bulk-hint { color: var(--accent); font-size: 13px; }
+#quote-page .bulk-sum { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
 #quote-page .busy { color: var(--accent); font-size: 13.5px; margin: 10px 0 0; }
 #quote-page .warn { color: var(--warn); font-size: 13.5px; margin: 10px 0 0; }
 #quote-page .warn a { color: var(--warn); text-decoration: underline; }
@@ -104,6 +107,7 @@
           <div class="fields" style="margin-top:10px">
             <label class="field">Số lượng sản phẩm
               <input id="quantity" type="number" min="1" step="1" value="1">
+              <span class="bulk-sum" id="bulk-summary"></span>
             </label>
             <label class="field">Chất lượng (process A1)
               <select id="process"></select>
@@ -132,6 +136,8 @@
           <div class="lab">Khách trả</div>
           <b id="final-price">—</b>
           <p class="sub" id="unit-line" hidden></p>
+          <div class="sub bulk-note" id="bulk-line" hidden></div>
+          <div class="sub bulk-hint" id="bulk-hint" hidden></div>
           <p class="sub" id="grams-line" hidden></p>
         </div>
         <p class="busy" id="slice-status" hidden></p>
@@ -242,6 +248,11 @@
   const fmt = (n) => new Intl.NumberFormat("vi-VN").format(Math.round(n || 0)) + " đ";
   const viNum = (n, nd = 1) => Number(n || 0).toFixed(nd).replace(/\.?0+$/, "").replace(".", ",");
   const gramsText = (o) => Object.entries(o || {}).map(([k, v]) => `${k} ${viNum(v)} g`).join(" · ");
+  const pctText = (x) => viNum(Number(x || 0) * 100, 2);
+  const bulkTiers = () => [["bulk1_min_qty", "bulk1_discount_pct"], ["bulk2_min_qty", "bulk2_discount_pct"]]
+    .map(([mk, dk]) => [Number((pricing.settings || {})[mk]), Number((pricing.settings || {})[dk])])
+    .filter(([m, d]) => m > 0 && d > 0)
+    .sort((a, b) => a[0] - b[0]);
   let sources = {};
   try { sources = JSON.parse(document.getElementById("pricing-sources").textContent || "{}"); } catch (e) { sources = {}; }
   let printOptions = {};
@@ -269,6 +280,10 @@
     ["pricing_value", "Hệ số giá (markup 1 = +100%; margin 0,5 = 50%)", "0.01"],
     ["round_to_vnd", "Làm tròn giá (đ)", "1000"],
     ["valid_days", "Hiệu lực báo giá (ngày)", "1"],
+    ["bulk1_min_qty", "Giá sỉ bậc 1 – từ (cái)", "1"],
+    ["bulk1_discount_pct", "Giảm bậc 1 (0–1)", "0.01"],
+    ["bulk2_min_qty", "Giá sỉ bậc 2 – từ (cái)", "1"],
+    ["bulk2_discount_pct", "Giảm bậc 2 (0–1)", "0.01"],
   ];
   const SHOP = [
     ["shop_phone", "Số điện thoại cửa hàng"],
@@ -543,6 +558,18 @@
     });
   }
 
+  function renderBulkSummary() {
+    const el = $("#bulk-summary");
+    const tiers = bulkTiers();
+    if (!tiers.length) {
+      el.textContent = "";
+      el.hidden = true;
+      return;
+    }
+    el.hidden = false;
+    el.textContent = "Sỉ: " + tiers.map(([m, d]) => `≥${Math.round(m)} cái −${pctText(d)} %`).join(", ");
+  }
+
   function renderAll() {
     renderSettings();
     renderMaterials();
@@ -550,6 +577,7 @@
     renderMaterialMap();
     renderMaterialSelect();
     renderProcessSelect();
+    renderBulkSummary();
   }
 
   async function loadPricing() {
@@ -760,6 +788,32 @@
     box.textContent = parts.join(" · ");
   }
 
+  function renderBulk(j) {
+    const disc = Number(j.bulk_discount_pct || 0);
+    const line = $("#bulk-line");
+    const hint = $("#bulk-hint");
+    if (disc > 0) {
+      const hit = bulkTiers().filter(([m, d]) => j.quantity >= m && Math.abs(d - disc) < 1e-9);
+      const minTxt = hit.length ? Math.round(hit[hit.length - 1][0]) : "";
+      line.hidden = false;
+      line.textContent = `Giá sỉ ≥${minTxt} cái: −${pctText(disc)} % ` +
+        `(giá lẻ ${j.unit_price_list_text || fmt(j.unit_price_list)})` +
+        (j.bulk_floor ? " – đã chạm giá vốn" : "");
+    } else {
+      line.hidden = true;
+      line.textContent = "";
+    }
+    const nb = j.next_bulk;
+    if (nb) {
+      hint.hidden = false;
+      hint.textContent = `Mua từ ${Math.round(nb.min_qty)} cái: ` +
+        `${nb.unit_price_text || fmt(nb.unit_price)}/cái (−${pctText(nb.discount_pct)} %)`;
+    } else {
+      hint.hidden = true;
+      hint.textContent = "";
+    }
+  }
+
   function renderPrice(j) {
     ["filament", "electricity", "depreciation", "labor", "extras", "failure"].forEach((k) => {
       $("#line-" + k).textContent = fmt(j.lines[k]);
@@ -769,6 +823,7 @@
     $("#unit-line").hidden = false;
     $("#unit-line").textContent = `${j.unit_price_text}/sản phẩm × ${j.quantity}` +
       (j.other_fee ? ` + phí khác ${fmt(j.other_fee)}` : "");
+    renderBulk(j);
     const gl = $("#grams-line");
     gl.hidden = false;
     gl.textContent = `${gramsText(j.grams)} · ${viNum(j.hours, 2)} giờ in`;

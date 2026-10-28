@@ -29,6 +29,7 @@ td.thumb img { width: 38mm; height: auto; display: block; }
 .desc .l { color: gray; font-size: 9.5pt; margin-top: 1mm; }
 .total-row td { font-weight: 700; font-size: 13pt; }
 .total-row td.label { text-align: right; }
+.bulk-note { margin-top: 3mm; font-size: 10.5pt; }
 .foot { display: flex; justify-content: space-between; gap: 10mm; margin-top: 6mm; font-size: 10pt; }
 .note { flex: 1; }
 .note .lbl { color: gray; font-size: 9.5pt; }
@@ -110,6 +111,10 @@ td.thumb img { width: 38mm; height: auto; display: block; }
       </tr>
     </tbody>
   </table>
+
+  {% if bulk_min_qty and bulk_discount_pct %}
+  <div class="bulk-note">Đã áp giá sỉ ≥{{ bulk_min_qty|int }} cái: −{{ bulk_discount_text }} % (giá lẻ {{ data.unit_price_list|vnd }})</div>
+  {% endif %}
 
   <div class="foot">
     <div class="note">

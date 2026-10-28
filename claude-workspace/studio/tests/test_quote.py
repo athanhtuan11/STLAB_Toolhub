@@ -136,8 +136,12 @@ for k, v in exp.items():
     check(abs(c["lines"][k] - v) < 0.01, f"{k}: {c['lines'][k]} != {v}")
 check(abs(c["cost"] - 180790) < 0.01, f"cost {c['cost']} != 180790")
 check(abs(c["price"] - 361580) < 0.01, f"price markup {c['price']} != 361580")
-check(c["unit_price"] == 181000, f"unit_price lam tron LEN 1000: {c['unit_price']}")
-check(c["subtotal"] == 362000 and c["total"] == 382000, f"subtotal/total {c['subtotal']}/{c['total']}")
+# v4 (2026-10-28): duoi bac si, don gia = gia le 1 cai (khong chia cong chuan bi theo SL) – xem test_quote_bulk.py
+c1 = quote.compute(p, pr, quantity=1, extras={eid: 4}, other_fee_vnd=20_000)
+check(c1["unit_price"] % 1000 == 0 and c1["unit_price"] >= c1["price"], f"unit_price lam tron LEN 1000: {c1['unit_price']}")
+check(c["unit_price"] == c1["unit_price"], f"SL 2 giu gia le: {c['unit_price']} vs {c1['unit_price']}")
+check(c["subtotal"] == 2 * c1["unit_price"] and c["total"] == c["subtotal"] + 20_000, f"subtotal/total {c['subtotal']}/{c['total']}")
+EXP_TOTAL = c["total"]
 quote.save_settings(conn, {"pricing_method": "margin", "pricing_value": 0.5})
 c2 = quote.compute(p, quote.get_pricing(conn), quantity=2, extras={eid: 4}, other_fee_vnd=20_000)
 check(abs(c2["price"] - 361580) < 0.01, "margin 0.5 = markup 1.0")
@@ -163,13 +167,17 @@ check(quote.fmt_vnd(1234000) == "1.234.000 đ" and quote.fmt_vnd(0) == "0 đ", "
 qid = quote.save_quote(conn, customer_name="Khách Thử", customer_phone="0900000000",
                        title="Tay máy – bàn P2", parsed=p, calc=c, note="")
 q = quote.get_quote(conn, qid)
-check(q["number"].startswith("BG-") and q["total_vnd"] == 382000, f"bao gia luu: {q.get('number')} {q.get('total_vnd')}")
+check(q["number"].startswith("BG-") and q["total_vnd"] == EXP_TOTAL, f"bao gia luu: {q.get('number')} {q.get('total_vnd')}")
 check(any(x["id"] == qid for x in quote.list_quotes(conn)), "list_quotes co bao gia vua luu")
 qid2 = quote.save_quote(conn, customer_name="B", customer_phone="", title="x", parsed=p, calc=c, note="")
 check(quote.get_quote(conn, qid2)["number"] != q["number"], "so bao gia khong trung")
 conn.close()
 
 # 5. Trang + API
+_c = quote.connect()
+EXP_API = quote.compute(p, quote.get_pricing(_c), quantity=2, extras={eid: 4}, other_fee_vnd=20_000)["total"]
+_c.close()
+EXP_API_TEXT = quote.fmt_vnd(EXP_API)
 H = {"Host": "127.0.0.1:5050"}
 HP = {**H, "X-Studio": "1"}
 cl = create_app().test_client()
@@ -206,7 +214,7 @@ check(r.status_code == 400 and "error" in (r.get_json() or {}), "file hong -> 40
 r = cl.post("/api/quote/calc", json={"token": j.get("token"), "quantity": 2, "extras": {str(eid): 4},
                                      "other_fee_vnd": 20000}, headers=HP)
 k = r.get_json() or {}
-check(r.status_code == 200 and k.get("total") == 382000 and k.get("total_text") == "382.000 đ", f"calc API: {k}")
+check(r.status_code == 200 and k.get("total") == EXP_API and k.get("total_text") == EXP_API_TEXT, f"calc API: {k}")
 r = cl.post("/api/quote/calc", json={"token": j.get("token"), "quantity": 1,
                                      "materials_map": {"PETG": "PLA", "TPU": "PLA"}}, headers=HP)
 check(r.status_code == 200 and (r.get_json() or {}).get("materials") == {"PLA": 130.0},
@@ -218,7 +226,7 @@ sid = (r.get_json() or {}).get("id")
 check(r.status_code == 200 and sid, "save API tra id")
 r = cl.get(f"/quote/{sid}", headers=H)
 t = r.get_data(as_text=True)
-check(r.status_code == 200 and "BÁO GIÁ IN 3D" in t and "Khách Thử" in t and "382.000 đ" in t,
+check(r.status_code == 200 and "BÁO GIÁ IN 3D" in t and "Khách Thử" in t and EXP_API_TEXT in t,
       "ban bao gia cho khach: tieu de, ten khach, tong tien")
 check("Giá vốn" not in t and "Khấu hao" not in t, "ban cho khach KHONG lo gia von")
 check(cl.get("/quote/999999", headers=H).status_code == 404, "bao gia khong co -> 404")
