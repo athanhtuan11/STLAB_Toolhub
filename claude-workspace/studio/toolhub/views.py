@@ -254,9 +254,9 @@ def vnd(n):
     return quote_lib.fmt_vnd(n)
 
 
-def _remember(parsed, name):
+def _remember(parsed, name, **extra):
     token = base64.urlsafe_b64encode(os.urandom(12)).decode().rstrip("=")
-    _parsed[token] = {"parsed": parsed, "name": name}
+    _parsed[token] = {"parsed": parsed, "name": name, "kind": "sliced", **extra}
     while len(_parsed) > 20:
         _parsed.pop(next(iter(_parsed)))
     return token
@@ -265,7 +265,7 @@ def _remember(parsed, name):
 def _item(data):
     item = _parsed.get(data.get("token") or "")
     if item is None:
-        raise quote_lib.QuoteError("Chưa có file in. Hãy thả file .3mf đã cắt lớp trước.")
+        raise quote_lib.QuoteError("Chưa có file in. Hãy thả file .stl, .obj, .step, .stp hoặc .3mf trước.")
     return item
 
 
@@ -281,25 +281,87 @@ def _materials_map(data):
     return {str(k): str(v) for k, v in mm.items() if k and v}
 
 
-def _calc(data):
-    item = _item(data)
+def _extras(data):
     extras = {}
     for k, v in (data.get("extras") or {}).items():
         try:
             extras[int(k)] = int(v)
         except (TypeError, ValueError):
             continue
+    return extras
+
+
+def _extras_detail(data, extras):
+    return [{"id": eid, "count": int((data.get("extras") or {}).get(str(eid), 0))}
+            for eid in extras if int((data.get("extras") or {}).get(str(eid), 0))]
+
+
+def _pricing_now():
     conn = quote_lib.connect()
     try:
-        pricing = quote_lib.get_pricing(conn)
+        return quote_lib.get_pricing(conn)
     finally:
         conn.close()
-    calc = quote_lib.compute(item["parsed"], pricing, quantity=int(data.get("quantity") or 1),
+
+
+def _calc(data):
+    item = _item(data)
+    if item.get("parsed") is None:
+        raise quote_lib.QuoteError("File này chưa cắt lớp. Dùng /api/quote/price để cắt lớp trước.")
+    extras = _extras(data)
+    calc = quote_lib.compute(item["parsed"], _pricing_now(), quantity=int(data.get("quantity") or 1),
                              extras=extras, other_fee_vnd=_fee(data.get("other_fee_vnd")),
                              materials_map=_materials_map(data))
-    calc["extras_detail"] = [{"id": eid, "count": int((data.get("extras") or {}).get(str(eid), 0))}
-                             for eid in extras if int((data.get("extras") or {}).get(str(eid), 0))]
+    calc["extras_detail"] = _extras_detail(data, extras)
     return calc
+
+
+def _plates_json(parsed):
+    plates = []
+    for p in parsed["plates"]:
+        img = p.get("image_png")
+        plates.append({"index": p["index"], "seconds": p["seconds"], "grams": p["grams"],
+                       "image": "data:image/png;base64," + base64.b64encode(img).decode() if img else None})
+    return plates
+
+
+def _texts(calc):
+    calc.update({k + "_text": quote_lib.fmt_vnd(calc[k])
+                 for k in ("total", "unit_price", "cost", "subtotal")})
+    return calc
+
+
+def _price(data):
+    """Gia tu file: model -> cat lop (hoac cache) theo profile nhua; file da cat lop -> tinh ngay."""
+    item = _item(data)
+    pricing = _pricing_now()
+    material = data.get("material") or ""
+    options = data.get("options") if isinstance(data.get("options"), dict) else {}
+    mapping = _materials_map(data)
+    slice_info = {"status": "ok", "warnings": [], "fallback": None}
+    if item.get("kind") == "model" or item.get("parsed") is None:
+        if material not in pricing["materials"]:
+            raise quote_lib.QuoteError(f"Nhựa '{material}' chưa có trong bảng giá")
+        res, parsed = quote_lib.slice_model(item.get("files") or [], material, options,
+                                            token=data.get("token"))
+        if mapping is None:
+            mapping = {t: material for t in parsed.get("grams") or {}}
+        slice_info = {"status": res.get("status"), "warnings": res.get("warnings") or [],
+                      "fallback": res.get("fallback")}
+    else:
+        parsed = item["parsed"]
+        if mapping is None and material:
+            mapping = {t: material for t in parsed.get("grams") or {}}
+    extras = _extras(data)
+    calc = quote_lib.compute(parsed, pricing, quantity=int(data.get("quantity") or 1),
+                             extras=extras, other_fee_vnd=_fee(data.get("other_fee_vnd")),
+                             materials_map=mapping)
+    calc["extras_detail"] = _extras_detail(data, extras)
+    calc["grams"] = calc.get("materials") or {}
+    calc["hours"] = parsed.get("hours", 0)
+    calc["plates"] = _plates_json(parsed)
+    calc["slice"] = slice_info
+    return item, parsed, calc, mapping
 
 
 def _vi(x, nd=2):
@@ -358,7 +420,9 @@ def quote():
         h["date_text"] = datetime.fromisoformat(h["created_at"]).strftime("%d/%m/%Y")
     projects = [f.relative_to(ws.ROOT).as_posix() for f in quote_lib.project_3mf_files()]
     pricing["sources"] = quote_lib.pricing_sources()
+    defaults = quote_lib.load_defaults()
     return render_template("quote.html", history=history, projects=projects, pricing=pricing,
+                           print_options=defaults.get("print_options") or {},
                            sources_json=json.dumps(pricing["sources"], ensure_ascii=False),
                            defaults_updated=quote_lib.defaults_updated())
 
@@ -400,7 +464,9 @@ def api_quote_pricing_save():
                 quote_lib.delete_material(conn, name)
             else:
                 quote_lib.save_material(conn, name, v.get("spool_price_vnd") or 0,
-                                        v.get("spool_weight_g") or 0)
+                                        v.get("spool_weight_g") or 0,
+                                        type=v.get("type") or None,
+                                        slicer_profile=v.get("slicer_profile") or None)
         for e in data.get("extras") or []:
             if e.get("delete"):
                 if e.get("id"):
@@ -452,19 +518,74 @@ def api_quote_calc():
     return jsonify(calc)
 
 
+@bp.post("/api/quote/upload")
+def api_quote_upload():
+    """Nhan file model (.stl/.obj/.step/.stp/.3mf) hoac .gcode.3mf da cat lop."""
+    files = [f for f in request.files.getlist("file") if f and f.filename]
+    if not files:
+        return jsonify({"error": "Chưa chọn file nào"}), 400
+    allowed = {".stl", ".obj", ".step", ".stp", ".3mf"}
+    token = base64.urlsafe_b64encode(os.urandom(12)).decode().rstrip("=")
+    folder = quote_lib.work_dir() / "uploads" / token
+    folder.mkdir(parents=True, exist_ok=True)
+    saved, names = [], []
+    for i, f in enumerate(files):
+        name = Path(f.filename.replace("\\", "/")).name
+        ext = Path(name).suffix.lower()
+        if ext not in allowed:
+            return jsonify({"error": f"Đuôi file không hỗ trợ: {name} (chỉ .stl .obj .step .stp .3mf)"}), 400
+        dest = folder / f"{i}_{name}"
+        f.save(dest)
+        saved.append(dest)
+        names.append(name)
+    parsed = None
+    for p in [x for x in saved if x.suffix.lower() == ".3mf"]:
+        try:
+            parsed = quote_lib.read_3mf(p)
+            break
+        except quote_lib.QuoteError:
+            continue
+    kind = "sliced" if parsed is not None else "model"
+    _parsed[token] = {"parsed": parsed, "name": ", ".join(names), "kind": kind,
+                      "files": [str(p) for p in saved]}
+    while len(_parsed) > 20:
+        _parsed.pop(next(iter(_parsed)))
+    out = {"token": token, "kind": kind, "names": names}
+    if parsed is not None:
+        out.update({"name": ", ".join(names), "hours": parsed["hours"], "grams": parsed["grams"],
+                    "plates": _plates_json(parsed)})
+    return jsonify(out)
+
+
+@bp.get("/api/quote/slicer-profiles")
+def api_quote_slicer_profiles():
+    try:
+        return jsonify(quote_lib.slicer_profiles())
+    except quote_lib.QuoteError as e:
+        return jsonify({"error": str(e), "filaments": [], "processes": []}), 503
+
+
+@bp.post("/api/quote/price")
+def api_quote_price():
+    try:
+        _, _, calc, _ = _price(request.get_json(silent=True) or {})
+    except quote_lib.QuoteError as e:
+        return jsonify({"error": str(e)}), 400
+    return jsonify(_texts(calc))
+
+
 @bp.post("/api/quote/save")
 def api_quote_save():
     data = request.get_json(silent=True) or {}
     try:
-        calc = _calc(data)
+        _, parsed, calc, mapping = _price(data)
     except quote_lib.QuoteError as e:
         return jsonify({"error": str(e)}), 400
-    item = _item(data)
     conn = quote_lib.connect()
     try:
         qid = quote_lib.save_quote(conn, data.get("customer_name") or "", data.get("customer_phone") or "",
-                                   data.get("title") or "", item["parsed"], calc, data.get("note") or "",
-                                   materials_map=_materials_map(data))
+                                   data.get("title") or "", parsed, calc, data.get("note") or "",
+                                   materials_map=mapping)
         qd = quote_lib.get_quote(conn, qid)
     finally:
         conn.close()

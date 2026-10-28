@@ -23,15 +23,17 @@
 #quote-page table.lines { width: 100%; font-size: 13.5px; }
 #quote-page table.lines td { padding: 4px 0; border-bottom: 1px dashed var(--line); }
 #quote-page table.lines td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
-#quote-page .sum { display: flex; justify-content: space-between; align-items: baseline; margin-top: 12px; font-size: 14px; }
-#quote-page .sum b { font-size: 19px; font-variant-numeric: tabular-nums; }
-#quote-page .sum.price { color: var(--highlight); border-top: 2px solid var(--line); padding-top: 10px; }
-#quote-page .sum.price b { font-size: 23px; }
+#quote-page .final { margin: 14px 0 0; padding-top: 12px; border-top: 2px solid var(--line); }
+#quote-page .final .lab { font-size: 13px; color: var(--muted); }
+#quote-page .final b { display: block; font-size: 34px; line-height: 1.15; color: var(--highlight);
+  font-variant-numeric: tabular-nums; }
+#quote-page .sub { font-size: 13.5px; color: var(--muted); margin: 4px 0 0; }
+#quote-page .busy { color: var(--accent); font-size: 13.5px; margin: 10px 0 0; }
 #quote-page .warn { color: var(--warn); font-size: 13.5px; margin: 10px 0 0; }
 #quote-page .warn a { color: var(--warn); text-decoration: underline; }
 #quote-page .price-table { width: 100%; font-size: 13px; }
 #quote-page .price-table th, #quote-page .price-table td { padding: 4px 6px 4px 0; border-bottom: 1px solid var(--line); }
-#quote-page .price-table input { padding: 4px 6px; font-size: 13px; }
+#quote-page .price-table input, #quote-page .price-table select { padding: 4px 6px; font-size: 13px; }
 #quote-page .price-table td.act { width: 30px; text-align: right; }
 #quote-page button.x { padding: 2px 8px; font-size: 13px; border-radius: 999px; color: var(--err); }
 #quote-page .subhead { font-size: 13px; color: var(--muted); margin: 16px 0 6px; }
@@ -52,24 +54,28 @@
 #quote-page .pricing-panel summary { cursor: pointer; font-size: 15px; font-weight: 600; }
 #quote-page .pricing-panel[open] summary { margin-bottom: 4px; }
 #quote-page .pricing-updated { font-size: 12.5px; margin: 0 0 8px; }
+#quote-page details.summary-box { margin-top: 14px; }
+#quote-page details.summary-box summary { cursor: pointer; font-size: 13.5px; color: var(--muted); }
+#quote-page .opt-label { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
 </style>
 
 <div id="quote-page">
   <div class="head">
     <div>
       <h1>Báo giá in 3D</h1>
-      <p class="sub">Thả file Bambu <code>.gcode.3mf</code> đã cắt lớp (hoặc chọn file của dự án) → giá vốn → giá bán → lưu báo giá cho khách.</p>
+      <p class="sub">Kéo file <code>.stl</code> <code>.obj</code> <code>.step</code> <code>.3mf</code> vào → chọn nhựa → ra giá cuối.
+        Toolhub tự cắt lớp bằng Bambu Studio theo profile A1.</p>
     </div>
   </div>
 
   <div class="quote-grid">
     <div>
       <section class="card">
-        <h2>1. File in</h2>
+        <h2>1. Kéo file vào</h2>
         <div class="drop" id="drop">
-          <strong>Kéo thả file .gcode.3mf vào đây</strong>
-          <div>hoặc bấm để chọn file (Bambu Studio: File → Export → Export plate sliced file)</div>
-          <input id="file" type="file" accept=".3mf">
+          <strong>Kéo thả file in vào đây</strong>
+          <div>hoặc bấm để chọn file: .stl .obj .step .stp .3mf (.gcode.3mf đã cắt lớp thì tính ngay)</div>
+          <input id="file" type="file" multiple accept=".stl,.obj,.step,.stp,.3mf">
         </div>
         <div class="files-row">
           <label class="field">File đã cắt lớp của dự án
@@ -88,18 +94,70 @@
       </section>
 
       <section class="card" style="margin-top:16px">
-        <h2>2. Tùy chọn</h2>
-        <div class="fields">
-          <label class="field">Số lượng sản phẩm
-            <input id="quantity" type="number" min="1" step="1" value="1">
-          </label>
-          <label class="field">Phí khác (đ)
-            <input id="other_fee" type="number" min="0" step="1000" value="0">
-          </label>
+        <h2>2. Nhựa</h2>
+        <label class="field">Nhựa in (tên – profile cắt lớp – giá/kg)
+          <select id="material"></select>
+        </label>
+
+        <details id="print-options" style="margin-top:14px">
+          <summary style="cursor:pointer;font-size:15px;font-weight:600">Tùy chọn in</summary>
+          <div class="fields" style="margin-top:10px">
+            <label class="field">Số lượng sản phẩm
+              <input id="quantity" type="number" min="1" step="1" value="1">
+            </label>
+            <label class="field">Chất lượng (process A1)
+              <select id="process"></select>
+            </label>
+            <label class="field">Infill % (trống = theo profile)
+              <input id="infill" type="number" min="0" max="100" step="1" value="">
+            </label>
+            <label class="field">Support
+              <select id="support">
+                <option value="auto">Tự động</option>
+                <option value="off">Không</option>
+              </select>
+            </label>
+            <label class="field">Phí khác (đ)
+              <input id="other_fee" type="number" min="0" step="1000" value="0">
+            </label>
+          </div>
+          <div class="subhead">Phụ kiện (số lượng mỗi sản phẩm)</div>
+          <div id="extra-counts"><p class="muted">Đang nạp bảng giá…</p></div>
+        </details>
+      </section>
+
+      <section class="card" style="margin-top:16px">
+        <h2>3. Giá cuối</h2>
+        <div class="final">
+          <div class="lab">Khách trả</div>
+          <b id="final-price">—</b>
+          <p class="sub" id="unit-line" hidden></p>
+          <p class="sub" id="grams-line" hidden></p>
         </div>
-        <div class="subhead">Phụ kiện (số lượng mỗi sản phẩm)</div>
-        <div id="extra-counts"><p class="muted">Đang nạp bảng giá…</p></div>
-        <div class="subhead">Khách hàng</div>
+        <p class="busy" id="slice-status" hidden></p>
+        <p class="warn" id="slice-warn" hidden></p>
+        <p class="warn" id="calc-error" hidden></p>
+
+        <details class="summary-box">
+          <summary>Giá vốn (bấm để xem)</summary>
+          <table class="lines" style="margin-top:8px">
+            <tbody>
+              <tr><td>Nhựa in</td><td id="line-filament">—</td></tr>
+              <tr><td>Điện</td><td id="line-electricity">—</td></tr>
+              <tr><td>Khấu hao máy</td><td id="line-depreciation">—</td></tr>
+              <tr><td>Công</td><td id="line-labor">—</td></tr>
+              <tr><td>Phụ kiện</td><td id="line-extras">—</td></tr>
+              <tr><td>Dự phòng hỏng</td><td id="line-failure">—</td></tr>
+            </tbody>
+          </table>
+          <div class="sum" style="display:flex;justify-content:space-between;margin-top:10px"><span>Giá vốn</span><b id="cost">—</b></div>
+        </details>
+
+        <div class="plates" id="price-plates"></div>
+      </section>
+
+      <section class="card" style="margin-top:16px">
+        <h2>Khách hàng</h2>
         <div class="fields">
           <label class="field">Tên khách
             <input id="customer_name" type="text" autocomplete="off">
@@ -109,29 +167,11 @@
           </label>
         </div>
         <label class="field" style="margin-top:10px">Tiêu đề báo giá
-          <input id="title" type="text" placeholder="vd. Tay máy – bàn P2">
+          <input id="title" type="text" placeholder="vd. Khối 20 mm">
         </label>
         <label class="field" style="margin-top:10px">Ghi chú cho khách
           <textarea id="note"></textarea>
         </label>
-      </section>
-
-      <section class="card" style="margin-top:16px">
-        <h2>3. Giá vốn</h2>
-        <table class="lines">
-          <tbody>
-            <tr><td>Nhựa in</td><td id="line-filament">—</td></tr>
-            <tr><td>Điện</td><td id="line-electricity">—</td></tr>
-            <tr><td>Khấu hao máy</td><td id="line-depreciation">—</td></tr>
-            <tr><td>Công</td><td id="line-labor">—</td></tr>
-            <tr><td>Phụ kiện</td><td id="line-extras">—</td></tr>
-            <tr><td>Dự phòng hỏng</td><td id="line-failure">—</td></tr>
-          </tbody>
-        </table>
-        <div class="sum"><span>Giá vốn</span><b id="cost">—</b></div>
-        <div class="sum price"><span>Giá bán (cả lô)</span><b id="total">—</b></div>
-        <p class="muted" id="unit-line" hidden></p>
-        <p class="warn" id="calc-error" hidden></p>
         <div class="actions-end">
           <button class="primary" id="save-quote" type="button">Lưu báo giá</button>
         </div>
@@ -146,9 +186,9 @@
           <div class="subhead">Thông số tính giá</div>
           <div class="fields" id="settings-fields"></div>
 
-          <div class="subhead">Nhựa (giá cuộn)</div>
+          <div class="subhead">Nhựa (giá cuộn + profile cắt lớp)</div>
           <table class="price-table">
-            <thead><tr><th>Nhựa</th><th>Giá cuộn (đ)</th><th>Khối lượng (g)</th><th></th></tr></thead>
+            <thead><tr><th>Nhựa</th><th>Giá cuộn (đ)</th><th>Khối lượng (g)</th><th>Profile cắt lớp</th><th></th></tr></thead>
             <tbody id="materials"></tbody>
           </table>
           <button type="button" id="add-material">+ Thêm nhựa</button>
@@ -193,22 +233,29 @@
 </div>
 
 <script type="application/json" id="pricing-sources">{{ sources_json|safe }}</script>
+<script type="application/json" id="print-options-json">{{ print_options|tojson }}</script>
 <script>
 (() => {
   const $ = (s) => document.querySelector(s);
   const HJ = { "X-Studio": "1", "Content-Type": "application/json" };
   const H = { "X-Studio": "1" };
   const fmt = (n) => new Intl.NumberFormat("vi-VN").format(Math.round(n || 0)) + " đ";
-  const gramsText = (o) => Object.entries(o || {}).map(([k, v]) => `${k} ${viNum(v)} g`).join(" · ");
   const viNum = (n, nd = 1) => Number(n || 0).toFixed(nd).replace(/\.?0+$/, "").replace(".", ",");
+  const gramsText = (o) => Object.entries(o || {}).map(([k, v]) => `${k} ${viNum(v)} g`).join(" · ");
   let sources = {};
   try { sources = JSON.parse(document.getElementById("pricing-sources").textContent || "{}"); } catch (e) { sources = {}; }
+  let printOptions = {};
+  try { printOptions = JSON.parse(document.getElementById("print-options-json").textContent || "{}"); } catch (e) { printOptions = {}; }
   let pricing = { settings: {}, materials: {}, extras: [], sources };
+  let profiles = { filaments: [], processes: [] };
+  let token = null;
+  let kind = null;
   let parsedGrams = {};
   let materialMap = {};
-  let token = null;
   let materialDeletes = [];
   let extraDeletes = [];
+  let seq = 0;
+  let timer = null;
 
   const META = [
     ["electricity_price_vnd_per_kwh", "Giá điện (đ/kWh)", "0.01"],
@@ -306,16 +353,36 @@
     SHOP.forEach(([k, label]) => shop.appendChild(textField(label, k, pricing.settings[k])));
   }
 
-  function materialRow(name, price, weight) {
+  function profileSelect(current) {
+    const sel = document.createElement("select");
+    sel.className = "mat-profile";
+    const list = (profiles.filaments || []).slice();
+    if (current && !list.includes(current)) list.unshift(current);
+    list.forEach((n) => {
+      const o = document.createElement("option");
+      o.value = n;
+      o.textContent = n;
+      if (n === current) o.selected = true;
+      sel.appendChild(o);
+    });
+    if (!list.length && current) sel.value = current;
+    return sel;
+  }
+
+  function materialRow(name, m) {
+    m = m || {};
     const tr = document.createElement("tr");
     tr.dataset.orig = name || "";
+    tr.dataset.type = m.type || "";
     tr.innerHTML = '<td><input class="mat-name" type="text" value=""></td>' +
       '<td><input class="mat-price" type="number" step="1000" min="0" value=""></td>' +
       '<td><input class="mat-weight" type="number" step="1" min="0" value=""></td>' +
+      '<td class="mat-profile-cell"></td>' +
       '<td class="act"><button type="button" class="x">×</button></td>';
     tr.querySelector(".mat-name").value = name || "";
-    tr.querySelector(".mat-price").value = price === undefined ? "" : price;
-    tr.querySelector(".mat-weight").value = weight === undefined ? "" : weight;
+    tr.querySelector(".mat-price").value = m.spool_price_vnd === undefined ? "" : m.spool_price_vnd;
+    tr.querySelector(".mat-weight").value = m.spool_weight_g === undefined ? "" : m.spool_weight_g;
+    tr.querySelector(".mat-profile-cell").appendChild(profileSelect(m.slicer_profile || ""));
     const note = name ? sourceNote("material:" + name) : null;
     if (note) tr.querySelector(".mat-price").parentNode.appendChild(note);
     tr.querySelector(".x").addEventListener("click", () => {
@@ -345,7 +412,7 @@
     box.innerHTML = "";
     materialDeletes = [];
     Object.entries(pricing.materials || {}).sort((a, b) => a[0].localeCompare(b[0])).forEach(([n, m]) =>
-      box.appendChild(materialRow(n, m.spool_price_vnd, m.spool_weight_g)));
+      box.appendChild(materialRow(n, m)));
   }
 
   function renderExtras() {
@@ -376,11 +443,54 @@
       inp.step = "1";
       inp.value = old[e.id] !== undefined ? old[e.id] : "0";
       inp.dataset.id = e.id;
-      inp.addEventListener("input", scheduleCalc);
+      inp.addEventListener("input", schedulePrice);
       row.appendChild(lab);
       row.appendChild(inp);
       box.appendChild(row);
     });
+  }
+
+  function renderMaterialSelect() {
+    const sel = $("#material");
+    const cur = sel.value;
+    sel.innerHTML = "";
+    const entries = Object.entries(pricing.materials || {}).sort((a, b) => a[0].localeCompare(b[0]));
+    entries.forEach(([n, m]) => {
+      const o = document.createElement("option");
+      o.value = n;
+      const kg = m.spool_weight_g ? fmt(m.spool_price_vnd * 1000 / m.spool_weight_g) + "/kg" : "—";
+      o.textContent = `${n} — ${m.slicer_profile || "chưa có profile"} — ${kg}`;
+      o.dataset.type = m.type || "";
+      sel.appendChild(o);
+    });
+    if (cur && pricing.materials[cur]) sel.value = cur;
+    else {
+      const def = entries.find(([, m]) => (m.type || "").toUpperCase() === "PETG");
+      if (def) sel.value = def[0];
+      else if (entries.length) sel.value = entries[0][0];
+    }
+  }
+
+  function renderProcessSelect() {
+    const sel = $("#process");
+    const cur = sel.value;
+    sel.innerHTML = "";
+    const list = (profiles.processes || []).slice();
+    if (!list.length) {
+      const o = document.createElement("option");
+      o.value = "";
+      o.textContent = "Theo profile mặc định";
+      sel.appendChild(o);
+      return;
+    }
+    list.forEach((p) => {
+      const o = document.createElement("option");
+      o.value = p;
+      o.textContent = p.replace(" @BBL A1", "");
+      sel.appendChild(o);
+    });
+    const want = cur || printOptions.process || "";
+    if (want && list.includes(want)) sel.value = want;
   }
 
   function materialNames() {
@@ -391,7 +501,7 @@
     const box = $("#material-map");
     const names = materialNames();
     const types = Object.keys(parsedGrams || {});
-    if (!names.length || !types.length) {
+    if (kind !== "sliced" || types.length < 2 || !names.length) {
       box.innerHTML = "";
       box.hidden = true;
       return;
@@ -421,7 +531,7 @@
       });
       sel.addEventListener("change", () => {
         materialMap[t] = sel.value;
-        scheduleCalc();
+        schedulePrice();
       });
       const g = document.createElement("span");
       g.className = "muted";
@@ -438,13 +548,25 @@
     renderMaterials();
     renderExtras();
     renderMaterialMap();
+    renderMaterialSelect();
+    renderProcessSelect();
   }
 
   async function loadPricing() {
     const r = await fetch("/api/quote/pricing");
     pricing = await r.json();
     if (!pricing.sources) pricing.sources = sources;
-    renderAll();
+  }
+
+  async function loadProfiles() {
+    try {
+      const r = await fetch("/api/quote/slicer-profiles");
+      if (r.ok) profiles = await r.json();
+    } catch (e) { /* giu rong: o chon profile se trong */ }
+  }
+
+  async function loadDefaultsIntoPricing() {
+    await loadPricing();
   }
 
   $("#pricing-form").addEventListener("submit", async (e) => {
@@ -465,6 +587,7 @@
       materials[name] = {
         spool_price_vnd: Number(tr.querySelector(".mat-price").value || 0),
         spool_weight_g: Number(tr.querySelector(".mat-weight").value || 0),
+        slicer_profile: tr.querySelector(".mat-profile").value || null,
       };
     });
     materialDeletes.forEach((n) => { if (!(n in materials)) materials[n] = null; });
@@ -485,7 +608,7 @@
     if (!pricing.sources) pricing.sources = sources;
     renderAll();
     toast(true, "Đã lưu bảng giá");
-    scheduleCalc();
+    schedulePrice();
   });
 
   $("#pricing-reset").addEventListener("click", async () => {
@@ -497,48 +620,60 @@
     if (!pricing.sources) pricing.sources = sources;
     renderAll();
     toast(true, "Đã khôi phục thời giá mặc định");
-    scheduleCalc();
+    schedulePrice();
   });
 
-  $("#add-material").addEventListener("click", () => $("#materials").appendChild(materialRow("", "", "")));
+  $("#add-material").addEventListener("click", () => $("#materials").appendChild(materialRow("", {})));
   $("#add-extra").addEventListener("click", () => $("#extras").appendChild(extraRow("", "", "")));
 
-  function showParsed(j) {
+  function showPlate(box, p) {
+    const d = document.createElement("div");
+    d.className = "plate";
+    if (p.image) {
+      const img = document.createElement("img");
+      img.src = p.image;
+      img.alt = `Bàn ${p.index}`;
+      d.appendChild(img);
+    }
+    const cap = document.createElement("div");
+    cap.className = "cap";
+    cap.textContent = `Bàn ${p.index} · ${viNum(p.seconds / 3600, 2)} h · ${gramsText(p.grams)}`;
+    d.appendChild(cap);
+    box.appendChild(d);
+  }
+
+  function renderPlates(plates) {
+    const box = $("#plates");
+    box.innerHTML = "";
+    (plates || []).forEach((p) => showPlate(box, p));
+  }
+
+  function handleToken(j) {
     token = j.token;
+    kind = j.kind || "sliced";
     parsedGrams = j.grams || {};
     materialMap = {};
     $("#file-info").hidden = false;
-    $("#file-name").textContent = j.name;
-    $("#file-sum").textContent = `${viNum(j.hours, 2)} giờ · ${gramsText(j.grams)}`;
+    $("#file-name").textContent = (j.names || [j.name || ""]).join(", ");
+    $("#file-sum").textContent = kind === "sliced"
+      ? `${viNum(j.hours, 2)} giờ · ${gramsText(j.grams)}`
+      : "File model – chọn nhựa để Toolhub cắt lớp.";
     renderMaterialMap();
-    const box = $("#plates");
-    box.innerHTML = "";
-    (j.plates || []).forEach((p) => {
-      const d = document.createElement("div");
-      d.className = "plate";
-      if (p.image) {
-        const img = document.createElement("img");
-        img.src = p.image;
-        img.alt = `Bàn ${p.index}`;
-        d.appendChild(img);
-      }
-      const cap = document.createElement("div");
-      cap.className = "cap";
-      cap.textContent = `Bàn ${p.index} · ${viNum(p.seconds / 3600, 2)} h · ${gramsText(p.grams)}`;
-      d.appendChild(cap);
-      box.appendChild(d);
-    });
-    scheduleCalc();
+    renderPlates(j.plates);
+    $("#price-plates").innerHTML = "";
+    if (kind === "sliced") schedulePrice();
+    else schedulePrice();
   }
 
-  async function upload(file) {
-    if (!/\.3mf$/i.test(file.name)) { toast(false, "Chọn file .3mf đã cắt lớp"); return; }
+  async function uploadFiles(fileList) {
+    const list = Array.from(fileList || []);
+    if (!list.length) return;
     const fd = new FormData();
-    fd.append("file", file);
-    const r = await fetch("/api/quote/parse", { method: "POST", headers: H, body: fd });
+    list.forEach((f) => fd.append("file", f));
+    const r = await fetch("/api/quote/upload", { method: "POST", headers: H, body: fd });
     const j = await r.json();
     if (!r.ok) { toast(false, j.error || "Không đọc được file"); return; }
-    showParsed(j);
+    handleToken(j);
   }
 
   const drop = $("#drop");
@@ -551,11 +686,10 @@
     drop.classList.remove("over");
   }));
   drop.addEventListener("drop", (e) => {
-    const f = e.dataTransfer.files && e.dataTransfer.files[0];
-    if (f) upload(f);
+    if (e.dataTransfer.files && e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
   });
   $("#file").addEventListener("change", (e) => {
-    if (e.target.files && e.target.files[0]) upload(e.target.files[0]);
+    if (e.target.files && e.target.files.length) uploadFiles(e.target.files);
   });
 
   $("#project").addEventListener("change", async (e) => {
@@ -564,63 +698,119 @@
     const r = await fetch("/api/quote/parse", { method: "POST", headers: HJ, body: JSON.stringify({ path }) });
     const j = await r.json();
     if (!r.ok) { toast(false, j.error || "Không đọc được file dự án"); return; }
-    showParsed(j);
+    putParsed(j);
   });
 
-  let timer = null;
-  function scheduleCalc() {
-    clearTimeout(timer);
-    timer = setTimeout(doCalc, 250);
+  function putParsed(j) {
+    handleToken({ token: j.token, kind: "sliced", names: [j.name], name: j.name,
+                  hours: j.hours, grams: j.grams, plates: j.plates });
   }
 
-  function calcBody() {
+  function extrasMap() {
     const extras = {};
     document.querySelectorAll("#extra-counts input[data-id]").forEach((i) => {
       const n = Number(i.value || 0);
       if (n > 0) extras[i.dataset.id] = n;
     });
-    return {
-      token,
-      quantity: Number($("#quantity").value || 1),
-      extras,
-      other_fee_vnd: Number($("#other_fee").value || 0),
-      materials_map: materialMap,
-    };
+    return extras;
   }
 
-  async function doCalc() {
-    if (!token) return;
-    const r = await fetch("/api/quote/calc", { method: "POST", headers: HJ, body: JSON.stringify(calcBody()) });
-    const j = await r.json();
+  function priceBody() {
+    const body = {
+      token,
+      material: $("#material").value,
+      quantity: Number($("#quantity").value || 1),
+      extras: extrasMap(),
+      other_fee_vnd: Number($("#other_fee").value || 0),
+      options: {
+        process: $("#process").value,
+        support: $("#support").value,
+        infill: $("#infill").value === "" ? null : Number($("#infill").value),
+      },
+    };
+    if (kind === "sliced") body.materials_map = materialMap;
+    return body;
+  }
+
+  function setBusy(busy) {
+    const hint = $("#slice-status");
+    hint.hidden = !busy;
+    if (busy) hint.textContent = kind === "sliced" ? "Đang tính giá…" : "Đang cắt lớp bằng Bambu Studio…";
+    $("#save-quote").disabled = busy;
+  }
+
+  function showError(msg) {
     const err = $("#calc-error");
-    if (!r.ok) {
-      err.hidden = false;
-      err.innerHTML = "";
-      err.appendChild(document.createTextNode((j.error || "Không tính được giá") + " "));
-      const a = document.createElement("a");
-      a.href = "#pricing-panel";
-      a.textContent = "Sửa bảng giá";
-      a.addEventListener("click", () => { $("#pricing-panel").open = true; });
-      err.appendChild(a);
-      return;
-    }
-    err.hidden = true;
+    err.hidden = false;
+    err.innerHTML = "";
+    err.appendChild(document.createTextNode((msg || "Không tính được giá") + " "));
+    const a = document.createElement("a");
+    a.href = "#pricing-panel";
+    a.textContent = "Sửa bảng giá";
+    a.addEventListener("click", () => { $("#pricing-panel").open = true; });
+    err.appendChild(a);
+  }
+
+  function renderSliceWarn(slice) {
+    const box = $("#slice-warn");
+    // quote_slice.py da ghi canh bao "chua tinh support" vao warnings khi fallback support-off
+    const parts = [...new Set((slice && slice.warnings) || [])];
+    if (!parts.length) { box.hidden = true; box.textContent = ""; return; }
+    box.hidden = false;
+    box.textContent = parts.join(" · ");
+  }
+
+  function renderPrice(j) {
     ["filament", "electricity", "depreciation", "labor", "extras", "failure"].forEach((k) => {
       $("#line-" + k).textContent = fmt(j.lines[k]);
     });
     $("#cost").textContent = j.cost_text;
-    $("#total").textContent = j.total_text;
+    $("#final-price").textContent = j.total_text;
     $("#unit-line").hidden = false;
-    $("#unit-line").textContent = `${j.unit_price_text}/sản phẩm × ${j.quantity} = ${j.subtotal_text}` +
+    $("#unit-line").textContent = `${j.unit_price_text}/sản phẩm × ${j.quantity}` +
       (j.other_fee ? ` + phí khác ${fmt(j.other_fee)}` : "");
+    const gl = $("#grams-line");
+    gl.hidden = false;
+    gl.textContent = `${gramsText(j.grams)} · ${viNum(j.hours, 2)} giờ in`;
+    renderSliceWarn(j.slice);
+    const box = $("#price-plates");
+    box.innerHTML = "";
+    (j.plates || []).forEach((p) => showPlate(box, p));
   }
 
-  $("#quantity").addEventListener("input", scheduleCalc);
-  $("#other_fee").addEventListener("input", scheduleCalc);
+  function schedulePrice() {
+    clearTimeout(timer);
+    timer = setTimeout(doPrice, 250);
+  }
+
+  async function doPrice() {
+    if (!token) return;
+    const my = ++seq;
+    setBusy(true);
+    $("#calc-error").hidden = true;
+    try {
+      const r = await fetch("/api/quote/price", { method: "POST", headers: HJ, body: JSON.stringify(priceBody()) });
+      const j = await r.json();
+      if (my !== seq) return;
+      if (!r.ok) { showError(j.error); return; }
+      renderPrice(j);
+    } catch (e) {
+      if (my === seq) showError("Không gọi được máy chủ");
+    } finally {
+      if (my === seq) setBusy(false);
+    }
+  }
+
+  $("#quantity").addEventListener("input", schedulePrice);
+  $("#other_fee").addEventListener("input", schedulePrice);
+  $("#material").addEventListener("change", schedulePrice);
+  $("#process").addEventListener("change", schedulePrice);
+  $("#infill").addEventListener("input", schedulePrice);
+  $("#support").addEventListener("change", schedulePrice);
 
   $("#save-quote").addEventListener("click", async () => {
     if (!token) { toast(false, "Chưa có file in"); return; }
-    const body = Object.assign(calcBody(), {
+    const body = Object.assign(priceBody(), {
       customer_name: $("#customer_name").value,
       customer_phone: $("#customer_phone").value,
       title: $("#title").value,
@@ -633,7 +823,10 @@
     window.open("/quote/" + j.id, "_blank");
   });
 
-  loadPricing();
+  (async function init() {
+    await Promise.all([loadDefaultsIntoPricing(), loadProfiles()]);
+    renderAll();
+  })();
 })();
 </script>
 {% endblock %}

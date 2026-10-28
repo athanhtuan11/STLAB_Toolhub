@@ -434,4 +434,5 @@ def main():
     return 1 if ket_luan == "FAIL" else 0
 
 
-sys.exit(main())
+if __name__ == "__main__":
+    sys.exit(main())

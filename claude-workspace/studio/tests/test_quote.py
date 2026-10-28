@@ -87,7 +87,8 @@ for k, d in DEF["settings"].items():
     check(pr["settings"].get(k) == d["value"], f"DB moi lay mac dinh {k}={d['value']}, co {pr['settings'].get(k)}")
     check(bool(d.get("source")), f"mac dinh {k} phai co source")
 for m, d in DEF["materials"].items():
-    check(pr["materials"].get(m) == {"spool_price_vnd": d["spool_price_vnd"], "spool_weight_g": d["spool_weight_g"]},
+    got = pr["materials"].get(m) or {}
+    check(got.get("spool_price_vnd") == d["spool_price_vnd"] and got.get("spool_weight_g") == d["spool_weight_g"],
           f"DB moi co nhua mac dinh {m}")
 check(any(x["label"] == DEF["extras"][0]["label"] for x in pr["extras"]), "DB moi co phu kien mac dinh")
 check(quote.pricing_sources()["printer_power_w"]["source"] == DEF["settings"]["printer_power_w"]["source"],
@@ -120,7 +121,8 @@ quote.save_material(conn, "PETG", spool_price_vnd=300_000, spool_weight_g=1000)
 quote.save_material(conn, "TPU", spool_price_vnd=500_000, spool_weight_g=1000)
 eid = quote.save_extra(conn, label="Insert ren M3", price_vnd=1000)
 pr = quote.get_pricing(conn)
-check(pr["materials"]["PETG"] == {"spool_price_vnd": 300000, "spool_weight_g": 1000}, f"material: {pr['materials']}")
+check({k: pr["materials"]["PETG"].get(k) for k in ("spool_price_vnd", "spool_weight_g")}
+      == {"spool_price_vnd": 300000, "spool_weight_g": 1000}, f"material: {pr['materials']}")
 check(any(x["id"] == eid and x["label"] == "Insert ren M3" for x in pr["extras"]), "extra luu duoc")
 conn.close()
 conn = quote.connect()  # mo lai: du lieu con

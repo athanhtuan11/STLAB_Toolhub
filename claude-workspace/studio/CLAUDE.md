@@ -27,7 +27,11 @@ qua cả 5 MCP server trong `.mcp.json`.
   - `toolhub/printprep.py` (trang Dự án, dự án có `print/print.yaml`): nút **Chuẩn bị in** và **Tự chạy khi Lưu**
     gọi `tools/robotics-cad/scripts/prepare-print.py` / `watch.py` bằng Python của FreeCAD, chạy nền (PID ở
     `print/_*.pid`). Chỉ đọc file FreeCAD đã lưu; ảnh chỉ trả `.png` mà `_prepare-print-result.json` trỏ tới. POST cần `X-Studio`.
-  - Trang **Báo giá** `/quote` (menu "Thêm ▾", 2026-10-28): thả file Bambu `.gcode.3mf` hoặc chọn `.3mf` của dự án → giá vốn
+  - Trang **Báo giá** `/quote` (menu "Thêm ▾", 2026-10-28): kéo `.stl/.obj/.step/.3mf` → Toolhub tự cắt lớp bằng Bambu CLI
+    (`tools/robotics-cad/scripts/quote_slice.py`, Python FreeCAD, profile A1 + profile cắt lớp của nhựa chọn; STEP đổi
+    STL bằng freecadcmd; 3MF nhiều màu lỗi support → cắt lại không support + cảnh báo) → chọn nhựa → giá cuối.
+    Thời giá mặc định có nguồn: `toolhub/quote_defaults.json`. Upload/kết quả cắt: `%LOCALAPPDATA%\stlab-quotes` (env
+    `STLAB_QUOTES_WORK`). Test thêm `tests/test_quote_slice.py`. File `.gcode.3mf` đã cắt thì đọc thẳng → giá vốn
     (nhựa, điện, khấu hao, công, phụ kiện, dự phòng hỏng) → giá bán (markup hoặc biên) → lưu báo giá → bản cho khách
     `/quote/<id>` + PDF (Edge headless). Bảng giá + báo giá lưu SQLite `%LOCALAPPDATA%\stlab-quotes\quotes.db` (env
     `STLAB_QUOTES_DB`), KHÔNG trong repo vì có tên/SĐT khách – nhớ sao lưu file này. Tuan tự nhập giá trên trang.
