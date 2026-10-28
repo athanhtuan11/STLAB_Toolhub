@@ -318,6 +318,16 @@ Việc tiếp:
 
 - So `akitaonrails/ai-memory` và `ruvnet/ruflo` với `tools/delegate/` (phân quyền 3 tầng) → báo cáo. Tuan duyệt rồi mới sửa (`TODO`).
 
+### Nhóm D – Báo giá in 3D (ghim 2026-10-28, chỉ tham chiếu)
+
+Tuan đồng ý ghim để **tham chiếu công thức** báo giá (trang Báo giá Toolhub). Không chạy, không cài, không link skill.
+Báo cáo: `docs/reports/3d-print-cost-quote-oss.md`. Ghim trong `community/pins.tsv` (allowlist `no`, auto `off`).
+
+| Repo | Thư mục (`pins.tsv`) | Ghim | License | Tin cậy | Kiểm tra | Ghi chú |
+|---|---|---|---|---|---|---|
+| [Gunderson3d/printcalc](https://github.com/Gunderson3d/printcalc) | `printcalc` | `v0.2.0` (`84070ded38f4`, 2026-10-15) | Apache-2.0 | Cộng đồng, dự án mới (0★ lúc ghim) | 2026-10-28 | Rust CLI + thư viện `libprintcalc` + bản wasm/web; đọc Bambu `.gcode.3mf` (`Metadata/slice_info.config`, `project_settings.config`), G-code, `.bgcode`, SLA. Dùng: công thức trong `PRICING.md` (giá máy/giờ, nhựa, công, phụ kiện, giá bán theo biên = giá vốn/(1−m)). Không chạy gì trong STLab |
+| [jkga/3dpcalc](https://github.com/jkga/3dpcalc) | `3dpcalc` | `48df32e45905` (2025-08-11) | MIT | Cộng đồng | 2026-10-28 | Web TypeScript ([3dpcalc.vercel.app](https://3dpcalc.vercel.app)), nhập tay, markup + xuất PDF. Dùng: tham chiếu các khoản phí (cài đặt, đóng gói, giao). Không chạy |
+
 ## Đã xem và KHÔNG dùng
 | Repo | Lý do |
 |---|---|

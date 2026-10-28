@@ -1,0 +1,516 @@
+{% extends "base.html" %}
+{% block title %}Báo giá in 3D{% endblock %}
+{% block content %}
+<style>
+#quote-page .quote-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 860px) { #quote-page .quote-grid { grid-template-columns: minmax(0, 1fr); } }
+#quote-page .card h2 { margin: 0 0 10px; font-size: 15px; }
+#quote-page .drop { border: 2px dashed var(--line); border-radius: var(--r-card); padding: 22px 16px; text-align: center;
+  background: var(--bg); color: var(--muted); font-size: 14px; }
+#quote-page .drop.over { border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+#quote-page .drop strong { color: var(--text); }
+#quote-page input[type=file] { margin-top: 10px; color: var(--text); font-size: 13px; }
+#quote-page label.field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+#quote-page input, #quote-page select, #quote-page textarea { font: inherit; font-size: 14px; padding: 6px 9px;
+  border: 1px solid var(--line); border-radius: var(--r-control); background: var(--bg); color: var(--text); width: 100%; }
+#quote-page textarea { min-height: 54px; resize: vertical; }
+#quote-page .fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+#quote-page .files-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: end; margin-top: 12px; }
+#quote-page .plates { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+#quote-page .plate { border: 1px solid var(--line); border-radius: var(--r-card); padding: 8px; background: var(--bg); width: 150px; }
+#quote-page .plate img { width: 100%; height: 100px; object-fit: contain; display: block; background: var(--card); border-radius: 6px; }
+#quote-page .plate .cap { font-size: 12px; color: var(--muted); margin-top: 4px; }
+#quote-page table.lines { width: 100%; font-size: 13.5px; }
+#quote-page table.lines td { padding: 4px 0; border-bottom: 1px dashed var(--line); }
+#quote-page table.lines td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+#quote-page .sum { display: flex; justify-content: space-between; align-items: baseline; margin-top: 12px; font-size: 14px; }
+#quote-page .sum b { font-size: 19px; font-variant-numeric: tabular-nums; }
+#quote-page .sum.price { color: var(--highlight); border-top: 2px solid var(--line); padding-top: 10px; }
+#quote-page .sum.price b { font-size: 23px; }
+#quote-page .warn { color: var(--warn); font-size: 13.5px; margin: 10px 0 0; }
+#quote-page .warn a { color: var(--warn); text-decoration: underline; }
+#quote-page .price-table { width: 100%; font-size: 13px; }
+#quote-page .price-table th, #quote-page .price-table td { padding: 4px 6px 4px 0; border-bottom: 1px solid var(--line); }
+#quote-page .price-table input { padding: 4px 6px; font-size: 13px; }
+#quote-page .price-table td.act { width: 30px; text-align: right; }
+#quote-page button.x { padding: 2px 8px; font-size: 13px; border-radius: 999px; color: var(--err); }
+#quote-page .subhead { font-size: 13px; color: var(--muted); margin: 16px 0 6px; }
+#quote-page .count-row { display: grid; grid-template-columns: minmax(0, 1fr) 90px; gap: 8px; align-items: center; margin-bottom: 8px; }
+#quote-page .count-row span { font-size: 13.5px; }
+#quote-page .actions-end { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+#quote-page .hist { width: 100%; font-size: 13px; }
+#quote-page .hist th, #quote-page .hist td { padding: 5px 6px; border-bottom: 1px solid var(--line); }
+#quote-page .hist td.num { text-align: right; font-variant-numeric: tabular-nums; }
+</style>
+
+<div id="quote-page">
+  <div class="head">
+    <div>
+      <h1>Báo giá in 3D</h1>
+      <p class="sub">Thả file Bambu <code>.gcode.3mf</code> đã cắt lớp (hoặc chọn file của dự án) → giá vốn → giá bán → lưu báo giá cho khách.</p>
+    </div>
+  </div>
+
+  <div class="quote-grid">
+    <div>
+      <section class="card">
+        <h2>1. File in</h2>
+        <div class="drop" id="drop">
+          <strong>Kéo thả file .gcode.3mf vào đây</strong>
+          <div>hoặc bấm để chọn file (Bambu Studio: File → Export → Export plate sliced file)</div>
+          <input id="file" type="file" accept=".3mf">
+        </div>
+        <div class="files-row">
+          <label class="field">File đã cắt lớp của dự án
+            <select id="project">
+              <option value="">— chọn file trong maker/ —</option>
+              {% for p in projects %}<option value="{{ p }}">{{ p }}</option>{% endfor %}
+            </select>
+          </label>
+        </div>
+        <div id="file-info" hidden>
+          <div class="subhead" id="file-name"></div>
+          <div class="muted" id="file-sum"></div>
+          <div class="plates" id="plates"></div>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:16px">
+        <h2>2. Tùy chọn</h2>
+        <div class="fields">
+          <label class="field">Số lượng sản phẩm
+            <input id="quantity" type="number" min="1" step="1" value="1">
+          </label>
+          <label class="field">Phí khác (đ)
+            <input id="other_fee" type="number" min="0" step="1000" value="0">
+          </label>
+        </div>
+        <div class="subhead">Phụ kiện (số lượng mỗi sản phẩm)</div>
+        <div id="extra-counts"><p class="muted">Đang nạp bảng giá…</p></div>
+        <div class="subhead">Khách hàng</div>
+        <div class="fields">
+          <label class="field">Tên khách
+            <input id="customer_name" type="text" autocomplete="off">
+          </label>
+          <label class="field">Số điện thoại
+            <input id="customer_phone" type="tel" autocomplete="off">
+          </label>
+        </div>
+        <label class="field" style="margin-top:10px">Tiêu đề báo giá
+          <input id="title" type="text" placeholder="vd. Tay máy – bàn P2">
+        </label>
+        <label class="field" style="margin-top:10px">Ghi chú cho khách
+          <textarea id="note"></textarea>
+        </label>
+      </section>
+
+      <section class="card" style="margin-top:16px">
+        <h2>3. Giá vốn</h2>
+        <table class="lines">
+          <tbody>
+            <tr><td>Nhựa in</td><td id="line-filament">—</td></tr>
+            <tr><td>Điện</td><td id="line-electricity">—</td></tr>
+            <tr><td>Khấu hao máy</td><td id="line-depreciation">—</td></tr>
+            <tr><td>Công</td><td id="line-labor">—</td></tr>
+            <tr><td>Phụ kiện</td><td id="line-extras">—</td></tr>
+            <tr><td>Dự phòng hỏng</td><td id="line-failure">—</td></tr>
+          </tbody>
+        </table>
+        <div class="sum"><span>Giá vốn</span><b id="cost">—</b></div>
+        <div class="sum price"><span>Giá bán (cả lô)</span><b id="total">—</b></div>
+        <p class="muted" id="unit-line" hidden></p>
+        <p class="warn" id="calc-error" hidden></p>
+        <div class="actions-end">
+          <button class="primary" id="save-quote" type="button">Lưu báo giá</button>
+        </div>
+      </section>
+    </div>
+
+    <div>
+      <section class="card" id="pricing">
+        <h2>Bảng giá</h2>
+        <form id="pricing-form">
+          <div class="subhead">Thông số tính giá</div>
+          <div class="fields" id="settings-fields"></div>
+
+          <div class="subhead">Nhựa (giá cuộn)</div>
+          <table class="price-table">
+            <thead><tr><th>Nhựa</th><th>Giá cuộn (đ)</th><th>Khối lượng (g)</th><th></th></tr></thead>
+            <tbody id="materials"></tbody>
+          </table>
+          <button type="button" id="add-material">+ Thêm nhựa</button>
+
+          <div class="subhead">Phụ kiện</div>
+          <table class="price-table">
+            <thead><tr><th>Nhãn</th><th>Giá (đ)</th><th></th></tr></thead>
+            <tbody id="extras"></tbody>
+          </table>
+          <button type="button" id="add-extra">+ Thêm phụ kiện</button>
+
+          <div class="subhead">Thông tin cửa hàng</div>
+          <div class="fields" id="shop-fields"></div>
+
+          <div class="actions-end">
+            <button class="primary" type="submit">Lưu bảng giá</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card" style="margin-top:16px">
+        <h2>Lịch sử báo giá</h2>
+        <table class="hist">
+          <thead><tr><th>Số</th><th>Ngày</th><th>Khách</th><th>Tổng</th></tr></thead>
+          <tbody>
+            {% for h in history %}
+            <tr>
+              <td><a href="/quote/{{ h.id }}" target="_blank">{{ h.number }}</a></td>
+              <td>{{ h.date_text }}</td>
+              <td>{{ h.customer_name }}</td>
+              <td class="num">{{ h.total_vnd|vnd }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="muted">Chưa có báo giá.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const HJ = { "X-Studio": "1", "Content-Type": "application/json" };
+  const H = { "X-Studio": "1" };
+  const fmt = (n) => new Intl.NumberFormat("vi-VN").format(Math.round(n || 0)) + " đ";
+  const gramsText = (o) => Object.entries(o || {}).map(([k, v]) => `${k} ${Number(v).toFixed(2)} g`).join(" · ");
+  let pricing = { settings: {}, materials: {}, extras: [] };
+  let token = null;
+  let materialDeletes = [];
+  let extraDeletes = [];
+
+  const META = [
+    ["electricity_price_vnd_per_kwh", "Giá điện (đ/kWh)", "0.01"],
+    ["printer_power_w", "Công suất máy in (W)", "1"],
+    ["machine_price_vnd", "Giá máy in (đ)", "1000"],
+    ["machine_lifetime_hours", "Tuổi thọ máy (giờ)", "0.1"],
+    ["labor_rate_vnd_per_hour", "Tiền công (đ/giờ)", "1000"],
+    ["setup_hours_per_job", "Chuẩn bị mỗi việc (giờ)", "0.05"],
+    ["post_hours_per_plate", "Hậu xử lý mỗi bàn (giờ)", "0.05"],
+    ["failure_pct", "Dự phòng hỏng (0–1)", "0.01"],
+    ["pricing_value", "Hệ số giá (markup 1 = +100%; margin 0,5 = 50%)", "0.01"],
+    ["round_to_vnd", "Làm tròn giá (đ)", "1000"],
+    ["valid_days", "Hiệu lực báo giá (ngày)", "1"],
+  ];
+  const SHOP = [
+    ["shop_phone", "Số điện thoại cửa hàng"],
+    ["shop_contact", "Liên hệ (địa chỉ, email…)"],
+    ["payment_note", "Ghi chú thanh toán"],
+  ];
+
+  function field(label, key, value, step = "1") {
+    const l = document.createElement("label");
+    l.className = "field";
+    l.textContent = label;
+    const i = document.createElement("input");
+    i.type = "number";
+    i.step = step;
+    i.dataset.key = key;
+    i.value = value === undefined || value === null ? "" : value;
+    l.appendChild(i);
+    return l;
+  }
+
+  function textField(label, key, value) {
+    const l = document.createElement("label");
+    l.className = "field";
+    l.textContent = label;
+    const i = document.createElement("input");
+    i.type = "text";
+    i.dataset.key = key;
+    i.value = value || "";
+    l.appendChild(i);
+    return l;
+  }
+
+  function renderSettings() {
+    const box = $("#settings-fields");
+    box.innerHTML = "";
+    META.forEach(([k, label, step]) => box.appendChild(field(label, k, pricing.settings[k], step)));
+    const l = document.createElement("label");
+    l.className = "field";
+    l.textContent = "Cách tính giá";
+    const sel = document.createElement("select");
+    sel.dataset.key = "pricing_method";
+    [["markup", "markup – lãi cộng thêm"], ["margin", "margin – biên lợi nhuận"]].forEach(([v, t]) => {
+      const o = document.createElement("option");
+      o.value = v;
+      o.textContent = t;
+      if ((pricing.settings.pricing_method || "markup") === v) o.selected = true;
+      sel.appendChild(o);
+    });
+    l.appendChild(sel);
+    box.appendChild(l);
+    const shop = $("#shop-fields");
+    shop.innerHTML = "";
+    SHOP.forEach(([k, label]) => shop.appendChild(textField(label, k, pricing.settings[k])));
+  }
+
+  function materialRow(name, price, weight) {
+    const tr = document.createElement("tr");
+    tr.dataset.orig = name || "";
+    tr.innerHTML = '<td><input class="mat-name" type="text" value=""></td>' +
+      '<td><input class="mat-price" type="number" step="1000" min="0" value=""></td>' +
+      '<td><input class="mat-weight" type="number" step="1" min="0" value=""></td>' +
+      '<td class="act"><button type="button" class="x">×</button></td>';
+    tr.querySelector(".mat-name").value = name || "";
+    tr.querySelector(".mat-price").value = price === undefined ? "" : price;
+    tr.querySelector(".mat-weight").value = weight === undefined ? "" : weight;
+    tr.querySelector(".x").addEventListener("click", () => {
+      if (tr.dataset.orig) materialDeletes.push(tr.dataset.orig);
+      tr.remove();
+    });
+    return tr;
+  }
+
+  function extraRow(id, label, price) {
+    const tr = document.createElement("tr");
+    tr.dataset.id = id || "";
+    tr.innerHTML = '<td><input class="ex-label" type="text" value=""></td>' +
+      '<td><input class="ex-price" type="number" step="1000" min="0" value=""></td>' +
+      '<td class="act"><button type="button" class="x">×</button></td>';
+    tr.querySelector(".ex-label").value = label || "";
+    tr.querySelector(".ex-price").value = price === undefined ? "" : price;
+    tr.querySelector(".x").addEventListener("click", () => {
+      if (tr.dataset.id) extraDeletes.push(Number(tr.dataset.id));
+      tr.remove();
+    });
+    return tr;
+  }
+
+  function renderMaterials() {
+    const box = $("#materials");
+    box.innerHTML = "";
+    materialDeletes = [];
+    Object.entries(pricing.materials || {}).sort((a, b) => a[0].localeCompare(b[0])).forEach(([n, m]) =>
+      box.appendChild(materialRow(n, m.spool_price_vnd, m.spool_weight_g)));
+  }
+
+  function renderExtras() {
+    const box = $("#extras");
+    box.innerHTML = "";
+    extraDeletes = [];
+    (pricing.extras || []).forEach((e) => box.appendChild(extraRow(e.id, e.label, e.price_vnd)));
+    renderCounts();
+  }
+
+  function renderCounts() {
+    const box = $("#extra-counts");
+    const old = {};
+    box.querySelectorAll("input[data-id]").forEach((i) => { old[i.dataset.id] = i.value; });
+    box.innerHTML = "";
+    if (!(pricing.extras || []).length) {
+      box.innerHTML = '<p class="muted">Chưa có phụ kiện. Thêm ở bảng giá bên cạnh.</p>';
+      return;
+    }
+    pricing.extras.forEach((e) => {
+      const row = document.createElement("div");
+      row.className = "count-row";
+      const lab = document.createElement("span");
+      lab.textContent = `${e.label} — ${fmt(e.price_vnd)}/cái`;
+      const inp = document.createElement("input");
+      inp.type = "number";
+      inp.min = "0";
+      inp.step = "1";
+      inp.value = old[e.id] !== undefined ? old[e.id] : "0";
+      inp.dataset.id = e.id;
+      inp.addEventListener("input", scheduleCalc);
+      row.appendChild(lab);
+      row.appendChild(inp);
+      box.appendChild(row);
+    });
+  }
+
+  async function loadPricing() {
+    const r = await fetch("/api/quote/pricing");
+    pricing = await r.json();
+    renderSettings();
+    renderMaterials();
+    renderExtras();
+  }
+
+  $("#pricing-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const settings = {};
+    document.querySelectorAll("#pricing-form [data-key]").forEach((i) => {
+      const k = i.dataset.key;
+      if (k === "pricing_method") { settings[k] = i.value; return; }
+      if (i.value === "") return;
+      settings[k] = Number(i.value);
+    });
+    const materials = {};
+    document.querySelectorAll("#materials tr").forEach((tr) => {
+      const name = tr.querySelector(".mat-name").value.trim();
+      if (!name) return;
+      const orig = tr.dataset.orig;
+      if (orig && orig !== name) materials[orig] = null;
+      materials[name] = {
+        spool_price_vnd: Number(tr.querySelector(".mat-price").value || 0),
+        spool_weight_g: Number(tr.querySelector(".mat-weight").value || 0),
+      };
+    });
+    materialDeletes.forEach((n) => { if (!(n in materials)) materials[n] = null; });
+    const extras = [];
+    document.querySelectorAll("#extras tr").forEach((tr) => {
+      const label = tr.querySelector(".ex-label").value.trim();
+      if (!label) return;
+      const price = Number(tr.querySelector(".ex-price").value || 0);
+      if (tr.dataset.id) extras.push({ id: Number(tr.dataset.id), label, price_vnd: price });
+      else extras.push({ label, price_vnd: price });
+    });
+    extraDeletes.forEach((id) => extras.push({ id, delete: true }));
+    const r = await fetch("/api/quote/pricing", { method: "POST", headers: HJ,
+      body: JSON.stringify({ settings, materials, extras }) });
+    const j = await r.json();
+    if (!r.ok) { toast(false, j.error || "Không lưu được bảng giá"); return; }
+    pricing = j;
+    renderSettings();
+    renderMaterials();
+    renderExtras();
+    toast(true, "Đã lưu bảng giá");
+    scheduleCalc();
+  });
+
+  $("#add-material").addEventListener("click", () => $("#materials").appendChild(materialRow("", "", "")));
+  $("#add-extra").addEventListener("click", () => $("#extras").appendChild(extraRow("", "", "")));
+
+  function showParsed(j) {
+    token = j.token;
+    $("#file-info").hidden = false;
+    $("#file-name").textContent = j.name;
+    $("#file-sum").textContent = `${Number(j.hours).toFixed(2)} giờ · ${gramsText(j.grams)}`;
+    const box = $("#plates");
+    box.innerHTML = "";
+    (j.plates || []).forEach((p) => {
+      const d = document.createElement("div");
+      d.className = "plate";
+      if (p.image) {
+        const img = document.createElement("img");
+        img.src = p.image;
+        img.alt = `Bàn ${p.index}`;
+        d.appendChild(img);
+      }
+      const cap = document.createElement("div");
+      cap.className = "cap";
+      cap.textContent = `Bàn ${p.index} · ${(p.seconds / 3600).toFixed(2)} h · ${gramsText(p.grams)}`;
+      d.appendChild(cap);
+      box.appendChild(d);
+    });
+    scheduleCalc();
+  }
+
+  async function upload(file) {
+    if (!/\.3mf$/i.test(file.name)) { toast(false, "Chọn file .3mf đã cắt lớp"); return; }
+    const fd = new FormData();
+    fd.append("file", file);
+    const r = await fetch("/api/quote/parse", { method: "POST", headers: H, body: fd });
+    const j = await r.json();
+    if (!r.ok) { toast(false, j.error || "Không đọc được file"); return; }
+    showParsed(j);
+  }
+
+  const drop = $("#drop");
+  ["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => {
+    e.preventDefault();
+    drop.classList.add("over");
+  }));
+  ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => {
+    e.preventDefault();
+    drop.classList.remove("over");
+  }));
+  drop.addEventListener("drop", (e) => {
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) upload(f);
+  });
+  $("#file").addEventListener("change", (e) => {
+    if (e.target.files && e.target.files[0]) upload(e.target.files[0]);
+  });
+
+  $("#project").addEventListener("change", async (e) => {
+    const path = e.target.value;
+    if (!path) return;
+    const r = await fetch("/api/quote/parse", { method: "POST", headers: HJ, body: JSON.stringify({ path }) });
+    const j = await r.json();
+    if (!r.ok) { toast(false, j.error || "Không đọc được file dự án"); return; }
+    showParsed(j);
+  });
+
+  let timer = null;
+  function scheduleCalc() {
+    clearTimeout(timer);
+    timer = setTimeout(doCalc, 250);
+  }
+
+  function calcBody() {
+    const extras = {};
+    document.querySelectorAll("#extra-counts input[data-id]").forEach((i) => {
+      const n = Number(i.value || 0);
+      if (n > 0) extras[i.dataset.id] = n;
+    });
+    return {
+      token,
+      quantity: Number($("#quantity").value || 1),
+      extras,
+      other_fee_vnd: Number($("#other_fee").value || 0),
+    };
+  }
+
+  async function doCalc() {
+    if (!token) return;
+    const r = await fetch("/api/quote/calc", { method: "POST", headers: HJ, body: JSON.stringify(calcBody()) });
+    const j = await r.json();
+    const err = $("#calc-error");
+    if (!r.ok) {
+      err.hidden = false;
+      err.innerHTML = "";
+      err.appendChild(document.createTextNode((j.error || "Không tính được giá") + " "));
+      const a = document.createElement("a");
+      a.href = "#pricing";
+      a.textContent = "Sửa bảng giá";
+      err.appendChild(a);
+      return;
+    }
+    err.hidden = true;
+    ["filament", "electricity", "depreciation", "labor", "extras", "failure"].forEach((k) => {
+      $("#line-" + k).textContent = fmt(j.lines[k]);
+    });
+    $("#cost").textContent = j.cost_text;
+    $("#total").textContent = j.total_text;
+    $("#unit-line").hidden = false;
+    $("#unit-line").textContent = `${j.unit_price_text}/sản phẩm × ${j.quantity} = ${j.subtotal_text}` +
+      (j.other_fee ? ` + phí khác ${fmt(j.other_fee)}` : "");
+  }
+
+  $("#quantity").addEventListener("input", scheduleCalc);
+  $("#other_fee").addEventListener("input", scheduleCalc);
+
+  $("#save-quote").addEventListener("click", async () => {
+    if (!token) { toast(false, "Chưa có file in"); return; }
+    const body = Object.assign(calcBody(), {
+      customer_name: $("#customer_name").value,
+      customer_phone: $("#customer_phone").value,
+      title: $("#title").value,
+      note: $("#note").value,
+    });
+    const r = await fetch("/api/quote/save", { method: "POST", headers: HJ, body: JSON.stringify(body) });
+    const j = await r.json();
+    if (!r.ok) { toast(false, j.error || "Không lưu được báo giá"); return; }
+    toast(true, "Đã lưu " + j.number);
+    window.open("/quote/" + j.id, "_blank");
+  });
+
+  loadPricing();
+})();
+</script>
+{% endblock %}

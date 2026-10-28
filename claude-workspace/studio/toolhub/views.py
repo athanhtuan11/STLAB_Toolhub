@@ -1,3 +1,9 @@
+import base64
+import io
+import os
+import subprocess
+import tempfile
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from flask import Blueprint, abort, jsonify, render_template, request, send_file, url_for
@@ -6,6 +12,7 @@ import launcher
 
 from . import opener
 from . import printprep
+from . import quote as quote_lib
 from . import usage
 from . import workspace as ws
 
@@ -16,8 +23,8 @@ bp = Blueprint("hub", __name__)
 def nav():
     # Menu gon: viec hang ngay o ngoai, trang he thong gom vao "Them"
     main = [("hub.overview", "Trang chính"), ("hub.projects", "Dự án"), ("hub.library", "Linh kiện")]
-    more = [("hub.apps", "Ứng dụng & MCP"), ("hub.community", "Nguồn cộng đồng"), ("hub.skills", "Skills & agents"),
-            ("hub.prompt", "Prompt library")]
+    more = [("hub.apps", "Ứng dụng & MCP"), ("hub.quote", "Báo giá"), ("hub.community", "Nguồn cộng đồng"),
+            ("hub.skills", "Skills & agents"), ("hub.prompt", "Prompt library")]
     ep = request.endpoint or ""
     on = next((e for e, _ in main + more if ep == e or ep.startswith(e + "_")), None)
     return {"nav": main, "nav_more": more, "nav_on": on, "more_on": next((lb for e, lb in more if e == on), None)}
@@ -234,4 +241,226 @@ def api_open_file(slug, i):
         abort(404)
     return jsonify(opener.open_file(p["rel"], i))
 
+# ---------- Bao gia in 3D (toolhub/quote.py) ----------
+_parsed = {}
+EDGE = [Path(r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"),
+        Path(r"C:\Program Files\Microsoft\Edge\Application\msedge.exe")]
+FONT_DIR = Path(__file__).resolve().parent / "static" / "fonts"
 
+
+@bp.app_template_filter("vnd")
+def vnd(n):
+    return quote_lib.fmt_vnd(n)
+
+
+def _remember(parsed, name):
+    token = base64.urlsafe_b64encode(os.urandom(12)).decode().rstrip("=")
+    _parsed[token] = {"parsed": parsed, "name": name}
+    while len(_parsed) > 20:
+        _parsed.pop(next(iter(_parsed)))
+    return token
+
+
+def _item(data):
+    item = _parsed.get(data.get("token") or "")
+    if item is None:
+        raise quote_lib.QuoteError("Chưa có file in. Hãy thả file .3mf đã cắt lớp trước.")
+    return item
+
+
+def _fee(v):
+    v = float(v or 0)
+    return int(v) if v.is_integer() else v
+
+
+def _calc(data):
+    item = _item(data)
+    extras = {}
+    for k, v in (data.get("extras") or {}).items():
+        try:
+            extras[int(k)] = int(v)
+        except (TypeError, ValueError):
+            continue
+    conn = quote_lib.connect()
+    try:
+        pricing = quote_lib.get_pricing(conn)
+    finally:
+        conn.close()
+    calc = quote_lib.compute(item["parsed"], pricing, quantity=int(data.get("quantity") or 1),
+                             extras=extras, other_fee_vnd=_fee(data.get("other_fee_vnd")))
+    calc["extras_detail"] = [{"id": eid, "count": int((data.get("extras") or {}).get(str(eid), 0))}
+                             for eid in extras if int((data.get("extras") or {}).get(str(eid), 0))]
+    return calc
+
+
+def _page(id):
+    conn = quote_lib.connect()
+    try:
+        qd = quote_lib.get_quote(conn, id)
+    finally:
+        conn.close()
+    if qd is None:
+        abort(404)
+    data = qd["data"]
+    pricing = data.get("pricing") or {}
+    settings = pricing.get("settings", {})
+    created = datetime.fromisoformat(qd["created_at"])
+    valid = created + timedelta(days=int(data.get("valid_days") or 7))
+    labels = {e["id"]: e["label"] for e in pricing.get("extras", [])}
+    extras_text = [f"{labels.get(e['id'], 'Phụ kiện #' + str(e['id']))} × {e['count']}"
+                   for e in (data.get("extras_detail") or []) if e.get("count")]
+    materials_text = " · ".join(f"{k} {v:g} g" for k, v in (data.get("grams") or {}).items())
+    plates_text = " · ".join(
+        f"Bàn {p['index']}: {p['seconds'] / 3600:.2f} h, "
+        + ", ".join(f"{k} {v:g} g" for k, v in (p.get("grams") or {}).items())
+        for p in (data.get("plates") or []))
+    return {"q": qd, "data": data, "settings": settings, "created": created, "valid_until": valid,
+            "extras_text": extras_text, "materials_text": materials_text, "plates_text": plates_text}
+
+
+def _font_css():
+    rules = []
+    for weight in (400, 600, 700):
+        for sub in ("vietnamese", "latin"):
+            f = FONT_DIR / f"be-vietnam-pro-{weight}-{sub}.woff2"
+            if f.exists():
+                rules.append("@font-face{font-family:'Be Vietnam Pro';font-style:normal;"
+                             f"font-weight:{weight};src:url('{f.as_uri()}') format('woff2');}}")
+    return "<style>" + "".join(rules) + "</style>"
+
+
+@bp.get("/quote")
+def quote():
+    conn = quote_lib.connect()
+    try:
+        history = quote_lib.list_quotes(conn, 20)
+    finally:
+        conn.close()
+    for h in history:
+        h["date_text"] = datetime.fromisoformat(h["created_at"]).strftime("%d/%m/%Y")
+    projects = [f.relative_to(ws.ROOT).as_posix() for f in quote_lib.project_3mf_files()]
+    return render_template("quote.html", history=history, projects=projects)
+
+
+@bp.get("/api/quote/pricing")
+def api_quote_pricing():
+    conn = quote_lib.connect()
+    try:
+        return jsonify(quote_lib.get_pricing(conn))
+    finally:
+        conn.close()
+
+
+@bp.post("/api/quote/pricing")
+def api_quote_pricing_save():
+    data = request.get_json(silent=True) or {}
+    conn = quote_lib.connect()
+    try:
+        if isinstance(data.get("settings"), dict):
+            quote_lib.save_settings(conn, data["settings"])
+        for name, v in (data.get("materials") or {}).items():
+            if v is None:
+                quote_lib.delete_material(conn, name)
+            else:
+                quote_lib.save_material(conn, name, v.get("spool_price_vnd") or 0,
+                                        v.get("spool_weight_g") or 0)
+        for e in data.get("extras") or []:
+            if e.get("delete"):
+                if e.get("id"):
+                    quote_lib.delete_extra(conn, e["id"])
+            else:
+                quote_lib.save_extra(conn, e.get("label") or "", e.get("price_vnd") or 0,
+                                     e.get("id") or None)
+        return jsonify(quote_lib.get_pricing(conn))
+    finally:
+        conn.close()
+
+
+@bp.post("/api/quote/parse")
+def api_quote_parse():
+    f = request.files.get("file")
+    try:
+        if f is not None and f.filename:
+            parsed = quote_lib.read_3mf(f.stream)
+            name = f.filename
+        else:
+            data = request.get_json(silent=True) or {}
+            rel = (data.get("path") or "").replace("\\", "/")
+            match = next((p for p in quote_lib.project_3mf_files()
+                          if p.relative_to(ws.ROOT).as_posix() == rel), None)
+            if match is None:
+                abort(404)
+            parsed = quote_lib.read_3mf(match)
+            name = match.name
+    except quote_lib.QuoteError as e:
+        return jsonify({"error": str(e)}), 400
+    token = _remember(parsed, name)
+    plates = []
+    for p in parsed["plates"]:
+        img = p.get("image_png")
+        plates.append({"index": p["index"], "seconds": p["seconds"], "grams": p["grams"],
+                       "image": "data:image/png;base64," + base64.b64encode(img).decode() if img else None})
+    return jsonify({"token": token, "name": name, "hours": parsed["hours"],
+                    "grams": parsed["grams"], "plates": plates})
+
+
+@bp.post("/api/quote/calc")
+def api_quote_calc():
+    try:
+        calc = _calc(request.get_json(silent=True) or {})
+    except quote_lib.QuoteError as e:
+        return jsonify({"error": str(e)}), 400
+    calc.update({k + "_text": quote_lib.fmt_vnd(calc[k])
+                 for k in ("total", "unit_price", "cost", "subtotal")})
+    return jsonify(calc)
+
+
+@bp.post("/api/quote/save")
+def api_quote_save():
+    data = request.get_json(silent=True) or {}
+    try:
+        calc = _calc(data)
+    except quote_lib.QuoteError as e:
+        return jsonify({"error": str(e)}), 400
+    item = _item(data)
+    conn = quote_lib.connect()
+    try:
+        qid = quote_lib.save_quote(conn, data.get("customer_name") or "", data.get("customer_phone") or "",
+                                   data.get("title") or "", item["parsed"], calc, data.get("note") or "")
+        qd = quote_lib.get_quote(conn, qid)
+    finally:
+        conn.close()
+    return jsonify({"id": qid, "number": qd["number"]})
+
+
+@bp.get("/quote/<int:id>")
+def quote_print(id):
+    return render_template("quote-print.html", **_page(id))
+
+
+@bp.get("/quote/<int:id>/pdf")
+def quote_pdf(id):
+    ctx = _page(id)
+    html = render_template("quote-print.html", **_ctx_pdf(ctx))
+    edge = next((e for e in EDGE if e.exists()), None)
+    if edge is None:
+        abort(503)
+    with tempfile.TemporaryDirectory(prefix="stlab-quote-") as td:
+        hp = Path(td) / "quote.html"
+        hp.write_text(html, encoding="utf-8")
+        out = Path(td) / "quote.pdf"
+        subprocess.run([str(edge), "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
+                        f"--user-data-dir={Path(td) / 'edge'}", f"--print-to-pdf={out}", hp.as_uri()],
+                       check=True, capture_output=True, timeout=180)
+        pdf = out.read_bytes()
+    return send_file(io.BytesIO(pdf), mimetype="application/pdf",
+                     download_name=f"{ctx['q']['number']}.pdf")
+
+
+def _ctx_pdf(ctx):
+    return {**ctx, "font_css": _font_css()}
+
+
+@bp.get("/api/quote/projects")
+def api_quote_projects():
+    return jsonify([f.relative_to(ws.ROOT).as_posix() for f in quote_lib.project_3mf_files()])

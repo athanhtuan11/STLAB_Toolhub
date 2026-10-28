@@ -27,6 +27,11 @@ qua cả 5 MCP server trong `.mcp.json`.
   - `toolhub/printprep.py` (trang Dự án, dự án có `print/print.yaml`): nút **Chuẩn bị in** và **Tự chạy khi Lưu**
     gọi `tools/robotics-cad/scripts/prepare-print.py` / `watch.py` bằng Python của FreeCAD, chạy nền (PID ở
     `print/_*.pid`). Chỉ đọc file FreeCAD đã lưu; ảnh chỉ trả `.png` mà `_prepare-print-result.json` trỏ tới. POST cần `X-Studio`.
+  - Trang **Báo giá** `/quote` (menu "Thêm ▾", 2026-10-28): thả file Bambu `.gcode.3mf` hoặc chọn `.3mf` của dự án → giá vốn
+    (nhựa, điện, khấu hao, công, phụ kiện, dự phòng hỏng) → giá bán (markup hoặc biên) → lưu báo giá → bản cho khách
+    `/quote/<id>` + PDF (Edge headless). Bảng giá + báo giá lưu SQLite `%LOCALAPPDATA%\stlab-quotes\quotes.db` (env
+    `STLAB_QUOTES_DB`), KHÔNG trong repo vì có tên/SĐT khách – nhớ sao lưu file này. Tuan tự nhập giá trên trang.
+    Mã: `toolhub/quote.py`; spec `spec-quote.md`; test `tests/test_quote.py`. Công thức tham chiếu `community/printcalc/PRICING.md`.
 - **Hệ thiết kế** (2026-10-24): `design/tokens.json` là nguồn màu/chữ duy nhất cho Toolhub + workbench FreeCAD + trang ESP32; `python design/build_tokens.py` sinh `toolhub/static/tokens.css` và kiểm tương phản. Font Be Vietnam Pro (OFL) lưu tại `toolhub/static/fonts/`. Không đặt hex trong `style.css`/template. Xem `design/DESIGN.md`.
 - `bat/`: nhấp đúp để chạy (`open-toolhub`, `open-freecad`, `open-blender`, `open-lightcraft`, `open-photocraft`,
   `open-all`, `open-claude`, `check-mcp`, `sync-claude-desktop`). Chưa có `open-filmcraft.bat`.

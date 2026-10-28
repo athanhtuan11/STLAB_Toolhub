@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Báo giá {{ q.number }} · STLab</title>
+{% if font_css %}{{ font_css|safe }}{% else %}<link rel="stylesheet" href="{{ url_for('static', filename='fonts.css') }}">{% endif %}
+<style>
+@page { size: A4; margin: 15mm 14mm; }
+* { box-sizing: border-box; }
+body { margin: 0; background: white; color: black; font-family: "Be Vietnam Pro", "Segoe UI", Arial, sans-serif; font-size: 11pt; line-height: 1.45; }
+.sheet { max-width: 182mm; margin: 0 auto; padding: 10mm 0; }
+.head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12mm; border-bottom: 2px solid black; padding-bottom: 4mm; }
+.brand { font-size: 20pt; font-weight: 700; letter-spacing: .5px; }
+.brand span { font-weight: 400; }
+.shop { font-size: 9.5pt; color: dimgray; margin-top: 1mm; }
+.shop div { margin-top: .6mm; }
+.head .right { text-align: right; font-size: 9.5pt; color: dimgray; }
+h1 { font-size: 16pt; margin: 6mm 0 3mm; letter-spacing: .5px; }
+.meta { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5mm 8mm; font-size: 10.5pt; margin-bottom: 5mm; }
+.meta .k { color: gray; display: inline-block; min-width: 26mm; }
+table { width: 100%; border-collapse: collapse; font-size: 10.5pt; }
+th, td { border: 1px solid gray; padding: 2mm; vertical-align: top; text-align: left; }
+th { background: whitesmoke; font-size: 10pt; }
+td.num, th.num { text-align: right; white-space: nowrap; }
+td.thumb { width: 42mm; }
+td.thumb img { width: 38mm; height: auto; display: block; }
+.desc .t { font-weight: 600; }
+.desc .l { color: gray; font-size: 9.5pt; margin-top: 1mm; }
+.total-row td { font-weight: 700; font-size: 13pt; }
+.total-row td.label { text-align: right; }
+.foot { display: flex; justify-content: space-between; gap: 10mm; margin-top: 6mm; font-size: 10pt; }
+.note { flex: 1; }
+.note .lbl { color: gray; font-size: 9.5pt; }
+.sign { text-align: center; min-width: 55mm; }
+.sign .role { color: gray; font-size: 9.5pt; }
+.sign .name { margin-top: 16mm; font-weight: 600; }
+.actions { display: flex; gap: 8px; margin-top: 8mm; }
+.actions a, .actions button { font: inherit; font-size: 10.5pt; padding: 6px 14px; border: 1px solid gray; border-radius: 6px;
+  background: whitesmoke; color: black; cursor: pointer; text-decoration: none; }
+@media print {
+  .no-print { display: none !important; }
+  .sheet { padding: 0; max-width: none; }
+}
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="head">
+    <div>
+      <div class="brand">STLab</div>
+      <div class="shop">Trung tâm STEAM · Đức Trọng, Lâm Đồng</div>
+      <div class="shop">
+        {% if settings.shop_phone %}<div>Điện thoại: {{ settings.shop_phone }}</div>{% endif %}
+        {% if settings.shop_contact %}<div>{{ settings.shop_contact }}</div>{% endif %}
+      </div>
+    </div>
+    <div class="right">
+      <div>Số: {{ q.number }}</div>
+      <div>Ngày: {{ created.strftime('%d/%m/%Y') }}</div>
+    </div>
+  </div>
+
+  <h1>BÁO GIÁ IN 3D</h1>
+
+  <div class="meta">
+    <div><span class="k">Khách hàng:</span>{{ q.customer_name }}</div>
+    <div><span class="k">Số điện thoại:</span>{{ q.customer_phone }}</div>
+    <div><span class="k">Hiệu lực đến:</span>{{ valid_until.strftime('%d/%m/%Y') }}</div>
+    <div><span class="k">Số báo giá:</span>{{ q.number }}</div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Ảnh bàn in</th>
+        <th>Nội dung</th>
+        <th class="num">SL</th>
+        <th class="num">Đơn giá</th>
+        <th class="num">Thành tiền</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="thumb">
+          {% if data.image %}<img src="data:image/png;base64,{{ data.image }}" alt="Bàn in">{% else %}<span class="l">Không có ảnh</span>{% endif %}
+        </td>
+        <td class="desc">
+          <div class="t">{{ q.title or 'Chi tiết in 3D' }}</div>
+          {% if plates_text %}<div class="l">{{ plates_text }}</div>{% endif %}
+          {% if materials_text %}<div class="l">Vật liệu: {{ materials_text }}</div>{% endif %}
+          {% if extras_text %}<div class="l">Phụ kiện: {{ extras_text|join(' · ') }} / sản phẩm</div>{% endif %}
+        </td>
+        <td class="num">{{ data.quantity }}</td>
+        <td class="num">{{ data.unit_price|vnd }}</td>
+        <td class="num">{{ data.subtotal|vnd }}</td>
+      </tr>
+      {% if data.other_fee %}
+      <tr>
+        <td></td>
+        <td>Phí khác</td>
+        <td class="num"></td>
+        <td class="num"></td>
+        <td class="num">{{ data.other_fee|vnd }}</td>
+      </tr>
+      {% endif %}
+      <tr class="total-row">
+        <td colspan="4" class="label">Tổng cộng</td>
+        <td class="num">{{ data.total|vnd }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="foot">
+    <div class="note">
+      {% if q.note %}<div class="lbl">Ghi chú</div><div>{{ q.note }}</div>{% endif %}
+      {% if settings.payment_note %}<div class="lbl" style="margin-top:2mm">Thanh toán</div><div>{{ settings.payment_note }}</div>{% endif %}
+    </div>
+    <div class="sign">
+      <div class="role">Người lập báo giá</div>
+      <div class="name">Tuan</div>
+    </div>
+  </div>
+
+  <div class="actions no-print">
+    <a href="/quote/{{ q.id }}/pdf">Xuất PDF</a>
+    <button type="button" onclick="window.print()">In</button>
+  </div>
+</div>
+</body>
+</html>

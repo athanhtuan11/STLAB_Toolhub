@@ -57,3 +57,5 @@ dagoste-squadra	https://github.com/dagoSte/squadra.git	sha	-	ce96f7d45044653f5ae
 makifbaysal-tasktrooper	https://github.com/makifbaysal/tasktrooper.git	sha	-	ae5fb965c4758bbb25d2fac7f10f9bb26cb63823	-	no	off	Apache-2.0
 j0ono0-pinout	https://github.com/j0ono0/pinout.git	sha	-	d46f4f1949b1360a07bc52a04c32f786975d702c	-	no	off	MIT
 wireviz	https://github.com/wireviz/WireViz.git	tag	v0.4.1	1c4fd68a2e34e12ff1513aac52323890c6a8c695	-	no	off	GPL-3.0
+printcalc	https://github.com/Gunderson3d/printcalc.git	tag	v0.2.0	84070ded38f4aed5d71cf6785f0a0bb8d3f26beb	-	no	off	Apache-2.0
+3dpcalc	https://github.com/jkga/3dpcalc.git	sha	-	48df32e459059c78da224a0e03dc568512628edc	-	no	off	MIT
