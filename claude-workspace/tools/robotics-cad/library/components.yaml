@@ -628,7 +628,7 @@ components:
       relay: "Songle SRD-05VDC-SL-C ×2, 1 tiếp điểm chuyển (NO/COM/NC)"
       tiep_diem: "10 A 250 VAC, 10 A 125 VAC, 10 A 30 VDC, 10 A 28 VDC (in trên vỏ relay)"
       cuon_day_v: 5
-      chan: "Vào: DC+ (5 V), DC− (GND), IN1, IN2 (cầu đấu vít). Jumper 3 chân Low–Com–High: Com–High = kích mức cao, Com–Low = kích mức thấp. Ra mỗi kênh: cầu vít 3 chân NO/COM/NC"
+      chan: "Vào: DC+ (5 V), DC− (GND), IN1, IN2 (cầu đấu vít). Mỗi kênh 1 jumper (S1 → IN1, S2 → IN2) trên hàng chân Low–Com–High: Com–High = kích mức cao, Com–Low = kích mức thấp. Ra mỗi kênh: cầu vít 3 chân NO/COM/NC"
       ghi_chu: "Tiếp điểm 10 A là tải điện trở; KHÔNG đóng trực tiếp motor (dòng khởi động lớn) – pump-control chỉ dùng để đóng cuộn hút contactor 220 VAC"
     nguon:
       - "Nhãn in trên relay + chữ in lụa trên PCB (ảnh Tuan chụp 2026-10-28)"
