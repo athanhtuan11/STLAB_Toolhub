@@ -57,5 +57,13 @@ bad("executor lech cooldown", lambda d: by_id(d, "opencode").__setitem__("cooldo
 bad("executor khong co trong delegate", lambda d: d["agents"].append(dict(copy.deepcopy(by_id(d, "opencode")),
                                                                             id="kimi")), "E-DELEGATE")
 bad("chuoi het han muc sai", lambda d: by_id(d, "codex").__setitem__("khi_het_han_muc", "agy"), "E-DELEGATE")
+
+
+def add_unknown_trial(d):
+    x = copy.deepcopy(by_id(d, "opencode"))
+    x.update(id="unknown-trial", trang_thai="thu-viec", khi_het_han_muc=None)
+    d["agents"].append(x)
+
+bad("thu-viec khong co adapter", add_unknown_trial, "E-DELEGATE")
 bad("policy thieu duong cam", lambda d: None, "E-POLICY", policy=pol.replace('  - "*.FCStd"\n', ""))
 print("gate OK")

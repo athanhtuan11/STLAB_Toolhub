@@ -16,6 +16,9 @@ File này ghi cách cài, cách dùng, lý do chọn và cách gỡ.
 | 3a | Plugin **deliberation** → Gemini qua **Antigravity CLI `agy`** (đăng nhập tài khoản Google) | 0 đ (hạn mức tuần của gói free; Google AI Pro thì nạp lại mỗi 5 giờ) | Viết nháp tiếng Việt, tóm tắt tài liệu dài, `consensus` Gemini + GPT |
 | 3b | Plugin **Codex chính hãng** (`openai/codex-plugin-cc`) + tài khoản **ChatGPT Free** | 0 đ (hạn mức Codex gói Free, không công bố) | `/codex:review`, `/codex:adversarial-review` cho script Python/FreeCAD |
 | 3c | **OpenCode** (`opencode-ai@1.19.4`) + model Zen free `opencode/deepseek-v4.1-flash-free` (thêm 2026-10-27) | 0 đ (Zen free, không cần đăng nhập; hạn mức TODO) | Code/script giao qua `tools/delegate/` khi Codex hết hạn mức (xem mục cuối file) |
+| 3d | **Kilo CLI 7.8.18** (`@kilocode/cli`, MIT) + model `kilo/kilo-auto/free` (thêm 2026-10-28) | 0 đ (không cần đăng nhập; hạn mức TODO) | Code, cad-script qua `tools/delegate/` khi OpenCode hết hạn mức |
+| 3e | **GitHub Copilot CLI 1.0.105** (`@github/copilot`) + gói Copilot Free (thêm 2026-10-28) | 0 đ (hạn mức tháng TODO) | Code, doc-ma qua `tools/delegate/` khi Kilo hết hạn mức |
+| 3f | **agy-sonnet**: cùng CLI agy, model `claude-sonnet-4-6` (thử việc, 2026-10-28) | Hạn mức riêng, tách với Gemini | Chỉ gọi đích danh `--executor agy-sonnet`; chờ Tuan quyết |
 
 Phần tiết kiệm chính là **tầng 2**: phiên Opus không phải đọc log `prepare-print`, diff dài hay bản nháp tài liệu.
 Tầng 3 bớt thêm phần viết chữ và review.
@@ -115,6 +118,8 @@ Hook tự động (`~/.claude/settings.json`, bản lưu `settings.json.bak-2026
 | Luật chặn | `~/.claude/settings.json` `permissions.deny` (bản lưu `settings.json.bak-2026-10-26`) | Server `deliberation-gemini/-grok/-openrouter` |
 | 3 agent | `custom/agents/*.md` → symlink `~/.claude/agents/` (`links.tsv`) | `model: haiku` |
 | OpenCode 1.19.4 (thêm 2026-10-27) | npm global, `%APPDATA%\npm\node_modules\opencode-ai` | Executor tầng 2 của `tools/delegate/`; luật trong `tools/delegate/opencode.json` |
+| Kilo CLI 7.8.18 (thêm 2026-10-28) | npm global `@kilocode/cli`; luật trong `tools/delegate/kilo.json` | Qua biến `KILO_CONFIG` (Kilo không đọc `OPENCODE_CONFIG` – đã thử) |
+| Copilot CLI 1.0.105 (thêm 2026-10-28) | npm global `@github/copilot`; đăng nhập `copilot login --device-code` | Gói Copilot Free; tài khoản GitHub của Tuan |
 
 Config deliberation (dựng lại trên máy mới, chép nguyên):
 
@@ -176,11 +181,11 @@ Số tầng ở các mục trên (1–3) là cách gọi cũ, vẫn đúng với
 |---|---|---|---|
 | 0 Tổng giám đốc | Claude Opus (phiên chính) | Quyết định; viết spec + gate; hình học khó; an toàn; duyệt | Quota Claude Pro |
 | 1 Quản lý | Haiku: `check-runner`, `doc-writer`, `git-scribe` | Chạy kiểm, viết tài liệu, commit | Giữ log/diff dài ngoài phiên chính |
-| 2 Thực thi | `tools/delegate/delegate.py` → Codex exec → OpenCode Zen free → agy | Viết và chạy code/script tới khi gate PASS | Claude chỉ đọc dòng JSON cuối |
+| 2 Thực thi | `tools/delegate/delegate.py` → Codex → OpenCode → Kilo → Copilot → agy | Viết và chạy code/script tới khi gate PASS | Claude chỉ đọc dòng JSON cuối |
 | Tư vấn | `ask-gpt`, `ask-gemini` (deliberation, chỉ đọc) | Nháp văn, tóm tắt, ý kiến thứ hai | Không ghi file; chỉ gửi bản chép |
 
-Thứ tự executor tầng 2 (`executor: auto`): **Codex exec** (chính) → **OpenCode Zen free** → **agy** (dự phòng).
-Gặp 429 hoặc hết hạn mức thì tự chuyển sang executor kế tiếp. Trạng thái lưu ở `%LOCALAPPDATA%\stlab-usage\executors.json`.
+Thứ tự executor tầng 2 (`executor: auto`, từ 2026-10-28): **Codex** (chính) → **OpenCode** (Zen free) → **Kilo** (free) → **Copilot** (Free) → **agy** (dự phòng).
+Gặp 429 hoặc hết hạn mức thì tự chuyển sang executor kế tiếp. `agy-sonnet` không nằm trong chuỗi tự động (chỉ gọi đích danh). Trạng thái lưu ở `%LOCALAPPDATA%\stlab-usage\executors.json`.
 agy đang hết hạn mức tới ~2026-11-02; Tuan đánh dấu bằng `python tools/delegate/delegate.py --mark-limit agy 2026-11-02T12:00`.
 
 Lý do thêm OpenCode: Codex và agy đều có hạn mức, cần thêm một đường free có thể thay thế. Thử 2026-10-27:
@@ -210,3 +215,53 @@ Remove-Item -Recurse "$env:USERPROFILE\.local\share\opencode"
 ```
 
 Sau khi gỡ, `delegate.py` tự bỏ qua OpenCode (kiểm `--status`) và chạy Codex, agy như cũ.
+
+## Thêm executor free: Kilo, Copilot, agy-sonnet (2026-10-28)
+
+Chuỗi tự động mới (nguồn `org/agents.yaml`): Codex → OpenCode → Kilo → Copilot → agy (Gemini, chỉ đọc mã).
+
+Đã loại sau khi tra (2026-10-28): Gemini CLI (Google dừng gói free cá nhân 18/06/2026, chuyển sang Antigravity), Qwen Code
+(OAuth free dừng 15/04/2026), iFlow (đã đóng), Rovo Dev (ngừng bản độc lập), Cline/Crush (không kèm model free),
+Cursor/Mistral Vibe/Amp (hạn mức không rõ). `kilo/openrouter/free` không dùng (Tuan không dùng OpenRouter).
+
+### Kilo CLI
+
+```powershell
+npm i -g @kilocode/cli@7.8.18
+```
+
+- Model `kilo/kilo-auto/free`, **không cần đăng nhập**. Kỹ năng: code, cad-script. Hạn mức free: TODO.
+- Hàng rào: `tools/delegate/kilo.json`, nạp qua biến `KILO_CONFIG`. Kilo không đọc `OPENCODE_CONFIG` (đã thử).
+- Cài với npm chặn postinstall vẫn chạy.
+- Selftest PASS 32 s.
+- Repo: Kilo-Org/kilocode (MIT).
+
+### GitHub Copilot CLI
+
+```powershell
+npm i -g @github/copilot@1.0.105
+copilot login --device-code
+```
+
+- Gói Copilot Free, đăng nhập bằng tài khoản GitHub của Tuan. Kỹ năng: code, doc-ma. Hạn mức tháng: TODO.
+- `delegate.py` truyền prompt qua **stdin**: argv của `copilot.cmd` qua `cmd.exe` làm vỡ ký tự `& | % "`.
+- Cờ: `--sandbox` (sandbox của hệ điều hành, MXC); `--allow-all-tools` + `--deny-tool` cho git commit/push/reset/checkout,
+  `rm -rf`, `Remove-Item`; `--disable-builtin-mcps`.
+- Selftest PASS 24 s.
+
+### agy-sonnet (thử việc)
+
+- Cùng CLI agy, model `claude-sonnet-4-6`, hạn mức **riêng** với Gemini.
+- Chỉ gọi đích danh `--executor agy-sonnet`, không nằm trong chuỗi tự động.
+- Selftest ESCALATE: sandbox agy không thấy `python`, nên không tự chạy được gate. Chờ Tuan quyết.
+
+### Chính sách dữ liệu
+
+Chính sách dữ liệu của gói free Kilo/Copilot: chưa xác minh (TODO). Đến khi có kết quả, giữ luật không gửi dữ liệu khách
+(xem `CLAUDE.md`, mục "Nguyên tắc cứng").
+
+### Gỡ
+
+```powershell
+npm uninstall -g @kilocode/cli @github/copilot
+```

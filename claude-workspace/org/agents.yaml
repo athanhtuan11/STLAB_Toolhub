@@ -105,10 +105,67 @@ agents:
     muc_du_lieu: internal
     nguoi_duyet: claude-main
     gate: bat-buoc
-    khi_het_han_muc: agy
+    khi_het_han_muc: kilo
     cooldown_h: 1
     trang_thai: chinh-thuc
     tu_ngay: 2026-10-27
+
+  # Tuan 2026-10-28 tuyen them 3 nguoi; selftest 2026-10-28: kilo PASS 32 s, copilot PASS 24 s -> chinh-thuc;
+  # agy-sonnet ESCALATE (sandbox agy khong thay python, gate khong chay duoc) -> con thu-viec.
+  - id: kilo
+    chuc_danh: Nhân viên lập trình
+    tang: 2
+    bao_cao_cho: claude-main
+    loai: cli-executor
+    # Kilo CLI 7.8.18 (Kilo-Org/kilocode, MIT), model free khong can dang nhap; han muc free: TODO.
+    # Hang rao: tools/delegate/kilo.json qua bien KILO_CONFIG (OPENCODE_CONFIG khong co tac dung – da thu 2026-10-28).
+    model: kilo/kilo-auto/free
+    chi_phi: free
+    ky_nang: [code, cad-script]
+    mang: none
+    muc_du_lieu: internal
+    nguoi_duyet: claude-main
+    gate: bat-buoc
+    khi_het_han_muc: agy-sonnet
+    cooldown_h: 1
+    trang_thai: chinh-thuc
+    tu_ngay: 2026-10-28
+
+  - id: agy-sonnet
+    chuc_danh: Nhân viên lập trình
+    tang: 2
+    bao_cao_cho: claude-main
+    loai: cli-executor
+    # Cung CLI agy nhung han muc rieng voi Gemini (thu OK 2026-10-28).
+    model: claude-sonnet-4-6
+    chi_phi: free
+    ky_nang: [code, cad-script, doc-ma]
+    mang: none
+    muc_du_lieu: internal
+    nguoi_duyet: claude-main
+    gate: bat-buoc
+    khi_het_han_muc: copilot
+    cooldown_h: 24
+    trang_thai: thu-viec
+    tu_ngay: 2026-10-28
+
+  - id: copilot
+    chuc_danh: Nhân viên lập trình
+    tang: 2
+    bao_cao_cho: claude-main
+    loai: cli-executor
+    # GitHub Copilot CLI 1.0.105, goi Copilot Free (han muc thang, so cu the: TODO). Model: TODO sau khi dang nhap.
+    model: auto
+    chi_phi: free
+    ky_nang: [code, doc-ma]
+    mang: none
+    muc_du_lieu: internal
+    nguoi_duyet: claude-main
+    gate: bat-buoc
+    khi_het_han_muc: agy
+    cooldown_h: 24
+    trang_thai: chinh-thuc
+    tu_ngay: 2026-10-28
 
   - id: agy
     chuc_danh: Nhân viên lập trình (dự phòng)
@@ -117,7 +174,9 @@ agents:
     loai: cli-executor
     model: gemini-3.8-flash-high
     chi_phi: free
-    ky_nang: [code, cad-script, doc-ma]
+    # Tuan 2026-10-27 "agy chua toi uu": han muc tuan dung chung voi ask-gemini/doc-writer, 2 viec CAD 26/10 lam het ca
+    # tuan -> chi giu viec doc ma; spec ky_nang [code]/[cad-script] khong chon agy (van la du phong cuoi khi auto).
+    ky_nang: [doc-ma]
     mang: none
     muc_du_lieu: internal
     nguoi_duyet: claude-main

@@ -222,23 +222,46 @@ def check(org_dir):
     for a in agents:
         if a.get("loai") == "cli-executor" and a.get("id") is not None:
             executors[a["id"]] = a
-    active = {i for i, a in executors.items() if a.get("trang_thai") != "nghi"}
-    if active != set(order):
+    official = {i for i, a in executors.items() if a.get("trang_thai") == "chinh-thuc"}
+    if official != set(order):
         add("E-DELEGATE", "executor",
-            f"tap cli-executor dang hoat dong {sorted(active)} != ORDER {order}")
+            f"tap cli-executor chinh-thuc {sorted(official)} != ORDER {order}")
+
+    for ident, a in executors.items():
+        status = a.get("trang_thai")
+        if status in ("thu-viec", "chinh-thuc") and ident not in dele.ADAPTERS:
+            add("E-DELEGATE", ident, "executor khong co trong ADAPTERS")
+        if status != "nghi":
+            want_cd = cooldown.get(ident)
+            if a.get("cooldown_h") != want_cd:
+                add("E-DELEGATE", ident, f"cooldown_h {a.get('cooldown_h')!r} != COOLDOWN_H {want_cd!r}")
 
     for i, ident in enumerate(order):
         a = executors.get(ident)
-        if a is None or a.get("trang_thai") == "nghi":
+        if a is None:
+            add("E-DELEGATE", ident, "executor trong ORDER khong co trong so")
             continue
-        want_cd = cooldown.get(ident)
-        if a.get("cooldown_h") != want_cd:
-            add("E-DELEGATE", ident, f"cooldown_h {a.get('cooldown_h')!r} != COOLDOWN_H {want_cd!r}")
         want_next = order[i + 1] if i + 1 < len(order) else None
         got = a.get("khi_het_han_muc", MISSING)
+        seen = {ident}
+        while got is not None and got != MISSING:
+            if got in seen or got not in executors:
+                add("E-DELEGATE", ident, f"chuoi khi_het_han_muc lap vong/id la tai {got!r}")
+                got = MISSING
+                break
+            seen.add(got)
+            nxt = executors[got]
+            if nxt.get("trang_thai") == "chinh-thuc":
+                break
+            if nxt.get("trang_thai") in ("thu-viec", "nghi"):
+                got = nxt.get("khi_het_han_muc", MISSING)
+                continue
+            add("E-DELEGATE", ident, f"trang_thai khong hop le tren chuoi tai {got!r}")
+            got = MISSING
+            break
         if got != want_next:
             add("E-DELEGATE", ident,
-                f"khi_het_han_muc {got!r} != {want_next!r} (executor thu {i + 1} trong ORDER)")
+                f"khi_het_han_muc executor chinh-thuc dau tien {got!r} != {want_next!r} (executor thu {i + 1} trong ORDER)")
 
     # --- policy phai bao trum FORBIDDEN ---
     for pat in forbidden:

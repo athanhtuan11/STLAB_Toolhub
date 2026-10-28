@@ -1,6 +1,6 @@
-# Giao viec code/script cho executor free (Codex -> OpenCode -> agy) theo spec.md Claude viet, tu chay gate.
+# Giao viec code/script cho executor free (Codex -> OpenCode -> Kilo -> agy-sonnet -> Copilot -> agy) theo spec.md Claude viet, tu chay gate.
 # Claude chi doc dong JSON cuoi (result.json); log dai nam trong thu muc run.
-#   python tools/delegate/delegate.py <spec.md> [--executor auto|codex|opencode|agy] [--simulate-limit codex]
+#   python tools/delegate/delegate.py <spec.md> [--executor auto|codex|opencode|kilo|agy-sonnet|copilot|agy] [--simulate-limit codex]
 #   python tools/delegate/delegate.py --status            # executor nao dang het han muc
 #   python tools/delegate/delegate.py --clear-limit codex # xoa danh dau het han muc
 #   python tools/delegate/delegate.py --stats [--rebuild] # thanh tich tung executor (JSON: gate_pass/rounds)
@@ -17,11 +17,26 @@
 import argparse, datetime as dt, fnmatch, json, os, re, shutil, subprocess, sys, time
 import yaml
 
+
 HERE = os.path.dirname(os.path.abspath(__file__))
+
+try:
+    sys.path.insert(0, os.path.join(HERE, "..", "org"))
+    import events as _events
+except Exception:
+    _events = None
+
+def _event_emit(*args, **kwargs):
+    try:
+        if _events:
+            return _events.emit(*args, **kwargs)
+    except Exception:
+        pass
+    return None
 WS = os.path.abspath(os.path.join(HERE, "..", ".."))
 USAGE = os.path.join(os.environ.get("LOCALAPPDATA", os.path.expanduser("~")), "stlab-usage")
 LIMITS = os.path.join(USAGE, "executors.json")
-ADAPTERS = {"codex": "codex", "opencode": "opencode", "agy": "agy"}
+ADAPTERS = {"codex": "codex", "opencode": "opencode", "kilo": "kilo", "agy-sonnet": "agy-sonnet", "copilot": "copilot", "agy": "agy"}
 STAT_FIELDS = ("rounds", "gate_pass", "pass_round1", "limited", "escalate", "seconds")
 
 def load_org(org_dir=None):
@@ -39,8 +54,8 @@ def load_org(org_dir=None):
     agents = {a.get("id"): a for a in doc["agents"] if isinstance(a, dict) and a.get("id")}
     ex = {i: a for i, a in agents.items() if a.get("loai") == "cli-executor" and a.get("chi_phi") != "tra-phi"}
     for ident, a in ex.items():
-        if a.get("trang_thai") == "chinh-thuc" and ident not in ADAPTERS:
-            raise ValueError(f"executor chinh-thuc khong co ADAPTERS: {ident}")
+        if a.get("trang_thai") in ("chinh-thuc", "thu-viec") and ident not in ADAPTERS:
+            raise ValueError(f"executor khong co ADAPTERS: {ident}")
     incoming = {a.get("khi_het_han_muc") for a in ex.values() if a.get("khi_het_han_muc") in ex}
     starts = [i for i in ex if ex[i].get("trang_thai") == "chinh-thuc" and i not in incoming]
     if len(starts) != 1:
@@ -55,7 +70,7 @@ def load_org(org_dir=None):
         a = ex[ident]
         if a.get("trang_thai") == "chinh-thuc":
             if ident not in ADAPTERS:
-                raise ValueError(f"executor chinh-thuc khong co ADAPTERS: {ident}")
+                raise ValueError(f"executor khong co ADAPTERS: {ident}")
             order.append(ident)
         ident = a.get("khi_het_han_muc")
     return dict(order=order, cooldown={i: a.get("cooldown_h") for i, a in ex.items()},
@@ -79,10 +94,11 @@ Rules:
 - Do NOT invent dimensions, component specs or safety values. If the spec lacks a number, write TODO and stop.
 - Text files are UTF-8 WITHOUT BOM and keep Vietnamese diacritics. On this Windows machine PowerShell 5.1
   turns every non-ASCII letter into '?' when text goes through a pipe (`@'...'@ | python`, `echo ... |`),
-  Set-Content, Out-File or `>`. NEVER pass Vietnamese text through PowerShell. Write files with your
-  file-editing tool (apply_patch / edit). If that tool is unavailable, write via Python whose COMMAND IS PURE
-  ASCII: encode every non-ASCII char as \\uXXXX, e.g. python -c "open('r.md','w',encoding='utf-8').write('Ki\\u1ec3m')".
-  A file with letters replaced by '?' is rejected.
+  Set-Content, Out-File or `>`. Pure-ASCII content (code, comments without diacritics) may be written any way that
+  works for you. NEVER pass NON-ASCII text (Vietnamese diacritics, '·', '–') through PowerShell: either use a
+  file-editing tool (apply_patch / edit) or Python whose COMMAND IS PURE ASCII with every non-ASCII char written as
+  \\uXXXX, e.g. python -c "open('r.md','w',encoding='utf-8').write('Ki\\u1ec3m')". Files with letters turned into '?'
+  are rejected.
 - When done, run the gate command yourself: `{gate}` (exit 0 = PASS). Fix and rerun until it passes.
 - If a step needs a permission you do not have, or is not your job (outside this spec), STOP and do not work
   around it: last line `ESCALATE: <what is needed and why>` – Claude (your manager) will decide.
@@ -118,9 +134,17 @@ def is_limited(name, lim):
     return bool(until) and dt.datetime.fromisoformat(until) > now()
 
 
+def reset_from_reason(reason):
+    """Gio het han muc doc tu thong bao loi, vd agy 'Resets in 137h19m52s' (2026-10-27) – chinh xac hon COOLDOWN_H."""
+    m = re.search(r"[Rr]esets? in (?:(\d+)h)?\s*(?:(\d+)m)?", reason or "")
+    if not m or not (m.group(1) or m.group(2)):
+        return None
+    return now() + dt.timedelta(hours=int(m.group(1) or 0), minutes=int(m.group(2) or 0))
+
+
 def mark_limited(name, reason, until=None):
     lim = load_limits()
-    until = until or now() + dt.timedelta(hours=COOLDOWN_H[name])
+    until = until or reset_from_reason(reason) or now() + dt.timedelta(hours=COOLDOWN_H[name])
     lim[name] = dict(limited_until=until.isoformat(timespec="minutes"), reason=reason[:200])
     save_limits(lim)
 
@@ -419,13 +443,33 @@ def _opencode(prompt):
     return None, None
 
 def _agy(prompt):
-    name = "agy"
-    if name == "agy":
-        return [shutil.which("agy"), "-p", prompt, "--model", ORG["model"][name],
-                "--dangerously-skip-permissions", "--sandbox"], None
-    return None, None
+    return _agy_named("agy", prompt)
 
-ADAPTERS.update(codex=_codex, opencode=_opencode, agy=_agy)
+def _agy_named(name, prompt):
+    return [shutil.which("agy"), "-p", prompt, "--model", ORG["model"][name],
+            "--dangerously-skip-permissions", "--sandbox"], None
+
+def _kilo(prompt):
+    exe = shutil.which("kilo.cmd") or shutil.which("kilo")
+    return [exe, "run", "--model", ORG["model"]["kilo"]], prompt
+
+def _agy_sonnet(prompt):
+    return _agy_named("agy-sonnet", prompt)
+
+def _copilot(prompt):
+    exe = shutil.which("copilot.cmd") or shutil.which("copilot")
+    # prompt qua stdin (argv cua copilot.cmd qua cmd.exe vo & | % "); --sandbox = MXC cua HDH (thu 2026-10-28)
+    argv = [exe, "-s", "--no-ask-user", "--sandbox", "--allow-all-tools", "--disable-builtin-mcps",
+            "--deny-tool=shell(git commit)", "--deny-tool=shell(git push)",
+            "--deny-tool=shell(git reset)", "--deny-tool=shell(git checkout)",
+            "--deny-tool=shell(rm -rf)", "--deny-tool=shell(Remove-Item)"]
+    model = ORG["model"]["copilot"]
+    if model != "auto":
+        argv += ["--model", model]
+    return argv, prompt
+
+ADAPTERS.update(codex=_codex, opencode=_opencode, kilo=_kilo,
+                **{"agy-sonnet": _agy_sonnet}, copilot=_copilot, agy=_agy)
 
 def command(name, prompt):
     try:
@@ -529,7 +573,7 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8")            # pipe tren Windows mac dinh cp1252 -> loi khi in tieng Viet
     ap = argparse.ArgumentParser()
     ap.add_argument("spec", nargs="?")
-    ap.add_argument("--executor")
+    ap.add_argument("--executor", help="auto|codex|opencode|kilo|agy-sonnet|copilot|agy")
     ap.add_argument("--simulate-limit", default="", help="danh sach executor gia lap het han muc (thu nghiem)")
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--stats", action="store_true", help="in thanh tich tung executor (JSON)")
@@ -616,10 +660,13 @@ def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resu
     # (ESCALATE 2 lan 2026-10-27). Git bo qua (.gitignore), xoa khi xong.
     tmpdir = os.path.join(cwd, ".delegate-tmp")
     os.makedirs(tmpdir, exist_ok=True)
-    env = dict(os.environ, OPENCODE_CONFIG=os.path.join(HERE, "opencode.json"), TMP=tmpdir, TEMP=tmpdir, TMPDIR=tmpdir,
+    env = dict(os.environ, OPENCODE_CONFIG=os.path.join(HERE, "opencode.json"), KILO_CONFIG=os.path.join(HERE, "kilo.json"), TMP=tmpdir, TEMP=tmpdir, TMPDIR=tmpdir,
                PYTHONUTF8="1", PYTHONIOENCODING="utf-8")
     before = {f: file_sig(f) for f in git_changed(cwd)}
     result = dict(task=meta["task"], cwd=cwd_rel, run_dir=run_dir, rounds=[], skipped=[], passed=False)
+    started_at = time.time()
+    first_executor = queue[0] if queue else "executor"
+    _event_emit("delegate", "run_start", f"{first_executor} nhan {meta['task']}", agent=first_executor, ref=run_dir)
     if resumed_from:
         result["resumed_from"] = resumed_from
     extra = [os.path.join(WS, p) for p in meta["read"]]
@@ -650,6 +697,8 @@ def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resu
             # Bao len tren: executor thieu quyen/ngoai viec -> dung han, KHONG giao lai, Claude quyet (org/policy.yaml)
             result["rounds"].append(r)
             result["escalate"] = last.split(":", 1)[-1].strip(" `")
+            _event_emit("delegate", "round", f"round {rnd} ESCALATE", agent=name, ref=run_dir,
+                        data={"round": rnd, "verdict": "ESCALATE"})
             break
         if code != 0 and LIMIT_RE.search(out[-4000:]):
             mark_limited(name, tail(out, 3))
@@ -661,6 +710,8 @@ def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resu
         open(os.path.join(run_dir, f"gate-{rnd}.log"), "w", encoding="utf-8").write(gout)
         r.update(gate_exit=gcode, gate_seconds=gsecs, gate_tail=tail(gout, 5))
         result["rounds"].append(r)
+        _event_emit("delegate", "round", f"round {rnd} {'PASS' if gcode == 0 else 'FAIL'}", agent=name,
+                    ref=run_dir, data={"round": rnd, "verdict": "PASS" if gcode == 0 else "FAIL", "gate_exit": gcode})
         bad = [f for f in git_changed(cwd) if before.get(f, "new") != file_sig(f) and mojibake(os.path.join(WS, f))]
         if gcode == 0 and not bad:
             result["passed"] = True
@@ -696,6 +747,14 @@ def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resu
                          "PASS" if result["passed"] and not outside else "WARN" if result["passed"] else "FAIL")
     if result["verdict"] != "PASS":
         result["handoff"] = write_handoff(run_dir, result)
+    if result["verdict"] == "ESCALATE" and _events:
+        try:
+            _events.add_approval(f"{result['rounds'][-1].get('executor', 'executor')}: {result.get('escalate', '')}",
+                                 source="delegate", ref=os.path.basename(os.path.normpath(run_dir)))
+        except Exception:
+            pass
+    _event_emit("delegate", "run_end", f"{meta['task']} {result['verdict']}", ref=run_dir,
+                data={"verdict": result["verdict"], "rounds": len(result["rounds"]), "seconds": round(time.time() - started_at)})
     update_stats(result)                                # ghi thanh tich truoc khi chot result.json
     json.dump(result, open(os.path.join(run_dir, "result.json"), "w", encoding="utf-8"), indent=1, ensure_ascii=False)
     print(json.dumps(result, ensure_ascii=False))

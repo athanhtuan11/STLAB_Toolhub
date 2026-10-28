@@ -13,15 +13,25 @@ spec.loader.exec_module(d)
 
 # 1) So that -> gia tri module (check_org.py van dung ORDER/COOLDOWN_H/FORBIDDEN)
 org = d.load_org()
-assert org["order"] == ["codex", "opencode", "agy"], org["order"]
-assert d.ORDER == org["order"] and d.COOLDOWN_H == {"codex": 5, "opencode": 1, "agy": 24}, (d.ORDER, d.COOLDOWN_H)
+assert org["order"] == ["codex", "opencode", "kilo", "copilot", "agy"], org["order"]
+assert d.ORDER == org["order"] and d.COOLDOWN_H == {"codex": 5, "opencode": 1, "kilo": 1, "agy-sonnet": 24, "copilot": 24, "agy": 24}, (d.ORDER, d.COOLDOWN_H)
 assert org["model"]["opencode"] == "opencode/deepseek-v4.1-flash-free" and org["model"]["agy"] == "gemini-3.8-flash-high"
 pol = yaml.safe_load(open(os.path.join(ORG, "policy.yaml"), encoding="utf-8"))
 assert set(pol["duong_cam"]) <= set(d.FORBIDDEN), "FORBIDDEN phai lay tu policy.duong_cam"
 src = open(SRC, encoding="utf-8").read()
 for hard in ('ORDER = ["codex"', '"opencode": 1, "agy": 24', 'OPENCODE_MODEL = "opencode/'):
     assert hard not in src, f"con hang so cung trong delegate.py: {hard}"
-assert {"codex", "opencode", "agy"} <= set(d.ADAPTERS), "ADAPTERS phai co codex/opencode/agy"
+assert {"codex", "opencode", "kilo", "agy-sonnet", "copilot", "agy"} <= set(d.ADAPTERS), "ADAPTERS phai co moi executor"
+assert d.pick_queue(dict(executor="kilo"), "tools/x", org) == ["kilo"]
+argv, stdin = d.command("kilo", "P")
+assert argv[1:4] == ["run", "--model", "kilo/kilo-auto/free"] and stdin == "P", argv
+argv, _ = d.command("agy-sonnet", "P")
+assert "claude-sonnet-4-6" in argv, argv
+argv, stdin = d.command("copilot", "P")
+# prompt qua stdin: argv cua copilot.cmd di qua cmd.exe lam vo & | % " (thu 2026-10-28)
+assert stdin == "P" and "P" not in argv and "-p" not in argv, argv
+assert "--sandbox" in argv and "--deny-tool=shell(git push)" in argv, argv
+assert "--model" not in argv and "--allow-all-paths" not in argv, argv
 
 
 TMP_ROOT = tempfile.mkdtemp(prefix="delegate-registry-test-")   # don cuoi file; sandbox co the dat TEMP trong cwd
@@ -54,18 +64,20 @@ def must_fail(fn, why):
 
 # 2) Nghi viec -> bo khoi chuoi, noi tiep theo khi_het_han_muc cua nguoi nghi
 o = d.load_org(tmp_org(lambda a: ag(a, "opencode").__setitem__("trang_thai", "nghi")))
-assert o["order"] == ["codex", "agy"], o["order"]
+assert o["order"] == ["codex", "kilo", "copilot", "agy"], o["order"]
 must_fail(lambda: d.pick_queue(dict(executor="opencode"), "tools/x", o), "nghi viec ma goi dich danh van chay")
 
 # 3) pick_queue theo ky_nang / executor / muc du lieu / thu viec
 assert d.pick_queue(dict(ky_nang="bao-cao"), "docs/reports", org) == ["codex"]
-assert d.pick_queue(dict(ky_nang="cad-script"), "tools/x", org) == ["codex", "opencode", "agy"]
-assert d.pick_queue(dict(ky_nang=["code", "cad-script"]), "tools/x", org) == ["codex", "opencode", "agy"]
-assert d.pick_queue(dict(executor="auto"), "tools/x", org) == ["codex", "opencode", "agy"]
+# agy chi giu doc-ma tu 2026-10-27 (han muc tuan dung chung voi ask-gemini/doc-writer) -> khong vao viec code/CAD
+assert d.pick_queue(dict(ky_nang="cad-script"), "tools/x", org) == ["codex", "opencode", "kilo"]
+assert d.pick_queue(dict(ky_nang=["code", "cad-script"]), "tools/x", org) == ["codex", "opencode", "kilo"]
+assert d.pick_queue(dict(ky_nang="doc-ma"), "tools/x", org) == ["codex", "copilot", "agy"]
+assert d.pick_queue(dict(executor="auto"), "tools/x", org) == ["codex", "opencode", "kilo", "copilot", "agy"]
 assert d.pick_queue(dict(executor="opencode"), "tools/x", org) == ["opencode"]
 must_fail(lambda: d.pick_queue(dict(ky_nang="hat-karaoke"), "tools/x", org), "khong ai co ky nang")
 must_fail(lambda: d.pick_queue(dict(executor="kimi"), "tools/x", org), "executor khong co trong so")
-assert d.pick_queue(dict(executor="auto"), "maker/pump-control/firmware", org) == ["codex", "opencode", "agy"], \
+assert d.pick_queue(dict(executor="auto"), "maker/pump-control/firmware", org) == ["codex", "opencode", "kilo", "copilot", "agy"], \
     "du an trong maker/ la viec binh thuong (Tuan 2026-10-27)"
 must_fail(lambda: d.pick_queue(dict(executor="auto"), "stlab/parent-reports", org), "bao cao phu huynh")
 
@@ -76,10 +88,7 @@ def add_trial(a):
     a["agents"].append(x)
 
 
-ot = d.load_org(tmp_org(add_trial))
-assert "kimi" not in d.pick_queue(dict(executor="auto"), "tools/x", ot), "thu-viec khong vao auto"
-assert "kimi" not in d.pick_queue(dict(ky_nang="code"), "tools/x", ot), "thu-viec khong vao chon theo ky nang"
-must_fail(lambda: d.pick_queue(dict(executor="kimi"), "tools/x", ot), "thu-viec chua co ADAPTER -> loi ro rang")
+must_fail(lambda: d.load_org(tmp_org(add_trial)), "thu-viec khong co ADAPTER -> loi ro rang")
 
 # 4) Executor chinh-thuc khong co adapter -> load_org bao loi (khong im lang)
 must_fail(lambda: d.load_org(tmp_org(lambda a: (add_trial(a), ag(a, "kimi").__setitem__("trang_thai", "chinh-thuc"),
