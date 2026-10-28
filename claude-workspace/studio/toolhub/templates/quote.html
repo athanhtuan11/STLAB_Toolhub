@@ -41,6 +41,17 @@
 #quote-page .hist { width: 100%; font-size: 13px; }
 #quote-page .hist th, #quote-page .hist td { padding: 5px 6px; border-bottom: 1px solid var(--line); }
 #quote-page .hist td.num { text-align: right; font-variant-numeric: tabular-nums; }
+#quote-page .mat-map { margin-top: 12px; }
+#quote-page .mat-map-row { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 8px;
+  align-items: center; margin-bottom: 6px; }
+#quote-page .mat-map-row .mat-map-label { font-size: 13.5px; }
+#quote-page .mat-map-row .muted { font-size: 13px; white-space: nowrap; }
+#quote-page .src { font-size: 11.5px; color: var(--muted); margin-top: 3px; line-height: 1.35; }
+#quote-page .src a { color: var(--muted); }
+#quote-page .src .warn { color: var(--warn); font-size: 11.5px; margin: 0; }
+#quote-page .pricing-panel summary { cursor: pointer; font-size: 15px; font-weight: 600; }
+#quote-page .pricing-panel[open] summary { margin-bottom: 4px; }
+#quote-page .pricing-updated { font-size: 12.5px; margin: 0 0 8px; }
 </style>
 
 <div id="quote-page">
@@ -71,6 +82,7 @@
         <div id="file-info" hidden>
           <div class="subhead" id="file-name"></div>
           <div class="muted" id="file-sum"></div>
+          <div id="material-map" class="mat-map" hidden></div>
           <div class="plates" id="plates"></div>
         </div>
       </section>
@@ -127,8 +139,9 @@
     </div>
 
     <div>
-      <section class="card" id="pricing">
-        <h2>Bảng giá</h2>
+      <details class="card pricing-panel" id="pricing-panel">
+        <summary>Bảng giá (thời giá – tự điền, sửa khi giá đổi)</summary>
+        <p class="muted pricing-updated">cập nhật {{ defaults_updated }}</p>
         <form id="pricing-form">
           <div class="subhead">Thông số tính giá</div>
           <div class="fields" id="settings-fields"></div>
@@ -152,9 +165,10 @@
 
           <div class="actions-end">
             <button class="primary" type="submit">Lưu bảng giá</button>
+            <button type="button" id="pricing-reset">Khôi phục thời giá mặc định</button>
           </div>
         </form>
-      </section>
+      </details>
 
       <section class="card" style="margin-top:16px">
         <h2>Lịch sử báo giá</h2>
@@ -178,14 +192,20 @@
   </div>
 </div>
 
+<script type="application/json" id="pricing-sources">{{ sources_json|safe }}</script>
 <script>
 (() => {
   const $ = (s) => document.querySelector(s);
   const HJ = { "X-Studio": "1", "Content-Type": "application/json" };
   const H = { "X-Studio": "1" };
   const fmt = (n) => new Intl.NumberFormat("vi-VN").format(Math.round(n || 0)) + " đ";
-  const gramsText = (o) => Object.entries(o || {}).map(([k, v]) => `${k} ${Number(v).toFixed(2)} g`).join(" · ");
-  let pricing = { settings: {}, materials: {}, extras: [] };
+  const gramsText = (o) => Object.entries(o || {}).map(([k, v]) => `${k} ${viNum(v)} g`).join(" · ");
+  const viNum = (n, nd = 1) => Number(n || 0).toFixed(nd).replace(/\.?0+$/, "").replace(".", ",");
+  let sources = {};
+  try { sources = JSON.parse(document.getElementById("pricing-sources").textContent || "{}"); } catch (e) { sources = {}; }
+  let pricing = { settings: {}, materials: {}, extras: [], sources };
+  let parsedGrams = {};
+  let materialMap = {};
   let token = null;
   let materialDeletes = [];
   let extraDeletes = [];
@@ -209,6 +229,31 @@
     ["payment_note", "Ghi chú thanh toán"],
   ];
 
+  function sourceNote(key) {
+    const s = (pricing.sources || sources || {})[key];
+    if (!s || !s.source) return null;
+    const d = document.createElement("div");
+    d.className = "src";
+    if (s.gia_dinh) {
+      const w = document.createElement("span");
+      w.className = "warn";
+      w.textContent = "giả định";
+      d.appendChild(w);
+      d.appendChild(document.createTextNode(" "));
+    }
+    if (s.url && /^https?:/i.test(s.url)) {
+      const a = document.createElement("a");
+      a.href = s.url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.textContent = s.source;
+      d.appendChild(a);
+    } else {
+      d.appendChild(document.createTextNode(s.source));
+    }
+    return d;
+  }
+
   function field(label, key, value, step = "1") {
     const l = document.createElement("label");
     l.className = "field";
@@ -219,6 +264,8 @@
     i.dataset.key = key;
     i.value = value === undefined || value === null ? "" : value;
     l.appendChild(i);
+    const note = sourceNote(key);
+    if (note) l.appendChild(note);
     return l;
   }
 
@@ -251,6 +298,8 @@
       sel.appendChild(o);
     });
     l.appendChild(sel);
+    const mNote = sourceNote("pricing_method");
+    if (mNote) l.appendChild(mNote);
     box.appendChild(l);
     const shop = $("#shop-fields");
     shop.innerHTML = "";
@@ -267,6 +316,8 @@
     tr.querySelector(".mat-name").value = name || "";
     tr.querySelector(".mat-price").value = price === undefined ? "" : price;
     tr.querySelector(".mat-weight").value = weight === undefined ? "" : weight;
+    const note = name ? sourceNote("material:" + name) : null;
+    if (note) tr.querySelector(".mat-price").parentNode.appendChild(note);
     tr.querySelector(".x").addEventListener("click", () => {
       if (tr.dataset.orig) materialDeletes.push(tr.dataset.orig);
       tr.remove();
@@ -332,12 +383,68 @@
     });
   }
 
-  async function loadPricing() {
-    const r = await fetch("/api/quote/pricing");
-    pricing = await r.json();
+  function materialNames() {
+    return Object.keys(pricing.materials || {});
+  }
+
+  function renderMaterialMap() {
+    const box = $("#material-map");
+    const names = materialNames();
+    const types = Object.keys(parsedGrams || {});
+    if (!names.length || !types.length) {
+      box.innerHTML = "";
+      box.hidden = true;
+      return;
+    }
+    box.hidden = false;
+    box.innerHTML = "";
+    const title = document.createElement("div");
+    title.className = "subhead";
+    title.textContent = "Nhựa cho từng loại trong file";
+    box.appendChild(title);
+    types.forEach((t) => {
+      const row = document.createElement("div");
+      row.className = "mat-map-row";
+      const lab = document.createElement("span");
+      lab.className = "mat-map-label";
+      lab.textContent = t;
+      const sel = document.createElement("select");
+      sel.dataset.type = t;
+      const cur = names.includes(materialMap[t]) ? materialMap[t] : (names.includes(t) ? t : names[0]);
+      materialMap[t] = cur;
+      names.forEach((n) => {
+        const o = document.createElement("option");
+        o.value = n;
+        o.textContent = n;
+        if (n === cur) o.selected = true;
+        sel.appendChild(o);
+      });
+      sel.addEventListener("change", () => {
+        materialMap[t] = sel.value;
+        scheduleCalc();
+      });
+      const g = document.createElement("span");
+      g.className = "muted";
+      g.textContent = `${viNum(parsedGrams[t])} g`;
+      row.appendChild(lab);
+      row.appendChild(sel);
+      row.appendChild(g);
+      box.appendChild(row);
+    });
+  }
+
+  function renderAll() {
     renderSettings();
     renderMaterials();
     renderExtras();
+    renderMaterialMap();
+  }
+
+  async function loadPricing() {
+    const r = await fetch("/api/quote/pricing");
+    pricing = await r.json();
+    if (!pricing.sources) pricing.sources = sources;
+    renderAll();
   }
 
   $("#pricing-form").addEventListener("submit", async (e) => {
@@ -375,10 +482,21 @@
     const j = await r.json();
     if (!r.ok) { toast(false, j.error || "Không lưu được bảng giá"); return; }
     pricing = j;
-    renderSettings();
-    renderMaterials();
-    renderExtras();
+    if (!pricing.sources) pricing.sources = sources;
+    renderAll();
     toast(true, "Đã lưu bảng giá");
+    scheduleCalc();
+  });
+
+  $("#pricing-reset").addEventListener("click", async () => {
+    if (!confirm("Khôi phục toàn bộ thời giá về mặc định? Các giá đã sửa sẽ bị ghi đè.")) return;
+    const r = await fetch("/api/quote/pricing/reset", { method: "POST", headers: HJ, body: "{}" });
+    const j = await r.json();
+    if (!r.ok) { toast(false, j.error || "Không khôi phục được thời giá"); return; }
+    pricing = j;
+    if (!pricing.sources) pricing.sources = sources;
+    renderAll();
+    toast(true, "Đã khôi phục thời giá mặc định");
     scheduleCalc();
   });
 
@@ -387,9 +505,12 @@
 
   function showParsed(j) {
     token = j.token;
+    parsedGrams = j.grams || {};
+    materialMap = {};
     $("#file-info").hidden = false;
     $("#file-name").textContent = j.name;
-    $("#file-sum").textContent = `${Number(j.hours).toFixed(2)} giờ · ${gramsText(j.grams)}`;
+    $("#file-sum").textContent = `${viNum(j.hours, 2)} giờ · ${gramsText(j.grams)}`;
+    renderMaterialMap();
     const box = $("#plates");
     box.innerHTML = "";
     (j.plates || []).forEach((p) => {
@@ -403,7 +524,7 @@
       }
       const cap = document.createElement("div");
       cap.className = "cap";
-      cap.textContent = `Bàn ${p.index} · ${(p.seconds / 3600).toFixed(2)} h · ${gramsText(p.grams)}`;
+      cap.textContent = `Bàn ${p.index} · ${viNum(p.seconds / 3600, 2)} h · ${gramsText(p.grams)}`;
       d.appendChild(cap);
       box.appendChild(d);
     });
@@ -463,6 +584,7 @@
       quantity: Number($("#quantity").value || 1),
       extras,
       other_fee_vnd: Number($("#other_fee").value || 0),
+      materials_map: materialMap,
     };
   }
 
@@ -476,8 +598,9 @@
       err.innerHTML = "";
       err.appendChild(document.createTextNode((j.error || "Không tính được giá") + " "));
       const a = document.createElement("a");
-      a.href = "#pricing";
+      a.href = "#pricing-panel";
       a.textContent = "Sửa bảng giá";
+      a.addEventListener("click", () => { $("#pricing-panel").open = true; });
       err.appendChild(a);
       return;
     }

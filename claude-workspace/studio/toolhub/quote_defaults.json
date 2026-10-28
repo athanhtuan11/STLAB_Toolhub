@@ -1,0 +1,83 @@
+{
+  "updated": "2026-10-28",
+  "note": "Thời giá mặc định cho tab Báo giá. Claude tra 2026-10-28; mục 'gia_dinh' = không có nguồn, Tuan sửa theo thực tế. DB chỉ lấy giá trị ở đây cho khóa CHƯA có; nút 'Khôi phục thời giá mặc định' ghi đè lại toàn bộ.",
+  "settings": {
+    "electricity_price_vnd_per_kwh": {
+      "value": 3152,
+      "source": "EVN – QĐ 1279/QĐ-BCT (hiệu lực 10/05/2025): giá kinh doanh, cấp điện áp dưới 6 kV, giờ bình thường, chưa VAT",
+      "url": "https://evn.com.vn/userfile/User/tcdl/files/2025/5/QD1279-QD-BCT-20250509163514982.pdf"
+    },
+    "printer_power_w": {
+      "value": 95,
+      "source": "Bambu Lab wiki (trích trên forum Bambu 26/04/2025): A1 in PLA trung bình 95 W ở 220 V. PETG nóng hơn (bàn 70 °C) – chưa có số, đo bằng ổ cắm đo điện nếu cần",
+      "url": "https://forum.bambulab.com/t/power-consumption-for-a1-printer/92095/14"
+    },
+    "machine_price_vnd": {
+      "value": 6466500,
+      "source": "3dthinking.vn – Bambu Lab A1 bản quốc tế, giá niêm yết gốc (bán 5.679.000 đ; combo AMS lite tới 10.699.000 đ), trang không ghi ngày",
+      "url": "https://3dthinking.vn/san-pham/may-in-3d-nhieu-mau-bambu-lab-a1/"
+    },
+    "machine_lifetime_hours": {
+      "value": 10000,
+      "gia_dinh": true,
+      "source": "Giả định: ~5 năm × 2.000 giờ in/năm. printcalc mặc định 5 năm × 50 % thời gian = 21.900 h – STLab dùng ít hơn nên lấy thấp hơn (khấu hao cao hơn, an toàn)",
+      "url": "community/printcalc/PRICING.md"
+    },
+    "labor_rate_vnd_per_hour": {
+      "value": 30000,
+      "gia_dinh": true,
+      "source": "Giả định ≈ 1,5 × lương tối thiểu giờ vùng III. Vùng III (Đức Trọng) 4.140.000 đ/tháng từ 01/01/2026 (NĐ 293/2025/NĐ-CP) ÷ 208 giờ ≈ 19.900 đ/h",
+      "url": "https://vanban.chinhphu.vn/?classid=1&docid=215832&pageid=27160"
+    },
+    "setup_hours_per_job": {
+      "value": 0.25,
+      "gia_dinh": true,
+      "source": "Giả định 15 phút/đơn: mở file, cắt lớp, nạp nhựa, bắt đầu in"
+    },
+    "post_hours_per_plate": {
+      "value": 0.1,
+      "gia_dinh": true,
+      "source": "Giả định 6 phút/bàn: đợi nguội, gỡ chi tiết, bỏ brim/support, lau bàn"
+    },
+    "failure_pct": {
+      "value": 0.3,
+      "gia_dinh": true,
+      "source": "Tham chiếu printcalc: nhựa ×1,5 (hao, xả, in hỏng), giờ máy ×1,3 – ở đây gộp +30 % trên nhựa + điện + khấu hao",
+      "url": "community/printcalc/PRICING.md"
+    },
+    "pricing_method": {
+      "value": "markup",
+      "source": "markup 100 % = biên lợi nhuận 50 % (mức thấp nhất printcalc gợi ý: 50/60/70 %)"
+    },
+    "pricing_value": {
+      "value": 1.0,
+      "gia_dinh": true,
+      "source": "Giá bán = 2 × giá vốn (biên 50 %, mức thấp nhất printcalc gợi ý)",
+      "url": "community/printcalc/PRICING.md"
+    },
+    "round_to_vnd": { "value": 1000, "source": "Làm tròn lên 1.000 đ mỗi sản phẩm" },
+    "valid_days": { "value": 7, "gia_dinh": true, "source": "Hiệu lực báo giá 7 ngày (giá nhựa hay đổi)" }
+  },
+  "materials": {
+    "PETG": {
+      "spool_price_vnd": 198000,
+      "spool_weight_g": 1000,
+      "source": "Bambu Lab PETG Basic 1 kg trên Shopee (qua vcshop.store): 155.000–198.000 đ tùy lựa chọn, lấy mức cao; trang không ghi ngày (ảnh 08/2026)",
+      "url": "https://vcshop.store/product/nhua-in-3d-bambu-lab-petg-basic-1-75mm-1kg/"
+    },
+    "PLA": {
+      "spool_price_vnd": 299000,
+      "spool_weight_g": 1000,
+      "source": "Bambu Lab PLA Basic 1 kg – Layer Lab (trang không ghi ngày, lúc tra hết hàng)",
+      "url": "https://layerlab.vn/products/bambu-lab-pla-basic-nhua-in-3d-fdm"
+    }
+  },
+  "extras": [
+    {
+      "label": "Vít M3x8 inox 304 (trí đuôi nhọn)",
+      "price_vnd": 675,
+      "source": "Ốc Vít Minh, trang không ghi ngày",
+      "url": "https://ocvitmin.com/s3VTN8-Vit-Tri-Duoi-Nhon-M3x8mm-Inox304"
+    }
+  ]
+}

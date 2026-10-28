@@ -1,7 +1,7 @@
 # Gate "Bao gia in 3D" (Claude viet, executor KHONG sua). Chay tu thu muc studio:
 #   .venv/Scripts/python.exe tests/test_quote.py
 # DB test nam trong thu muc tam (bien STLAB_QUOTES_DB), khong dung DB that cua Tuan.
-import io, os, sys, tempfile, zipfile
+import io, os, re, sys, tempfile, zipfile
 from pathlib import Path
 
 STUDIO = Path(__file__).resolve().parent.parent
@@ -80,14 +80,40 @@ SETTINGS = {
 conn = quote.connect()
 check(Path(os.environ["STLAB_QUOTES_DB"]).exists(), "connect() tao DB tai STLAB_QUOTES_DB")
 pr = quote.get_pricing(conn)
-check(pr["settings"].get("round_to_vnd") == 1000 and pr["settings"].get("valid_days") == 7,
-      "DB moi co mac dinh round_to_vnd=1000, valid_days=7")
+# Tuan 2026-10-28: thoi gia tu dien tu toolhub/quote_defaults.json, van sua duoc
+import json  # noqa: E402
+DEF = json.loads((STUDIO / "toolhub" / "quote_defaults.json").read_text(encoding="utf-8"))
+for k, d in DEF["settings"].items():
+    check(pr["settings"].get(k) == d["value"], f"DB moi lay mac dinh {k}={d['value']}, co {pr['settings'].get(k)}")
+    check(bool(d.get("source")), f"mac dinh {k} phai co source")
+for m, d in DEF["materials"].items():
+    check(pr["materials"].get(m) == {"spool_price_vnd": d["spool_price_vnd"], "spool_weight_g": d["spool_weight_g"]},
+          f"DB moi co nhua mac dinh {m}")
+check(any(x["label"] == DEF["extras"][0]["label"] for x in pr["extras"]), "DB moi co phu kien mac dinh")
+check(quote.pricing_sources()["printer_power_w"]["source"] == DEF["settings"]["printer_power_w"]["source"],
+      "pricing_sources() tra nguon tung khoa (de hien tren trang)")
+c0 = quote.compute(p, pr, quantity=1, materials_map={"TPU": "PETG"})
+check(c0["total"] > 0, "file + chon nhua la ra gia ngay, khong can nhap gi them")
 try:
     quote.compute(p, pr, quantity=1)
-    check(False, "bang gia trong phai raise QuoteError")
+    check(False, "nhua TPU chua co gia va khong doi nhua -> QuoteError")
 except quote.QuoteError as e:
-    check("electricity_price_vnd_per_kwh" in str(e) and "PETG" in str(e),
-          f"loi phai liet ke khoa thieu + nhua thieu: {e}")
+    check("TPU" in str(e), f"loi phai neu ten nhua thieu: {e}")
+quote.save_settings(conn, {"printer_power_w": None})
+try:
+    quote.compute(p, quote.get_pricing(conn), quantity=1, materials_map={"TPU": "PETG"})
+    check(False, "khoa bi xoa (None) -> QuoteError")
+except quote.QuoteError as e:
+    check("printer_power_w" in str(e), f"loi phai liet ke khoa thieu: {e}")
+quote.reset_defaults(conn)
+check(quote.get_pricing(conn)["settings"]["printer_power_w"] == DEF["settings"]["printer_power_w"]["value"],
+      "reset_defaults() dua thoi gia ve mac dinh")
+conn.close()
+conn = quote.connect()
+check(quote.get_pricing(conn)["settings"]["printer_power_w"] == DEF["settings"]["printer_power_w"]["value"],
+      "connect() lan 2 khong ghi de / khong nhan doi")
+check(len([x for x in quote.get_pricing(conn)["extras"] if x["label"] == DEF["extras"][0]["label"]]) == 1,
+      "phu kien mac dinh khong bi them lai moi lan connect/reset")
 
 quote.save_settings(conn, SETTINGS)
 quote.save_material(conn, "PETG", spool_price_vnd=300_000, spool_weight_g=1000)
@@ -120,6 +146,15 @@ try:
 except quote.QuoteError:
     pass
 quote.save_settings(conn, {"pricing_method": "markup", "pricing_value": 1.0})
+quote.save_material(conn, "PLA", spool_price_vnd=250_000, spool_weight_g=1000)
+c3 = quote.compute(p, quote.get_pricing(conn), quantity=1, materials_map={"PETG": "PLA", "TPU": "PLA"})
+check(abs(c3["lines"]["filament"] - 130 * 250) < 0.01, f"doi nhua: 130 g x 250 d/g, co {c3['lines']['filament']}")
+check(c3.get("materials") == {"PLA": 130.0}, f"calc ghi nhua da chon + gam: {c3.get('materials')}")
+try:
+    quote.compute(p, quote.get_pricing(conn), quantity=1, materials_map={"PETG": "ABS"})
+    check(False, "doi sang nhua khong co trong bang gia -> QuoteError")
+except quote.QuoteError as e:
+    check("ABS" in str(e), "loi neu ten nhua khong co")
 check(quote.fmt_vnd(1234000) == "1.234.000 đ" and quote.fmt_vnd(0) == "0 đ", "fmt_vnd kieu Viet Nam")
 
 # 4. Luu bao gia
@@ -142,6 +177,10 @@ check(r.status_code == 200, f"/quote {r.status_code}")
 for need in ('id="file"', 'id="quantity"', 'id="pricing-form"', "Giá vốn", "Lịch sử báo giá"):
     check(need in html, f"/quote thieu {need}")
 check("Zalo" not in html, "Tuan: khong can nut Zalo")
+check('id="material-map"' in html, "chon nhua cho tung loai trong file (id=material-map)")
+check(re.search(r'<details[^>]*id="pricing-panel"', html) is not None, "bang gia gap trong <details id=pricing-panel>")
+check('id="pricing-reset"' in html, "nut khoi phuc thoi gia mac dinh")
+check(DEF["settings"]["printer_power_w"]["source"][:30] in html, "hien nguon thoi gia canh o nhap")
 check('href="/quote"' in cl.get("/", headers=H).get_data(as_text=True), "menu co link /quote")
 
 check(cl.post("/api/quote/pricing", json={"settings": {"printer_power_w": 120}}, headers=H).status_code == 403,
@@ -166,6 +205,10 @@ r = cl.post("/api/quote/calc", json={"token": j.get("token"), "quantity": 2, "ex
                                      "other_fee_vnd": 20000}, headers=HP)
 k = r.get_json() or {}
 check(r.status_code == 200 and k.get("total") == 382000 and k.get("total_text") == "382.000 đ", f"calc API: {k}")
+r = cl.post("/api/quote/calc", json={"token": j.get("token"), "quantity": 1,
+                                     "materials_map": {"PETG": "PLA", "TPU": "PLA"}}, headers=HP)
+check(r.status_code == 200 and (r.get_json() or {}).get("materials") == {"PLA": 130.0},
+      "calc API nhan materials_map (chi can file + chon nhua)")
 r = cl.post("/api/quote/save", json={"token": j.get("token"), "quantity": 2, "extras": {str(eid): 4},
                                      "other_fee_vnd": 20000, "customer_name": "Khách Thử",
                                      "customer_phone": "0900000000", "title": "Tay máy", "note": ""}, headers=HP)
@@ -177,6 +220,12 @@ check(r.status_code == 200 and "BÁO GIÁ IN 3D" in t and "Khách Thử" in t an
       "ban bao gia cho khach: tieu de, ten khach, tong tien")
 check("Giá vốn" not in t and "Khấu hao" not in t, "ban cho khach KHONG lo gia von")
 check(cl.get("/quote/999999", headers=H).status_code == 404, "bao gia khong co -> 404")
+
+r = cl.post("/api/quote/pricing/reset", json={}, headers=HP)
+PW = DEF["settings"]["printer_power_w"]["value"]
+check(r.status_code == 200 and r.get_json()["settings"]["printer_power_w"] == PW,
+      "POST /api/quote/pricing/reset -> thoi gia mac dinh")
+check("sources" in cl.get("/api/quote/pricing", headers=H).get_json(), "GET pricing kem sources")
 
 plates = quote.project_3mf_files()
 check(all(f.suffix == ".3mf" and "maker" in f.parts for f in plates), "project_3mf_files chi .3mf trong maker/")

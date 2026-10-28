@@ -26,7 +26,40 @@ SETTINGS_KEYS = (
     "pricing_method", "pricing_value", "round_to_vnd",
 )
 SHOP_KEYS = ("shop_phone", "shop_contact", "payment_note", "valid_days")
-DEFAULTS = {"round_to_vnd": 1000, "valid_days": 7, "pricing_method": "markup"}
+DEFAULTS_FILE = Path(__file__).resolve().parent / "quote_defaults.json"
+
+
+def load_defaults():
+    """Thoi gia mac dinh (Claude tra, co nguon) trong quote_defaults.json canh file .py."""
+    try:
+        return json.loads(DEFAULTS_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as e:
+        raise QuoteError("Không đọc được thời giá mặc định (quote_defaults.json): " + str(e))
+
+
+def defaults_updated():
+    return load_defaults().get("updated") or ""
+
+
+def pricing_sources():
+    """Nguon cua tung khoa thoi gia + 'material:<ten>' cho nhua (hien tren trang)."""
+    defaults = load_defaults()
+    out = {}
+    for k, d in (defaults.get("settings") or {}).items():
+        src = {"source": d.get("source") or ""}
+        if d.get("url"):
+            src["url"] = d["url"]
+        if d.get("gia_dinh"):
+            src["gia_dinh"] = True
+        out[k] = src
+    for name, m in (defaults.get("materials") or {}).items():
+        src = {"source": m.get("source") or ""}
+        if m.get("url"):
+            src["url"] = m["url"]
+        if m.get("gia_dinh"):
+            src["gia_dinh"] = True
+        out["material:" + name] = src
+    return out
 
 
 def _db_path():
@@ -110,10 +143,47 @@ def connect():
         " customer_name TEXT, customer_phone TEXT, title TEXT, note TEXT, total_vnd REAL, data_json TEXT);"
     )
     now = datetime.now().isoformat()
-    for k, v in DEFAULTS.items():
-        c.execute("INSERT OR IGNORE INTO settings VALUES(?,?,?)", (k, json.dumps(v), now))
+    defaults = load_defaults()
+    for k, d in (defaults.get("settings") or {}).items():
+        c.execute("INSERT OR IGNORE INTO settings VALUES(?,?,?)",
+                  (k, json.dumps(d.get("value"), ensure_ascii=False), now))
+    for name, m in (defaults.get("materials") or {}).items():
+        c.execute("INSERT OR IGNORE INTO materials VALUES(?,?,?,?)",
+                  (name, float(m.get("spool_price_vnd") or 0), float(m.get("spool_weight_g") or 0), now))
+    for e in defaults.get("extras") or []:
+        label = e.get("label") or ""
+        if label and not c.execute("select 1 from extras where label=?", (label,)).fetchone():
+            c.execute("insert into extras(label,price_vnd,active) values(?,?,1)",
+                      (label, float(e.get("price_vnd") or 0)))
     c.commit()
     return c
+
+
+def reset_defaults(conn):
+    """Ghi de thoi gia + nhua mac dinh; cap nhat phu kien mac dinh theo nhan (khong tao trung)."""
+    defaults = load_defaults()
+    now = datetime.now().isoformat()
+    for k, d in (defaults.get("settings") or {}).items():
+        conn.execute("insert into settings values(?,?,?) on conflict(key) do update set"
+                     " value=excluded.value, updated_at=excluded.updated_at",
+                     (k, json.dumps(d.get("value"), ensure_ascii=False), now))
+    for name, m in (defaults.get("materials") or {}).items():
+        conn.execute("insert into materials values(?,?,?,?) on conflict(name) do update set"
+                     " spool_price_vnd=excluded.spool_price_vnd, spool_weight_g=excluded.spool_weight_g,"
+                     " updated_at=excluded.updated_at",
+                     (name, float(m.get("spool_price_vnd") or 0), float(m.get("spool_weight_g") or 0), now))
+    for e in defaults.get("extras") or []:
+        label = e.get("label") or ""
+        if not label:
+            continue
+        row = conn.execute("select id from extras where label=? order by id limit 1", (label,)).fetchone()
+        if row is None:
+            conn.execute("insert into extras(label,price_vnd,active) values(?,?,1)",
+                         (label, float(e.get("price_vnd") or 0)))
+        else:
+            conn.execute("update extras set price_vnd=? where id=?",
+                         (float(e.get("price_vnd") or 0), row["id"]))
+    conn.commit()
 
 
 def get_pricing(conn):
@@ -131,6 +201,9 @@ def save_settings(conn, data):
     now = datetime.now().isoformat()
     for k, v in data.items():
         if k not in allowed:
+            continue
+        if v is None:
+            conn.execute("delete from settings where key=?", (k,))
             continue
         conn.execute("insert into settings values(?,?,?) on conflict(key) do update set"
                      " value=excluded.value, updated_at=excluded.updated_at",
@@ -169,10 +242,19 @@ def delete_extra(conn, id):
     conn.commit()
 
 
-def compute(parsed, pricing, quantity=1, extras=None, other_fee_vnd=0):
+def _merge_grams(grams, mapping):
+    out = {}
+    for t, g in (grams or {}).items():
+        name = (mapping or {}).get(t) or t
+        out[name] = out.get(name, 0.0) + g
+    return out
+
+
+def compute(parsed, pricing, quantity=1, extras=None, other_fee_vnd=0, materials_map=None):
     s = pricing.get("settings", {})
     mats = pricing.get("materials", {})
-    grams = parsed.get("grams", {})
+    mapping = materials_map or {}
+    grams = _merge_grams(parsed.get("grams", {}), mapping)
     missing = [k for k in SETTINGS_KEYS if k not in s]
     missing += [n for n in grams if n not in mats or not mats[n].get("spool_weight_g")]
     if "hours" not in parsed or "plates" not in parsed:
@@ -208,7 +290,8 @@ def compute(parsed, pricing, quantity=1, extras=None, other_fee_vnd=0):
     subtotal = unit_price * q
     return {"lines": lines, "cost": cost, "price": price, "unit_price": unit_price,
             "subtotal": subtotal, "other_fee": other_fee_vnd, "total": subtotal + other_fee_vnd,
-            "quantity": q, "hours": h, "grams": grams, "method": method, "value": value}
+            "quantity": q, "hours": h, "grams": parsed.get("grams", {}), "materials": grams,
+            "materials_map": dict(mapping), "method": method, "value": value}
 
 
 def fmt_vnd(n):
@@ -227,12 +310,16 @@ def _next_number(conn):
     return f"{prefix}{top + 1:02d}"
 
 
-def save_quote(conn, customer_name, customer_phone, title, parsed, calc, note):
+def save_quote(conn, customer_name, customer_phone, title, parsed, calc, note, materials_map=None):
     now = datetime.now()
     number = _next_number(conn)
     pr = get_pricing(conn)
+    mapping = materials_map or {}
     data = dict(calc)
-    data["plates"] = [{"index": p["index"], "seconds": p["seconds"], "grams": p["grams"],
+    data["materials_map"] = dict(mapping)
+    data["materials"] = calc.get("materials") or {}
+    data["plates"] = [{"index": p["index"], "seconds": p["seconds"],
+                       "grams": _merge_grams(p["grams"], mapping),
                        "hours": p["seconds"] / 3600} for p in parsed["plates"]]
     first = next((p for p in parsed["plates"] if p.get("image_png")), None)
     data["image"] = base64.b64encode(first["image_png"]).decode() if first else None

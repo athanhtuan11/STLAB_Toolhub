@@ -1,5 +1,6 @@
 import base64
 import io
+import json
 import os
 import subprocess
 import tempfile
@@ -273,6 +274,13 @@ def _fee(v):
     return int(v) if v.is_integer() else v
 
 
+def _materials_map(data):
+    mm = data.get("materials_map")
+    if not isinstance(mm, dict):
+        return None
+    return {str(k): str(v) for k, v in mm.items() if k and v}
+
+
 def _calc(data):
     item = _item(data)
     extras = {}
@@ -287,10 +295,18 @@ def _calc(data):
     finally:
         conn.close()
     calc = quote_lib.compute(item["parsed"], pricing, quantity=int(data.get("quantity") or 1),
-                             extras=extras, other_fee_vnd=_fee(data.get("other_fee_vnd")))
+                             extras=extras, other_fee_vnd=_fee(data.get("other_fee_vnd")),
+                             materials_map=_materials_map(data))
     calc["extras_detail"] = [{"id": eid, "count": int((data.get("extras") or {}).get(str(eid), 0))}
                              for eid in extras if int((data.get("extras") or {}).get(str(eid), 0))]
     return calc
+
+
+def _vi(x, nd=2):
+    s = f"{float(x):.{nd}f}"
+    if "." in s:
+        s = s.rstrip("0").rstrip(".")
+    return s.replace(".", ",")
 
 
 def _page(id):
@@ -309,10 +325,11 @@ def _page(id):
     labels = {e["id"]: e["label"] for e in pricing.get("extras", [])}
     extras_text = [f"{labels.get(e['id'], 'Phụ kiện #' + str(e['id']))} × {e['count']}"
                    for e in (data.get("extras_detail") or []) if e.get("count")]
-    materials_text = " · ".join(f"{k} {v:g} g" for k, v in (data.get("grams") or {}).items())
+    chosen = data.get("materials") or data.get("grams") or {}
+    materials_text = " · ".join(f"{k} {_vi(v, 1)} g" for k, v in chosen.items())
     plates_text = " · ".join(
-        f"Bàn {p['index']}: {p['seconds'] / 3600:.2f} h, "
-        + ", ".join(f"{k} {v:g} g" for k, v in (p.get("grams") or {}).items())
+        f"Bàn {p['index']}: {_vi(p['seconds'] / 3600)} h, "
+        + ", ".join(f"{k} {_vi(v, 1)} g" for k, v in (p.get("grams") or {}).items())
         for p in (data.get("plates") or []))
     return {"q": qd, "data": data, "settings": settings, "created": created, "valid_until": valid,
             "extras_text": extras_text, "materials_text": materials_text, "plates_text": plates_text}
@@ -334,19 +351,39 @@ def quote():
     conn = quote_lib.connect()
     try:
         history = quote_lib.list_quotes(conn, 20)
+        pricing = quote_lib.get_pricing(conn)
     finally:
         conn.close()
     for h in history:
         h["date_text"] = datetime.fromisoformat(h["created_at"]).strftime("%d/%m/%Y")
     projects = [f.relative_to(ws.ROOT).as_posix() for f in quote_lib.project_3mf_files()]
-    return render_template("quote.html", history=history, projects=projects)
+    pricing["sources"] = quote_lib.pricing_sources()
+    return render_template("quote.html", history=history, projects=projects, pricing=pricing,
+                           sources_json=json.dumps(pricing["sources"], ensure_ascii=False),
+                           defaults_updated=quote_lib.defaults_updated())
+
+
+def _pricing_with_sources(conn):
+    pr = quote_lib.get_pricing(conn)
+    pr["sources"] = quote_lib.pricing_sources()
+    return pr
 
 
 @bp.get("/api/quote/pricing")
 def api_quote_pricing():
     conn = quote_lib.connect()
     try:
-        return jsonify(quote_lib.get_pricing(conn))
+        return jsonify(_pricing_with_sources(conn))
+    finally:
+        conn.close()
+
+
+@bp.post("/api/quote/pricing/reset")
+def api_quote_pricing_reset():
+    conn = quote_lib.connect()
+    try:
+        quote_lib.reset_defaults(conn)
+        return jsonify(_pricing_with_sources(conn))
     finally:
         conn.close()
 
@@ -371,7 +408,7 @@ def api_quote_pricing_save():
             else:
                 quote_lib.save_extra(conn, e.get("label") or "", e.get("price_vnd") or 0,
                                      e.get("id") or None)
-        return jsonify(quote_lib.get_pricing(conn))
+        return jsonify(_pricing_with_sources(conn))
     finally:
         conn.close()
 
@@ -426,7 +463,8 @@ def api_quote_save():
     conn = quote_lib.connect()
     try:
         qid = quote_lib.save_quote(conn, data.get("customer_name") or "", data.get("customer_phone") or "",
-                                   data.get("title") or "", item["parsed"], calc, data.get("note") or "")
+                                   data.get("title") or "", item["parsed"], calc, data.get("note") or "",
+                                   materials_map=_materials_map(data))
         qd = quote_lib.get_quote(conn, qid)
     finally:
         conn.close()
