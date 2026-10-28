@@ -217,6 +217,19 @@ obotcad` khi khởi động. Workbench vẫn nạp
 - Agent `codex:codex-rescue` dùng `model: sonnet` (chỉ chuyển tiếp lệnh, vẫn tốn quota Claude ít).
 - Không có URL cứng trong script; mạng do Codex CLI gọi OpenAI.
 
+### Sơ đồ chân / sơ đồ đấu dây (đọc mã 2026-10-28)
+Thay bản "hộp chữ" ở trang Thư viện linh kiện (Tuan 2026-10-28: chữ không thực tế; chọn hướng A = cả hai).
+| Repo | Ghim | License | Độ tin cậy | Dùng cho |
+|---|---|---|---|---|
+| [j0ono0/pinout](https://github.com/j0ono0/pinout) | `d46f4f1949b1` (main, chưa có tag) | MIT | 436★, commit 2026-04 | Sơ đồ chân trên **ảnh bo thật** (Python → SVG), dữ liệu từ `components.yaml` (`anh_chan`, `chan.x/y`) |
+| [wireviz/WireViz](https://github.com/wireviz/WireViz) | `v0.4.1` (`1c4fd68a2e34`) | GPL-3.0 | 5,3k★, commit 2026-10 | Sơ đồ đấu giữa các module theo dự án (`so_do`), khối có ảnh module |
+- pinout: phụ thuộc Jinja2, Pillow. Chỉ gọi mạng (`urllib.request.urlopen`) khi `src` ảnh là URL → STLab chỉ dùng file trên máy.
+- WireViz: phụ thuộc click, pyyaml, pillow, graphviz (Python) + **chương trình Graphviz `dot`** (cài riêng). `os.system` chỉ ở
+  `build_examples.py` (script dựng ví dụ, không dùng). Không có lệnh mạng.
+- Cài vào `studio/.venv` từ bản ghim (`pip install community/j0ono0-pinout community/wireviz`), không lấy từ PyPI.
+- Đã xem, không chọn: wokwi-elements (MIT, 268★ – không có module relay 2 kênh), fritzing-parts (628★, không có ESP32,
+  license chưa rõ), Pinout.xyz (chỉ Raspberry Pi), schemdraw/netlistsvg (sơ đồ nguyên lý, không có hình bo).
+
 ## Thay đổi bên ngoài workspace (để gỡ/khôi phục)
 | Ngày | Vị trí | Thay đổi | Khôi phục |
 |---|---|---|---|
@@ -334,6 +347,7 @@ Khi chuyển sang thương mại, rà bảng này trước (và cột License �
 |---|---|---|
 | hesreallyhim/awesome-claude-code | CC BY-NC-ND 4.0 (phi thương mại, không phái sinh) | Tra cứu |
 | GarethManning/education-agent-skills | CC BY-SA 4.0 (ghi công, chia sẻ cùng license) | stlab |
+| wireviz/WireViz | GPL-3.0 (phân phối phần mềm phái sinh phải mở mã GPL; ảnh SVG xuất ra không bị ràng buộc) | Toolhub – sơ đồ đấu dây |
 | FreeCAD/FreeCAD-library | CC-BY 3.0 (ghi công) | FreeCAD |
 | CyberBrick-Official/CyberBrick_Controller_Core | CyberBrick Codebase License (chỉ trong hệ MakerWorld/Bambu; giữ thông báo bản quyền) | Tham khảo code XA003 |
 | anthropics/skills docx/pdf/pptx/xlsx | Source-available | stlab |

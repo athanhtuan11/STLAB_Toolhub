@@ -35,7 +35,7 @@
 
 <section class="grid" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr))">
   {% for c in lib.components %}
-  <article class="card" data-type="{{ c.loai }}"{% if c.pinout %} style="grid-column:span 2"{% endif %}>
+  <article class="card" data-type="{{ c.loai }}"{% if c.pinout %} style="grid-column:1 / -1"{% endif %}>
     <div class="row">
       <span class="dot {{ 'ok' if c.model_ok else 'bad' }}" title="{{ 'Có model STEP trong thư viện' if c.model_ok else 'Không tìm thấy file model' }}"></span>
       <h3 class="grow">{{ c.ten }}</h3><span class="badge plain">{{ c.loai }}</span>
@@ -58,7 +58,7 @@
       {% for p in c.pinout %}
       <div style="margin-top:10px">
         <div class="muted" style="font-size:12.5px;margin-bottom:2px">{{ p.title }}</div>
-        <div>{{ p.svg|safe }}</div>
+        <div style="overflow-x:auto">{{ p.svg|safe }}</div>
       </div>
       {% endfor %}
     </details>

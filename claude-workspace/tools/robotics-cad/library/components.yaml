@@ -630,18 +630,22 @@ components:
       cuon_day_v: 5
       chan: "Vào: DC+ (5 V), DC− (GND), IN1, IN2 (cầu đấu vít). Mỗi kênh 1 jumper (S1 → IN1, S2 → IN2) trên hàng chân Low–Com–High: Com–High = kích mức cao, Com–Low = kích mức thấp. Ra mỗi kênh: cầu vít 3 chân NO/COM/NC"
       ghi_chu: "Tiếp điểm 10 A là tải điện trở; KHÔNG đóng trực tiếp motor (dòng khởi động lớn) – pump-control chỉ dùng để đóng cuộn hút contactor 220 VAC"
-    # Sơ đồ chân (Toolhub vẽ thành graph): ben = trai|phai; muc = ac220 | 5v | 3v3 | gnd | tin-hieu
+    # Sơ đồ chân trên ảnh thật (Toolhub vẽ bằng j0ono0/pinout). anh_chan: ảnh trong library/images, kích thước px.
+    # chan: x, y = tâm chân trên ảnh (px, gốc trên-trái); ben = trai|phai|tren|duoi (hướng nhãn);
+    #       muc = ac220 | 5v | 3v3 | gnd | tin-hieu; xac_nhan: false = vị trí/tên chưa đo trên hàng thật (vẽ kèm "?").
+    anh_chan: {file: images/relay-module-2ch-srd-05vdc.png, w: 760, h: 890, nguon: "ảnh Tuan chụp 2026-10-28, cắt quanh bo"}
     chan:
-      - {ten: DC+, ben: trai, muc: 5v, mo_ta: "nguồn 5 V"}
-      - {ten: DC−, ben: trai, muc: gnd, mo_ta: GND}
-      - {ten: IN1, ben: trai, muc: 3v3, mo_ta: "kích kênh 1 (jumper S1)"}
-      - {ten: IN2, ben: trai, muc: 3v3, mo_ta: "kích kênh 2 (jumper S2)"}
-      - {ten: NO1, ben: phai, muc: ac220, mo_ta: "thường hở, relay 1"}
-      - {ten: COM1, ben: phai, muc: ac220, mo_ta: "chung, relay 1"}
-      - {ten: NC1, ben: phai, muc: ac220, mo_ta: "thường đóng, relay 1"}
-      - {ten: NO2, ben: phai, muc: ac220, mo_ta: "thường hở, relay 2"}
-      - {ten: COM2, ben: phai, muc: ac220, mo_ta: "chung, relay 2"}
-      - {ten: NC2, ben: phai, muc: ac220, mo_ta: "thường đóng, relay 2"}
+      - {ten: DC+, ben: duoi, muc: 5v, mo_ta: "nguồn 5 V", x: 333, y: 785}
+      - {ten: DC−, ben: duoi, muc: gnd, mo_ta: GND, x: 420, y: 785}
+      - {ten: IN1, ben: duoi, muc: 3v3, mo_ta: "kích kênh 1 (jumper S1)", x: 525, y: 780}
+      - {ten: IN2, ben: duoi, muc: 3v3, mo_ta: "kích kênh 2 (jumper S2)", x: 610, y: 780}
+      - {ten: NO1, ben: tren, muc: ac220, mo_ta: "thường hở, relay 1", x: 132, y: 78, xac_nhan: false}
+      - {ten: COM1, ben: tren, muc: ac220, mo_ta: "chung, relay 1", x: 222, y: 85, xac_nhan: false}
+      - {ten: NC1, ben: tren, muc: ac220, mo_ta: "thường đóng, relay 1", x: 313, y: 90, xac_nhan: false}
+      - {ten: NO2, ben: tren, muc: ac220, mo_ta: "thường hở, relay 2", x: 418, y: 88, xac_nhan: false}
+      - {ten: COM2, ben: tren, muc: ac220, mo_ta: "chung, relay 2", x: 512, y: 90, xac_nhan: false}
+      - {ten: NC2, ben: tren, muc: ac220, mo_ta: "thường đóng, relay 2", x: 600, y: 95, xac_nhan: false}
+      - {ten: S1/S2, ben: trai, muc: tin-hieu, mo_ta: "jumper Low–Com–High (đặt High)", x: 228, y: 785}
     # Sơ đồ đấu theo dự án: noi = [chân linh kiện, nối tới, ghi chú]; chân không có trong noi = để trống
     so_do:
       - du_an: pump-control

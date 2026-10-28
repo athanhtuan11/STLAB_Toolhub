@@ -9,7 +9,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from . import pinout
+from . import pin_diagram, pinout
 
 STUDIO = Path(__file__).resolve().parent.parent
 ROOT = STUDIO.parent
@@ -149,6 +149,7 @@ def prompts():
 
 
 LIBRARY_YAML = ROOT / "tools" / "robotics-cad" / "library" / "components.yaml"
+LIBRARY_DIR = LIBRARY_YAML.parent
 
 
 def library():
@@ -167,7 +168,20 @@ def library():
         c["todo"] = c.get("todo") or []
         c["nguon"] = c.get("nguon") or []
         c["pinout"] = []
-        if c.get("chan"):
+        if c.get("anh_chan"):
+            svg = pin_diagram.photo_svg(c)
+            if svg:
+                c["pinout"].append({"title": "S\u01a1 \u0111\u1ed3 ch\u00e2n", "svg": svg})
+            for sd in c.get("so_do") or []:
+                wiring = pin_diagram.wiring_svg(c, sd)
+                if not wiring:
+                    continue
+                du_an = sd.get("du_an") or ""
+                tieu_de = sd.get("tieu_de") or ""
+                title = ("\u0110\u1ea5u cho %s: %s" % (du_an, tieu_de) if du_an
+                         else "\u0110\u1ea5u cho %s" % tieu_de)
+                c["pinout"].append({"title": title, "svg": wiring})
+        elif c.get("chan"):
             c["pinout"].append({"title": "S\u01a1 \u0111\u1ed3 ch\u00e2n",
                                 "svg": pinout.render_svg(c.get("ten", ""), c["chan"])})
             for sd in c.get("so_do") or []:

@@ -28,6 +28,20 @@ def library():
     return render_template("library.html", lib=ws.library())
 
 
+IMG_EXT = {".png", ".jpg", ".jpeg", ".svg", ".webp"}
+
+
+@bp.get("/library/img/<path:rel>")
+def library_img(rel):
+    base = (ws.LIBRARY_DIR / "images").resolve()
+    target = (ws.LIBRARY_DIR / rel).resolve()
+    if target != base and base not in target.parents:
+        abort(404)
+    if target.suffix.lower() not in IMG_EXT or not target.is_file():
+        abort(404)
+    return send_file(target, max_age=0)
+
+
 # ---------- Trang ----------
 @bp.get("/")
 def overview():
