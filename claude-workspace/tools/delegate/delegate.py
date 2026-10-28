@@ -445,8 +445,15 @@ def _opencode(prompt):
 def _agy(prompt):
     return _agy_named("agy", prompt)
 
+AGY_NOTE = """
+NOTE (agy sandbox): your sandbox has no python and cannot see paths outside the current directory, so you
+cannot run the gate. Do NOT run it and do NOT ESCALATE for that – delegate.py runs the gate right after you and
+sends you its output next round if it fails. Write the files, check them by reading, then reply `DONE`."""
+
+
 def _agy_named(name, prompt):
-    return [shutil.which("agy"), "-p", prompt, "--model", ORG["model"][name],
+    # sandbox agy khong thay python (thu 2026-10-28) -> gate do delegate.py chay, giu --sandbox
+    return [shutil.which("agy"), "-p", prompt + AGY_NOTE, "--model", ORG["model"][name],
             "--dangerously-skip-permissions", "--sandbox"], None
 
 def _kilo(prompt):

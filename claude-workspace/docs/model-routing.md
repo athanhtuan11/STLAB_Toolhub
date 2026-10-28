@@ -18,7 +18,7 @@ File này ghi cách cài, cách dùng, lý do chọn và cách gỡ.
 | 3c | **OpenCode** (`opencode-ai@1.19.4`) + model Zen free `opencode/deepseek-v4.1-flash-free` (thêm 2026-10-27) | 0 đ (Zen free, không cần đăng nhập; hạn mức TODO) | Code/script giao qua `tools/delegate/` khi Codex hết hạn mức (xem mục cuối file) |
 | 3d | **Kilo CLI 7.8.18** (`@kilocode/cli`, MIT) + model `kilo/kilo-auto/free` (thêm 2026-10-28) | 0 đ (không cần đăng nhập; hạn mức TODO) | Code, cad-script qua `tools/delegate/` khi OpenCode hết hạn mức |
 | 3e | **GitHub Copilot CLI 1.0.105** (`@github/copilot`) + gói Copilot Free (thêm 2026-10-28) | 0 đ (hạn mức tháng TODO) | Code, doc-ma qua `tools/delegate/` khi Kilo hết hạn mức |
-| 3f | **agy-sonnet**: cùng CLI agy, model `claude-sonnet-4-6` (thử việc, 2026-10-28) | Hạn mức riêng, tách với Gemini | Chỉ gọi đích danh `--executor agy-sonnet`; chờ Tuan quyết |
+| 3f | **agy-sonnet**: cùng CLI agy, model `claude-sonnet-4-6` (chính thức 2026-10-28) | Hạn mức riêng, tách với Gemini | Code, cad-script, doc-ma qua `tools/delegate/`, sau Kilo và trước Copilot |
 
 Phần tiết kiệm chính là **tầng 2**: phiên Opus không phải đọc log `prepare-print`, diff dài hay bản nháp tài liệu.
 Tầng 3 bớt thêm phần viết chữ và review.
@@ -181,11 +181,11 @@ Số tầng ở các mục trên (1–3) là cách gọi cũ, vẫn đúng với
 |---|---|---|---|
 | 0 Tổng giám đốc | Claude Opus (phiên chính) | Quyết định; viết spec + gate; hình học khó; an toàn; duyệt | Quota Claude Pro |
 | 1 Quản lý | Haiku: `check-runner`, `doc-writer`, `git-scribe` | Chạy kiểm, viết tài liệu, commit | Giữ log/diff dài ngoài phiên chính |
-| 2 Thực thi | `tools/delegate/delegate.py` → Codex → OpenCode → Kilo → Copilot → agy | Viết và chạy code/script tới khi gate PASS | Claude chỉ đọc dòng JSON cuối |
+| 2 Thực thi | `tools/delegate/delegate.py` → Codex → OpenCode → Kilo → agy-sonnet → Copilot → agy | Viết và chạy code/script tới khi gate PASS | Claude chỉ đọc dòng JSON cuối |
 | Tư vấn | `ask-gpt`, `ask-gemini` (deliberation, chỉ đọc) | Nháp văn, tóm tắt, ý kiến thứ hai | Không ghi file; chỉ gửi bản chép |
 
-Thứ tự executor tầng 2 (`executor: auto`, từ 2026-10-28): **Codex** (chính) → **OpenCode** (Zen free) → **Kilo** (free) → **Copilot** (Free) → **agy** (dự phòng).
-Gặp 429 hoặc hết hạn mức thì tự chuyển sang executor kế tiếp. `agy-sonnet` không nằm trong chuỗi tự động (chỉ gọi đích danh). Trạng thái lưu ở `%LOCALAPPDATA%\stlab-usage\executors.json`.
+Thứ tự executor tầng 2 (`executor: auto`, từ 2026-10-28): **Codex** (chính) → **OpenCode** (Zen free) → **Kilo** (free) → **agy-sonnet** (`claude-sonnet-4-6`) → **Copilot** (Free) → **agy** (dự phòng).
+Gặp 429 hoặc hết hạn mức thì tự chuyển sang executor kế tiếp. Trạng thái lưu ở `%LOCALAPPDATA%\stlab-usage\executors.json`.
 agy đang hết hạn mức tới ~2026-11-02; Tuan đánh dấu bằng `python tools/delegate/delegate.py --mark-limit agy 2026-11-02T12:00`.
 
 Lý do thêm OpenCode: Codex và agy đều có hạn mức, cần thêm một đường free có thể thay thế. Thử 2026-10-27:
@@ -218,7 +218,7 @@ Sau khi gỡ, `delegate.py` tự bỏ qua OpenCode (kiểm `--status`) và chạ
 
 ## Thêm executor free: Kilo, Copilot, agy-sonnet (2026-10-28)
 
-Chuỗi tự động mới (nguồn `org/agents.yaml`): Codex → OpenCode → Kilo → Copilot → agy (Gemini, chỉ đọc mã).
+Chuỗi tự động mới (nguồn `org/agents.yaml`): Codex → OpenCode → Kilo → agy-sonnet → Copilot → agy (Gemini, chỉ đọc mã).
 
 Đã loại sau khi tra (2026-10-28): Gemini CLI (Google dừng gói free cá nhân 18/06/2026, chuyển sang Antigravity), Qwen Code
 (OAuth free dừng 15/04/2026), iFlow (đã đóng), Rovo Dev (ngừng bản độc lập), Cline/Crush (không kèm model free),
@@ -249,11 +249,16 @@ copilot login --device-code
   `rm -rf`, `Remove-Item`; `--disable-builtin-mcps`.
 - Selftest PASS 24 s.
 
-### agy-sonnet (thử việc)
+### agy-sonnet (chính thức 2026-10-28)
 
-- Cùng CLI agy, model `claude-sonnet-4-6`, hạn mức **riêng** với Gemini.
-- Chỉ gọi đích danh `--executor agy-sonnet`, không nằm trong chuỗi tự động.
-- Selftest ESCALATE: sandbox agy không thấy `python`, nên không tự chạy được gate. Chờ Tuan quyết.
+- Cùng CLI agy, model `claude-sonnet-4-6`, hạn mức **riêng** với Gemini. Kỹ năng: code, cad-script, doc-ma.
+- Nằm trong chuỗi tự động, sau Kilo và trước Copilot.
+- Selftest lần 1 ESCALATE: sandbox agy không thấy `python`. Thử gọi python bằng đường dẫn đầy đủ trong `agy --sandbox`:
+  vẫn không thấy, vì sandbox không thấy ổ đĩa ngoài cwd.
+- Cách xử lý: giữ `--sandbox`. `delegate.py` thêm lời dặn AGY_NOTE vào prompt của mọi executor nhà agy (agy, agy-sonnet):
+  không tự chạy gate, không ESCALATE vì việc đó, viết xong trả DONE. `delegate.py` chạy gate ngay sau; nếu FAIL thì gửi
+  kết quả vào vòng sau.
+- Selftest lần 2 PASS vòng 1, 61 s → chính thức.
 
 ### Chính sách dữ liệu
 

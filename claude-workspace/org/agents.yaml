@@ -111,7 +111,7 @@ agents:
     tu_ngay: 2026-10-27
 
   # Tuan 2026-10-28 tuyen them 3 nguoi; selftest 2026-10-28: kilo PASS 32 s, copilot PASS 24 s -> chinh-thuc;
-  # agy-sonnet ESCALATE (sandbox agy khong thay python, gate khong chay duoc) -> con thu-viec.
+  # agy-sonnet: sandbox agy khong thay python -> AGY_NOTE: gate do delegate.py chay; selftest lan 2 PASS 61 s -> chinh-thuc.
   - id: kilo
     chuc_danh: Nhân viên lập trình
     tang: 2
@@ -146,7 +146,7 @@ agents:
     gate: bat-buoc
     khi_het_han_muc: copilot
     cooldown_h: 24
-    trang_thai: thu-viec
+    trang_thai: chinh-thuc
     tu_ngay: 2026-10-28
 
   - id: copilot

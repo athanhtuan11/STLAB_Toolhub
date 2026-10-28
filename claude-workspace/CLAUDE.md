@@ -71,7 +71,7 @@ Sổ nhân sự (sinh tự động – sửa `org/agents.yaml` rồi chạy `pyt
 | 2 – Nhân viên | Nhân viên lập trình (chính) | `codex` | codex-chatgpt-free | free | code, cad-script, doc-ma, bao-cao | claude-main | chinh-thuc |
 | 2 – Nhân viên | Nhân viên lập trình | `opencode` | opencode/deepseek-v4.1-flash-free | free | code, cad-script | claude-main | chinh-thuc |
 | 2 – Nhân viên | Nhân viên lập trình | `kilo` | kilo/kilo-auto/free | free | code, cad-script | claude-main | chinh-thuc |
-| 2 – Nhân viên | Nhân viên lập trình | `agy-sonnet` | claude-sonnet-4-6 | free | code, cad-script, doc-ma | claude-main | thu-viec |
+| 2 – Nhân viên | Nhân viên lập trình | `agy-sonnet` | claude-sonnet-4-6 | free | code, cad-script, doc-ma | claude-main | chinh-thuc |
 | 2 – Nhân viên | Nhân viên lập trình | `copilot` | auto | free | code, doc-ma | claude-main | chinh-thuc |
 | 2 – Nhân viên | Nhân viên lập trình (dự phòng) | `agy` | gemini-3.8-flash-high | free | doc-ma | claude-main | chinh-thuc |
 | Tư vấn | Tư vấn tra web | `ask-gpt` | codex-chatgpt-free | free | tra-web | claude-main | chinh-thuc |
@@ -84,7 +84,7 @@ Mô tả công việc:
 | Tầng | Ai | Làm gì |
 |---|---|---|
 | 0 – Tổng giám đốc | Phiên chính (Opus) | Kiến trúc, quyết định, **viết spec + gate** (tiêu chí nghiệm thu đo được), hình học/khe/động học khó, `safe_edit.py`, hướng in/support `print.yaml`, an toàn, duyệt ảnh + `result.json` |
-| 2 – Thực thi (free) | `tools/delegate/delegate.py` → Codex (chính) → OpenCode → Kilo → Copilot → agy (dự phòng) | Viết + chạy code/script theo `spec.md` tới khi gate PASS: script Python, firmware, Toolhub, script FreeCAD theo spec (`tools/cad-delegation/`) |
+| 2 – Thực thi (free) | `tools/delegate/delegate.py` → Codex (chính) → OpenCode → Kilo → agy-sonnet → Copilot → agy (dự phòng) | Viết + chạy code/script theo `spec.md` tới khi gate PASS: script Python, firmware, Toolhub, script FreeCAD theo spec (`tools/cad-delegation/`) |
 | 1 – Quản lý | Agent `check-runner` (Haiku) | Sau mỗi lần sửa model đã Lưu: chạy `prepare-print.py` + test, trả tóm tắt ≤ 15 dòng. **Không tự đọc log dài trong phiên chính** |
 | 1 – Quản lý | Agent `doc-writer` (Haiku + Gemini free) | README, văn xuôi ASSEMBLY.md, ghi chú nghiên cứu, caption, lịch sử sửa – từ gạch đầu dòng phiên chính đưa |
 | 1 – Quản lý | Agent `git-scribe` (Haiku) | Soạn commit + push khi kiểm đạt (đưa kèm phạm vi file + kết quả kiểm) |
@@ -98,7 +98,7 @@ JSON cuối (`verdict`, `rounds`, `changed`, `forbidden_touched`). Log dài nằ
 và báo FAIL nếu executor đụng `.FCStd`/`print.yaml`/`community/`/`.env`. OpenCode chạy với
 `tools/delegate/opencode.json` (cấm ghi ngoài `cwd`, cấm `.FCStd`/git commit/push). Kilo nạp `tools/delegate/kilo.json`
 qua `KILO_CONFIG`. Copilot nhận prompt qua stdin, có `--sandbox` và `--deny-tool` cho git commit/push/reset/checkout, `rm -rf`,
-`Remove-Item`. `agy-sonnet` chỉ gọi đích danh (`--executor agy-sonnet`), chờ Tuan quyết. Claude chỉ tự viết code khi
+`Remove-Item`. `agy-sonnet` (chính thức 2026-10-28) nằm trong chuỗi tự động sau Kilo; sandbox agy không thấy python/ổ ngoài cwd nên `delegate.py` chạy gate thay (lời dặn AGY_NOTE trong prompt). Claude chỉ tự viết code khi
 việc nhỏ hơn việc viết spec (≲ 30 dòng) hoặc là hình học/khe/an toàn.
 
 **Quy tắc cứng (Tuan 2026-10-26, nhắc 2 lần):** phiên chính KHÔNG tự đọc tài liệu/BOM/log/file mẫu, KHÔNG tự viết tài
@@ -113,9 +113,9 @@ Codex `ask-gpt` (deliberation) trên Windows **không đọc được file** –
 dùng nó để tra web hoặc dán đoạn mã vào prompt; đọc mã/repo giao Gemini (agy). `/codex:review`: `TODO` thử lại trên Windows.
 
 Nguyên tắc cứng:
-- Model free (Gemini, Codex, OpenCode, Kilo, Copilot) **không quyết** kích thước, khe, thông số linh kiện, an toàn điện/pin/nhiệt. Số liệu từ chúng
+- Model free (Gemini, Codex, OpenCode, Kilo, agy-sonnet, Copilot) **không quyết** kích thước, khe, thông số linh kiện, an toàn điện/pin/nhiệt. Số liệu từ chúng
   phải được phiên chính hoặc script kiểm; không có nguồn → `TODO`.
-- **Không gửi ra ngoài** (Gemini, Codex, OpenCode, Kilo, Copilot – chính sách dữ liệu gói free Kilo/Copilot còn TODO): `stlab/parent-reports/`, thông tin cá nhân của khách (tên, địa chỉ, SĐT, mật khẩu Wi-Fi/tài khoản – KHÔNG phải
+- **Không gửi ra ngoài** (Gemini, Codex, OpenCode, Kilo, agy-sonnet, Copilot – chính sách dữ liệu gói free Kilo/Copilot còn TODO): `stlab/parent-reports/`, thông tin cá nhân của khách (tên, địa chỉ, SĐT, mật khẩu Wi-Fi/tài khoản – KHÔNG phải
   bản thân dự án: mọi dự án trong `maker/` là việc bình thường, giao executor được; Tuan 2026-10-27),
   `.env`/key/mật khẩu, ảnh có người. Chỉ tài liệu kỹ thuật, mã nguồn của workspace.
 - `/codex:rescue` (Codex được ghi file, sandbox `workspace-write`) chỉ dùng khi Tuan đồng ý; cấm cho đụng `.FCStd`,

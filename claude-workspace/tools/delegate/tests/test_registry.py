@@ -13,7 +13,7 @@ spec.loader.exec_module(d)
 
 # 1) So that -> gia tri module (check_org.py van dung ORDER/COOLDOWN_H/FORBIDDEN)
 org = d.load_org()
-assert org["order"] == ["codex", "opencode", "kilo", "copilot", "agy"], org["order"]
+assert org["order"] == ["codex", "opencode", "kilo", "agy-sonnet", "copilot", "agy"], org["order"]
 assert d.ORDER == org["order"] and d.COOLDOWN_H == {"codex": 5, "opencode": 1, "kilo": 1, "agy-sonnet": 24, "copilot": 24, "agy": 24}, (d.ORDER, d.COOLDOWN_H)
 assert org["model"]["opencode"] == "opencode/deepseek-v4.1-flash-free" and org["model"]["agy"] == "gemini-3.8-flash-high"
 pol = yaml.safe_load(open(os.path.join(ORG, "policy.yaml"), encoding="utf-8"))
@@ -26,7 +26,8 @@ assert d.pick_queue(dict(executor="kilo"), "tools/x", org) == ["kilo"]
 argv, stdin = d.command("kilo", "P")
 assert argv[1:4] == ["run", "--model", "kilo/kilo-auto/free"] and stdin == "P", argv
 argv, _ = d.command("agy-sonnet", "P")
-assert "claude-sonnet-4-6" in argv, argv
+assert "claude-sonnet-4-6" in argv and "--sandbox" in argv, argv
+assert argv[2].startswith("P") and "delegate.py runs the gate" in argv[2], argv[2]
 argv, stdin = d.command("copilot", "P")
 # prompt qua stdin: argv cua copilot.cmd di qua cmd.exe lam vo & | % " (thu 2026-10-28)
 assert stdin == "P" and "P" not in argv and "-p" not in argv, argv
@@ -64,20 +65,20 @@ def must_fail(fn, why):
 
 # 2) Nghi viec -> bo khoi chuoi, noi tiep theo khi_het_han_muc cua nguoi nghi
 o = d.load_org(tmp_org(lambda a: ag(a, "opencode").__setitem__("trang_thai", "nghi")))
-assert o["order"] == ["codex", "kilo", "copilot", "agy"], o["order"]
+assert o["order"] == ["codex", "kilo", "agy-sonnet", "copilot", "agy"], o["order"]
 must_fail(lambda: d.pick_queue(dict(executor="opencode"), "tools/x", o), "nghi viec ma goi dich danh van chay")
 
 # 3) pick_queue theo ky_nang / executor / muc du lieu / thu viec
 assert d.pick_queue(dict(ky_nang="bao-cao"), "docs/reports", org) == ["codex"]
 # agy chi giu doc-ma tu 2026-10-27 (han muc tuan dung chung voi ask-gemini/doc-writer) -> khong vao viec code/CAD
-assert d.pick_queue(dict(ky_nang="cad-script"), "tools/x", org) == ["codex", "opencode", "kilo"]
-assert d.pick_queue(dict(ky_nang=["code", "cad-script"]), "tools/x", org) == ["codex", "opencode", "kilo"]
-assert d.pick_queue(dict(ky_nang="doc-ma"), "tools/x", org) == ["codex", "copilot", "agy"]
-assert d.pick_queue(dict(executor="auto"), "tools/x", org) == ["codex", "opencode", "kilo", "copilot", "agy"]
+assert d.pick_queue(dict(ky_nang="cad-script"), "tools/x", org) == ["codex", "opencode", "kilo", "agy-sonnet"]
+assert d.pick_queue(dict(ky_nang=["code", "cad-script"]), "tools/x", org) == ["codex", "opencode", "kilo", "agy-sonnet"]
+assert d.pick_queue(dict(ky_nang="doc-ma"), "tools/x", org) == ["codex", "agy-sonnet", "copilot", "agy"]
+assert d.pick_queue(dict(executor="auto"), "tools/x", org) == ["codex", "opencode", "kilo", "agy-sonnet", "copilot", "agy"]
 assert d.pick_queue(dict(executor="opencode"), "tools/x", org) == ["opencode"]
 must_fail(lambda: d.pick_queue(dict(ky_nang="hat-karaoke"), "tools/x", org), "khong ai co ky nang")
 must_fail(lambda: d.pick_queue(dict(executor="kimi"), "tools/x", org), "executor khong co trong so")
-assert d.pick_queue(dict(executor="auto"), "maker/pump-control/firmware", org) == ["codex", "opencode", "kilo", "copilot", "agy"], \
+assert d.pick_queue(dict(executor="auto"), "maker/pump-control/firmware", org) == ["codex", "opencode", "kilo", "agy-sonnet", "copilot", "agy"], \
     "du an trong maker/ la viec binh thuong (Tuan 2026-10-27)"
 must_fail(lambda: d.pick_queue(dict(executor="auto"), "stlab/parent-reports", org), "bao cao phu huynh")
 
