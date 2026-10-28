@@ -60,8 +60,8 @@ if w and valid_xml(w[w.index("<svg"):] if "<svg" in w else w, "wiring_svg"):
 # 3. Trang + route anh
 c = create_app().test_client()
 H = {"Host": "127.0.0.1:5050"}
-r = c.get("/library", headers=H)
-check(r.status_code == 200, f"/library status {r.status_code}")
+r = c.get("/library/relay-module-2ch-srd-05vdc", headers=H)
+check(r.status_code == 200, f"/library/<id> status {r.status_code}")
 html = r.get_data(as_text=True)
 check("Sơ đồ chân" in html, "trang thieu muc 'Sơ đồ chân'")
 check(IMG_URL in html, "trang thieu so do chan anh that cua relay")

@@ -1,20 +1,16 @@
 {% extends "base.html" %}
 {% block title %}Thư viện linh kiện{% endblock %}
 {% block content %}
-{% set labels = {
-  'kich_thuoc_mm': 'Kích thước (mm)', 'khoi_luong_g': 'Khối lượng (g)', 'dien_ap_v': 'Điện áp (V)',
-  'momen_stall_kgf_cm': 'Mô-men stall (kgf·cm)', 'toc_do': 'Tốc độ', 'mat_bich_mm': 'Mặt bích (mm)',
-  'goc_buoc_deg': 'Góc bước (°)', 'buoc_moi_vong': 'Bước/vòng', 'dong_dinh_muc_a': 'Dòng định mức (A)',
-  'momen_giu_n_cm': 'Mô-men giữ (N·cm)', 'dien_tro_pha_ohm': 'Điện trở pha (Ω)', 'truc_mm': 'Trục (mm)',
-  'muc_logic_v': 'Mức logic (V)', 'ghi_chu': 'Ghi chú', 'bo_mach_mm': 'Bo mạch (mm)', 'lo_bat': 'Lỗ bắt',
-  'dong_lam_viec_ma': 'Dòng làm việc (mA)', 'tam_do_cm': 'Tầm đo (cm)', 'goc_do_deg': 'Góc đo (°)',
-  'tan_so_khz': 'Tần số (kHz)', 'dien_ap_toi_da_v': 'Điện áp tối đa (V)', 'dong_tong_a': 'Dòng tổng (A)',
-  'trong_mm': 'Đường kính trong (mm)', 'ngoai_mm': 'Đường kính ngoài (mm)', 'day_mm': 'Bề dày (mm)',
-  'spline': 'Spline / horn', 'ghi_chu_pg002': 'Ghi chú PG002', 'go_dinh_tam_mm': 'Gờ định tâm (mm)',
-  'dien_cam_mh': 'Điện cảm pha (mH)', 'chieu_cao_mm': 'Chiều cao cổng (mm)', 'vai_truc_da_min_mm': 'Vai trục da min (mm)',
-  'vai_lo_Da_max_mm': 'Vai lỗ Da max (mm)', 'dung_luong_mah': 'Dung lượng (mAh)', 'dong_toi_da_a': 'Dòng tối đa (A)',
-  'gpio_ma': 'Dòng mỗi GPIO (mA)', 'tiep_diem': 'Tiếp điểm', 'cuon_day_v': 'Cuộn dây (V)',
-  'relay': 'Relay', 'chan': 'Chân'} %}
+<style>
+.lib-card { color: inherit; text-decoration: none; }
+.lib-card:hover { border-color: var(--accent); text-decoration: none; }
+.lib-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.lib-card .thumb { height: 96px; width: 100%; object-fit: contain; display: block; }
+.lib-card .specs { font-size: 12.5px; color: var(--muted); display: grid; gap: 2px; }
+.lib-card .specs .k { opacity: .85; }
+#q { font: inherit; font-size: 14px; padding: 7px 10px; border: 1px solid var(--line);
+  border-radius: var(--r-control); background: var(--card); color: var(--text); min-width: 200px; }
+</style>
 <div class="head">
   <div>
     <h1>Thư viện linh kiện robotics</h1>
@@ -31,43 +27,31 @@
 <div class="actions" style="margin-bottom:14px" id="filters">
   <button data-filter="" class="primary">Tất cả</button>
   {% for t in lib.types %}<button data-filter="{{ t }}">{{ t }}</button>{% endfor %}
+  <input id="q" type="search" placeholder="Tìm linh kiện…" aria-label="Tìm linh kiện">
 </div>
 
-<section class="grid" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr))">
+<section class="grid" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr))">
   {% for c in lib.components %}
-  <article class="card" data-type="{{ c.loai }}"{% if c.pinout %} style="grid-column:1 / -1"{% endif %}>
+  <a class="card lib-card" href="/library/{{ c.id }}" data-type="{{ c.loai }}"
+     data-id="{{ c.id }}" data-name="{{ c.ten|lower }}">
     <div class="row">
       <span class="dot {{ 'ok' if c.model_ok else 'bad' }}" title="{{ 'Có model STEP trong thư viện' if c.model_ok else 'Không tìm thấy file model' }}"></span>
       <h3 class="grow">{{ c.ten }}</h3><span class="badge plain">{{ c.loai }}</span>
     </div>
+    {% if c.thumb %}<img class="thumb" src="{{ c.thumb }}" alt="{{ c.ten }}" loading="lazy">{% endif %}
     <div class="row">
       {% if c.model_ok %}<span class="badge ok">STEP</span>{% endif %}
       {% if c.stl_ok %}<span class="badge ok">STL</span>{% endif %}
       {% if not c.model_ok %}<span class="badge bad">chưa có model</span>{% endif %}
+      {% if c.has_pinout %}<span class="badge">Sơ đồ chân</span>{% endif %}
     </div>
-    {% if c.bbox_mm %}<div class="muted">Hộp bao model: {{ c.bbox_mm|join(' × ') }} mm</div>{% endif %}
-    {% if c.thong_so %}
-    <table style="font-size:13px">
-      {% for k, v in c.thong_so.items() %}<tr><td class="muted" style="padding:3px 8px 3px 0;border:none;white-space:nowrap">{{ labels.get(k, k.replace('_', ' ')) }}</td><td style="padding:3px 0;border:none">{{ v }}</td></tr>{% endfor %}
-    </table>
-    {% else %}<div class="muted">Chưa có thông số có nguồn.</div>{% endif %}
-    {% if c.todo %}<div>{% for t in c.todo %}<span class="badge bad wrap" style="margin:2px 4px 2px 0">TODO: {{ t }}</span>{% endfor %}</div>{% endif %}
-    {% if c.pinout %}
-    <details open style="margin-top:4px">
-      <summary>Sơ đồ chân</summary>
-      {% for p in c.pinout %}
-      <div style="margin-top:10px">
-        <div class="muted" style="font-size:12.5px;margin-bottom:2px">{{ p.title }}</div>
-        <div style="overflow-x:auto">{{ p.svg|safe }}</div>
-      </div>
-      {% endfor %}
-    </details>
+    {% if c.key_specs %}
+    <div class="specs">
+      {% for k, v in c.key_specs %}<div><span class="k">{{ k }}:</span> {{ v }}</div>{% endfor %}
+    </div>
     {% endif %}
-    <div class="muted" style="margin-top:auto">
-      {% for n in c.nguon %}{% if n.startswith('http') %}<a href="{{ n }}" target="_blank" rel="noopener">nguồn {{ loop.index }}</a>{% else %}{{ n }}{% endif %}{% if not loop.last %} · {% endif %}{% endfor %}
-    </div>
-    <div class="mono muted" title="{{ c.model }}" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.model }}</div>
-  </article>
+    {% if c.todo_count %}<div><span class="badge warn">{{ c.todo_count }} TODO</span></div>{% endif %}
+  </a>
   {% endfor %}
 </section>
 
@@ -79,10 +63,22 @@
 </footer>
 
 <script>
+let typeFilter = "";
+const q = document.getElementById("q");
+function applyFilter() {
+  const s = q.value.trim().toLowerCase();
+  document.querySelectorAll(".card[data-type]").forEach(c => {
+    const okType = !typeFilter || c.dataset.type === typeFilter;
+    const okText = !s || (c.dataset.name || "").includes(s) || (c.dataset.id || "").includes(s);
+    c.hidden = !(okType && okText);
+  });
+}
 document.getElementById("filters").addEventListener("click", e => {
   const b = e.target.closest("button[data-filter]"); if (!b) return;
+  typeFilter = b.dataset.filter;
   document.querySelectorAll("#filters button").forEach(x => x.classList.toggle("primary", x === b));
-  document.querySelectorAll(".card[data-type]").forEach(c => c.hidden = !!b.dataset.filter && c.dataset.type !== b.dataset.filter);
+  applyFilter();
 });
+q.addEventListener("input", applyFilter);
 </script>
 {% endblock %}

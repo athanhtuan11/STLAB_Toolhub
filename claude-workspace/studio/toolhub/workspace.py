@@ -152,44 +152,82 @@ LIBRARY_YAML = ROOT / "tools" / "robotics-cad" / "library" / "components.yaml"
 LIBRARY_DIR = LIBRARY_YAML.parent
 
 
-def library():
-    """Danh muc linh kien (components.yaml) + kiem tra file model co trong thu vien da ghim."""
+LABELS = {
+    'kich_thuoc_mm': 'Kích thước (mm)', 'khoi_luong_g': 'Khối lượng (g)', 'dien_ap_v': 'Điện áp (V)',
+    'momen_stall_kgf_cm': 'Mô-men stall (kgf·cm)', 'toc_do': 'Tốc độ', 'mat_bich_mm': 'Mặt bích (mm)',
+    'goc_buoc_deg': 'Góc bước (°)', 'buoc_moi_vong': 'Bước/vòng', 'dong_dinh_muc_a': 'Dòng định mức (A)',
+    'momen_giu_n_cm': 'Mô-men giữ (N·cm)', 'dien_tro_pha_ohm': 'Điện trở pha (Ω)', 'truc_mm': 'Trục (mm)',
+    'muc_logic_v': 'Mức logic (V)', 'ghi_chu': 'Ghi chú', 'bo_mach_mm': 'Bo mạch (mm)', 'lo_bat': 'Lỗ bắt',
+    'dong_lam_viec_ma': 'Dòng làm việc (mA)', 'tam_do_cm': 'Tầm đo (cm)', 'goc_do_deg': 'Góc đo (°)',
+    'tan_so_khz': 'Tần số (kHz)', 'dien_ap_toi_da_v': 'Điện áp tối đa (V)', 'dong_tong_a': 'Dòng tổng (A)',
+    'trong_mm': 'Đường kính trong (mm)', 'ngoai_mm': 'Đường kính ngoài (mm)', 'day_mm': 'Bề dày (mm)',
+    'spline': 'Spline / horn', 'ghi_chu_pg002': 'Ghi chú PG002', 'go_dinh_tam_mm': 'Gờ định tâm (mm)',
+    'dien_cam_mh': 'Điện cảm pha (mH)', 'chieu_cao_mm': 'Chiều cao cổng (mm)', 'vai_truc_da_min_mm': 'Vai trục da min (mm)',
+    'vai_lo_Da_max_mm': 'Vai lỗ Da max (mm)', 'dung_luong_mah': 'Dung lượng (mAh)', 'dong_toi_da_a': 'Dòng tối đa (A)',
+    'gpio_ma': 'Dòng mỗi GPIO (mA)', 'tiep_diem': 'Tiếp điểm', 'cuon_day_v': 'Cuộn dây (V)',
+    'relay': 'Relay', 'chan': 'Chân'}
+
+THUMB_MAX = 60
+
+
+def _enrich(c, roots, lib_root):
+    root = roots.get(c.get("thu_vien"), lib_root)
+    c["model_ok"] = bool(c.get("model")) and (root / c["model"]).exists()
+    c["stl_ok"] = bool(c.get("stl")) and (root / c["stl"]).exists()
+    c["thong_so"] = c.get("thong_so") or {}
+    c["todo"] = c.get("todo") or []
+    c["nguon"] = c.get("nguon") or []
+    return c
+
+
+def _load():
     import yaml
     data = yaml.safe_load(LIBRARY_YAML.read_text(encoding="utf-8")) if LIBRARY_YAML.exists() else {}
     lib_root = ROOT / data.get("library_root", "community/freecad-library")
     # Nhieu nguon model: thu_vien: <ten> -> library_roots[<ten>]; khong ghi -> library_root
     roots = {k: ROOT / v for k, v in (data.get("library_roots") or {}).items()}
-    comps = data.get("components", [])
-    for c in comps:
-        root = roots.get(c.get("thu_vien"), lib_root)
-        c["model_ok"] = bool(c.get("model")) and (root / c["model"]).exists()
-        c["stl_ok"] = bool(c.get("stl")) and (root / c["stl"]).exists()
-        c["thong_so"] = c.get("thong_so") or {}
-        c["todo"] = c.get("todo") or []
-        c["nguon"] = c.get("nguon") or []
-        c["pinout"] = []
-        if c.get("anh_chan"):
-            svg = pin_diagram.photo_svg(c)
-            if svg:
-                c["pinout"].append({"title": "S\u01a1 \u0111\u1ed3 ch\u00e2n", "svg": svg})
-            for sd in c.get("so_do") or []:
-                wiring = pin_diagram.wiring_svg(c, sd)
-                if not wiring:
-                    continue
-                du_an = sd.get("du_an") or ""
-                tieu_de = sd.get("tieu_de") or ""
-                title = ("\u0110\u1ea5u cho %s: %s" % (du_an, tieu_de) if du_an
-                         else "\u0110\u1ea5u cho %s" % tieu_de)
-                c["pinout"].append({"title": title, "svg": wiring})
-        elif c.get("chan"):
-            c["pinout"].append({"title": "S\u01a1 \u0111\u1ed3 ch\u00e2n",
-                                "svg": pinout.render_svg(c.get("ten", ""), c["chan"])})
-            for sd in c.get("so_do") or []:
-                c["pinout"].append({
-                    "title": "\u0110\u1ea5u cho %s" % (sd.get("du_an") or ""),
-                    "svg": pinout.render_svg(c.get("ten", ""), c["chan"], sd),
-                })
-            c["pinout"] = [p for p in c["pinout"] if p["svg"]]
+    comps = [_enrich(c, roots, lib_root) for c in data.get("components", [])]
+    return data, comps, lib_root, roots
+
+
+def _key_specs(thong_so):
+    out = []
+    for k, v in list(thong_so.items())[:3]:
+        s = str(v)
+        if len(s) > THUMB_MAX:
+            s = s[:THUMB_MAX] + "…"
+        out.append((LABELS.get(k, k.replace("_", " ")), s))
+    return out
+
+
+def _pinout(c):
+    rows = []
+    if c.get("anh_chan"):
+        svg = pin_diagram.photo_svg(c)
+        if svg:
+            rows.append({"title": "S\u01a1 \u0111\u1ed3 ch\u00e2n", "svg": svg})
+        for sd in c.get("so_do") or []:
+            wiring = pin_diagram.wiring_svg(c, sd)
+            if not wiring:
+                continue
+            du_an = sd.get("du_an") or ""
+            tieu_de = sd.get("tieu_de") or ""
+            title = ("\u0110\u1ea5u cho %s: %s" % (du_an, tieu_de) if du_an
+                     else "\u0110\u1ea5u cho %s" % tieu_de)
+            rows.append({"title": title, "svg": wiring})
+    elif c.get("chan"):
+        rows.append({"title": "S\u01a1 \u0111\u1ed3 ch\u00e2n",
+                     "svg": pinout.render_svg(c.get("ten", ""), c["chan"])})
+        for sd in c.get("so_do") or []:
+            rows.append({
+                "title": "\u0110\u1ea5u cho %s" % (sd.get("du_an") or ""),
+                "svg": pinout.render_svg(c.get("ten", ""), c["chan"], sd),
+            })
+        rows = [p for p in rows if p["svg"]]
+    return rows
+
+
+def _stats(lib_root, roots):
     stats = {"step": 0, "fcstd": 0, "stl": 0}
     for r in {lib_root, *roots.values()}:
         if not r.exists():
@@ -205,8 +243,30 @@ def library():
                     stats["fcstd"] += 1
                 elif ext == "stl":
                     stats["stl"] += 1
-    return {"components": comps, "updated": data.get("cap_nhat", ""), "stats": stats,
+    return stats
+
+
+def library():
+    """Danh sach gon: ten + thong tin co ban; khong ve so do (xem library_item)."""
+    data, comps, lib_root, roots = _load()
+    for c in comps:
+        anh_chan = c.get("anh_chan") or {}
+        c["has_pinout"] = bool(c.get("chan"))
+        c["thumb"] = "/library/img/" + anh_chan["file"] if anh_chan.get("file") else ""
+        c["todo_count"] = len(c["todo"])
+        c["key_specs"] = _key_specs(c["thong_so"])
+    return {"components": comps, "updated": data.get("cap_nhat", ""), "stats": _stats(lib_root, roots),
             "types": sorted({c.get("loai", "") for c in comps}), "root": str(lib_root)}
+
+
+def library_item(cid):
+    """Mot linh kien day du (co so do chan/dau) hoac None."""
+    _data, comps, _lib_root, _roots = _load()
+    c = next((x for x in comps if x.get("id") == cid), None)
+    if c is None:
+        return None
+    c["pinout"] = _pinout(c)
+    return c
 
 
 def open_in_vscode(slug):

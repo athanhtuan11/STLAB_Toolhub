@@ -56,15 +56,15 @@ xml.dom.minidom.parseString(pinout.render_svg("X", [{"ten": "A"}]))  # thieu ben
 
 # 4. Trang /library: relay co so do chan that tu components.yaml
 c = create_app().test_client()
-r = c.get("/library", headers={"Host": "127.0.0.1:5050"})
-check(r.status_code == 200, f"/library status {r.status_code}")
+r = c.get("/library/relay-module-2ch-srd-05vdc", headers={"Host": "127.0.0.1:5050"})
+check(r.status_code == 200, f"/library/<id> status {r.status_code}")
 html = r.get_data(as_text=True)
 check("Sơ đồ chân" in html, "trang thieu muc 'Sơ đồ chân'")
 check(html.count("<svg") >= 1 and "ESP32 GPIO26" in html, "card relay thieu SVG so do pump-control")
 check("pump-control" in html, "thieu ten du an cua so do")
 check("COM1" in html and "NO1" in html, "thieu chan COM1/NO1 cua relay")
 check("&lt;svg" not in html, "SVG bi escape thanh text (thieu |safe)")
-r2 = c.get("/library", headers={"Host": "127.0.0.1:5050"})
+r2 = c.get("/library/relay-module-2ch-srd-05vdc", headers={"Host": "127.0.0.1:5050"})
 check(r2.get_data(as_text=True).count("<svg") == html.count("<svg"), "goi lai /library khong duoc nhan doi SVG")
 
 if fails:

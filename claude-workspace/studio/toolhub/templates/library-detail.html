@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ c.ten }}{% endblock %}
+{% block content %}
+<p style="margin:0 0 12px"><a href="/library">← Linh kiện</a></p>
+
+<div class="head">
+  <div>
+    <h1>{{ c.ten }}</h1>
+    <p class="sub mono">{{ c.id }}</p>
+  </div>
+  <div class="actions"><span class="badge plain">{{ c.loai }}</span></div>
+</div>
+
+<section class="card" style="gap:12px">
+  <div class="row">
+    <span class="dot {{ 'ok' if c.model_ok else 'bad' }}" title="{{ 'Có model STEP trong thư viện' if c.model_ok else 'Không tìm thấy file model' }}"></span>
+    {% if c.model_ok %}<span class="badge ok">STEP</span>{% endif %}
+    {% if c.stl_ok %}<span class="badge ok">STL</span>{% endif %}
+    {% if not c.model_ok %}<span class="badge bad">chưa có model</span>{% endif %}
+    {% if c.has_pinout or c.pinout %}<span class="badge">Sơ đồ chân</span>{% endif %}
+  </div>
+
+  {% if c.bbox_mm %}<div class="muted">Hộp bao model: {{ c.bbox_mm|join(' × ') }} mm</div>{% endif %}
+
+  {% if c.thong_so %}
+  <div class="table-wrap">
+    <table style="font-size:13px">
+      {% for k, v in c.thong_so.items() %}<tr><td class="muted" style="padding:3px 8px 3px 0;border:none;white-space:nowrap">{{ labels.get(k, k.replace('_', ' ')) }}</td><td style="padding:3px 0;border:none">{{ v }}</td></tr>{% endfor %}
+    </table>
+  </div>
+  {% else %}<div class="muted">Chưa có thông số có nguồn.</div>{% endif %}
+
+  {% if c.todo %}<div>{% for t in c.todo %}<span class="badge bad wrap" style="margin:2px 4px 2px 0">TODO: {{ t }}</span>{% endfor %}</div>{% endif %}
+
+  {% if c.pinout %}
+  <details open style="margin-top:4px">
+    <summary>Sơ đồ chân</summary>
+    {% for p in c.pinout %}
+    <div style="margin-top:10px">
+      <div class="muted" style="font-size:12.5px;margin-bottom:2px">{{ p.title }}</div>
+      <div style="overflow-x:auto">{{ p.svg|safe }}</div>
+    </div>
+    {% endfor %}
+  </details>
+  {% endif %}
+
+  <div class="muted" style="margin-top:auto">
+    {% for n in c.nguon %}{% if n.startswith('http') %}<a href="{{ n }}" target="_blank" rel="noopener">nguồn {{ loop.index }}</a>{% else %}{{ n }}{% endif %}{% if not loop.last %} · {% endif %}{% endfor %}
+  </div>
+  {% if c.model %}
+  <div class="mono muted" title="{{ c.model }}" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.model }}</div>
+  {% endif %}
+</section>
+{% endblock %}

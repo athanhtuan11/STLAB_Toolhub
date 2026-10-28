@@ -25,7 +25,7 @@ def nav():
 
 @bp.get("/library")
 def library():
-    return render_template("library.html", lib=ws.library())
+    return render_template("library.html", lib=ws.library(), labels=ws.LABELS)
 
 
 IMG_EXT = {".png", ".jpg", ".jpeg", ".svg", ".webp"}
@@ -40,6 +40,14 @@ def library_img(rel):
     if target.suffix.lower() not in IMG_EXT or not target.is_file():
         abort(404)
     return send_file(target, max_age=0)
+
+
+@bp.get("/library/<cid>")
+def library_item(cid):
+    c = ws.library_item(cid)
+    if c is None:
+        abort(404)
+    return render_template("library-detail.html", c=c, labels=ws.LABELS)
 
 
 # ---------- Trang ----------
