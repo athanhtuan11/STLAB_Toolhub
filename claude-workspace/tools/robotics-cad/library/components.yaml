@@ -630,6 +630,29 @@ components:
       cuon_day_v: 5
       chan: "Vào: DC+ (5 V), DC− (GND), IN1, IN2 (cầu đấu vít). Mỗi kênh 1 jumper (S1 → IN1, S2 → IN2) trên hàng chân Low–Com–High: Com–High = kích mức cao, Com–Low = kích mức thấp. Ra mỗi kênh: cầu vít 3 chân NO/COM/NC"
       ghi_chu: "Tiếp điểm 10 A là tải điện trở; KHÔNG đóng trực tiếp motor (dòng khởi động lớn) – pump-control chỉ dùng để đóng cuộn hút contactor 220 VAC"
+    # Sơ đồ chân (Toolhub vẽ thành graph): ben = trai|phai; muc = ac220 | 5v | 3v3 | gnd | tin-hieu
+    chan:
+      - {ten: DC+, ben: trai, muc: 5v, mo_ta: "nguồn 5 V"}
+      - {ten: DC−, ben: trai, muc: gnd, mo_ta: GND}
+      - {ten: IN1, ben: trai, muc: 3v3, mo_ta: "kích kênh 1 (jumper S1)"}
+      - {ten: IN2, ben: trai, muc: 3v3, mo_ta: "kích kênh 2 (jumper S2)"}
+      - {ten: NO1, ben: phai, muc: ac220, mo_ta: "thường hở, relay 1"}
+      - {ten: COM1, ben: phai, muc: ac220, mo_ta: "chung, relay 1"}
+      - {ten: NC1, ben: phai, muc: ac220, mo_ta: "thường đóng, relay 1"}
+      - {ten: NO2, ben: phai, muc: ac220, mo_ta: "thường hở, relay 2"}
+      - {ten: COM2, ben: phai, muc: ac220, mo_ta: "chung, relay 2"}
+      - {ten: NC2, ben: phai, muc: ac220, mo_ta: "thường đóng, relay 2"}
+    # Sơ đồ đấu theo dự án: noi = [chân linh kiện, nối tới, ghi chú]; chân không có trong noi = để trống
+    so_do:
+      - du_an: pump-control
+        tieu_de: "Kênh 1 đóng cuộn hút contactor (S1 = Com–High, cấp từ chân 5V ESP32)"
+        noi:
+          - [DC+, "ESP32 5V", "5 V từ USB-C"]
+          - [DC−, "ESP32 GND", ""]
+          - [IN1, "ESP32 GPIO26", "kích mức cao"]
+          - [IN2, "DC− (hoặc để trống)", "không dùng"]
+          - [COM1, "L qua công tắc xoay vị trí TỰ ĐỘNG", "220 VAC"]
+          - [NO1, "A1 cuộn hút contactor", "A2 → N"]
     nguon:
       - "Nhãn in trên relay + chữ in lụa trên PCB (ảnh Tuan chụp 2026-10-28)"
     todo:

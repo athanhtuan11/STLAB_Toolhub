@@ -9,6 +9,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from . import pinout
+
 STUDIO = Path(__file__).resolve().parent.parent
 ROOT = STUDIO.parent
 COMM = ROOT / "community"
@@ -164,6 +166,16 @@ def library():
         c["thong_so"] = c.get("thong_so") or {}
         c["todo"] = c.get("todo") or []
         c["nguon"] = c.get("nguon") or []
+        c["pinout"] = []
+        if c.get("chan"):
+            c["pinout"].append({"title": "S\u01a1 \u0111\u1ed3 ch\u00e2n",
+                                "svg": pinout.render_svg(c.get("ten", ""), c["chan"])})
+            for sd in c.get("so_do") or []:
+                c["pinout"].append({
+                    "title": "\u0110\u1ea5u cho %s" % (sd.get("du_an") or ""),
+                    "svg": pinout.render_svg(c.get("ten", ""), c["chan"], sd),
+                })
+            c["pinout"] = [p for p in c["pinout"] if p["svg"]]
     stats = {"step": 0, "fcstd": 0, "stl": 0}
     for r in {lib_root, *roots.values()}:
         if not r.exists():

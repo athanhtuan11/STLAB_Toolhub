@@ -13,7 +13,8 @@
   'spline': 'Spline / horn', 'ghi_chu_pg002': 'Ghi chú PG002', 'go_dinh_tam_mm': 'Gờ định tâm (mm)',
   'dien_cam_mh': 'Điện cảm pha (mH)', 'chieu_cao_mm': 'Chiều cao cổng (mm)', 'vai_truc_da_min_mm': 'Vai trục da min (mm)',
   'vai_lo_Da_max_mm': 'Vai lỗ Da max (mm)', 'dung_luong_mah': 'Dung lượng (mAh)', 'dong_toi_da_a': 'Dòng tối đa (A)',
-  'gpio_ma': 'Dòng mỗi GPIO (mA)'} %}
+  'gpio_ma': 'Dòng mỗi GPIO (mA)', 'tiep_diem': 'Tiếp điểm', 'cuon_day_v': 'Cuộn dây (V)',
+  'relay': 'Relay', 'chan': 'Chân'} %}
 <div class="head">
   <div>
     <h1>Thư viện linh kiện robotics</h1>
@@ -34,7 +35,7 @@
 
 <section class="grid" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr))">
   {% for c in lib.components %}
-  <article class="card" data-type="{{ c.loai }}">
+  <article class="card" data-type="{{ c.loai }}"{% if c.pinout %} style="grid-column:span 2"{% endif %}>
     <div class="row">
       <span class="dot {{ 'ok' if c.model_ok else 'bad' }}" title="{{ 'Có model STEP trong thư viện' if c.model_ok else 'Không tìm thấy file model' }}"></span>
       <h3 class="grow">{{ c.ten }}</h3><span class="badge plain">{{ c.loai }}</span>
@@ -51,6 +52,17 @@
     </table>
     {% else %}<div class="muted">Chưa có thông số có nguồn.</div>{% endif %}
     {% if c.todo %}<div>{% for t in c.todo %}<span class="badge bad wrap" style="margin:2px 4px 2px 0">TODO: {{ t }}</span>{% endfor %}</div>{% endif %}
+    {% if c.pinout %}
+    <details open style="margin-top:4px">
+      <summary>Sơ đồ chân</summary>
+      {% for p in c.pinout %}
+      <div style="margin-top:10px">
+        <div class="muted" style="font-size:12.5px;margin-bottom:2px">{{ p.title }}</div>
+        <div>{{ p.svg|safe }}</div>
+      </div>
+      {% endfor %}
+    </details>
+    {% endif %}
     <div class="muted" style="margin-top:auto">
       {% for n in c.nguon %}{% if n.startswith('http') %}<a href="{{ n }}" target="_blank" rel="noopener">nguồn {{ loop.index }}</a>{% else %}{{ n }}{% endif %}{% if not loop.last %} · {% endif %}{% endfor %}
     </div>
