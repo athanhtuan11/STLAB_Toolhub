@@ -25,5 +25,9 @@
 
 ## Quy ước
 - Bí mật (Wi-Fi, token, khóa RainMaker) **không** ghi vào file trong git – dùng biến môi trường / file bị `.gitignore`.
-- Flash/OTA lên thiết bị thật: chỉ khi Tuan đồng ý.
+- **Phát hành firmware = OTA, Claude tự làm (Tuan 2026-10-29):** sửa firmware xong → commit mã nguồn → chạy
+  `firmware/release.ps1 -Version x.y.z -Notes "..."` (tự tăng `PROJECT_VER`, build, đẩy `releases/` lên GitHub). Không
+  tự sửa `PROJECT_VER` trước (script từ chối nếu không lớn hơn bản cũ). Thiết bị thấy bản mới ≤ 6 giờ hoặc sau khởi
+  động lại → bấm "Cap nhat" trên app. **Không** bảo Tuan nạp USB; `flash.ps1` chỉ dùng cho ESP32 mới / cứu khi OTA hỏng.
+- Chống bật/tắt liên tục: `PUMP_MIN_OFF_S` = 5 s (Tuan chốt 2026-10-29, từ 1.2.0).
 - Kích thước mm; ghi đơn vị V, A, W cho mọi đại lượng.
