@@ -8,6 +8,7 @@ Motor 220 V 1 pha 2 HP (≈ 1,5 kW), dòng chạy ≈ 12,5 A, khởi động ~60
 | # | Món | Thông số cần | SL | Vì sao |
 |---|---|---|---|---|
 | 1 | Contactor | **AC-3 ≥ 18 A**, cuộn hút **220 VAC** | 1 | Đóng cắt motor. Relay module (~10 A) không chịu dòng khởi động → dính/cháy tiếp điểm |
+|   | ↳ đã có (2026-10-29) | **LS Metasol MC-22b**: AC-3 22 A, AC-1 40 A, UL 3 HP @230 V 1 pha, phụ 1NO+1NC. Cuộn hút: `TODO` đọc nhãn (phải 220 VAC). Toolhub → Linh kiện → `contactor-ls-mc-22b`; ảnh `img/contactor-ls-mc-22b-*.jpg` | | Đạt yêu cầu dòng |
 | 2 | Bo ESP32 | **ESP32-DevKitC WROOM-32D**, cấp 5 V vào chân 5V | 1 | Wi-Fi + RainMaker |
 | 3 | Nguồn AC-DC cách ly | 220 VAC → **5 V ≥ 1 A**, module đóng kín | 1 | Nuôi ESP32 + module relay |
 | 4 | Module relay | Opto 1–2 kênh 5 V, jumper H/L → **đặt H**. Thử bật/tắt khi nhận hàng | 1 | Đóng cuộn hút contactor |

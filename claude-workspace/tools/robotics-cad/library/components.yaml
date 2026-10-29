@@ -11,7 +11,7 @@
 #     (dung_tu_ban_ve: true, library/boards_param.py): mat bang dung ban ve, chieu cao linh kien la UOC -> do hang that.
 #   - thu_vien: espressif -> STEP module ESP32 chinh hang (espressif/kicad-libraries 3.2.1, CC-BY-SA-4.0).
 version: 1
-cap_nhat: 2026-10-24
+cap_nhat: 2026-10-29
 library_root: community/freecad-library
 library_roots:
   cyberbrick: community/cyberbrick-official/models
@@ -664,3 +664,46 @@ components:
       - "dòng cuộn dây (A) + điện trở cuộn (Ω): ghim datasheet Songle SRD"
       - "IN mức cao 3,3 V (ESP32) có kích chắc không: thử với hàng thật"
       - "kích thước PCB, lỗ bắt (mm): đo hàng thật; chưa có model STEP"
+
+  - id: contactor-ls-mc-22b
+    ten: Contactor (khởi động từ) LS Metasol MC-22b, 3 cực, 1NO + 1NC phụ
+    loai: contactor
+    du_an: [pump-control]
+    bbox_mm: []
+    anh: maker/pump-control/docs/img/contactor-ls-mc-22b-front.jpg
+    thong_so:
+      dong_dinh_muc_a: "AC-3: 22 A (240 / 440 / 550 / 690 VAC); AC-1 = Ith: 40 A"
+      cong_suat_motor: "AC-3 3 pha: 5,5 kW @240 V, 11 kW @440 V, 15 kW @550–690 V. UL 1 pha: 2 HP @115 V, 3 HP @230 V; 3 pha: 7,5 HP @200–230 V, 10 HP @460 V, 15 HP @575 V"
+      dien_ap_toi_da_v: "Ui 690 V; Uimp 8 kV"
+      tiep_diem: "3 cực chính 1/L1–2/T1, 3/L2–4/T2, 5/L3–6/T3; phụ 43–44 NO, 31–32 NC"
+      cuon_day_v: "TODO – đọc nhãn cuộn hút (cạnh chân A1/A2); pump-control cần 220 VAC"
+      day_dau: "AWG 12–8, dây đồng 60/75 °C (nhãn UL)"
+      ghi_chu: "Pump-control (motor 1 pha 2 HP ≈ 12,5 A): đủ (AC-3 22 A ≥ 18 A yêu cầu; UL 3 HP @230 V 1 pha ≥ 2 HP). Dùng 2 cực đóng cả L và N, cực thứ 3 để trống"
+    anh_chan: {file: images/contactor-ls-mc-22b.png, w: 760, h: 980, nguon: "ảnh Tuan chụp 2026-10-29, cắt quanh contactor"}
+    chan:
+      - {ten: 1/L1, ben: tren, muc: ac220, mo_ta: "vào cực 1", x: 139, y: 99}
+      - {ten: 3/L2, ben: tren, muc: ac220, mo_ta: "vào cực 2", x: 303, y: 99}
+      - {ten: 5/L3, ben: tren, muc: ac220, mo_ta: "vào cực 3", x: 474, y: 99}
+      - {ten: 2/T1, ben: duoi, muc: ac220, mo_ta: "ra cực 1", x: 116, y: 810}
+      - {ten: 4/T2, ben: duoi, muc: ac220, mo_ta: "ra cực 2", x: 292, y: 810}
+      - {ten: 6/T3, ben: duoi, muc: ac220, mo_ta: "ra cực 3", x: 474, y: 804}
+      - {ten: "43/31", ben: phai, muc: ac220, mo_ta: "phụ: 43 NO, 31 NC (vít trên; vít thứ 2 bị che)", x: 623, y: 215, xac_nhan: false}
+      - {ten: "32/44", ben: phai, muc: ac220, mo_ta: "phụ: 32 NC, 44 NO (vít giữa)", x: 634, y: 655, xac_nhan: false}
+      - {ten: "A2?", ben: phai, muc: ac220, mo_ta: "có thể là chân cuộn hút – đọc nhãn", x: 645, y: 810, xac_nhan: false}
+    so_do:
+      - du_an: pump-control
+        tieu_de: "1 pha: đóng cả L và N tới motor; cuộn hút qua công tắc xoay / relay ESP32"
+        noi:
+          - [1/L1, "L từ MCB nhánh tủ nhà", "dây 2,5 mm²"]
+          - [3/L2, "N từ MCB nhánh tủ nhà", "dây 2,5 mm²"]
+          - [2/T1, "motor L", ""]
+          - [4/T2, "motor N", "PE nối thẳng motor, không qua contactor"]
+          - [A1, "công tắc xoay TAY / NO1 relay ESP32 (TỰ ĐỘNG)", "chân cuộn hút – chưa có trên ảnh"]
+          - [A2, "N", ""]
+    nguon:
+      - "Nhãn mặt trước + nhãn hông (ảnh Tuan chụp 2026-10-29): MC-22b, AC3 22 A, AC1 = Ith 40 A, Ui 690 V, Uimp 8 kV, bảng HP UL, AWG 12–8"
+    todo:
+      - "điện áp cuộn hút (V, AC/DC) + vị trí chân A1/A2: đọc nhãn trên cuộn – phải là 220 VAC cho pump-control"
+      - "vít phụ nào là 43/44/31/32 và vít góc dưới phải có phải A2: đo thông mạch (chưa hút: 31–32 thông, 43–44 hở; cuộn A1–A2 có điện trở)"
+      - "dây 2,5 mm² nhỏ hơn dải AWG 12 (≈ 3,3 mm²) in trên nhãn UL: tra catalog LS dải đấu IEC hoặc bấm đầu cos/ống"
+      - "kích thước, lỗ bắt / ray DIN 35 mm (mm): đo hàng thật; chưa có model STEP"

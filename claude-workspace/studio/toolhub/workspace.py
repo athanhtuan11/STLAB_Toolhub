@@ -165,7 +165,7 @@ LABELS = {
     'dien_cam_mh': 'Điện cảm pha (mH)', 'chieu_cao_mm': 'Chiều cao cổng (mm)', 'vai_truc_da_min_mm': 'Vai trục da min (mm)',
     'vai_lo_Da_max_mm': 'Vai lỗ Da max (mm)', 'dung_luong_mah': 'Dung lượng (mAh)', 'dong_toi_da_a': 'Dòng tối đa (A)',
     'gpio_ma': 'Dòng mỗi GPIO (mA)', 'tiep_diem': 'Tiếp điểm', 'cuon_day_v': 'Cuộn dây (V)',
-    'relay': 'Relay', 'chan': 'Chân'}
+    'relay': 'Relay', 'chan': 'Chân', 'cong_suat_motor': 'Công suất motor', 'day_dau': 'Dây đấu'}
 
 THUMB_MAX = 60
 
