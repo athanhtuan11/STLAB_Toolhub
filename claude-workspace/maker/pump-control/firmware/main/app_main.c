@@ -122,7 +122,14 @@ static esp_err_t write_cb(const esp_rmaker_device_t *device, const esp_rmaker_pa
             esp_rmaker_param_update_and_report(param, esp_rmaker_bool(false));
             return ESP_OK;
         }
-        pump_set(val.val.b, PUMP_SRC_USER);
+        if (!pump_set(val.val.b, PUMP_SRC_USER)) {
+            // Chong bat/tat lien tuc: bao khach + tra nut ve TAT
+            char msg[96];
+            snprintf(msg, sizeof(msg), "May bom vua tat - cho %d giay nua moi bat lai duoc", pump_lockout_seconds());
+            esp_rmaker_raise_alert(msg);
+            esp_rmaker_param_update_and_report(param, esp_rmaker_bool(false));
+            return ESP_OK;
+        }
         esp_rmaker_param_update(param, val);
     } else if (strcmp(name, PARAM_MAX) == 0) {
         int m = val.val.i;

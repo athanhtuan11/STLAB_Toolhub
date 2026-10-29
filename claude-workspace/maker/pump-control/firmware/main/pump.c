@@ -11,6 +11,7 @@ static gpio_num_t s_gpio;
 static bool s_on;
 static int s_max_min;
 static int64_t s_started_us;
+static int64_t s_off_us;  // luc tat gan nhat (khoi dong = luc tat)
 static esp_timer_handle_t s_timer;
 static pump_change_cb_t s_cb;
 static SemaphoreHandle_t s_lock;
@@ -49,14 +50,30 @@ void pump_init(gpio_num_t relay_gpio, int max_minutes, pump_change_cb_t cb)
     };
     ESP_ERROR_CHECK(gpio_config(&io));
     relay_write(false);
+    s_off_us = esp_timer_get_time();  // mat dien chop chop -> cung phai cho, motor khong khoi dong lien tuc
     const esp_timer_create_args_t args = {.callback = timeout_cb, .name = "pump_max"};
     ESP_ERROR_CHECK(esp_timer_create(&args, &s_timer));
     ESP_LOGI(TAG, "relay GPIO%d = TAT, chay toi da %d phut", s_gpio, s_max_min);
 }
 
-void pump_set(bool on, pump_src_t src)
+static int lockout_s_locked(void)
+{
+    if (s_on) {
+        return 0;
+    }
+    int64_t left_us = (int64_t)PUMP_MIN_OFF_S * 1000000 - (esp_timer_get_time() - s_off_us);
+    return left_us > 0 ? (int)((left_us + 999999) / 1000000) : 0;  // lam tron len giay
+}
+
+bool pump_set(bool on, pump_src_t src)
 {
     xSemaphoreTake(s_lock, portMAX_DELAY);
+    if (on && lockout_s_locked() > 0) {
+        int left = lockout_s_locked();
+        xSemaphoreGive(s_lock);
+        ESP_LOGW(TAG, "tu choi BAT: moi tat, con cho %d s", left);
+        return false;
+    }
     bool changed = (on != s_on);
     s_on = on;
     relay_write(on);
@@ -65,12 +82,24 @@ void pump_set(bool on, pump_src_t src)
         arm_timer();
     } else if (!on) {
         esp_timer_stop(s_timer);
+        if (changed) {
+            s_off_us = esp_timer_get_time();
+        }
     }
     xSemaphoreGive(s_lock);
     ESP_LOGI(TAG, "bom %s (%s)", on ? "BAT" : "TAT", src == PUMP_SRC_TIMEOUT ? "het gio" : "lenh");
     if (changed && s_cb) {
         s_cb(on, src);
     }
+    return true;
+}
+
+int pump_lockout_seconds(void)
+{
+    xSemaphoreTake(s_lock, portMAX_DELAY);
+    int left = lockout_s_locked();
+    xSemaphoreGive(s_lock);
+    return left;
 }
 
 bool pump_is_on(void)
