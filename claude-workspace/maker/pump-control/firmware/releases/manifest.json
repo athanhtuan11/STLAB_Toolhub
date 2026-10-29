@@ -1,8 +1,8 @@
 {
-    "version":  "1.1.2",
-    "url":  "https://raw.githubusercontent.com/athanhtuan11/STLAB_Toolhub/main/claude-workspace/maker/pump-control/firmware/releases/pump_control-1.1.2.bin",
-    "notes":  "Sua loi tran stack sau cap nhat",
-    "date":  "2026-10-25 12:36",
-    "size":  1470256,
-    "sha256":  "46b364496e19561aed1e9317aee9c5ec92e55dc6be771ee53ab7baaea70ce1ec"
+    "version":  "1.2.0",
+    "url":  "https://raw.githubusercontent.com/athanhtuan11/STLAB_Toolhub/main/claude-workspace/maker/pump-control/firmware/releases/pump_control-1.2.0.bin",
+    "notes":  "Chong bat tat lien tuc: tat xong 5 s moi bat lai",
+    "date":  "2026-10-29 15:53",
+    "size":  1470672,
+    "sha256":  "f6b2f071eceb61b6050ac0497993c578e5d41357aac07505603ad1f1ed915bd8"
 }
