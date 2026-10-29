@@ -42,3 +42,13 @@ Tuan đưa clip tự quay + vài dòng mong muốn → Claude phân tích, lập
 ## Riêng tư
 - Âm thanh/chép lời xử lý trên máy. Ảnh khung hình + chép lời được Claude đọc (gửi lên Claude).
 - Clip có học sinh: cần đồng ý của phụ huynh; ghi tên clip vào `rieng-tu.txt` để không trích ảnh.
+
+## Video AI dựng bằng HyperFrames (2026-10-29)
+- **Khi nào dùng:** video không cần clip quay – giới thiệu dự án, explainer, motion graphic, chữ động, biểu đồ, slide thuyết trình (skill `slideshow`). Clip tự quay vẫn dùng FilmCraft (mục trên).
+- **Thư mục:** `video-ai/projects/<ten>/` (KHÔNG lên git) chứa dự án HyperFrames. Khung dọc 1080×1920 giữ vùng an toàn như mục Reel. Màu/font lấy từ `studio/design/tokens.json` + Be Vietnam Pro.
+- **Phân việc:** Claude (tổng giám đốc) viết brief/spec: kịch bản từng cảnh, thời lượng, khung hình, chữ tiếng Việt, gate. Nhân viên (`tools/delegate/delegate.py`, chuỗi Codex → OpenCode → Kilo → agy-sonnet → Copilot → agy) viết composition HTML + render. Trong spec dẫn đường dẫn `community/heygen-com-hyperframes/skills/hyperframes/SKILL.md` để executor đọc.
+- **Gate gợi ý:** `npx hyperframes check` PASS; `npx hyperframes render` ra MP4; ffprobe đúng độ phân giải + thời lượng; `npx hyperframes snapshot` ra ảnh khung hình → Claude duyệt bằng ảnh (contact sheet), không duyệt .txt.
+- **Phiên bản ghim:** luôn gọi `npx -y hyperframes@0.8.214 ...`. Env `HYPERFRAMES_NO_TELEMETRY=1`, `HYPERFRAMES_SKIP_SKILLS=1` (đã đặt trong `~/.claude/settings.json`; executor chạy ngoài Claude Code phải tự đặt).
+- **Giọng đọc tiếng Việt:** dùng VieNeu (`scripts/tts_vi.py`) như mục trên, không dùng HeyGen TTS.
+- **Không tự đăng:** không `hyperframes publish` khi chưa hỏi Tuan.
+- **Nâng phiên bản:** theo `docs/COMMUNITY.md` (`update-community.sh check/apply` chỉ khi Tuan xác nhận), nhớ đổi số phiên bản npm theo.

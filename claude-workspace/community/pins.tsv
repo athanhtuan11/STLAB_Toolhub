@@ -59,3 +59,4 @@ j0ono0-pinout	https://github.com/j0ono0/pinout.git	sha	-	d46f4f1949b1360a07bc52a
 wireviz	https://github.com/wireviz/WireViz.git	tag	v0.4.1	1c4fd68a2e34e12ff1513aac52323890c6a8c695	-	no	off	GPL-3.0
 printcalc	https://github.com/Gunderson3d/printcalc.git	tag	v0.2.0	84070ded38f4aed5d71cf6785f0a0bb8d3f26beb	-	no	off	Apache-2.0
 3dpcalc	https://github.com/jkga/3dpcalc.git	sha	-	48df32e459059c78da224a0e03dc568512628edc	-	no	off	MIT
+heygen-com-hyperframes	https://github.com/heygen-com/hyperframes.git	sha	-	4fa5f54519150566b8ef706f60c05ff13c903423	-	no	off	Apache-2.0

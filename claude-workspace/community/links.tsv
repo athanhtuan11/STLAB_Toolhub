@@ -48,3 +48,8 @@ maker/oss-toolkit/.claude/skills/pr	community/mattpocock-skills/skills/engineeri
 ~/AppData/Roaming/FreeCAD/v1-1/Mod/fasteners	community/shaise-freecad-fasteners
 ~/AppData/Roaming/FreeCAD/v1-1/Mod/STLab	tools/robotics-cad/workbench/STLab
 ~/AppData/Roaming/FreeCAD/v1-1/Macro/PartsLibrary.FCMacro	community/freecad-library/PartsLibrary.FCMacro
+~/.claude/skills/hyperframes	community/heygen-com-hyperframes/skills/hyperframes
+~/.claude/skills/hyperframes-cli	community/heygen-com-hyperframes/skills/hyperframes-cli
+~/.claude/skills/hyperframes-registry	community/heygen-com-hyperframes/skills/hyperframes-registry
+~/.claude/skills/media-use	community/heygen-com-hyperframes/skills/media-use
+~/.claude/skills/slideshow	community/heygen-com-hyperframes/skills/slideshow
