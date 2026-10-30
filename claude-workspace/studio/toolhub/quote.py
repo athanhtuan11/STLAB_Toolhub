@@ -304,6 +304,22 @@ def read_3mf(path):
     return {"plates": plates, "hours": sum(p["seconds"] for p in plates) / 3600, "grams": total}
 
 
+def model_key(name):
+    """Stable key based only on the uploaded file name(s)."""
+    suffixes = {".3mf", ".stl", ".obj", ".step", ".stp"}
+    def one(value):
+        name = Path(str(value or "").strip()).name
+        ext = Path(name).suffix.lower()
+        if ext in suffixes:
+            name = name[:-len(Path(name).suffix)]
+        if name.lower().endswith(".gcode"):
+            name = name[:-6]
+        return name.strip().lower()
+    if isinstance(name, (list, tuple)):
+        return "+".join(sorted(k for k in (one(v) for v in name) if k))
+    return one(name)
+
+
 def connect():
     p = _db_path()
     p.parent.mkdir(parents=True, exist_ok=True)
@@ -315,6 +331,7 @@ def connect():
         " spool_weight_g REAL, updated_at TEXT, type TEXT, slicer_profile TEXT);"
         "CREATE TABLE IF NOT EXISTS extras(id INTEGER PRIMARY KEY, label TEXT, price_vnd REAL,"
         " active INTEGER);"
+        "CREATE TABLE IF NOT EXISTS model_extras(model_key TEXT PRIMARY KEY, extras_json TEXT, updated_at TEXT);"
         "CREATE TABLE IF NOT EXISTS quotes(id INTEGER PRIMARY KEY, number TEXT UNIQUE, created_at TEXT,"
         " customer_name TEXT, customer_phone TEXT, title TEXT, note TEXT, total_vnd REAL, data_json TEXT);"
     )
@@ -346,6 +363,48 @@ def connect():
                       (label, float(e.get("price_vnd") or 0)))
     c.commit()
     return c
+
+
+
+def save_model_extras(conn, key, extras):
+    if not key:
+        return None
+    active = {r["id"] for r in conn.execute("select id from extras where active=1")}
+    clean = {}
+    for k, v in (extras or {}).items():
+        try:
+            eid, count = int(k), int(v)
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if eid in active and count > 0:
+            clean[str(eid)] = count
+    updated = datetime.now().isoformat(timespec="seconds")
+    payload = json.dumps(clean, ensure_ascii=False)
+    conn.execute("insert into model_extras(model_key,extras_json,updated_at) values(?,?,?) "
+                 "on conflict(model_key) do update set extras_json=excluded.extras_json, updated_at=excluded.updated_at",
+                 (key, payload, updated))
+    conn.commit()
+    return {"extras": clean, "updated_at": updated}
+
+
+def get_model_extras(conn, key):
+    row = conn.execute("select extras_json,updated_at from model_extras where model_key=?", (key,)).fetchone()
+    if row is None:
+        return None
+    try:
+        stored = json.loads(row["extras_json"] or "{}")
+    except (TypeError, ValueError):
+        stored = {}
+    active = {r["id"] for r in conn.execute("select id from extras where active=1")}
+    clean = {}
+    for k, v in stored.items():
+        try:
+            eid, count = int(k), int(v)
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if eid in active and count > 0:
+            clean[str(eid)] = count
+    return {"extras": clean, "updated_at": row["updated_at"]}
 
 
 def reset_defaults(conn):

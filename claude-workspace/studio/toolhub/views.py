@@ -296,6 +296,15 @@ def _extras_detail(data, extras):
             for eid in extras if int((data.get("extras") or {}).get(str(eid), 0))]
 
 
+def _model_info(names):
+    key = quote_lib.model_key(names)
+    conn = quote_lib.connect()
+    try:
+        return {"model_key": key, "saved_extras": quote_lib.get_model_extras(conn, key) if key else None}
+    finally:
+        conn.close()
+
+
 def _pricing_now():
     conn = quote_lib.connect()
     try:
@@ -514,14 +523,15 @@ def api_quote_parse():
             name = match.name
     except quote_lib.QuoteError as e:
         return jsonify({"error": str(e)}), 400
-    token = _remember(parsed, name)
+    info = _model_info(name)
+    token = _remember(parsed, name, model_key=info["model_key"])
     plates = []
     for p in parsed["plates"]:
         img = p.get("image_png")
         plates.append({"index": p["index"], "seconds": p["seconds"], "grams": p["grams"],
                        "image": "data:image/png;base64," + base64.b64encode(img).decode() if img else None})
     return jsonify({"token": token, "name": name, "hours": parsed["hours"],
-                    "grams": parsed["grams"], "plates": plates})
+                    "grams": parsed["grams"], "plates": plates, **info})
 
 
 @bp.post("/api/quote/calc")
@@ -565,11 +575,28 @@ def api_quote_upload():
                       "files": [str(p) for p in saved]}
     while len(_parsed) > 20:
         _parsed.pop(next(iter(_parsed)))
-    out = {"token": token, "kind": kind, "names": names}
+    info = _model_info(names)
+    _parsed[token]["model_key"] = info["model_key"]
+    out = {"token": token, "kind": kind, "names": names, **info}
     if parsed is not None:
         out.update({"name": ", ".join(names), "hours": parsed["hours"], "grams": parsed["grams"],
                     "plates": _plates_json(parsed)})
     return jsonify(out)
+
+
+@bp.post("/api/quote/model-extras")
+def api_quote_model_extras():
+    data = request.get_json(silent=True) or {}
+    token = data.get("token") or ""
+    item = _parsed.get(token)
+    if item is None or not item.get("model_key"):
+        return jsonify({"error": "Chưa có file mẫu hợp lệ – hãy thả file in lại"}), 400
+    conn = quote_lib.connect()
+    try:
+        saved = quote_lib.save_model_extras(conn, item["model_key"], data.get("extras") or {})
+    finally:
+        conn.close()
+    return jsonify({"model_key": item["model_key"], **saved})
 
 
 @bp.get("/api/quote/slicer-profiles")

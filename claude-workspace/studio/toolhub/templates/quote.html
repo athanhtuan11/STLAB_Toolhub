@@ -126,6 +126,7 @@
             </label>
           </div>
           <div class="subhead">Phụ kiện (số lượng mỗi sản phẩm)</div>
+          <p id="extras-note" class="muted"></p>
           <div id="extra-counts"><p class="muted">Đang nạp bảng giá…</p></div>
         </details>
       </section>
@@ -260,6 +261,8 @@
   let pricing = { settings: {}, materials: {}, extras: [], sources };
   let profiles = { filaments: [], processes: [] };
   let token = null;
+  let modelKey = "";
+  let extrasSaveTimer = null;
   let kind = null;
   let parsedGrams = {};
   let materialMap = {};
@@ -458,7 +461,7 @@
       inp.step = "1";
       inp.value = old[e.id] !== undefined ? old[e.id] : "0";
       inp.dataset.id = e.id;
-      inp.addEventListener("input", schedulePrice);
+      inp.addEventListener("input", () => { schedulePrice(); scheduleSaveExtras(); });
       row.appendChild(lab);
       row.appendChild(inp);
       box.appendChild(row);
@@ -678,6 +681,7 @@
 
   function handleToken(j) {
     token = j.token;
+    modelKey = j.model_key || "";
     kind = j.kind || "sliced";
     parsedGrams = j.grams || {};
     materialMap = {};
@@ -689,8 +693,21 @@
     renderMaterialMap();
     renderPlates(j.plates);
     $("#price-plates").innerHTML = "";
-    if (kind === "sliced") schedulePrice();
-    else schedulePrice();
+    const saved = j.saved_extras;
+    const counts = (saved && saved.extras) || {};
+    document.querySelectorAll("#extra-counts input[data-id]").forEach((i) => {
+      i.value = String(counts[i.dataset.id] || 0);
+    });
+    const note = $("#extras-note");
+    if (saved) {
+      const d = new Date(saved.updated_at);
+      const date = Number.isNaN(d.getTime()) ? "" :
+        `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+      note.textContent = `Đã điền theo lần trước (${date}) – sửa số sẽ nhớ lại cho mẫu “${modelKey}”.`;
+    } else {
+      note.textContent = "Mẫu mới – chọn phụ kiện bằng tay, Toolhub sẽ nhớ cho lần sau.";
+    }
+    schedulePrice();
   }
 
   async function uploadFiles(fileList) {
@@ -741,6 +758,20 @@
       if (n > 0) extras[i.dataset.id] = n;
     });
     return extras;
+  }
+
+  function scheduleSaveExtras() {
+    clearTimeout(extrasSaveTimer);
+    if (!token) return;
+    extrasSaveTimer = setTimeout(async () => {
+      try {
+        const r = await fetch("/api/quote/model-extras", { method: "POST", headers: HJ,
+          body: JSON.stringify({ token, extras: extrasMap() }) });
+        const j = await r.json();
+        if (!r.ok) { toast(false, j.error || "Không nhớ được phụ kiện"); return; }
+        $("#extras-note").textContent = `Đã nhớ phụ kiện cho mẫu “${j.model_key}”.`;
+      } catch (e) { toast(false, "Không nhớ được phụ kiện"); }
+    }, 800);
   }
 
   function priceBody() {
