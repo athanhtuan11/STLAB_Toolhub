@@ -1,0 +1,15 @@
+[project]
+name = "model-study"
+version = "0.1.0"
+description = "STLab: tach + do model cong dong (STL/3MF/STEP) de rut thong so lap ghep"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy",
+    "trimesh",
+    "pyransac3d",
+    "manifold3d",
+    "scipy",
+]
+
+[tool.uv]
+package = false

@@ -88,6 +88,13 @@ description: Thiet ke co khi robot trong FreeCAD cho STLab - chon linh kien tu d
    cắt lưới **theo hướng in** (lấy từ 3MF) từng lớp 0,2 mm, mặt cắt có 2·diện tích/chu vi < 0,45 mm = vách mỏng.
 5. Báo lại: kích thước chính (mm), khối lượng ước tính (vật liệu PLA/PETG), các giả định.
 
+## Tra kho thông số lắp ghép – BẮT BUỘC (Tuan 2026-10-30)
+Trước khi chọn bất kỳ đường kính lỗ/chốt/khe nào: `tools/model-study/.venv/Scripts/python.exe
+tools/model-study/fit-library/fit_lib.py recommend <interface>` (vd `rotate-joint-5mm`, `screw-M2.5`). `basis: verified`
+= STLab in thử thật → dùng; `community` = số trên file tác giả → dùng được, ghi rõ trong spec, chi tiết quan trọng in thử
+trước. Không có trong kho → `TODO`, không đoán. Số mới đo/in thử → thêm vào kho (skill `model-study`).
+Lưu ý: khe 0,40 (tipflow) là khớp **1 lỗ**; chốt xuyên **nhiều** chi tiết STLab đã in thật 0,4 → kẹt, dùng 0,6 (mục dưới).
+
 ## Chốt / trục khớp quay (cập nhật 2026-10-25 – Tuan: chốt pushrod-arm "quá khít", "rỗng sẽ yếu lực")
 **Ca thật pushrod-arm:** chốt xuyên nhiều chi tiết (`Pin_S`: Turret_one_piece ↔ Spacer_S ↔ Boom001) in Ø5,0 trong lỗ Ø5,4
 = khe **0,2 mm/bên** → in ra **không nhét vào được**; ruột chốt **rỗng vì in infill 40 %** (model đặc); `Pin_jaw2` in

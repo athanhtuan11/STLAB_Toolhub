@@ -1,0 +1,189 @@
+{
+ "about": "Kho thong so lap ghep STLab (Tuan 2026-10-30). Don vi mm, duong kinh. AI/Claude thiet ke chi tiet lap ghep PHAI tra kho nay (fit_lib.py recommend <interface>) thay vi tu doan. Uu tien muc verified=true (STLab in thu that tren Bambu A1 + PETG); muc cong dong la so tren file cua tac gia (may/nhua cua ho: TODO). Them muc: Claude gan nhan giao dien + fit, khong de model free tu quyet.",
+ "fit_types": {
+  "rotate": "khop xoay (chot trong lo, quay tu do)",
+  "slide": "truot doc truc",
+  "press": "ep chat",
+  "clearance": "lo vit/truc di qua, khong ren",
+  "self-tap": "lo cho vit tu ren bat thang vao nhua",
+  "unknown": "chua ro chuc nang – TODO"
+ },
+ "entries": [
+  {
+   "id": "tipflow-arm/knob-joint",
+   "interface": "rotate-joint-5mm",
+   "fit": "rotate",
+   "hole_mm": 5.467,
+   "shaft_mm": 5.068,
+   "clearance_mm": 0.399,
+   "nominal_mm": null,
+   "source": {
+    "model": "makerworld-tipflow-cyberbrick-robotic-arm",
+    "parts": "lo 03, 05, 23; num 17, 19",
+    "method": "stl-slice",
+    "ref": "docs/research-notes/tipflow-robotic-arm-fits.md"
+   },
+   "print": {
+    "printer": "TODO (tac gia)",
+    "material": "TODO (tac gia)"
+   },
+   "confidence": 0.8,
+   "verified": false,
+   "note": "Tac gia dung khe 0,40 cho moi khop xoay do duoc."
+  },
+  {
+   "id": "tipflow-arm/base-gear-hub",
+   "interface": "rotate-joint-8.5mm",
+   "fit": "rotate",
+   "hole_mm": 8.868,
+   "shaft_mm": 8.468,
+   "clearance_mm": 0.4,
+   "nominal_mm": null,
+   "source": {
+    "model": "makerworld-tipflow-cyberbrick-robotic-arm",
+    "parts": "banh rang 12 tren truc 13",
+    "method": "stl-slice",
+    "ref": "docs/research-notes/tipflow-robotic-arm-fits.md"
+   },
+   "print": {
+    "printer": "TODO (tac gia)",
+    "material": "TODO (tac gia)"
+   },
+   "confidence": 0.8,
+   "verified": false,
+   "note": ""
+  },
+  {
+   "id": "tipflow-arm/servo9g-screw",
+   "interface": "servo-9g-mount-screw",
+   "fit": "self-tap",
+   "hole_mm": 1.8,
+   "shaft_mm": null,
+   "clearance_mm": null,
+   "nominal_mm": null,
+   "source": {
+    "model": "makerworld-tipflow-cyberbrick-robotic-arm",
+    "parts": "03, 05, 29 (2 lo o 03 cach nhau 27,8)",
+    "method": "stl-slice",
+    "ref": "docs/research-notes/tipflow-robotic-arm-fits.md"
+   },
+   "print": {
+    "printer": "TODO (tac gia)",
+    "material": "TODO (tac gia)"
+   },
+   "confidence": 0.8,
+   "verified": false,
+   "note": "Co vit servo 9g: TODO (khong doan)."
+  },
+  {
+   "id": "tipflow-arm/m2.5-self-tap",
+   "interface": "screw-M2.5",
+   "fit": "self-tap",
+   "hole_mm": 2.4,
+   "shaft_mm": null,
+   "clearance_mm": null,
+   "nominal_mm": 2.5,
+   "source": {
+    "model": "makerworld-tipflow-cyberbrick-robotic-arm",
+    "parts": "01 va 03 (vit M2.5x6 BHCS ghep vo)",
+    "method": "stl-slice",
+    "ref": "docs/research-notes/tipflow-robotic-arm-fits.md"
+   },
+   "print": {
+    "printer": "TODO (tac gia)",
+    "material": "TODO (tac gia)"
+   },
+   "confidence": 0.8,
+   "verified": false,
+   "note": ""
+  },
+  {
+   "id": "tipflow-arm/gearbox030-output",
+   "interface": "gearbox-030-output-hole",
+   "fit": "unknown",
+   "hole_mm": 5.691,
+   "shaft_mm": null,
+   "clearance_mm": null,
+   "nominal_mm": null,
+   "source": {
+    "model": "makerworld-tipflow-cyberbrick-robotic-arm",
+    "parts": "01, 08 (do 5,684-5,698)",
+    "method": "stl-slice",
+    "ref": "docs/research-notes/tipflow-robotic-arm-fits.md"
+   },
+   "print": {
+    "printer": "TODO (tac gia)",
+    "material": "TODO (tac gia)"
+   },
+   "confidence": 0.6,
+   "verified": false,
+   "note": "Duong kinh truc ra hop so: TODO."
+  },
+  {
+   "id": "tipflow-arm/joint-4mm",
+   "interface": "rotate-joint-4mm",
+   "fit": "rotate",
+   "hole_mm": 4.401,
+   "shaft_mm": 4.0,
+   "clearance_mm": 0.401,
+   "nominal_mm": null,
+   "source": {
+    "model": "makerworld-tipflow-cyberbrick-robotic-arm",
+    "method": "stl-fit",
+    "ref": "tools/model-study/_out/arm/features.json",
+    "parts": "lo 03, 13; truc 17, 20, 22"
+   },
+   "print": {
+    "printer": "TODO (tac gia)",
+    "material": "TODO (tac gia)"
+   },
+   "confidence": 0.85,
+   "verified": false,
+   "note": "measure_features 2026-10-30, rms < 0,002. Cung khe 0,40 nhu khop 5 mm."
+  },
+  {
+   "id": "tipflow-arm/tilted-pin-5mm",
+   "interface": "rotate-joint-5mm",
+   "fit": "rotate",
+   "hole_mm": 5.468,
+   "shaft_mm": 5.068,
+   "clearance_mm": 0.4,
+   "nominal_mm": null,
+   "source": {
+    "model": "makerworld-tipflow-cyberbrick-robotic-arm",
+    "method": "stl-fit",
+    "ref": "tools/model-study/_out/arm/features.json",
+    "parts": "chot 20, 22 (in nghieng 30 do) trong lo 03"
+   },
+   "print": {
+    "printer": "TODO (tac gia)",
+    "material": "TODO (tac gia)"
+   },
+   "confidence": 0.85,
+   "verified": false,
+   "note": "Chot in nghieng – truoc day measure_holes khong do duoc."
+  },
+  {
+   "id": "stlab/pushrod-arm-pin-multi",
+   "interface": "rotate-pin-multi-part-5mm",
+   "fit": "rotate",
+   "hole_mm": 5.4,
+   "shaft_mm": 4.8,
+   "clearance_mm": 0.6,
+   "nominal_mm": null,
+   "source": {
+    "model": "stlab maker/pushrod-arm",
+    "parts": "Pin_S xuyen Turret_one_piece, Spacer_S, Boom001",
+    "method": "stlab-design",
+    "ref": "custom/skills/robotics-cad/SKILL.md muc Chot / truc"
+   },
+   "print": {
+    "printer": "Bambu A1",
+    "material": "Bambu PETG Basic"
+   },
+   "confidence": 0.7,
+   "verified": false,
+   "note": "IN THAT 2026-10-25: chot O5,0 trong lo O5,4 (khe 0,4) xuyen nhieu chi tiet -> KHONG nhet vao duoc. Da sua chot O4,8 (khe 0,6) + bo chot thu print-pin-gauge.yaml; TODO: in xong bo chot thu -> doi verified=true, method print-test."
+  }
+ ]
+}
