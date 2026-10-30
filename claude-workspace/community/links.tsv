@@ -11,6 +11,8 @@
 ~/.claude/skills/filmcraft	community/midasmatterhorn-artcraft-skills/filmcraft
 ~/.claude/skills/lightcraft	community/midasmatterhorn-artcraft-skills/lightcraft
 ~/.claude/skills/video-ai	custom/skills/video-ai
+~/.claude/skills/stlab-workflow	custom/skills/stlab-workflow
+~/.claude/skills/stlab-ota-release	custom/skills/stlab-ota-release
 ~/.claude/skills/remotion-best-practices	community/remotion-dev-skills/skills/remotion-best-practices
 # --- Agent re (phan viec theo model, 2026-10-26, docs/model-routing.md) ---
 ~/.claude/agents/check-runner.md	custom/agents/check-runner.md
