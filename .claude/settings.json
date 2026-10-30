@@ -3,9 +3,9 @@
     "allow": [
       "Bash(tasklist)",
       "Bash(tasklist *)",
-	  "Bash(agy -p *)",
-	  "Bash(opencode run *)",
-	  "Bash(python tools/delegate/delegate.py *)"
+      "Bash(agy -p *)",
+      "Bash(opencode run *)",
+      "Bash(python tools/delegate/delegate.py *)"
     ]
   },
   "hooks": {
@@ -16,6 +16,73 @@
           {
             "type": "command",
             "command": "python \"D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/custom/hooks/guard_paths.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/custom/hooks/event_log.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/custom/hooks/event_log.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/custom/hooks/event_log.py\"",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/custom/hooks/event_log.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/custom/hooks/event_log.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"D:/04_Stlab/04_STLAB_Toolhub/claude-workspace/custom/hooks/event_log.py\"",
             "timeout": 10
           }
         ]
