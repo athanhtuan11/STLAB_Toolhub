@@ -35,6 +35,7 @@ __pycache__/
 /maker/**/*.webm
 /maker/**/*.mp3
 /maker/**/*.wav
+/maker/*/freecad/images/
 
 # Bi mat va cau hinh ca nhan
 .env

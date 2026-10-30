@@ -38,6 +38,8 @@ Ngoại lệ: việc ≲ 30 dòng (nhỏ hơn viết spec) Claude tự sửa.
 ## 3. Kết thúc việc (KHÔNG bỏ bước)
 1. Gate PASS + tự kiểm xong → giao `git-scribe` commit + push, **chỉ liệt kê file của việc này** (working tree hay có
    việc dở khác). Kèm kết quả kiểm + dòng `Co-Authored-By` theo system reminder.
+   **Không commit ảnh/video/âm thanh trong `maker/`** (Tuan 2026-10-30: tốn dung lượng cloud) – đã chặn bằng
+   `.gitignore`; ảnh duyệt chỉ để trên máy.
 2. Cập nhật memory: quyết định mới của Tuan → sửa file memory sẵn có (không tạo trùng) + dòng MEMORY.md.
 3. **Quy trình lặp lại ≥ 2 lần mà chưa có skill → tạo skill** (bước 4).
 4. Báo Tuan: làm gì, kiểm gì (PASS/FAIL thật), còn gì chưa kiểm, commit hash.
