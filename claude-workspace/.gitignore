@@ -24,6 +24,17 @@ __pycache__/
 /maker/*/print/plates/
 /maker/*/print/plates-*/
 /maker/*/print/_*
+# Anh/video/am thanh sinh ra trong du an maker: chi de tren may, khong len git (Tuan 2026-10-30: ton dung luong cloud)
+/maker/**/*.png
+/maker/**/*.jpg
+/maker/**/*.jpeg
+/maker/**/*.gif
+/maker/**/*.webp
+/maker/**/*.mp4
+/maker/**/*.mov
+/maker/**/*.webm
+/maker/**/*.mp3
+/maker/**/*.wav
 
 # Bi mat va cau hinh ca nhan
 .env
