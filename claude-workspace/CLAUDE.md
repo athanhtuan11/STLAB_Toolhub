@@ -33,6 +33,9 @@ file này; mỗi dự án con có CLAUDE.md riêng và tự nạp file này theo
   Không liên kết cùng một skill ở cả cấp dự án và cấp dùng chung (bị trùng tên).
 - Claude Desktop làm việc với FreeCAD/Blender… → dùng tab **Code**. Tab Chat/Cowork không đọc skill trên máy.
 - **Không tải skill lên tài khoản claude.ai** (sẽ thành bản sao thứ hai, tự đồng bộ xuống `~/.claude/skills/synced/`).
+- **Quy trình lặp lại ≥ 2 lần → lưu thành skill** (Tuan 2026-10-30) trong `custom/skills/` + dòng `links.tsv`; quy trình
+  đổi thì sửa skill, đừng để memory và skill nói khác nhau. Trình tự nhận việc → giao → kiểm → commit → memory:
+  skill `stlab-workflow`; phát hành firmware OTA: skill `stlab-ota-release`.
 
 ## Quy tắc với nguồn cộng đồng
 - Muốn dùng skill/agent mới: thêm dòng vào `community/links.tsv` rồi chạy
