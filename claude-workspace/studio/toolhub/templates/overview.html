@@ -82,9 +82,10 @@ fetch("/api/org").then(r => r.json()).then(data => {
   const providers = document.getElementById("org-providers");
   providers.textContent = "";
   data.providers.forEach(p => {
-    const c = el("article", "u-card");
+    const c = el("article", "u-card" + (p.stale ? " stale" : ""));
     const h = el("div", "row");
     h.append(el("b", "grow", p.name), el("span", "badge plain", p.plan)); c.append(h);
+    if (p.stale) c.append(el("span", "badge plain", "Số cũ – " + (p.updated || "?")));
     p.bars.forEach(b => {
       const left = 100 - b.used, level = left > 50 ? "ok" : left > 20 ? "warn" : "bad";
       const line = el("div", "u-line");
@@ -93,6 +94,11 @@ fetch("/api/org").then(r => r.json()).then(data => {
       if (b.reset) c.append(el("div", "muted", "reset " + b.reset));
     });
     if (p.note) c.append(el("div", "muted", p.note));
+    if (p.last_run || p.last_limited) {
+      let line = p.last_run ? "Lần cuối chạy: " + p.last_run : "";
+      if (p.last_limited) line += (line ? " · " : "") + "chạm hạn mức " + p.last_limited;
+      c.append(el("div", "muted u-last", line));
+    }
     c.append(el("div", "muted org-used-by", "Dùng cho: "));
     const used = c.lastChild; p.agents.forEach((id, i) => { used.append(el("span", "chip", id)); });
     if (p.limited_until) c.append(el("span", "badge warn wrap", "Hết hạn mức tới " + p.limited_until));

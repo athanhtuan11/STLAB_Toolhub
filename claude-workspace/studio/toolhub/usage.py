@@ -91,11 +91,19 @@ def gemini():
         reset_in = q.get("reset_in_seconds")
         out["bars"].append(_bar(name.replace("_", " "), 100 * (1 - float(q["remaining_fraction"])),
                                 t + reset_in if reset_in is not None else None))
-    out["plan"] = j.get("plan_tier") or out["plan"]
+    out["plan"] = (j.get("plan_tier") or out["plan"]).replace("Antigravity ", "").replace(" Quota", "")
     out["updated"] = time.strftime("%d/%m %H:%M", time.localtime(t)) if t else ""
     if not out["bars"]:
         out["note"] = "agy chưa báo hạn mức – gõ /usage trong agy."
+    elif _stale(t):
+        out["stale"] = True
+        out["note"] = "Số cũ – agy chỉ cập nhật khi mở trong terminal (gõ agy → đợi dòng hạn mức → /exit)."
     return out
+
+
+def _stale(t, hours=24):
+    """Anh chup han muc cu hon N gio -> giao dien lam mo + ghi 'so cu' (Tuan 2026-10-27: the agy tu mau thuan)."""
+    return bool(t) and time.time() - float(t) > hours * 3600
 
 
 def claude():
@@ -167,20 +175,27 @@ def org_board():
     stats_data = _read_json(data_dir / "agent-stats.json")
     now = time.time()
     providers = []
-    sources = {"claude": ("Claude", claude), "codex": ("Codex", codex),
-               "gemini": ("Gemini (agy)", gemini), "opencode": ("OpenCode", None)}
+    sources = (("claude", "Claude", claude), ("codex", "Codex", codex),
+               ("gemini", "Antigravity (agy)", gemini), ("opencode", "OpenCode", None),
+               ("kilo", "Kilo", None), ("copilot", "Copilot", None))
+    default_plan = {"opencode": "Zen free", "kilo": "Kilo free", "copilot": "Copilot free"}
     agent_source = {}
     for agent in agents:
-        aid = agent.get("id", "")
+        aid = str(agent.get("id", ""))
+        low = aid.lower()
         model = str(agent.get("model", "")).lower()
         if agent.get("chi_phi") == "claude-quota":
             source = "claude"
-        elif "codex" in aid.lower() or "gpt" in model or "codex" in model:
+        elif "codex" in low or "gpt" in low or "codex" in model or "gpt" in model:
             source = "codex"
-        elif "gemini" in aid.lower() or "agy" in aid.lower() or "gemini" in model:
+        elif low.startswith("agy") or "gemini" in low or "gemini" in model:
             source = "gemini"
-        elif "opencode" in aid.lower() or "opencode" in model:
+        elif "opencode" in low or "opencode" in model:
             source = "opencode"
+        elif "kilo" in low or "kilo" in model:
+            source = "kilo"
+        elif "copilot" in low or "copilot" in model:
+            source = "copilot"
         else:
             continue
         agent_source[aid] = source
@@ -198,17 +213,25 @@ def org_board():
             except (TypeError, ValueError, OverflowError):
                 return False
 
-    for source, (name, getter) in sources.items():
-        usage = getter() if getter else {"name": name, "plan": "Zen free", "bars": [],
-                                         "note": "Zen free – chưa có số hạn mức", "updated": ""}
+    for source, name, getter in sources:
+        usage = getter() if getter else {"name": name, "plan": default_plan[source], "bars": [],
+                                         "note": "Chưa có số hạn mức – xem lần cuối chạy", "updated": ""}
         members = [a["id"] for a in agents if agent_source.get(a.get("id")) == source]
         limits = [executor_data.get(aid, {}).get("limited_until") for aid in members
                   if isinstance(executor_data.get(aid), dict)]
         latest = max((value for value in limits if active_until(value)), default="")
-        providers.append({"id": source, "name": usage.get("name", name), "plan": usage.get("plan", ""),
+        stamps = [stats_data.get(aid, {}).get("last_run") for aid in members
+                  if isinstance(stats_data.get(aid), dict)]
+        last_run = max((v for v in stamps if isinstance(v, str) and v), default="")
+        lim_stamps = [stats_data.get(aid, {}).get("last_limited") for aid in members
+                      if isinstance(stats_data.get(aid), dict)]
+        last_limited = max((v for v in lim_stamps if isinstance(v, str) and v), default="")
+        providers.append({"id": source, "name": name, "plan": usage.get("plan", ""),
                           "bars": usage.get("bars", []), "note": usage.get("note", ""),
-                          "updated": usage.get("updated", ""), "agents": members,
-                          "limited_until": _date_label(latest) if latest else ""})
+                          "updated": usage.get("updated", ""), "agents": members, "stale": usage.get("stale", False),
+                          "limited_until": _date_label(latest) if latest else "",
+                          "last_run": _date_label(last_run) if last_run else "",
+                          "last_limited": _date_label(last_limited) if last_limited else ""})
 
     tiers = []
     for tier, label in ((0, "Giám đốc"), (1, "Quản lý"), (2, "Nhân viên"), ("tu-van", "Tư vấn")):

@@ -172,14 +172,31 @@ def new_stats():
     return dict.fromkeys(STAT_FIELDS, 0)
 
 
+def run_stamp(result):
+    """Moc thoi gian tu ten run_dir 'YYYYMMDD-HHMMSS-<task>' -> 'YYYY-MM-DDTHH:MM'; sai dang -> ''."""
+    m = re.match(r"^(\d{8})-(\d{6})-", os.path.basename(str(result.get("run_dir") or "")))
+    if not m:
+        return ""
+    d, t = m.groups()
+    return f"{d[:4]}-{d[4:6]}-{d[6:8]}T{t[:2]}:{t[2:4]}"
+
+
 def tally(stats, result):
     """Cong don 1 run vao stats (dung chung cho update_stats va rebuild_stats)."""
     rounds = result.get("rounds") or []
+    stamp = run_stamp(result)
     for i, r in enumerate(rounds):
         name = r.get("executor")
         if not name:
             continue
         s = stats.setdefault(name, new_stats())
+        if stamp:
+            if stamp > (s.get("last_run") or ""):
+                s["last_run"] = stamp
+            if r.get("limited") and stamp > (s.get("last_limited") or ""):
+                s["last_limited"] = stamp
+            if r.get("gate_exit") == 0 and stamp > (s.get("last_pass") or ""):
+                s["last_pass"] = stamp
         if r.get("limited"):
             s["limited"] += 1
             continue

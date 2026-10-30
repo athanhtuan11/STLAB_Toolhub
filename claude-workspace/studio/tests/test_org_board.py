@@ -15,7 +15,8 @@ json.dump({"state": "running", "pid": 999999, "spec": "x.md"},
 json.dump({"verdict": "PASS"}, open(U / "delegate-runs" / "20261027-090000-viec-xong" / "result.json", "w"))
 until = time.strftime("%Y-%m-%dT%H:%M+07:00", time.localtime(time.time() + 3 * 3600))
 json.dump({"codex": {"limited_until": until, "reason": "429"}}, open(U / "executors.json", "w"))
-json.dump({"opencode": {"rounds": 10, "gate_pass": 8, "pass_round1": 6, "limited": 0, "escalate": 0, "seconds": 938}},
+json.dump({"opencode": {"rounds": 10, "gate_pass": 8, "pass_round1": 6, "limited": 0, "escalate": 0, "seconds": 938,
+                       "last_run": "2026-10-30T10:04", "last_pass": "2026-10-29T08:00"}},
           open(U / "agent-stats.json", "w"))
 
 sys.path.insert(0, str(STUDIO))
@@ -28,17 +29,25 @@ r = c.get("/api/org", headers=H)
 assert r.status_code == 200, r.status_code
 d = r.get_json()
 
-# 1) Nguon han muc: 4 nguon, moi agent trong so thuoc dung 1 nguon
+# 1) Nguon han muc (Tuan 2026-10-30: du MOI nguon, nguon chua co so van hien + "lan cuoi chay")
 prov = {p["id"]: p for p in d["providers"]}
-assert set(prov) == {"claude", "codex", "gemini", "opencode"}, set(prov)
+assert set(prov) == {"claude", "codex", "gemini", "opencode", "kilo", "copilot"}, set(prov)
 for p in prov.values():
-    assert {"name", "bars", "agents", "limited_until", "note"} <= set(p), p.keys()
+    assert {"name", "bars", "agents", "limited_until", "note", "last_run"} <= set(p), p.keys()
 assert set(prov["claude"]["agents"]) == {"claude-main", "check-runner", "doc-writer", "git-scribe"}
 assert set(prov["codex"]["agents"]) == {"codex", "ask-gpt"}
-assert set(prov["gemini"]["agents"]) == {"agy", "ask-gemini"} and prov["opencode"]["agents"] == ["opencode"]
+assert set(prov["gemini"]["agents"]) == {"agy", "agy-sonnet", "ask-gemini"}, prov["gemini"]["agents"]
+assert "Antigravity" in prov["gemini"]["name"], prov["gemini"]["name"]
+assert prov["opencode"]["agents"] == ["opencode"] and prov["kilo"]["agents"] == ["kilo"]
+assert prov["copilot"]["agents"] == ["copilot"]
+mine = [a for p in prov.values() for a in p["agents"]]
+assert len(mine) == len(set(mine)), "moi agent chi thuoc 1 nguon"
 assert prov["codex"]["limited_until"], "codex dang het han muc (executors.json) phai hien gio"
+assert prov["opencode"]["last_run"] == "30/10 10:04", prov["opencode"]["last_run"]
+assert prov["kilo"]["last_run"] == "" and "chưa có số" in prov["kilo"]["note"].lower(), prov["kilo"]
+assert "chưa có số" in prov["copilot"]["note"].lower(), prov["copilot"]
 
-# 2) So do: 4 tang, du 9 agent theo so that, trang thai dung
+# 2) So do: 4 tang, du agent theo so that, trang thai dung
 agents = yaml.safe_load(open(WS / "org" / "agents.yaml", encoding="utf-8"))["agents"]
 tiers = d["tiers"]
 assert [t["label"] for t in tiers] == ["Giám đốc", "Quản lý", "Nhân viên", "Tư vấn"], [t["label"] for t in tiers]
