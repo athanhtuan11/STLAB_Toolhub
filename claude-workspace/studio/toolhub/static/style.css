@@ -106,6 +106,8 @@ details.others summary { cursor: pointer; color: var(--muted); font-size: 14px; 
 .u-bar { height: 6px; background: var(--line); border-radius: 999px; overflow: hidden; }
 .u-bar i { display: block; height: 100%; background: var(--ok); }
 .u-bar i.warn { background: var(--warn); } .u-bar i.bad { background: var(--err); }
+/* Anh chup han muc cu (> 24 h): lam mo thanh + so, giu chu doc duoc */
+.u-card.stale .u-bar, .u-card.stale .u-val { opacity: .45; }
 .u-upd { margin-top: auto; font-size: 12px; }
 
 

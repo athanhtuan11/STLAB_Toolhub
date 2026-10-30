@@ -30,7 +30,8 @@ cần internet. 400 thân, 600 nhấn, 700 tiêu đề. Workbench dùng font c�
 2. **Chỉ hiện điều cần làm.** Trang chính chỉ có lỗi cần chú ý, việc đang làm, nút chính. Thông tin hệ thống để vào "Thêm".
 3. **Trạng thái bằng chữ và màu**, không chỉ bằng màu (người mù màu vẫn đọc được "WARN").
 4. **Viết bằng ngôn ngữ người dùng:** nút ghi đúng việc nó làm ("Chuẩn bị in", "Mở"), lỗi nói rõ cách sửa.
-5. Sáng/tối theo hệ thống, không có nút đổi theme riêng.
+5. **Toolhub luôn tối** (Tuan 2026-10-27) – chọn bằng `toolhub_theme` trong `tokens.json` (`dark` | `light` | `auto`
+   theo hệ thống). Bộ màu sáng vẫn giữ cho workbench FreeCAD và trang ESP32. Không có nút đổi theme trên trang.
 
 ## Checklist "đẹp" kiểm được (bước 0 và mỗi lần sửa giao diện)
 - [ ] `build_tokens.py` exit 0 (tương phản đạt) · không có hex mới trong code giao diện (`grep`).

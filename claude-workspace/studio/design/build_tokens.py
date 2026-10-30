@@ -60,10 +60,14 @@ def css():
         return "".join(f"  --{k}: {v};\n" for k, v in t.items())
     stages = "".join(f"  --stage-{k}: {s['color']};\n" for k, s in TOK["stages"].items())
     on_accent_dark = TOK["dark"]["bg"]
-    return (f"/* SINH TU studio/design/tokens.json bang build_tokens.py - KHONG SUA TAY */\n"
-            f":root {{\n{block(TOK['light'])}  --on-accent: #FFFFFF;\n{stages}"
-            f"  --font-ui: \"{f['ui']}\", {f['fallback']};\n  --font-mono: {f['mono']};\n"
-            f"  --r-control: {TOK['radius']['control']}px;\n  --r-card: {TOK['radius']['card']}px;\n"
+    common = (f"{stages}  --font-ui: \"{f['ui']}\", {f['fallback']};\n  --font-mono: {f['mono']};\n"
+              f"  --r-control: {TOK['radius']['control']}px;\n  --r-card: {TOK['radius']['card']}px;\n")
+    head = "/* SINH TU studio/design/tokens.json bang build_tokens.py - KHONG SUA TAY */\n"
+    theme = TOK.get("toolhub_theme", "auto")             # Tuan 2026-10-27: Toolhub luon toi
+    if theme in ("dark", "light"):
+        t, on = (TOK["dark"], on_accent_dark) if theme == "dark" else (TOK["light"], "#FFFFFF")
+        return head + f":root {{\n{block(t)}  --on-accent: {on};\n{common}  color-scheme: {theme};\n}}\n"
+    return (head + f":root {{\n{block(TOK['light'])}  --on-accent: #FFFFFF;\n{common}"
             f"  color-scheme: light;\n}}\n"
             f"@media (prefers-color-scheme: dark) {{\n  :root {{\n"
             + "".join(f"  {ln}\n" for ln in block(TOK["dark"]).splitlines())
