@@ -184,6 +184,182 @@
    "confidence": 0.7,
    "verified": false,
    "note": "IN THAT 2026-10-25: chot O5,0 trong lo O5,4 (khe 0,4) xuyen nhieu chi tiet -> KHONG nhet vao duoc. Da sua chot O4,8 (khe 0,6) + bo chot thu print-pin-gauge.yaml; TODO: in xong bo chot thu -> doi verified=true, method print-test."
+  },
+  {
+   "id": "mec1/gearbox-output-hole",
+   "interface": "gearbox-030-output-hole",
+   "fit": "unknown",
+   "hole_mm": 5.7,
+   "shaft_mm": null,
+   "clearance_mm": null,
+   "nominal_mm": null,
+   "source": {
+    "model": "makerworld-terae-mec-1",
+    "parts": "10-13 motor-differential #20 (vo hop so in 3D)",
+    "method": "stl-fit",
+    "ref": "docs/research-notes/mec-1-forklift-fits.md"
+   },
+   "print": {
+    "printer": "TODO (tac gia)",
+    "material": "TODO (tac gia)"
+   },
+   "confidence": 0.9,
+   "verified": false,
+   "note": "Khop tipflow 5,691 -> 2 tac gia doc lap cung ~5,7. Hop so tu in, dung bo banh rang 48:1 + motor DC cua kit CyberBrick. Duong kinh truc ra: TODO."
+  },
+  {
+   "id": "mec1/wheel-hub-double-d",
+   "interface": "gearbox-030-output-wheel-press",
+   "fit": "press",
+   "hole_mm": 5.53,
+   "shaft_mm": null,
+   "clearance_mm": null,
+   "nominal_mm": null,
+   "source": {
+    "model": "makerworld-terae-mec-1",
+    "parts": "01/02 wheel ver4-2, cat lat z 0,5-6",
+    "method": "stl-slice",
+    "ref": "docs/research-notes/mec-1-forklift-fits.md"
+   },
+   "print": {
+    "printer": "TODO (tac gia)",
+    "material": "TODO (tac gia)"
+   },
+   "confidence": 0.8,
+   "verified": false,
+   "note": "Lo double-D: tron O5,53, 2 mat phang cach 3,80 (x -1,849/+1,951). Tac gia: banh ep chat vao truc ra, thao de hong hop so. Kich thuoc truc that: TODO."
+  },
+  {
+   "id": "mec1/m2.5-clearance",
+   "interface": "screw-M2.5-clearance",
+   "fit": "clearance",
+   "hole_mm": 2.8,
+   "shaft_mm": null,
+   "clearance_mm": null,
+   "nominal_mm": 2.5,
+   "source": {
+    "model": "makerworld-terae-mec-1",
+    "parts": "01 wheel, 20, 21 (lo bac dau vit O5,0)",
+    "method": "stl-fit",
+    "ref": "docs/research-notes/mec-1-forklift-fits.md"
+   },
+   "print": {
+    "printer": "TODO (tac gia)",
+    "material": "TODO (tac gia)"
+   },
+   "confidence": 0.9,
+   "verified": false,
+   "note": "Vit H2.5x6 (luc giac 1,5 = BHCS). Lo bac dau O5,0 sau 1,5-3,5. Vo hop so dung 2,7 + bac O5,0 sau 2,1."
+  },
+  {
+   "id": "mec1/m2.5-self-tap",
+   "interface": "screw-M2.5",
+   "fit": "self-tap",
+   "hole_mm": 2.2,
+   "shaft_mm": null,
+   "clearance_mm": null,
+   "nominal_mm": 2.5,
+   "source": {
+    "model": "makerworld-terae-mec-1",
+    "parts": "03 wheel ver4-1 (sau 5,8), 05, 06, 21",
+    "method": "stl-fit",
+    "ref": "docs/research-notes/mec-1-forklift-fits.md"
+   },
+   "print": {
+    "printer": "TODO (tac gia)",
+    "material": "TODO (tac gia)"
+   },
+   "confidence": 0.9,
+   "verified": false,
+   "note": "Tac gia nay dung 2,2; tipflow dung 2,4. Chua in thu tren A1+PETG -> chon trong khoang 2,2-2,4, in mau truoc."
+  },
+  {
+   "id": "mec1/sideprint-pin-5mm",
+   "interface": "pin-sideprint-5mm",
+   "fit": "rotate",
+   "hole_mm": 5.0,
+   "shaft_mm": 4.7,
+   "clearance_mm": 0.3,
+   "nominal_mm": 5.0,
+   "source": {
+    "model": "makerworld-terae-mec-1",
+    "parts": "chot 15-18 (in nam ngang) trong lo 5,0 cua 22, 31, 33, 21",
+    "method": "stl-fit",
+    "ref": "docs/research-notes/mec-1-forklift-fits.md"
+   },
+   "print": {
+    "printer": "TODO (tac gia)",
+    "material": "TODO (tac gia)"
+   },
+   "confidence": 0.8,
+   "verified": false,
+   "note": "Chot O4,7 vat 2 mat con 4,07 de in nam ngang (ben hon in dung), dau mu O6. Khe 0,3."
+  },
+  {
+   "id": "mec1/chain-snap-joint",
+   "interface": "snap-chain-joint-5mm",
+   "fit": "rotate",
+   "hole_mm": 5.0,
+   "shaft_mm": 4.4,
+   "clearance_mm": 0.6,
+   "nominal_mm": null,
+   "source": {
+    "model": "makerworld-terae-mec-1",
+    "parts": "22/23 vertical-reinforced-chains (luoi O5,0 day 3,4 tren chot O4,4 dai 3,8)",
+    "method": "stl-fit",
+    "ref": "docs/research-notes/mec-1-forklift-fits.md"
+   },
+   "print": {
+    "printer": "TODO (tac gia)",
+    "material": "TODO (tac gia)"
+   },
+   "confidence": 0.7,
+   "verified": false,
+   "note": "Mat xich bop nhe de lap (flex). Khe huong kinh 0,6, khe doc truc ~0,2/ben. STL co nhieu than chong nhau -> suy tu hinh hoc, chua cat lat day du."
+  },
+  {
+   "id": "mec1/servo9g-screw",
+   "interface": "servo-9g-mount-screw",
+   "fit": "self-tap",
+   "hole_mm": 2.0,
+   "shaft_mm": null,
+   "clearance_mm": null,
+   "nominal_mm": null,
+   "source": {
+    "model": "makerworld-terae-mec-1",
+    "parts": "33 servo holder #3,#4 (cach nhau 27,81)",
+    "method": "stl-fit",
+    "ref": "docs/research-notes/mec-1-forklift-fits.md"
+   },
+   "print": {
+    "printer": "TODO (tac gia)",
+    "material": "TODO (tac gia)"
+   },
+   "confidence": 0.85,
+   "verified": false,
+   "note": "Servo 360 do kit, vit dai cua servo. tipflow 1,8 cung khoang cach ~27,8. Co vit: TODO."
+  },
+  {
+   "id": "mec1/magnet-4x2-seat",
+   "interface": "magnet-4x2-seat",
+   "fit": "press",
+   "hole_mm": 4.1,
+   "shaft_mm": 4.0,
+   "clearance_mm": 0.1,
+   "nominal_mm": 4.0,
+   "source": {
+    "model": "makerworld-terae-mec-1",
+    "parts": "05 #1 (sau 2,1), 14 #1 (sau 2,2)",
+    "method": "stl-fit",
+    "ref": "docs/research-notes/mec-1-forklift-fits.md"
+   },
+   "print": {
+    "printer": "TODO (tac gia)",
+    "material": "TODO (tac gia)"
+   },
+   "confidence": 0.8,
+   "verified": false,
+   "note": "Nam cham O4x2: shaft lay theo danh nghia trong huong dan, khong do. Tac gia van nho keo 502 o vo duoi; chu y cung cuc."
   }
  ]
 }
