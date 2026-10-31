@@ -200,8 +200,10 @@
     "ref": "docs/research-notes/mec-1-forklift-fits.md"
    },
    "print": {
-    "printer": "TODO (tac gia)",
-    "material": "TODO (tac gia)"
+    "printer": "Bambu A1 mini 0.4, lop 0.2",
+    "material": "Bambu PLA Basic",
+    "xy_hole_compensation": 0,
+    "proven": "san pham hoan thien, tac gia in + chay that"
    },
    "confidence": 0.9,
    "verified": false,
@@ -222,8 +224,10 @@
     "ref": "docs/research-notes/mec-1-forklift-fits.md"
    },
    "print": {
-    "printer": "TODO (tac gia)",
-    "material": "TODO (tac gia)"
+    "printer": "Bambu A1 mini 0.4, lop 0.2",
+    "material": "Bambu PLA Basic",
+    "xy_hole_compensation": 0,
+    "proven": "san pham hoan thien, tac gia in + chay that"
    },
    "confidence": 0.8,
    "verified": false,
@@ -244,8 +248,10 @@
     "ref": "docs/research-notes/mec-1-forklift-fits.md"
    },
    "print": {
-    "printer": "TODO (tac gia)",
-    "material": "TODO (tac gia)"
+    "printer": "Bambu A1 mini 0.4, lop 0.2",
+    "material": "Bambu PLA Basic",
+    "xy_hole_compensation": 0,
+    "proven": "san pham hoan thien, tac gia in + chay that"
    },
    "confidence": 0.9,
    "verified": false,
@@ -266,8 +272,10 @@
     "ref": "docs/research-notes/mec-1-forklift-fits.md"
    },
    "print": {
-    "printer": "TODO (tac gia)",
-    "material": "TODO (tac gia)"
+    "printer": "Bambu A1 mini 0.4, lop 0.2",
+    "material": "Bambu PLA Basic",
+    "xy_hole_compensation": 0,
+    "proven": "san pham hoan thien, tac gia in + chay that"
    },
    "confidence": 0.9,
    "verified": false,
@@ -288,10 +296,12 @@
     "ref": "docs/research-notes/mec-1-forklift-fits.md"
    },
    "print": {
-    "printer": "TODO (tac gia)",
-    "material": "TODO (tac gia)"
+    "printer": "Bambu A1 mini 0.4, lop 0.2",
+    "material": "Bambu PLA Basic",
+    "xy_hole_compensation": 0,
+    "proven": "san pham hoan thien, tac gia in + chay that"
    },
-   "confidence": 0.8,
+   "confidence": 0.9,
    "verified": false,
    "note": "Chot O4,7 vat 2 mat con 4,07 de in nam ngang (ben hon in dung), dau mu O6. Khe 0,3."
   },
@@ -310,8 +320,10 @@
     "ref": "docs/research-notes/mec-1-forklift-fits.md"
    },
    "print": {
-    "printer": "TODO (tac gia)",
-    "material": "TODO (tac gia)"
+    "printer": "Bambu A1 mini 0.4, lop 0.2",
+    "material": "Bambu PLA Basic",
+    "xy_hole_compensation": 0,
+    "proven": "san pham hoan thien, tac gia in + chay that"
    },
    "confidence": 0.7,
    "verified": false,
@@ -332,10 +344,12 @@
     "ref": "docs/research-notes/mec-1-forklift-fits.md"
    },
    "print": {
-    "printer": "TODO (tac gia)",
-    "material": "TODO (tac gia)"
+    "printer": "Bambu A1 mini 0.4, lop 0.2",
+    "material": "Bambu PLA Basic",
+    "xy_hole_compensation": 0,
+    "proven": "san pham hoan thien, tac gia in + chay that"
    },
-   "confidence": 0.85,
+   "confidence": 0.9,
    "verified": false,
    "note": "Servo 360 do kit, vit dai cua servo. tipflow 1,8 cung khoang cach ~27,8. Co vit: TODO."
   },
@@ -354,10 +368,12 @@
     "ref": "docs/research-notes/mec-1-forklift-fits.md"
    },
    "print": {
-    "printer": "TODO (tac gia)",
-    "material": "TODO (tac gia)"
+    "printer": "Bambu A1 mini 0.4, lop 0.2",
+    "material": "Bambu PLA Basic",
+    "xy_hole_compensation": 0,
+    "proven": "san pham hoan thien, tac gia in + chay that"
    },
-   "confidence": 0.8,
+   "confidence": 0.9,
    "verified": false,
    "note": "Nam cham O4x2: shaft lay theo danh nghia trong huong dan, khong do. Tac gia van nho keo 502 o vo duoi; chu y cung cuc."
   }
