@@ -19,23 +19,34 @@ Công cụ ở `tools/model-study/` – chạy bằng `.venv\Scripts\python.exe`
 ## Các bước
 1. **Đặt file**: `community/<nguon>-<tac-gia>-<ten>/` (git bỏ qua). License MakerWorld = dùng cá nhân, KHÔNG lên
    GitHub. Không sửa trong đó. Có STEP thì xin Tuan tải STEP (đo chính xác hơn STL).
-2. **Tách + ảnh**: `python study_3mf.py <file.3mf|thu-muc-stl> _out/<ten>` → `parts/*.stl`, `parts.csv`,
+   Model Tuan đưa = **sản phẩm hoàn thiện, đã in + chạy** (Tuan 2026-10-31) → khe đo được là khe đã chạy, không đề xuất
+   in thử để "xác minh". Lấy luôn từ 3mf: tác giả/license (`3D/3dmodel.model` metadata), hướng dẫn lắp PDF + code trong
+   `Auxiliaries/`, **máy + nhựa + `xy_hole_compensation`** trong `Metadata/project_settings.config` → ghi vào `print` của
+   mục kho (khác nhựa STLab thì chỉ mối ép cần lưu ý).
+2. **Tách + ảnh**: `uv run --with matplotlib python study_3mf.py <file.3mf|thu-muc-stl> _out/<ten>` → `parts/*.stl`, `parts.csv`,
    `contact-sheet.png` (duyệt bằng ảnh), `summary.md`.
 3. **Đo**:
    - STL (mọi trục): `.venv\Scripts\python.exe measure_features.py _out/<ten>/parts/*.stl --json _out/<ten>/features.json`
      → lỗ/boss/cung (`arc`), `through`, lỗ bậc (`groups` counterbore), `rms_mm`, `confidence`.
    - STEP (chính xác ±0,001): `measure_step.py` qua freecadcmd.
    - `measure_holes.py` cũ (chỉ trục x/y/z) – chỉ để đối chiếu.
+   - Lỗ không tròn (double-D, lục giác, then) → `arc` coverage < 300°: **cắt lát** `trimesh.intersections.mesh_plane`
+     rồi đo cạnh phẳng (không cần networkx). STL có thể chứa nhiều thân chồng nhau (thể tích > hộp bao) → suy ghép
+     cặp từ hình học, ghi rõ trong `note`.
+   - Đọc hướng dẫn lắp PDF (`uv run --with pymupdf`, `sys.stdout.reconfigure(encoding='utf-8')`) để biết linh kiện,
+     vít, kiểu lắp (ép/bấm/vít) trước khi gán nhãn.
 4. **Gán nhãn + đưa vào kho** (Claude): xem contact sheet + features.json, xác định giao diện (vd `rotate-joint-5mm`,
    `screw-M2.5`, `servo-9g-mount-screw`, `bearing-608-seat`) và loại fit (`rotate|slide|press|clearance|self-tap`).
    Ghép cặp lỗ–chốt để tính khe. Thêm bằng
    `fit_lib.add_from_features(...)` (tự ghi nguồn + method `stl-fit`) hoặc sửa tay `fit-library/fits.json`, rồi
    `python fit-library/fit_lib.py check`. Confidence < 0,7 hoặc rms lớn → ghi `note`, không dùng làm mặc định.
 5. **Ghi chú nghiên cứu**: `docs/research-notes/<ten>-fits.md` (giao `doc-writer`, đưa gạch đầu dòng số đo).
+5b. **Rút mẫu thiết kế vào skill**: cách làm hay (cơ cấu, kiểu lắp, kiểu in) → thêm gạch đầu dòng vào mục
+   "Mẫu thiết kế đã chạy" của skill `robotics-cad` (kèm số + nguồn). Không có bước này thì lần thiết kế sau không dùng tới.
 6. **Thiết kế bản chuẩn hơn**: trước khi chọn bất kỳ khe/lỗ nào → `fit_lib.py recommend <interface>`.
    - `basis: verified` (STLab in thử A1 + PETG) → dùng luôn.
-   - `basis: community` → dùng được nhưng ghi rõ trong spec; chi tiết quan trọng → in mẫu thử trước, đo, thêm mục
-     `verified: true`, `method: print-test`.
+   - `basis: community` (sản phẩm đã chạy) → dùng làm mặc định, ghi nguồn trong spec. Khác nhựa (PLA→PETG) thì mối ép
+     in 1 chi tiết trước; STLab in thật xong → thêm mục `verified: true`, `method: print-test`.
    - Không có trong kho → `TODO`, hỏi Tuan / in thử; **không bịa số**.
    - Áp dụng thêm luật [khe lắp ghép – co ngót] (memory) và support/brim của Tuan.
 

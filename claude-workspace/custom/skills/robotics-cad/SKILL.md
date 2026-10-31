@@ -91,9 +91,25 @@ description: Thiet ke co khi robot trong FreeCAD cho STLab - chon linh kien tu d
 ## Tra kho thông số lắp ghép – BẮT BUỘC (Tuan 2026-10-30)
 Trước khi chọn bất kỳ đường kính lỗ/chốt/khe nào: `tools/model-study/.venv/Scripts/python.exe
 tools/model-study/fit-library/fit_lib.py recommend <interface>` (vd `rotate-joint-5mm`, `screw-M2.5`). `basis: verified`
-= STLab in thử thật → dùng; `community` = số trên file tác giả → dùng được, ghi rõ trong spec, chi tiết quan trọng in thử
-trước. Không có trong kho → `TODO`, không đoán. Số mới đo/in thử → thêm vào kho (skill `model-study`).
+= STLab in thử thật → dùng; `community` = số lấy từ **sản phẩm hoàn thiện đã chạy** (Tuan 2026-10-31) → dùng làm mặc
+định, ghi nguồn trong spec. Xem `print` của mục: tác giả in **PLA, không bù lỗ** → số đã gồm co lỗ của PLA; STLab in PETG
+thì chỉ mối **ép** (moay-ơ, nam châm) cần in 1 chi tiết trước khi in cả bộ. Không có trong kho → `TODO`, không đoán.
+Số mới đo/in thử → thêm vào kho (skill `model-study`).
 Lưu ý: khe 0,40 (tipflow) là khớp **1 lỗ**; chốt xuyên **nhiều** chi tiết STLab đã in thật 0,4 → kẹt, dùng 0,6 (mục dưới).
+
+## Mẫu thiết kế đã chạy – học từ model cộng đồng (CyberBrick)
+Chi tiết + số: `docs/research-notes/` (`tipflow-robotic-arm-fits.md`, `mec-1-forklift-fits.md`). Ưu tiên các mẫu này
+thay vì tự nghĩ cách mới:
+- **Bánh vào trục ra hộp số 030:** lỗ **double-D** ép chặt, không vít (MEC-1: tròn Ø5,53, phẳng cách 3,80; trục hãng
+  Ø5,3 / 3,6). Vỏ đỡ trục ra Ø5,7 (2 tác giả cùng số). Tháo bánh dễ hỏng hộp số → ghi vào ASSEMBLY.md.
+- **Hộp số tự in:** chỉ có motor + bộ bánh răng rời (vd 48:1 kit Ultimate) → in vỏ + nắp, M2.5 xuyên Ø2,7 + bậc đầu Ø5,0.
+  Đã có vỏ hãng (LA024/LA013) thì không in.
+- **Chốt in nằm ngang:** Ø4,7 vát 2 mặt còn 4,07 (in nằm, bền theo thớ), mũ Ø6, vào lỗ Ø5,0 (khe 0,3) – khớp nâng/xích.
+- **Xích lắp bấm:** lưỡi lỗ Ø5,0 dày 3,4 trên chốt liền Ø4,4 dài 3,8, bóp nhẹ để lắp; in 100 % infill.
+- **Vỏ trên không vít:** 4 trụ Ø7,5 (đầu Ø4,0 / vai Ø6,5) đẩy vào lỗ vỏ dưới rồi trượt ra sau để khóa + nam châm 4×2
+  (ổ Ø4,1 sâu 2,1–2,2, nhỏ keo, đúng cực) → mở vỏ nhanh, hợp học sinh.
+- **Vít:** M2.5×6 BHCS (lục giác 1,5) cho mọi mối ghép; tự ren Ø2,2–2,4, xuyên Ø2,7–2,8. Servo 9g: 2 lỗ cách 27,8, Ø1,8–2,0.
+- **Support:** tác giả chỉ bật cho 1–2 khung lớn; còn lại thiết kế để in không support (đúng luật Tuan: không vẽ support vào STL).
 
 ## Chốt / trục khớp quay (cập nhật 2026-10-25 – Tuan: chốt pushrod-arm "quá khít", "rỗng sẽ yếu lực")
 **Ca thật pushrod-arm:** chốt xuyên nhiều chi tiết (`Pin_S`: Turret_one_piece ↔ Spacer_S ↔ Boom001) in Ø5,0 trong lỗ Ø5,4
