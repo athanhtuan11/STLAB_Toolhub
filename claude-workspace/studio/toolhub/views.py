@@ -12,6 +12,8 @@ from flask import Blueprint, abort, jsonify, render_template, request, send_file
 import launcher
 
 from . import opener
+from . import ops
+from .ops import events
 from . import printprep
 from . import quote as quote_lib
 from . import usage
@@ -24,6 +26,7 @@ bp = Blueprint("hub", __name__)
 def nav():
     # Menu gon: viec hang ngay o ngoai, trang he thong gom vao "Them"
     main = [("hub.overview", "Trang chính"), ("hub.projects", "Dự án"), ("hub.library", "Linh kiện")]
+    main.append(("hub.ops_page", "Điều hành"))
     more = [("hub.apps", "Ứng dụng & MCP"), ("hub.quote", "Báo giá"), ("hub.community", "Nguồn cộng đồng"),
             ("hub.skills", "Skills & agents"), ("hub.prompt", "Prompt library")]
     ep = request.endpoint or ""
@@ -76,7 +79,7 @@ def overview():
                       "ket_luan": "FAIL" if "FAIL" in tt else "WARN" if "WARN" in tt else "PASS" if tt else None,
                       "tom_tat": next((t["chi_tiet"] for t in kq.get("tang", []) if t["ten"].startswith("Tang 2")), "")}
         active.append(p)
-    return render_template("overview.html", apps=apps, active=active, other=other)
+    return render_template("overview.html", apps=apps, active=active, other=other, ops_summary=ops.summary())
 
 
 @bp.get("/api/health")
@@ -89,6 +92,43 @@ def api_health():
     if n := sum(not x["ok"] for x in ws.links()):
         issues.append((f"{n} skill/agent liên kết lỗi", "hub.skills"))
     return jsonify([{"text": t, "url": url_for(ep)} for t, ep in issues])
+
+
+@bp.get("/ops")
+def ops_page():
+    return render_template("ops.html", org=usage.org_board())
+
+
+@bp.get("/api/ops")
+def api_ops():
+    return jsonify(ops.data())
+
+
+@bp.get("/api/ops/timeline")
+def api_ops_timeline():
+    return jsonify({"timeline": ops.timeline_after(request.args.get("after", "0"))})
+
+
+@bp.post("/api/ops/approvals/<int:approval_id>")
+def api_ops_approval(approval_id):
+    data = request.get_json(silent=True) or {}
+    state = data.get("state")
+    if state not in ("da-duyet", "tu-choi"):
+        return jsonify({"error": "Tr\u1ea1ng th\u00e1i kh\u00f4ng h\u1ee3p l\u1ec7"}), 400
+    if not any(a.get("id") == approval_id for a in events.list_approvals()):
+        abort(404)
+    events.resolve(approval_id, state, "tuan", data.get("note"))
+    return jsonify({"ok": True})
+
+
+@bp.get("/api/ops/run/<run>/handoff")
+def api_ops_handoff(run):
+    if not ops.RUN_RE.fullmatch(run):
+        return jsonify({"error": "M\u00e3 phi\u00ean kh\u00f4ng h\u1ee3p l\u1ec7"}), 400
+    path = ops.RUNS_DIR / run / "handoff.md"
+    if not path.is_file():
+        abort(404)
+    return path.read_text(encoding="utf-8"), 200, {"Content-Type": "text/plain; charset=utf-8"}
 
 
 @bp.get("/api/org")

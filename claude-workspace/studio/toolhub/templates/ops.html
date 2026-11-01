@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Điều hành{% endblock %}
+{% block content %}
+<div class="head"><h1>Điều hành</h1><a class="btn" href="/">Trang chính</a></div>
+<div class="ops-grid" id="ops-grid">
+<section class="card ops-widget" data-widget="approvals"><div class="ops-head"><h2>Chờ duyệt</h2><button class="small" data-move="up">&#8593;</button><button class="small" data-move="down">&#8595;</button><button class="small" data-toggle>Ẩn/hiện</button></div><div data-content></div></section>
+<section class="card ops-widget" data-widget="running"><div class="ops-head"><h2>Đang chạy</h2><button class="small" data-move="up">&#8593;</button><button class="small" data-move="down">&#8595;</button><button class="small" data-toggle>Ẩn/hiện</button></div><div data-content></div></section>
+<section class="card ops-widget" data-widget="board"><div class="ops-head"><h2>Bảng công việc</h2><button class="small" data-move="up">&#8593;</button><button class="small" data-move="down">&#8595;</button><button class="small" data-toggle>Ẩn/hiện</button></div><div data-content><div class="ops-board"></div><pre class="ops-handoff" hidden></pre></div></section>
+<section class="card ops-widget" data-widget="timeline"><div class="ops-head"><h2>Dòng sự kiện</h2><button class="small" data-move="up">&#8593;</button><button class="small" data-move="down">&#8595;</button><button class="small" data-toggle>Ẩn/hiện</button></div><div data-content class="ops-timeline"></div></section>
+<section class="card ops-widget" data-widget="org"><div class="ops-head"><h2>Nhân sự AI</h2><button class="small" data-move="up">&#8593;</button><button class="small" data-move="down">&#8595;</button><button class="small" data-toggle>Ẩn/hiện</button></div><div data-content><div class="ops-providers"></div><ul class="ops-attention"></ul></div></section>
+<section class="card ops-widget" data-widget="commits"><div class="ops-head"><h2>Commit gần đây</h2><button class="small" data-move="up">&#8593;</button><button class="small" data-move="down">&#8595;</button><button class="small" data-toggle>Ẩn/hiện</button></div><div data-content></div></section>
+</div>
+<script src="{{ url_for('static', filename='ops.js') }}"></script>
+{% endblock %}
