@@ -21,6 +21,10 @@ jobs:
         working-directory: claude-workspace/studio
         run: uv sync
 
+      # Graphviz (dot): so do dau WireViz trong Toolhub (test_pinout, test_library_pages)
+      - name: Install Graphviz
+        run: choco install graphviz -y --no-progress
+
       - name: Install ruff into venv
         working-directory: claude-workspace/studio
         run: uv pip install ruff

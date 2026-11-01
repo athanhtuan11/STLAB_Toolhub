@@ -13,7 +13,9 @@ json.dump({"state": "running", "pid": 999999, "spec": "x.md"},
           open(U / "delegate-runs" / "20261027-100000-viec-bi-cat" / "state.json", "w"))
 (U / "delegate-runs" / "20261027-090000-viec-xong").mkdir(parents=True)
 json.dump({"verdict": "PASS"}, open(U / "delegate-runs" / "20261027-090000-viec-xong" / "result.json", "w"))
-until = time.strftime("%Y-%m-%dT%H:%M+07:00", time.localtime(time.time() + 3 * 3600))
+# gio co mui gio that (+07:00), khong lay gio may: runner CI chay UTC (2026-11-01)
+from datetime import datetime, timedelta, timezone  # noqa: E402
+until = (datetime.now(timezone(timedelta(hours=7))) + timedelta(hours=3)).strftime("%Y-%m-%dT%H:%M+07:00")
 json.dump({"codex": {"limited_until": until, "reason": "429"}}, open(U / "executors.json", "w"))
 json.dump({"opencode": {"rounds": 10, "gate_pass": 8, "pass_round1": 6, "limited": 0, "escalate": 0, "seconds": 938,
                        "last_run": "2026-10-30T10:04", "last_pass": "2026-10-29T08:00"}},
