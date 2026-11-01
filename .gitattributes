@@ -14,3 +14,5 @@
 *.FCStd binary
 *.stl binary
 *.3mf binary
+# Hook git (shell, khong duoi): CRLF lam hong dong #!/bin/sh
+claude-workspace/tools/git-hooks/pre-commit text eol=lf

@@ -1,0 +1,30 @@
+name: ci
+
+"on":
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v4
+
+      - name: Sync studio venv
+        working-directory: claude-workspace/studio
+        run: uv sync
+
+      - name: Install ruff into venv
+        working-directory: claude-workspace/studio
+        run: uv pip install ruff
+
+      - name: Run CI tests
+        working-directory: claude-workspace
+        run: studio/.venv/Scripts/python.exe tools/ci/run_ci.py

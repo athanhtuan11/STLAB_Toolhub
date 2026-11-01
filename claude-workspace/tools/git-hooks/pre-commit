@@ -1,0 +1,2 @@
+#!/bin/sh
+exec python "$(git rev-parse --show-toplevel)/claude-workspace/tools/git-hooks/pre_commit.py" "$@"
