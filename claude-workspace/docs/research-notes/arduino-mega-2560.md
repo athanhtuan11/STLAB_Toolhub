@@ -35,7 +35,7 @@ Nguồn: datasheet chính hãng `en-datasheet.md`, bản sửa 22/05/2025.
 **Cơ khí** (bản vẽ mục Mechanical Information trong datasheet):
 
 - Bo 99 × 53 mm.
-- Lỗ bắt vít Ø3 mm; hai lỗ trên cách nhau 75 mm.
+- Lỗ bắt vít Ø3 mm (bản vẽ; model STEP đo Ø3,2 – 2026-11-01); hai lỗ trên cách nhau 75 mm.
 - Phần đầu nối bên phải cao 33 mm.
 - Tọa độ tuyệt đối từng lỗ: TODO – lấy từ `A000067-cad-files.zip` hoặc đo model STEP bằng công cụ `tools/model-study` trước khi vẽ vỏ.
 

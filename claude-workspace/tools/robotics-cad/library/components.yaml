@@ -471,6 +471,31 @@ components:
     nguon: [https://docs.arduino.cc/hardware/giga-r1-wifi/]
     todo: ["mức logic 3,3 V? – kiểm datasheet"]
 
+  # Tuan 2026-11-01: nghien cuu docs/research-notes/arduino-mega-2560.md. Model STEP cong dong (freecad-library);
+  # lo do bang freecadcmd 2026-11-01 – khoang cach 2 lo canh tren 74,93 mm khop ban ve chinh hang 75 mm.
+  - id: arduino-mega-2560
+    ten: Arduino Mega 2560 Rev3 (A000067)
+    loai: vi-dieu-khien
+    model: Computing/SingleBoardComputers/Arduino/arduino-mega.step
+    bbox_mm: [108.8, 53.16, 14.81]
+    thong_so:
+      chip: "ATmega2560 16 MHz; USB ATmega16U2 (bản chính hãng) / CH340 (clone)"
+      bo_nho: "Flash 256 KB (8 KB bootloader), SRAM 8 KB, EEPROM 4 KB"
+      chan: "54 digital (15 PWM), 16 analog, 4 UART, SPI, I2C (D20 SDA / D21 SCL)"
+      dien_ap_vao_v: "VIN/jack 7 – 12 (datasheet); USB 4,8 – 5,5"
+      muc_logic_v: 5
+      gpio_ma: "20 / chân (pinout chính hãng – chưa đối chiếu lần 2)"
+      bo_mach_mm: "99 × 53 (bản vẽ datasheet); hộp bao model 108,8 × 53,16 × 14,81 gồm USB-B + jack DC nhô ra"
+      lo_bat: "6 lỗ Ø3,2 – tọa độ (mm) tính từ góc hộp bao model: (21,10; 2,41) (73,17; 7,48) (103,65; 2,40)
+        (22,37; 50,67) (97,30; 50,67) (73,17; 35,43)"
+      nhiet_do_c: "-40 – 85"
+    nguon:
+      - https://docs.arduino.cc/hardware/mega-2560
+      - https://docs.arduino.cc/resources/datasheets/A000067-datasheet.pdf
+      - "Bản ghim: community/arduino-docs-content/content/hardware/mega/boards/mega-2560/ (pinout, schematic, CAD)"
+    todo: ["dòng tối đa chân 5 V", "giá trị polyfuse USB (schematic)", "đổi tọa độ lỗ sang gốc mép PCB",
+           "clone CH340: ổn áp + driver WCH"]
+
   - id: arduino-modulino
     ten: Arduino Modulino (13 module I2C Qwiic – buttons, buzzer, distance, knob, pixels, thermo…)
     loai: cam-bien
