@@ -22,4 +22,4 @@ Tạo bằng `/new-project`. Cấu trúc chuẩn: `tools/robotics-cad/CLAUDE.md`
 - Sửa model theo quy ước `tools/robotics-cad/CLAUDE.md`; in xong `/print-result`.
 
 ## Trạng thái
-- Bước 0 – chờ Tuan chọn concept A/B/C (2026-11-01)
+- Bước 0 xong (2026-11-01): concept **A – Khung tầng**, lớp 6. Tiếp: giai đoạn 1 – chốt linh kiện + thư viện Toolhub.

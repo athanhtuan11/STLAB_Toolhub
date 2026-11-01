@@ -2,7 +2,7 @@
 
 ## Thông tin
 - Thời lượng: 2 buổi × 90 phút.
-- Đối tượng: học sinh THCS lớp 6–9 (TODO Tuan xác nhận lớp).
+- Đối tượng: học sinh lớp 6 (Tuan 2026-11-01).
 - Sĩ số / nhóm: TODO.
 
 ## Mục tiêu

@@ -16,7 +16,7 @@ luật mở phần cứng; sa bàn ô 30 cm làm được ở STLab. Bản `line
 
 ## Brief
 - **Sản phẩm:** xe tự hành dò line + tránh vật cản, dùng cho lớp robot STLab và đi thi chuẩn RCJ Rescue Line.
-  Đối tượng: học sinh **THCS (lớp 6–9)**, đội 2–3 em – `TODO` Tuan xác nhận lớp.
+  Đối tượng: học sinh **lớp 6** (Tuan 2026-11-01), đội 2–3 em.
 - **Cảm giác:** chắc – mở là thấy mạch – nhanh mà gọn.
 - **Kích thước bao (Claude chốt):** ≤ 180 × 180 × 150 mm (lọt cửa ô 25 cm, xoay tại chỗ trong ô 30 cm, dưới trần 25 cm);
   khối lượng mục tiêu ≤ 1,2 kg.
@@ -53,3 +53,4 @@ luật mở phần cứng; sa bàn ô 30 cm làm được ở STLab. Bản `line
 
 ## Quyết định
 <!-- Tuan chọn: ngày | concept | ghi chú → chép 1 dòng vào README "Lịch sử sửa" -->
+2026-11-01 | **A – Khung tầng** | Tuan giao Claude chọn. Lý do: mở tầng trên là sửa được (lớp 6 lắp sai nhiều), linh kiện lộ để dạy, tấm phẳng in nhanh không support. Bù phần "kém đẹp" bằng nắp trang trí in màu (sau). Lớp 6 → pin 2S để trong hộp pin kín có BMS, giáo viên sạc.

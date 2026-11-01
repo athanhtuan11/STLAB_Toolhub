@@ -2,7 +2,7 @@
 
 ## Mục tiêu
 - Xe tự hành dò line đen, nhận dấu giao lộ xanh, tránh vật cản, qua dốc và gờ giảm tốc trên sa bàn ô 30 × 30 cm.
-- Dùng cho lớp robot STLab (THCS lớp 6–9, đội 2–3 em – TODO Tuan xác nhận lớp) và đi thi theo chuẩn RCJ Rescue Line.
+- Dùng cho lớp robot STLab (học sinh **lớp 6**, đội 2–3 em – Tuan 2026-11-01) và đi thi theo chuẩn RCJ Rescue Line.
 - Kích thước bao ≤ 180 × 180 × 150 mm; khối lượng mục tiêu ≤ 1,2 kg (chi tiết: `design/brief.md`).
 - Luật và lý do chọn chuẩn: `docs/research-notes/line-robot-competitions.md`.
 
@@ -48,6 +48,7 @@ Nhựa mặc định: Bambu PETG Basic @BBL A1. Không vẽ support vào STL.
 
 ## Lịch sử sửa
 - 2026-11-01: tạo dự án, brief bước 0, nghiên cứu luật thi.
+- 2026-11-01: Tuan giao Claude chọn concept → **A – Khung tầng** (dễ sửa, dễ dạy lớp 6, tấm phẳng in nhanh không support); đối tượng lớp 6.
 
 ## Lịch sử in
 <!-- /print-result ghi vào đây: ngày | plate | PASS/FAIL | mô tả | ảnh -->
