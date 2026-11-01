@@ -51,5 +51,7 @@ Công cụ ở `tools/model-study/` – chạy bằng `.venv\Scripts\python.exe`
    - Áp dụng thêm luật [khe lắp ghép – co ngót] (memory) và support/brim của Tuan.
 
 ## Không làm
+- **Không đăng lại / remix để đăng** model đã nghiên cứu (Tuan 2026-11-01): model cộng đồng chỉ để đọc thông số → fit-library
+  + skill. Model đăng MakerWorld/Printables là thiết kế MỚI cùng Tuan làm (hình học vẽ mới, chỉ dùng lại thông số đã học).
 - Không đưa file/ảnh model cộng đồng lên git. Ảnh render trong `maker/` cũng không commit.
 - Model free (Codex/agy/…) không tự quyết khe, kích thước lắp ghép.
