@@ -1,0 +1,6 @@
+{
+  "source_root": "../..",
+  "include": ["maker/**/*.FCStd"],
+  "destinations": ["G:/stlab-backup/fcstd", "%USERPROFILE%/OneDrive/stlab-backup/fcstd"],
+  "keep_versions": 7
+}
