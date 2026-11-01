@@ -30,6 +30,10 @@ Ngoại lệ: việc ≲ 30 dòng (nhỏ hơn viết spec) Claude tự sửa.
    thật). Chạy thử → phải ĐỎ đúng chỗ.
 2. Chép `tools/delegate/templates/spec.md` → `spec-<viec>.md` cạnh code. `allow` hẹp nhất có thể; ghi rõ file nào đang
    có thay đổi chưa commit cần GIỮ; mục "Không làm".
+   **`gate` chạy qua cmd.exe**: đường dẫn exe phải dùng `\` (`.venv\Scripts\python.exe`, `..\studio\.venv\...`) –
+   `.venv/Scripts/...` báo "'.venv' is not recognized" (2 việc FAIL oan 2026-11-01). Chạy thử đúng chuỗi gate trước khi giao.
+   Nhiều việc chạy song song → đặt `cwd` mỗi việc ở thư mục riêng (không dùng `cwd: .`), nếu không `outside_allow` báo
+   nhầm file của việc khác.
 3. `delegate.py` chạy nền; chỉ đọc dòng JSON cuối (`verdict`, `changed`, `encoding_broken`, `forbidden_touched`).
 4. `verdict: FAIL` chỉ vì `encoding_broken` (Codex Windows mất dấu → `?`): `git diff` file đó, tìm chuỗi có `?`, sửa
    tay chuỗi tiếng Việt, chạy lại gate. Lỗi khác → đọc `handoff.md`, sửa spec/giao lại (tối đa 1 lần) rồi mới tự làm.
