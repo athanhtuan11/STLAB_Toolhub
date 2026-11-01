@@ -270,3 +270,54 @@ Chính sách dữ liệu của gói free Kilo/Copilot: chưa xác minh (TODO). �
 ```powershell
 npm uninstall -g @kilocode/cli @github/copilot
 ```
+
+## Quy tắc chi tiết (chuyển từ CLAUDE.md, 2026-11-01)
+
+Luật ngắn nằm trong `claude-workspace/CLAUDE.md` mục "Phân việc theo model". Phần này giữ chi tiết để CLAUDE.md gọn
+(CLAUDE.md nạp vào mọi phiên, tốn hạn mức).
+
+### Mô tả công việc theo tầng
+
+| Tầng | Ai | Làm gì |
+|---|---|---|
+| 0 – Tổng giám đốc | Phiên chính (Opus) | Kiến trúc, quyết định, **viết spec + gate** (tiêu chí nghiệm thu đo được), hình học/khe/động học khó, `safe_edit.py`, hướng in/support `print.yaml`, an toàn, duyệt ảnh + `result.json` |
+| 2 – Thực thi (free) | `tools/delegate/delegate.py` → Codex (chính) → OpenCode → Kilo → agy-sonnet → Copilot → agy (dự phòng) | Viết + chạy code/script theo `spec.md` tới khi gate PASS: script Python, firmware, Toolhub, script FreeCAD theo spec (`tools/cad-delegation/`) |
+| 1 – Quản lý | Agent `check-runner` (Haiku) | Sau mỗi lần sửa model đã Lưu: chạy `prepare-print.py` + test, trả tóm tắt ≤ 15 dòng. **Không tự đọc log dài trong phiên chính** |
+| 1 – Quản lý | Agent `doc-writer` (Haiku + Gemini free) | README, văn xuôi ASSEMBLY.md, ghi chú nghiên cứu, caption, lịch sử sửa – từ gạch đầu dòng phiên chính đưa |
+| 1 – Quản lý | Agent `git-scribe` (Haiku) | Soạn commit + push khi kiểm đạt (đưa kèm phạm vi file + kết quả kiểm) |
+| Tư vấn | deliberation `ask-gemini` (Gemini qua Antigravity `agy`) | Tóm tắt tài liệu/trang web dài (> ~300 dòng) trước khi Claude đọc; dịch; đổi giọng văn |
+| Tư vấn | `/codex:review` (ChatGPT Free); deliberation `consensus` (Gemini + GPT) | Review lần 2 script Python/FreeCAD lớn trước khi commit; `consensus`/`/codex:adversarial-review` khi phân vân thiết kế code |
+
+### delegate.py: giao việc và đọc kết quả
+
+- Spec: chép `tools/delegate/templates/spec.md`, điền mục tiêu, `cwd`, `allow`, `gate`. Claude viết test/gate **trước**.
+- Chạy nền `python tools/delegate/delegate.py <spec.md>`; chỉ đọc dòng JSON cuối (`verdict`, `rounds`, `changed`,
+  `forbidden_touched`). Log dài nằm ở `run_dir`, chỉ đọc khi FAIL.
+- Hết 429/hạn mức: `delegate.py` tự chuyển executor. Xem trạng thái: `python tools/delegate/delegate.py --status`.
+  Đánh dấu tay: `python tools/delegate/delegate.py --mark-limit <executor> <ISO>`.
+- Executor đụng `.FCStd`, `print.yaml`, `community/`, `.env` → báo FAIL.
+- OpenCode chạy với `tools/delegate/opencode.json`: cấm ghi ngoài `cwd`, cấm `.FCStd`, cấm git commit/push.
+  Kilo nạp `tools/delegate/kilo.json` qua `KILO_CONFIG`. Copilot và lời dặn AGY_NOTE: xem các mục trên.
+
+### Gemini và Codex (deliberation)
+
+- Gemini (`ask-gemini`): agy chỉ thấy bản chép. Chép file vào `D:\04_Stlab\agy-scratch\<ten-viec>\`, `cwd` = thư mục đó,
+  prompt ghi "chỉ đọc file trong thư mục làm việc hiện tại, không chạy lệnh terminal, chỉ trả văn bản". Xong thì xóa
+  đúng thư mục đó. Lý do và lỗi `files`: mục "An toàn" ở trên.
+- `ask-gpt` (Codex) trên Windows **không đọc được file**: sandbox chặn mọi lệnh shell (thử 2026-10-26). Dùng để tra web
+  hoặc dán đoạn mã vào prompt; đọc mã/repo giao Gemini.
+- `/codex:review`: `TODO` thử lại trên Windows.
+- `/codex:rescue` (Codex được ghi file, sandbox `workspace-write`): chỉ khi Tuan đồng ý; cấm đụng `.FCStd`,
+  `print.yaml`, `community/`.
+
+### Báo lên trên (Tuan 2026-10-27)
+
+- Chuỗi báo: nhân viên → quản lý/giám đốc (`bao_cao_cho`) → Tuan. Không tự làm thay, không nhờ agent khác làm hộ.
+- Executor trả `ESCALATE: ...` → `delegate.py` dừng, `verdict: ESCALATE` (exit 2) + ghi `handoff.md`.
+- Agent Haiku ghi `BÁO LÊN TRÊN:` ở dòng đầu báo cáo.
+- Phiên chính gặp việc vượt quyền (quyền hệ thống, việc của phiên khác, quyết định của Tuan) → hỏi Tuan.
+
+### Sổ nhân sự (tham chiếu)
+
+- Thiết kế + lộ trình phân quyền: `docs/reports/agent-org-roles-permissions.md` mục 7 (đã xong bước 1).
+- Kiểm sổ: `python tools/org/check_org.py` (PASS trước khi commit). Sinh bảng: `python tools/org/gen_table.py --write`.

@@ -1,66 +1,47 @@
 # claude-workspace – workspace Claude Code của STLab
 
-Cấu trúc theo mẫu cộng đồng (shanraisshan/claude-code-best-practice): quy ước chung đặt ở
-file này; mỗi dự án con có CLAUDE.md riêng và tự nạp file này theo cây thư mục cha.
+Quy ước chung đặt ở file này (mẫu shanraisshan/claude-code-best-practice); mỗi dự án con có `CLAUDE.md` riêng và tự nạp file này theo cây thư mục cha.
 
 ## Cấu trúc
-- `community/`: repo cộng đồng đã clone, **detached ở điểm ghim**. Chỉ đọc, KHÔNG sửa.
-  - `pins.tsv`: điểm ghim; `links.tsv`: skill/agent nào liên kết vào đâu.
-  - `update-community.sh`: kiểm tra, áp dụng, rollback (xem `docs/COMMUNITY.md`).
-- `custom/skills/`: skill tự viết (chỉ khi không có nguồn cộng đồng phù hợp, có ghi lý do).
-- `studio/`: giao diện web **STLAB Toolhub** (Flask, `.flaskenv`) + mở FreeCAD/Blender/LightCraft/PhotoCraft
-  kèm MCP (file .bat). Xem `studio/CLAUDE.md`. Thêm tính năng mới thì thêm trang vào Toolhub.
-- `video-ai/`: tự dựng video ngắn từ clip tự quay bằng FilmCraft (phân tích → plan → dựng), xem `video-ai/CLAUDE.md`.
-- `stlab/`: giáo án (`lesson-plans/`), báo cáo phụ huynh (`parent-reports/`, dữ liệu cá nhân – không lên git).
-- `maker/`: **chỉ dự án** (mỗi thư mục một dự án, có `CLAUDE.md` + `README.md`). Dự án CAD: `design/` (bước 0),
-  `freecad/`, `print/`; điện tử: `firmware/`, `hardware/`, `docs/`.
-- `tools/`: công cụ dùng chung cho nhiều dự án – `robotics-cad/` (kiểm model, xuất STL, cắt lớp, workbench STLab,
-  `project-template/`), `prompt-library/` (prompt FreeCAD/Blender + MCP).
-- `photo-ai/`: sửa ảnh LightCraft – **tạm dừng** (chờ bản LightCraft tạo ảnh AI).
-- `harness-lab/`: sổ lỗi `inbox.md` + lệnh `/lesson` để cải thiện cách làm việc với Claude.
-- `docs/`: nghiên cứu (`*-research.md`), quy trình (`cad-standard-workflow.md`), `reports/`, `research-notes/`,
-  `COMMUNITY.md` (bảng quản lý nguồn cộng đồng).
+- `community/`: repo cộng đồng detached ở điểm ghim. **Chỉ đọc, KHÔNG sửa.** `pins.tsv` (ghim), `links.tsv` (liên kết), `update-community.sh` (xem `docs/COMMUNITY.md`).
+- `custom/skills/`: skill tự viết, chỉ khi không có nguồn cộng đồng phù hợp (ghi lý do).
+- `studio/`: giao diện STLAB Toolhub (Flask) + mở FreeCAD/Blender/LightCraft/PhotoCraft kèm MCP; xem `studio/CLAUDE.md`. Tính năng mới thì thêm trang vào Toolhub.
+- `video-ai/`: tự dựng video ngắn từ clip tự quay (FilmCraft); xem `video-ai/CLAUDE.md`.
+- `stlab/`: giáo án (`lesson-plans/`); `parent-reports/` là dữ liệu cá nhân, không lên git.
+- `maker/`: **chỉ dự án**, mỗi thư mục một dự án (`CLAUDE.md` + `README.md`). CAD: `design/` (bước 0), `freecad/`, `print/`; điện tử: `firmware/`, `hardware/`, `docs/`.
+- `tools/`: công cụ dùng chung: `robotics-cad/` (kiểm model, STL, cắt lớp, workbench STLab, `project-template/`), `prompt-library/`.
+- `tools/backup/`: sao lưu .FCStd ra G: + OneDrive (lịch hằng ngày 21:00).
+- `photo-ai/`: LightCraft – **tạm dừng** (chờ bản tạo ảnh AI).
+- `harness-lab/`: sổ lỗi `inbox.md` + lệnh `/lesson`.
+- `docs/`: nghiên cứu, quy trình, `reports/`, `research-notes/`, `COMMUNITY.md`, `model-routing.md` (phân việc model, chi tiết).
 
-## Đặt tên (Tuan 2026-10-23, chuẩn hóa toàn repo 2026-10-25)
-- Thư mục, file, script, khóa YAML, tham số CLI, URL Toolhub, tên skill/lệnh: **tiếng Anh, kebab-case, không dấu**.
-  Ngoại lệ theo ngôn ngữ: module Python và file model dùng `_` (`safe_edit.py`, `pushrod_arm.FCStd`); file chuẩn viết
-  hoa (`CLAUDE.md`, `README.md`, `SKILL.md`, `ASSEMBLY.md`, `BOM.md`); tên riêng giữ nguyên (giọng `mai-anh.mp3`).
-- Nội dung tài liệu viết tiếng Việt. Tên cũ trong lịch sử git/memory là lịch sử, không sửa.
+## Đặt tên (Tuan 2026-10-23, chuẩn hóa 2026-10-25)
+- Thư mục, file, script, khóa YAML, tham số CLI, URL Toolhub, tên skill/lệnh: **tiếng Anh, kebab-case, không dấu**. Ngoại lệ: module Python và file model dùng `_`; file chuẩn viết hoa (`CLAUDE.md`, `README.md`, `SKILL.md`, `ASSEMBLY.md`, `BOM.md`); tên riêng giữ nguyên.
+- Nội dung tài liệu viết **tiếng Việt**. Tên cũ trong lịch sử git/memory là lịch sử, không sửa.
 
 ## Một nguồn duy nhất cho skill
-- Skill chỉ nằm trong workspace (`custom/skills/`, `community/...`); mọi nơi khác là **symlink** theo `links.tsv`.
-- Skill dùng chung → `~/.claude/skills/` (Claude Code + tab **Code** của Claude Desktop đều đọc).
-  Không liên kết cùng một skill ở cả cấp dự án và cấp dùng chung (bị trùng tên).
-- Claude Desktop làm việc với FreeCAD/Blender… → dùng tab **Code**. Tab Chat/Cowork không đọc skill trên máy.
-- **Không tải skill lên tài khoản claude.ai** (sẽ thành bản sao thứ hai, tự đồng bộ xuống `~/.claude/skills/synced/`).
-- **Quy trình lặp lại ≥ 2 lần → lưu thành skill** (Tuan 2026-10-30) trong `custom/skills/` + dòng `links.tsv`; quy trình
-  đổi thì sửa skill, đừng để memory và skill nói khác nhau. Trình tự nhận việc → giao → kiểm → commit → memory:
-  skill `stlab-workflow`; phát hành firmware OTA: skill `stlab-ota-release`.
+- Skill chỉ nằm trong workspace (`custom/skills/`, `community/...`); nơi khác là **symlink** theo `links.tsv`. Skill dùng chung → `~/.claude/skills/`; không liên kết một skill ở cả cấp dự án lẫn cấp dùng chung (bị trùng tên).
+- **Không tải skill lên claude.ai** (thành bản sao thứ hai). Tab **Code** của Claude Desktop đọc skill; tab Chat/Cowork không đọc.
+- **Quy trình lặp lại ≥ 2 lần → lưu thành skill** (Tuan 2026-10-30) + dòng `links.tsv`; quy trình đổi thì sửa skill, không để memory và skill nói khác. Nhận việc → giao → kiểm → commit → memory: `stlab-workflow`; phát hành OTA: `stlab-ota-release`.
 
 ## Quy tắc với nguồn cộng đồng
-- Muốn dùng skill/agent mới: thêm dòng vào `community/links.tsv` rồi chạy
-  `bash community/update-community.sh link`. Không copy để sửa trực tiếp.
-- Cần tùy biến thì tạo file riêng trong `custom/`; không đè lên bản gốc.
+- Muốn dùng skill/agent mới: thêm dòng vào `community/links.tsv`, rồi `bash community/update-community.sh link`. Không copy để sửa trực tiếp; tùy biến thì tạo file riêng trong `custom/`, không đè bản gốc.
 - **Không bao giờ** tự chạy `apply` hay `rollback` khi Tuan chưa xác nhận repo đó trong hội thoại.
-- Trước khi thêm nguồn mới: đọc mã, liệt kê những gì nó chạy/truy cập, ghi license,
-  ghi vào `docs/COMMUNITY.md`.
-- Chọn nguồn: **ưu tiên nhiều sao GitHub**. STLab dùng phi thương mại → license **không phải lý do loại**;
-  nguồn có ràng buộc (NC, trả phí khi thương mại, AGPL, không license) ghi vào bảng
-  "Xem lại khi làm thương mại" trong `docs/COMMUNITY.md`. An toàn (mã chạy gì, gửi dữ liệu đi đâu) vẫn bắt buộc.
-- `.claude/skills/` và `.claude/agents/` của các dự án chỉ chứa symlink và không đưa lên git.
+- Trước khi thêm nguồn: đọc mã, liệt kê những gì nó chạy/truy cập, ghi license vào `docs/COMMUNITY.md`.
+- Chọn nguồn ưu tiên **nhiều sao GitHub**. License không phải lý do loại (STLab phi thương mại); nguồn ràng buộc (NC, trả phí khi thương mại, AGPL, không license) ghi bảng "Xem lại khi làm thương mại". An toàn (mã chạy gì, gửi dữ liệu đi đâu) vẫn bắt buộc.
+- `.claude/skills/`, `.claude/agents/` của dự án chỉ chứa symlink, không đưa lên git.
 
-## Phân việc theo model (Tuan 2026-10-26: chỉ trả Claude Pro, còn lại free)
-Chi tiết, cài đặt, gỡ bỏ: `docs/model-routing.md`.
+## Phân việc theo model (chỉ trả Claude Pro, còn lại free – Tuan 2026-10-26)
+Chi tiết, cài đặt, gỡ bỏ, bảng mô tả công việc, cơ chế delegate: `docs/model-routing.md`.
 
-**Phân quyền 3 tầng (Tuan 2026-10-27):** Claude = tổng giám đốc: quyết định + viết đặc tả/gate, giao cấp dưới làm.
-**Sổ nhân sự `org/agents.yaml` + `org/policy.yaml` là nguồn duy nhất** về agent (vai trò, model, chi phí, quyền, mức dữ
-liệu, người duyệt, chuyển khi hết hạn mức). Thêm/đổi agent: sửa sổ (chỉ phiên chính, Tuan duyệt) → `python
-tools/org/check_org.py` phải PASS. Agent mới vào `thu-viec`, qua bài thử có gate mới `chinh-thuc`. Executor không được sửa `org/`.
-Thiết kế + lộ trình: `docs/reports/agent-org-roles-permissions.md` mục 7 (đã xong bước 1).
-**Báo lên trên (Tuan 2026-10-27):** không có quyền / không phải việc của mình → dừng, báo `bao_cao_cho` (nhân viên →
-quản lý/giám đốc → Tuan); không tự làm thay, không nhờ agent khác làm hộ. Executor trả `ESCALATE: ...` → `delegate.py`
-dừng, `verdict: ESCALATE` (exit 2) + `handoff.md`; agent Haiku ghi `BÁO LÊN TRÊN:` ở dòng đầu báo cáo. Phiên chính
-gặp việc vượt quyền mình (quyền hệ thống, việc của phiên khác, quyết định của Tuan) → hỏi Tuan.
+- **Phân quyền 3 tầng (Tuan 2026-10-27):** tổng giám đốc (Claude) quyết định, viết spec + gate, giao cấp dưới; Haiku (`check-runner`, `doc-writer`, `git-scribe`) quản lý; executor free qua `tools/delegate/delegate.py` làm việc.
+- Phiên chính **không** tự đọc tài liệu/BOM/log/file mẫu, không tự viết tài liệu, không tự commit: đọc/tóm tắt → `ask-gemini`; tra web → `ask-gpt`; viết tài liệu → `doc-writer`; kiểm → `check-runner`; commit → `git-scribe`. Chỉ tự làm CAD (dựng hình, khe, động học), an toàn, quyết định; đọc tối đa vài dòng khi viết code CAD.
+- Giao code: spec từ `tools/delegate/templates/spec.md`, viết gate **trước**, chạy nền `delegate.py`, chỉ đọc dòng JSON cuối. Phiên chính tự viết code chỉ khi việc ≲ 30 dòng hoặc là hình học/khe/an toàn.
+- Hết 429/hạn mức: `delegate.py` tự chuyển executor (Codex → OpenCode → Kilo → agy-sonnet → Copilot → agy). Hết hạn mức free thì làm tiếp bằng Haiku/phiên chính, **không** đổi sang dịch vụ trả phí.
+- Gemini (`ask-gemini`, chỉ đọc): chỉ thấy bản chép trong `D:\04_Stlab\agy-scratch\<ten-viec>\` (ngoài repo), `cwd` = thư mục đó, xong xóa; **không** dùng tham số `files`. Đọc mã/repo giao Gemini; `ask-gpt` chỉ tra web hoặc nhận đoạn mã dán vào prompt.
+- `/codex:rescue` (Codex được ghi file) chỉ khi Tuan đồng ý. Không bật stop review gate của `/codex:setup`.
+- **Sổ nhân sự `org/agents.yaml` + `org/policy.yaml` là nguồn duy nhất** về agent (vai trò, model, chi phí, quyền, mức dữ liệu, người duyệt). Thêm/đổi agent: chỉ phiên chính sửa sổ (Tuan duyệt) → `python tools/org/check_org.py` phải PASS. Agent mới vào `thu-viec`, qua gate mới lên `chinh-thuc`. Executor **không** được sửa `org/`.
+- **Báo lên trên (Tuan 2026-10-27):** không có quyền / không phải việc mình → dừng, báo `bao_cao_cho` (nhân viên → quản lý/giám đốc → Tuan), không tự làm thay, không nhờ agent khác. Báo cáo ghi `BÁO LÊN TRÊN:` ở dòng đầu. Phiên chính gặp việc vượt quyền → hỏi Tuan.
 
 Sổ nhân sự (sinh tự động – sửa `org/agents.yaml` rồi chạy `python tools/org/gen_table.py --write`):
 
@@ -82,52 +63,12 @@ Sổ nhân sự (sinh tự động – sửa `org/agents.yaml` rồi chạy `pyt
 _Sinh tự động từ org/agents.yaml bằng tools/org/gen_table.py – không sửa tay._
 <!-- org-table:end -->
 
-Mô tả công việc:
-
-| Tầng | Ai | Làm gì |
-|---|---|---|
-| 0 – Tổng giám đốc | Phiên chính (Opus) | Kiến trúc, quyết định, **viết spec + gate** (tiêu chí nghiệm thu đo được), hình học/khe/động học khó, `safe_edit.py`, hướng in/support `print.yaml`, an toàn, duyệt ảnh + `result.json` |
-| 2 – Thực thi (free) | `tools/delegate/delegate.py` → Codex (chính) → OpenCode → Kilo → agy-sonnet → Copilot → agy (dự phòng) | Viết + chạy code/script theo `spec.md` tới khi gate PASS: script Python, firmware, Toolhub, script FreeCAD theo spec (`tools/cad-delegation/`) |
-| 1 – Quản lý | Agent `check-runner` (Haiku) | Sau mỗi lần sửa model đã Lưu: chạy `prepare-print.py` + test, trả tóm tắt ≤ 15 dòng. **Không tự đọc log dài trong phiên chính** |
-| 1 – Quản lý | Agent `doc-writer` (Haiku + Gemini free) | README, văn xuôi ASSEMBLY.md, ghi chú nghiên cứu, caption, lịch sử sửa – từ gạch đầu dòng phiên chính đưa |
-| 1 – Quản lý | Agent `git-scribe` (Haiku) | Soạn commit + push khi kiểm đạt (đưa kèm phạm vi file + kết quả kiểm) |
-| Tư vấn | deliberation `ask-gemini` (Gemini qua Antigravity `agy`) | Tóm tắt tài liệu/trang web dài (> ~300 dòng) trước khi Claude đọc; dịch; đổi giọng văn |
-| Tư vấn | `/codex:review` (ChatGPT Free); deliberation `consensus` (Gemini + GPT) | Review lần 2 script Python/FreeCAD lớn trước khi commit; `consensus`/`/codex:adversarial-review` khi phân vân thiết kế code |
-
-Giao việc code (thay cho Claude tự viết code dài): chép `tools/delegate/templates/spec.md` → điền mục tiêu, `cwd`,
-`allow`, `gate` (Claude viết test/gate TRƯỚC) → chạy nền `python tools/delegate/delegate.py <spec.md>` → chỉ đọc dòng
-JSON cuối (`verdict`, `rounds`, `changed`, `forbidden_touched`). Log dài nằm ở `run_dir`, không đọc trừ khi FAIL.
-`delegate.py` tự chuyển executor khi gặp 429/hết hạn mức (`--status` xem, `--mark-limit agy <ISO>` đánh dấu tay),
-và báo FAIL nếu executor đụng `.FCStd`/`print.yaml`/`community/`/`.env`. OpenCode chạy với
-`tools/delegate/opencode.json` (cấm ghi ngoài `cwd`, cấm `.FCStd`/git commit/push). Kilo nạp `tools/delegate/kilo.json`
-qua `KILO_CONFIG`. Copilot nhận prompt qua stdin, có `--sandbox` và `--deny-tool` cho git commit/push/reset/checkout, `rm -rf`,
-`Remove-Item`. `agy-sonnet` (chính thức 2026-10-28) nằm trong chuỗi tự động sau Kilo; sandbox agy không thấy python/ổ ngoài cwd nên `delegate.py` chạy gate thay (lời dặn AGY_NOTE trong prompt). Claude chỉ tự viết code khi
-việc nhỏ hơn việc viết spec (≲ 30 dòng) hoặc là hình học/khe/an toàn.
-
-**Quy tắc cứng (Tuan 2026-10-26, nhắc 2 lần):** phiên chính KHÔNG tự đọc tài liệu/BOM/log/file mẫu, KHÔNG tự viết tài
-liệu, KHÔNG tự commit – đọc/tóm tắt → agy (`ask-gemini`), tra web → Codex (`ask-gpt`), viết tài liệu → `doc-writer`,
-kiểm/test → `check-runner`, commit → `git-scribe`. Claude chỉ tự làm CAD (script dựng hình/ảnh, khe, động học), an toàn,
-quyết định; tự đọc tối đa vài dòng khi đang viết code CAD.
-
-Gọi Gemini qua deliberation: chép file cần đọc vào `D:\04_Stlab\agy-scratch\<ten-viec>\` (ngoài repo), `cwd` = thư
-mục đó, prompt ghi "chỉ đọc file trong thư mục làm việc, không chạy lệnh terminal"; xong xóa thư mục. **Không** dùng
-`files` cho Gemini (không được chèn nội dung; đã thử 2026-10-26). Lý do: trên Windows `agy` không có sandbox HĐH.
-Codex `ask-gpt` (deliberation) trên Windows **không đọc được file** – sandbox chỉ đọc chặn mọi lệnh shell (thử 2026-10-26);
-dùng nó để tra web hoặc dán đoạn mã vào prompt; đọc mã/repo giao Gemini (agy). `/codex:review`: `TODO` thử lại trên Windows.
-
-Nguyên tắc cứng:
-- Model free (Gemini, Codex, OpenCode, Kilo, agy-sonnet, Copilot) **không quyết** kích thước, khe, thông số linh kiện, an toàn điện/pin/nhiệt. Số liệu từ chúng
-  phải được phiên chính hoặc script kiểm; không có nguồn → `TODO`.
-- **Không gửi ra ngoài** (Gemini, Codex, OpenCode, Kilo, agy-sonnet, Copilot – chính sách dữ liệu gói free Kilo/Copilot còn TODO): `stlab/parent-reports/`, thông tin cá nhân của khách (tên, địa chỉ, SĐT, mật khẩu Wi-Fi/tài khoản – KHÔNG phải
-  bản thân dự án: mọi dự án trong `maker/` là việc bình thường, giao executor được; Tuan 2026-10-27),
-  `.env`/key/mật khẩu, ảnh có người. Chỉ tài liệu kỹ thuật, mã nguồn của workspace.
-- `/codex:rescue` (Codex được ghi file, sandbox `workspace-write`) chỉ dùng khi Tuan đồng ý; cấm cho đụng `.FCStd`,
-  `print.yaml`, `community/`. Không bật cổng review khi dừng (`/codex:setup` → stop gate giữ **tắt**).
-- Không chạy `/deliberation:setup` (cài luật "tự giao việc trên MỌI tin nhắn" vào `~/.claude/rules/`). Server
-  `deliberation-gemini/-grok/-openrouter` bị `deny` (đường ghi file duy nhất của Gemini); chỉ dùng bộ điều phối.
+Nguyên tắc cứng (model free: Gemini, Codex, OpenCode, Kilo, agy-sonnet, Copilot):
+- **Không quyết** kích thước, khe, thông số linh kiện, an toàn điện/pin/nhiệt. Số liệu phải từ phiên chính hoặc script kiểm; không có nguồn → `TODO`.
+- **Không gửi** `stlab/parent-reports/`, thông tin cá nhân của khách (tên, địa chỉ, SĐT, mật khẩu Wi-Fi/tài khoản; dự án trong `maker/` là việc bình thường, Tuan 2026-10-27), `.env`/key/mật khẩu, ảnh có người. Chỉ tài liệu kỹ thuật, mã nguồn workspace.
 - Chỉ một phiên điều khiển FreeCAD GUI; agent chỉ chạy `freecadcmd`/`python.exe` trên file đã Lưu.
-- Hết hạn mức free (lỗi 429/quota) → làm tiếp bằng Haiku/phiên chính, không đổi sang dịch vụ trả phí.
+- Không chạy `/deliberation:setup` (cài luật tự giao việc vào `~/.claude/rules/`); server `deliberation-gemini/-grok/-openrouter` bị `deny`.
 
 ## Git
-- Repo này định đưa lên GitHub. Không đưa bản clone cộng đồng và bí mật vào repo (xem `.gitignore`).
-- Kiểm ổn (test/kiểm tra đạt) thì tự commit + push lên GitHub (Tuan 2026-10-23); thay đổi lớn làm trên nhánh rồi gộp.
+- Repo định đưa lên GitHub. Không đưa bản clone cộng đồng và bí mật vào repo (xem `.gitignore`).
+- Kiểm ổn (test/kiểm tra đạt) thì tự commit + push GitHub, không cần hỏi (Tuan 2026-10-23) – việc commit giao `git-scribe`; thay đổi lớn làm trên nhánh rồi gộp.
