@@ -63,6 +63,10 @@ def run_one(name, script, extra, cwd):
     print("%s %s %.2fs" % ("PASS" if ok else "FAIL", name, seconds), flush=True)
     if not ok and output.strip():
         print(output.rstrip(), flush=True)
+        if os.environ.get("GITHUB_ACTIONS"):
+            # log job can dang nhap moi doc duoc; annotation thi cong khai -> dua 8 dong cuoi len annotation
+            tail = output.strip().splitlines()[-8:]
+            print("::error title=FAIL %s::%s" % (name, "%0A".join(tail)), flush=True)
     return ok
 
 
@@ -70,6 +74,8 @@ def main(argv):
     os.chdir(WS)
     # ruff cai trong venv (CI) khong nam tren PATH -> them thu muc Scripts cua python nay de hook khong bo qua ruff
     os.environ["PATH"] = os.path.dirname(sys.executable) + os.pathsep + os.environ.get("PATH", "")
+    # runner Windows dung cp1252: test in/doc tieng Viet se loi -> ep UTF-8 cho moi test con
+    os.environ["PYTHONUTF8"] = "1"
     tests = build_tests()
     if "--list" in argv:
         for name, _script, _extra, _cwd in tests:
