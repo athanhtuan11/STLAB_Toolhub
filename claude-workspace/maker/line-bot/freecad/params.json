@@ -1,0 +1,34 @@
+{
+  "_ghi_chu": "Tham so line-bot (Claude chot 2026-11-01, concept A - Khung tang, lop 6). Don vi mm. He truc: X tien, Y trai, Z len; goc = trung diem 2 truc banh tren mat san. DOI LINH KIEN = sua muc 'linh_kien' roi chay lai build_line_bot.py. Gia tri 'nguon':'gia-dinh' = chua co anh linh kien that cua Tuan -> thay khi co.",
+
+  "bao": {"max_x": 180.0, "max_y": 180.0, "max_z": 150.0, "nguon": "brief.md (lot cua o RCJ 25 cm, tran 25 cm)"},
+
+  "linh_kien": {
+    "mega": {"bbox": [108.8, 53.16, 14.81], "pcb_t": 1.6,
+             "lo": [[21.10, 2.41], [73.17, 7.48], [103.65, 2.40], [22.37, 50.67], [97.30, 50.67], [73.17, 35.43]],
+             "lo_dung": [0, 2, 3, 4], "lo_d": 3.2,
+             "nguon": "thu vien arduino-mega-2560: do STEP freecad-library, toa do tu goc hop bao; 2 lo canh tren cach 74,93 khop ban ve 75"},
+    "n20": {"w": 12.0, "h": 10.0, "dai": 35.8, "truc_d": 3.0, "truc_dai": 10.0, "vit_cach_tam": 4.5, "vit": "M1.6",
+            "dai_encoder_them": 0.0,
+            "nguon": "thu vien n20-gearmotor (bbox 12 x 10 x 35,8 gom truc 10); encoder: dai_encoder_them = gia-dinh 0 -> TODO anh Tuan"},
+    "banh": {"d": 42.0, "w": 19.0, "nguon": "gia-dinh (banh N20 thong dung) -> TODO anh Tuan"},
+    "bi_do": {"cao_toi_tam_vit": null, "d_bi": 9.5, "nguon": "gia-dinh: bi do 3/8 in; chieu cao tinh tu banh de xe thang -> TODO anh Tuan"},
+    "line": {"so_mat": 8, "buoc": 9.525, "pcb": [75.0, 13.0, 1.6], "cao_san": 3.0, "truoc_truc": 60.0,
+             "nguon": "Pololu QTR-8 (0J12): buoc 9,525, khoang do toi uu 3 mm, toi da 6 (8A) - da doi chieu 2026-11-01; pcb + truoc_truc: gia-dinh"},
+    "sr04": {"bbox": [45.0, 20.0, 15.0], "mat_d": 16.0, "mat_cach": 26.0,
+             "nguon": "thu vien hc-sr04 (45 x 20 x 15 datasheet); mat_d/mat_cach: gia-dinh -> do hang that"},
+    "pin_2s": {"bbox": [77.0, 41.0, 20.0], "nguon": "gia-dinh: hop 2 x 18650 nam ngang -> TODO anh Tuan"},
+    "driver": {"bbox": [20.3, 20.3, 1.6], "nguon": "gia-dinh: module TB6612FNG -> TODO anh Tuan"}
+  },
+
+  "khung": {
+    "tam_duoi_t": 3.0, "tam_tren_t": 3.0, "cot_cao": 35.0, "cot_d": 8.0,
+    "bo_goc_r": 6.0, "khe": 0.2,
+    "nguon": "Claude chot; khe 0,2 theo cyberbrick-car (Tuan chot)"
+  },
+
+  "lo_vit": {
+    "m3_xuyen": 3.4, "m3_tu_ren": 2.6, "m16_xuyen": 1.9,
+    "nguon": "Claude chot 2026-11-01: m3_xuyen theo ISO 273 (medium); m3_tu_ren + m16 = CAN IN THU (fit-library chua co muc M3/N20)"
+  }
+}
