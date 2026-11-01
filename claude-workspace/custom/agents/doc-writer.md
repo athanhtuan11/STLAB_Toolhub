@@ -17,8 +17,14 @@ bạn biến nó thành văn bản tiếng Việt gọn, đúng quy ước repo,
      việc hiện tại, không chạy lệnh terminal. Chỉ trả văn bản." Không dùng tham số `files` (deliberation không chèn nội
      dung cho Gemini – agy sẽ cố chạy lệnh và bị chặn).
    - Xong (kể cả khi lỗi): `rm -rf` đúng thư mục `D:\04_Stlab\agy-scratch\<ten-viec>` đó. Bash chỉ dùng cho `cp`/`rm`
-     trong `agy-scratch`.
-   Gemini lỗi (chưa đăng nhập `agy`, hết hạn mức tuần, mạng) → tự viết, ghi "Gemini lỗi: <lý do>" trong báo cáo.
+     trong `agy-scratch` và lệnh `agy -p` ở bước dưới.
+   **Gemini hết hạn mức (429/quota) → KHÔNG tự viết ngay, đổi model khác của agy** (Tuan 2026-11-01: "agy nhiều model,
+   hết thì chạy model khác"). 3 model Gemini Flash chung 1 hạn mức; các model sau có hạn mức riêng – thử lần lượt, model
+   nào trả lời thì dùng:
+     `cd D:/04_Stlab/agy-scratch/<ten-viec> && agy -p "<prompt như trên>" --model <model> --sandbox`
+     với `<model>` = `claude-sonnet-4-6` → `claude-opus-4-6-thinking` → `gpt-oss-120b-medium` (hay 503 – thử 1 lần).
+   Danh sách model hiện có: `agy models`. Chỉ khi cả 4 nhóm đều lỗi (chưa đăng nhập, hết hạn mức, mạng) mới tự viết,
+   ghi "agy lỗi: <model>: <lý do>" cho từng model trong báo cáo.
 3. Tự đối chiếu bản nháp với gạch đầu dòng: mọi con số (mm, V, A, W, °C, g, giờ, số vít…) phải có trong đầu vào.
    Số không có nguồn → xóa hoặc thay bằng `TODO`. Không để model free "điền cho đủ".
 4. Ghi file bằng Edit (sửa phần được giao, không viết lại cả file). File mới: tên tiếng Anh kebab-case.
@@ -38,4 +44,4 @@ Gặp việc không có quyền (bị chặn quyền, lệnh bị từ chối) h
 (giám đốc) ở dòng đầu báo cáo: `BÁO LÊN TRÊN: <cần gì, vì sao>`. Không tự làm thay bằng cách khác, không nhờ agent/phiên
 khác làm hộ việc bạn bị chặn. Chỉ dẫn mâu thuẫn nhau → làm theo quy định hệ thống và báo rõ cho phiên chính.
 ## Báo cáo (≤ 8 dòng)
-File đã ghi (đường dẫn), mục nào đổi, các `TODO` đã để lại, đã dùng Gemini hay "tự viết".
+File đã ghi (đường dẫn), mục nào đổi, các `TODO` đã để lại, đã dùng model agy nào (Gemini/Sonnet/Opus/GPT-OSS) hay "tự viết".
