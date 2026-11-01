@@ -9,6 +9,7 @@ Tuy chon (sau --pass, dang khoa=gia-tri vi freecadcmd tu doc moi tham so "--x"):
     ignore-pair="Horn|Servo*"    cap duoc phep cham/chong (vd. horn lap tren truc servo); lap lai duoc
     mesh-pair="Gear*|Pinion*"    cap an khop (banh rang) hoac dem/washer long: khe nho -> INFO (chong van FAIL)
     multi-solid="Spacer_D,..." object co y gom nhieu manh: khong bat loi "N solid"
+    hidden-ok="Hidden_*,Old_*" chi tiet AN co y (glob Label): FAIL -> INFO (mac dinh: chi tiet an = FAIL)
     sweep=Khop:min:max[:buoc]  quet khop Assembly (Revolute/Cylindrical: do; Slider: mm); lap lai duoc
     export=3mf | export=step    xuat tung chi tiet in vao thu muc bao cao
     thresholds=<file.yaml>     mac dinh thresholds.yaml (thu muc robotics-cad)
@@ -74,6 +75,7 @@ def tham_so():
     ap.add_argument("--ignore-pair", action="append", default=[])
     ap.add_argument("--mesh-pair", action="append", default=[])
     ap.add_argument("--multi-solid", default="")
+    ap.add_argument("--hidden-ok", default="")
     ap.add_argument("--sweep", action="append", default=[])
     ap.add_argument("--export", choices=["3mf", "step"])
     ap.add_argument("--thresholds", default=str(HERE.parent / "thresholds.yaml"))
@@ -121,6 +123,28 @@ def la_linh_kien(ct, mau):
     if "community" in Path(ct["file_goc"]).parts:
         return True
     return any(fnmatch.fnmatch(ct["nhan"], m.strip()) for m in mau if m.strip())
+
+
+def chi_tiet_an(doc):
+    """Chi tiet AN (Visibility False) co solid nhung khong phai la "la": dang la dau vao cua boolean/feature khac
+    (co Part::Feature trong InList) - giong tieu chi "la" cua metrics.py. Tra danh sach Label sap xep tang dan.
+
+    check.py bo qua chi tiet an khi kiem (chi_tiet_la) nhung export-stl.py van xuat STL -> chi tiet duoc in
+    ma chua kiem. Liet ke ra de khong im lang (bai hoc inbox 2026-10-25).
+    """
+    def la_part(o):
+        return o.isDerivedFrom("Part::Feature")
+
+    ra = []
+    for o in doc.Objects:
+        if not la_part(o) or getattr(o, "Visibility", True):
+            continue
+        if any(la_part(x) for x in o.InList):  # dau vao boolean/feature khac: an la dung
+            continue
+        shp = getattr(o, "Shape", None)
+        if shp is not None and shp.Solids:
+            ra.append(o.Label)
+    return sorted(ra)
 
 
 # ---------- 1. hinh hoc ----------
@@ -834,6 +858,19 @@ def main():
         (Path(a.tmp) / f"phan-{k}.json").write_text(json.dumps(r), encoding="utf-8")
         return 0
 
+    # chi tiet an: check.py bo qua nhung export-stl.py van xuat -> phai bao (bai hoc inbox 2026-10-25)
+    an = chi_tiet_an(doc)
+    mau_an = [x.strip() for x in a.hidden_ok.split(",") if x.strip()]
+    if not an:
+        tt_an = "PASS"
+    elif all(any(fnmatch.fnmatch(lb, m) for m in mau_an) for lb in an):
+        tt_an = "INFO"
+    else:
+        tt_an = "FAIL"
+    if an:
+        print(f"CHI TIET AN (khong kiem): {', '.join(an)}  -> neu co y an, them hidden-ok=<mau Label>"
+              f" (vi du hidden-ok={an[0]})", flush=True)
+
     cache = doc_cache(cdir, ng, a.rebuild, a.mode)
     tat_ca_cap = danh_sach_cap(cts, a.ignore_pair)
     ds_ct = [i for i, ct in enumerate(cts) if a.export or ct["khoa"] not in cache["p"]
@@ -875,7 +912,7 @@ def main():
     qk = [quet_khop(doc, spec, ng, a.ignore_pair, lk_mau) for spec in a.sweep]
 
     tat_ca = [v["trang_thai"] for ct in cts for v in ct["ket_qua"].values()]
-    tat_ca += [vc["trang_thai"]] + [q["trang_thai"] for q in qk]
+    tat_ca += [vc["trang_thai"]] + [q["trang_thai"] for q in qk] + [tt_an]
     ket_luan = "FAIL" if "FAIL" in tat_ca else ("WARN" if "WARN" in tat_ca else "PASS")
     bc = {
         "file": src.name, "duong_dan": str(src), "thoi_gian": time.strftime("%Y-%m-%d %H:%M"),
@@ -887,6 +924,7 @@ def main():
                                   for k, v in ct["ket_qua"].items()}}
                      for ct in cts],
         "va_cham": vc, "quet_khop": qk,
+        "chi_tiet_an": {"trang_thai": tt_an, "nhan": an, "cho_phep": mau_an},
         "chay": {"tien_trinh": n, "chi_tiet_kiem_moi": len(ds_ct), "cap_kiem_moi": len(ds_cap)},
     }
 

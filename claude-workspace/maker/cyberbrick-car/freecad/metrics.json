@@ -821,17 +821,17 @@
  },
  "plates": {
   "P1_Body__0.20_PETG": {
-   "time_s": 15495,
+   "time_s": 15494,
    "grams": 59.5,
    "support": false
   },
   "P2_Chassis_Steering__0.20_PETG": {
-   "time_s": 5547,
+   "time_s": 5533,
    "grams": 35.3,
    "support": false
   },
   "P3_Wheels__0.16_PETG": {
-   "time_s": 4422,
+   "time_s": 4417,
    "grams": 19.5,
    "support": false
   }

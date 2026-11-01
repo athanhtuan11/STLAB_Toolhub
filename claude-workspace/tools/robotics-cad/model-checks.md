@@ -299,6 +299,9 @@ I_kg_m2 = I * (mass_g / 1000 / V) * 1e-6   # nhân khối lượng/thể tích, 
 
 ## 7. Kiểm tự động
 
+- **Chi tiết ẩn (2026-10-25):** `check.py` liệt kê mọi `Part::Feature` có solid nhưng `Visibility == False` và không phải đầu vào feature khác (không có `Part::Feature` trong `InList`) vào `chi_tiet_an` của `report.json`. Mặc định **FAIL** (vì `export-stl.py` vẫn xuất STL → in mà chưa kiểm); chi tiết cố ý ẩn thì khai `hidden-ok=<glob Label,...>` → INFO.
+- **Thể tích STL so với model (2026-10-25):** `export-stl.py` ghi `the_tich` (`model_mm3`, `stl_mm3`, `lech_pct`) và `stl_lech` trong `_export-stl.json`. `|lech_pct| > 2 %` → **FAIL**; lệch dương > 0,5 % (lưới phình ra) → **WARN**; `prepare-print.py` báo dòng "STL so với model" và **không cắt lớp** khi có FAIL (trừ `force`).
+
 ### 7.1 Test framework của FreeCAD (đã chạy)
 - `freecadcmd -t` (không đối số) liệt kê test: TestAssemblyWorkbench, TestPartApp, TestPartDesignApp, MeshTestsApp, TestFemApp… [S18]. Test workbench bị **tắt mặc định từ 1.1** [S18][S2].
 - `freecadcmd -t TestAssemblyWorkbench`: 8 test, OK (skipped=2), 0,16 s.

@@ -34,6 +34,8 @@ import MeshPart
 import yaml
 
 V = App.Vector
+LECH_FAIL_PCT = 2.0   # |stl - model| / model > 2 % -> FAIL (Claude chot)
+LECH_WARN_PCT = 0.5   # > 0,5 % -> WARN
 
 
 def khung(spec, OBJ):
@@ -69,7 +71,7 @@ def main():
                 o.Placement = App.Placement(V(*b), App.Rotation(*q))
     OBJ = {o.Label: o for o in doc.Objects if o.isDerivedFrom("Part::Feature")}
     luoi = x.get("mesh", {})
-    ghi, chua, sp = set(), [], []
+    ghi, chua, sp, the_tich, stl_lech = set(), [], [], {}, []
     for o in OBJ.values():
         qt = next((q for q in x["rules"] if any(fnmatch.fnmatch(o.Label, g) for g in q["names"])), None)
         if qt is None:
@@ -82,6 +84,7 @@ def main():
             so = so.copy()
             bb = so.BoundBox
             so.translate(V(-bb.Center.x, -bb.Center.y, -bb.ZMin))
+            model = so.Volume
             m = MeshPart.meshFromShape(Shape=so, LinearDeflection=luoi.get("linear_mm", 0.03),
                                        AngularDeflection=luoi.get("angular_rad", 0.2618), Relative=False)
             fn = f"{qt['group']}__{ten}{qt.get('suffix', '')}.stl"
@@ -89,6 +92,14 @@ def main():
                 sp.append(fn)  # Tuan to support trong Bambu Studio (khong dung vao STL)
             m.write(str(stl_dir / fn))
             ghi.add(fn)
+            # kiem tren artifact cuoi: the tich luoi STL so voi the tich solid model
+            stl_v = m.Volume
+            lech = round((stl_v - model) / model * 100, 3) if model else 0.0
+            the_tich[fn] = {"model_mm3": round(model, 3), "stl_mm3": round(stl_v, 3), "lech_pct": lech}
+            if abs(lech) > LECH_FAIL_PCT:
+                stl_lech.append({"file": fn, "lech_pct": lech, "trang_thai": "FAIL"})
+            elif lech > LECH_WARN_PCT:  # luoi PHINH ra > 0,5 %: dau hieu loi; luoi nho di do chia luoi la binh thuong
+                stl_lech.append({"file": fn, "lech_pct": lech, "trang_thai": "WARN"})
     for q in x["rules"]:  # quy tac khong khop doi tuong nao -> bao (de sot do doi ten)
         if not any(fnmatch.fnmatch(lb, g) for lb in OBJ for g in q["names"]):
             chua.append(q["names"])
@@ -96,7 +107,7 @@ def main():
     for f in cu:
         (stl_dir / f).unlink()  # STL sinh tu lan truoc, khong con trong danh sach -> xoa de khong cat lop nham
     kq = {"so_stl": len(ghi), "quy_tac_khong_khop": chua, "xoa_stl_cu": cu, "support_trong_slicer": sp,
-          "s": round(time.time() - t0, 1)}
+          "the_tich": the_tich, "stl_lech": stl_lech, "s": round(time.time() - t0, 1)}
     (stl_dir / "_export-stl.json").write_text(json.dumps(kq, ensure_ascii=False, indent=1), encoding="utf-8")
     print("XUAT-STL", json.dumps(kq, ensure_ascii=False), flush=True)
 

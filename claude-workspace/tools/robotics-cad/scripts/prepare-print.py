@@ -111,9 +111,17 @@ def main():
     loi1 = [f"{c['nhan']}: {k} {v['tom_tat']}" for c in b1["chi_tiet"] for k, v in c["ket_qua"].items()
             if v["trang_thai"] == "FAIL"]
     loi1 += [f"{x['a']} ~ {x['b']}: {x['tom_tat']}" for x in b1["va_cham"]["cap"] if x["trang_thai"] == "FAIL"]
+    an1 = b1.get("chi_tiet_an") or {}
+    if an1.get("nhan"):
+        loi1.append("Chi tiết ẩn (không kiểm): " + ", ".join(an1["nhan"]))
     kq.append(("Tang 1 kiem nhanh", b1["ket_luan"], f"{b1['thoi_gian_chay_s']} s", loi1, out_kt / "overview.png"))
     kq.append(("Kha nang in (STL)", "FAIL" if loi_in else ("WARN" if cb_in else "PASS"),
                f"{xs['so_stl']} STL", loi_in + cb_in, ""))
+    # the tich STL so voi model (kiem tren artifact cuoi; export-stl.py ghi the_tich/stl_lech)
+    lech_stl = xs.get("stl_lech", [])
+    tt_stl = "FAIL" if any(x["trang_thai"] == "FAIL" for x in lech_stl) else ("WARN" if lech_stl else "PASS")
+    kq.append(("STL so với model", tt_stl, f"{len(xs.get('the_tich', {}))} STL",
+               [f"{x['file']}: lech {x['lech_pct']} %" for x in lech_stl], ""))
     if asm is not None:
         if p5 is not None:
             p5.wait()
@@ -125,7 +133,7 @@ def main():
 
     # 3) chi cat lop khi da sach
     b2 = None
-    if (b1["ket_luan"] != "FAIL" and not loi_in) or ep_cat:
+    if (b1["ket_luan"] != "FAIL" and not loi_in and tt_stl != "FAIL") or ep_cat:
         print("Tang 2 (cat lop Bambu) ...", flush=True)
         t2 = time.time()
         p3 = chay([sys.executable, HERE / "slice.py", cfg_p], logs / "slice.txt")

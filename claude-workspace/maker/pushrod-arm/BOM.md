@@ -82,15 +82,15 @@ Sinh tự động từ `freecad/pushrod_arm.FCStd` bằng `tools/robotics-cad/sc
 ## Bàn in (số liệu slicer)
 | Bàn | Thời gian | Nhựa (g) | Support |
 |---|---|---|---|
-| P1_Base__0.24Draft_PETG | 2h27 | 92.9 | – |
+| P1_Base__0.24Draft_PETG | 2h28 | 93.0 | – |
 | P2_Turret_Turntable__0.20_PETG | 2h55 | 76.1 | – |
 | P3_Forearm_Plates__0.20_PETG | 0h41 | 21.3 | – |
-| P4_Boom_Gripper_Housings__0.20_PETG | 2h02 | 59.2 | – |
-| P5_Gears_Racks_Pins__0.16_PETG | 0h41 | 12.8 | – |
+| P4_Boom_Gripper_Housings__0.20_PETG | 2h01 | 59.2 | – |
+| P5_Gears_Racks_Pins__0.16_PETG | 0h41 | 12.9 | – |
 | P6_GripperPads__TPU95A | 0h05 | 0.6 | – |
 | P7_Gears__0.12_PETG_100pct | 0h36 | 7.3 | – |
-| P8_Pins__0.16_PETG_100pct | 0h28 | 6.7 | – |
-| **Tổng** | **9h59** | **276.9** | |
+| P8_Pins__0.16_PETG_100pct | 0h28 | 6.8 | – |
+| **Tổng** | **9h59** | **277.2** | |
 
 ## Chưa phân loại (TODO)
 Label không khớp quy ước vít / `components=` / `export.rules`:
