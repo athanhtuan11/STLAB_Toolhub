@@ -1,0 +1,90 @@
+topics:
+  - id: arduino
+    ten: Arduino
+    keywords: [arduino, uno]
+    weight: 1.0
+  - id: esp32
+    ten: ESP32
+    keywords: [esp32]
+    weight: 1.0
+  - id: raspberry-pi
+    ten: Raspberry Pi
+    keywords: [raspberry, pico]
+    weight: 1.0
+  - id: stm32
+    ten: STM32
+    keywords: [stm32]
+    weight: 1.0
+  - id: line-robot
+    ten: Line Robot
+    keywords: [line follower, line sensor]
+    weight: 1.5
+  - id: robot-arm
+    ten: Robot Arm
+    keywords: [robot arm, robotic arm]
+    weight: 1.0
+  - id: freecad
+    ten: FreeCAD
+    keywords: [freecad]
+    weight: 1.0
+  - id: 3d-print-bambu
+    ten: Bambu 3D Print
+    keywords: [bambu, 3d print]
+    weight: 1.0
+  - id: cyberbrick
+    ten: Cyberbrick
+    keywords: [cyberbrick]
+    weight: 1.0
+  - id: smart-home
+    ten: Smart Home
+    keywords: [smart home]
+    weight: 1.0
+  - id: ai-agent-free
+    ten: Free AI Agent
+    keywords: [ai agent, open source ai]
+    weight: 1.0
+  - id: steam-education
+    ten: STEAM Education
+    keywords: [steam education, classroom]
+    weight: 1.0
+github_queries:   # topic = chu de gan khi mo ta repo khong chua tu khoa (Claude chot 2026-11-01)
+  - {q: esp32 robot, topic: esp32, min_stars: 50, pushed_days: 90}
+  - {q: line follower robot, topic: line-robot, min_stars: 20, pushed_days: 180}
+  - {q: arduino robot car, topic: arduino, min_stars: 50, pushed_days: 90}
+  - {q: raspberry pi pico robot, topic: raspberry-pi, min_stars: 30, pushed_days: 90}
+  - {q: stm32 robot, topic: stm32, min_stars: 30, pushed_days: 90}
+  - {q: freecad python, topic: freecad, min_stars: 50, pushed_days: 90}
+  - {q: bambu lab, topic: 3d-print-bambu, min_stars: 50, pushed_days: 90}
+repos:
+  - {repo: espressif/esp-idf, topic: esp32}
+  - {repo: espressif/arduino-esp32, topic: esp32}
+  - {repo: raspberrypi/pico-sdk, topic: raspberry-pi}
+  - {repo: arduino/ArduinoCore-renesas, topic: arduino}
+  - {repo: stm32duino/Arduino_Core_STM32, topic: stm32}
+  - {repo: FreeCAD/FreeCAD, topic: freecad}
+  - {repo: bambulab/BambuStudio, topic: 3d-print-bambu}
+  - {repo: anthropics/claude-code, topic: ai-agent-free}
+  - {repo: openai/codex, topic: ai-agent-free}
+feeds:
+  - name: arduino
+    url: https://blog.arduino.cc/feed/
+  - name: rpi
+    url: https://www.raspberrypi.com/news/feed/
+  - name: freecad
+    url: https://blog.freecad.org/feed/
+  - name: hackaday
+    url: https://hackaday.com/blog/feed/
+hn:
+  - query: line follower
+    min_points: 20
+  - query: esp32
+    min_points: 20
+  - query: raspberry pi pico
+    min_points: 20
+  - query: 3d printing
+    min_points: 20
+  - query: freecad
+    min_points: 20
+digest:
+  top_n: 10
+  days: 7

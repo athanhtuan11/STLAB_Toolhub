@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Nghiên cứu{% endblock %}
+{% block content %}
+<div class="head"><h1>Nghiên cứu</h1><button class="primary" id="research-scan">Quét ngay</button></div>
+<section class="card research-digest">
+<h2>Gợi ý tuần {% if digest %}{{ digest.week }}{% endif %}</h2>
+{% if digest %}<p class="muted">{{ digest.model }} · {{ digest.created }}</p><pre class="research-content">{{ digest.content }}</pre>
+{% else %}<p>Chưa có bản gợi ý – chạy digest.py hoặc chờ Chủ nhật 07:30</p>{% endif %}
+</section>
+<section><div class="research-toolbar"><h2>Tin đã quét</h2>
+<label>Chủ đề <select id="research-topic"><option value="">Tất cả</option>{% for topic in topics %}<option value="{{ topic.id }}">{{ topic.name or topic.id }}</option>{% endfor %}</select></label>
+<label>Trạng thái <select id="research-status"><option value="">Chưa bỏ qua</option><option value="quan-tam">Quan tâm</option><option value="bo-qua">Bỏ qua</option><option value="moi">Mới</option></select></label></div>
+<div id="research-items" class="research-items" aria-live="polite">
+{% for item in items %}<article class="card research-item"><a class="research-title" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.title }}</a>
+<p class="muted">{{ item.source }} · {{ item.topic }} · {{ "%.1f"|format(item.score or 0) }}</p><p class="research-summary">{{ (item.summary or "")[:200] }}</p>
+<div class="actions"><button class="small" data-id="{{ item.id }}" data-status="quan-tam">Quan tâm</button><button class="small" data-id="{{ item.id }}" data-status="bo-qua">Bỏ qua</button></div></article>{% endfor %}
+</div></section>
+<script src="{{ url_for('static', filename='research.js') }}"></script>
+{% endblock %}

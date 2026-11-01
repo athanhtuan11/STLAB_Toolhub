@@ -13,6 +13,7 @@ import launcher
 
 from . import opener
 from . import ops
+from . import research
 from .ops import events
 from . import printprep
 from . import quote as quote_lib
@@ -27,6 +28,7 @@ def nav():
     # Menu gon: viec hang ngay o ngoai, trang he thong gom vao "Them"
     main = [("hub.overview", "Trang chính"), ("hub.projects", "Dự án"), ("hub.library", "Linh kiện")]
     main.append(("hub.ops_page", "Điều hành"))
+    main.append(("hub.research_page", "Nghiên cứu"))
     more = [("hub.apps", "Ứng dụng & MCP"), ("hub.quote", "Báo giá"), ("hub.community", "Nguồn cộng đồng"),
             ("hub.skills", "Skills & agents"), ("hub.prompt", "Prompt library")]
     ep = request.endpoint or ""
@@ -97,6 +99,38 @@ def api_health():
 @bp.get("/ops")
 def ops_page():
     return render_template("ops.html", org=usage.org_board())
+
+
+@bp.get("/research")
+def research_page():
+    result = research.data()
+    return render_template("research.html", digest=result["digest"], items=result["items"], topics=result["topics"])
+
+
+@bp.get("/api/research")
+def api_research():
+    topic = request.args.get("topic") or None
+    raw_status = request.args.get("status")
+    status = raw_status if raw_status else None
+    result = research.data(topic=topic, status=status)
+    return jsonify(result)
+
+
+@bp.post("/api/research/<int:item_id>/status")
+def api_research_status(item_id):
+    body = request.get_json(silent=True) or {}
+    result = research.set_status(item_id, body.get("status"))
+    if result == "invalid":
+        return jsonify({"error": "Trạng thái không hợp lệ"}), 400
+    if result == "missing":
+        abort(404)
+    return jsonify({"ok": True})
+
+
+@bp.post("/api/research/scan")
+def api_research_scan():
+    research.scan()
+    return jsonify({"started": True}), 202
 
 
 @bp.get("/api/ops")
