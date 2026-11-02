@@ -22,6 +22,12 @@ if pose == 'tu_the_mac_dinh':
     pose = P['tu_the_mac_dinh']
 t1, phi = P['tu_the'][pose]
 K = P['khe']
+DANG = P['dang']
+VAT_DAY = DANG['vat_day']
+VAT_CANH = DANG['vat_canh']
+VAT_FORE = DANG['vat_cang_tay_canh']
+VAT_HEAD = DANG['vat_dau_kep']
+VAT_ARM = DANG['tay_tren_bat_giac_vat']
 doc = App.newDocument('cyberbrick_arm')
 LIB = PROJ.parent.parent / 'community' / 'cyberbrick-official' / 'models'
 GREY = (0.82, 0.84, 0.86)
@@ -93,6 +99,96 @@ def cavity(shape, margin=K):
                b.XMax + margin, b.YMax + margin, b.ZMax + margin)
 
 
+# ---------------- Vat canh / logo (phuong an B) ----------------
+def _chamfer_once(shape, dist, edges):
+    if not edges:
+        return shape
+    try:
+        r = shape.makeChamfer(dist, edges)
+        if r.isValid() and len(r.Solids) == len(shape.Solids) and r.Volume > 0:
+            return r
+    except Exception:
+        pass
+    return shape
+
+
+def chamfer_first(shape, dist, preds):
+    """Thu tung nhom, dung o nhom dau tien vat duoc."""
+    for pred in preds:
+        r = _chamfer_once(shape, dist, [e for e in shape.Edges if pred(e)])
+        if r is not shape:
+            return r
+    return shape
+
+
+def chamfer_groups(shape, dist, preds):
+    """Vat lan luot tung nhom; nhom nao loi thi bo qua nhom do."""
+    out = shape
+    for pred in preds:
+        out = _chamfer_once(out, dist, [e for e in out.Edges if pred(e)])
+    return out
+
+
+def flat_z(e, z, tol=1e-3):
+    b = e.BoundBox
+    return abs(b.ZMin - z) < tol and abs(b.ZMax - z) < tol
+
+
+def par_y(e, tol=1e-4):
+    b = e.BoundBox
+    return b.XLength < tol and b.ZLength < tol and b.YLength > tol
+
+
+def par_dir(e, vec, tol=0.999):
+    try:
+        return abs(e.tangentAt(0.5).dot(vec.normalize())) > tol
+    except Exception:
+        return False
+
+
+def is_line(e):
+    return e.Curve.TypeId == 'Part::GeomLine'
+
+
+def rim(z, rad, tol=0.05):
+    def pred(e):
+        b = e.BoundBox
+        if abs(b.ZMin - z) > 1e-3 or abs(b.ZMax - z) > 1e-3:
+            return False
+        return all(abs(math.hypot(v.Point.x, v.Point.y) - rad) < tol for v in e.Vertexes)
+    return pred
+
+
+def text_tool(text, font, width, height, depth, cols, base):
+    """Chu khac: cao height, rong width (scale X), sau depth, dat theo 3 cot cols."""
+    import Draft
+    obj = Draft.makeShapeString(text, str(font), height, 0)
+    shp = obj.Shape.copy()
+    doc.removeObject(obj.Name)
+    bb = shp.BoundBox
+    m = App.Matrix()
+    m.A11 = width / bb.XLength
+    m.A22 = height / bb.YLength
+    m.A33 = 1.0
+    m.A14 = -bb.Center.x * m.A11
+    m.A24 = -bb.Center.y * m.A22
+    m.A34 = -0.1
+    shp = shp.transformGeometry(m)
+    sol = None
+    for f in shp.Faces:
+        e = f.extrude(V(0, 0, depth))
+        sol = e if sol is None else sol.fuse(e)
+    sol = sol.removeSplitter()
+    W = App.Matrix(cols[0][0], cols[1][0], cols[2][0], base.x,
+                   cols[0][1], cols[1][1], cols[2][1], base.y,
+                   cols[0][2], cols[1][2], cols[2][2], base.z,
+                   0, 0, 0, 1)
+    q = sol.transformGeometry(W)
+    if q.Volume < 0:
+        q.reverse()
+    return q
+
+
 # ---------------- Co dinh: de ----------------
 d = P['de']
 f = d['tam_day']
@@ -104,6 +200,10 @@ except Exception:
     pass
 foot = foot.cut(cyl(f['hoc_r'], f['hoc_sau'] + 1.0,
                     (0, 0, f['cao'] - f['hoc_sau']), (0, 0, 1)))
+foot = chamfer_first(foot, VAT_DAY, [
+    lambda e: flat_z(e, 0.0),
+    lambda e: flat_z(e, 0.0) and is_line(e),
+    lambda e: flat_z(e, 0.0) and is_line(e) and e.CenterOfMass.x > 0 and abs(e.CenterOfMass.y) < 1e-6])
 add('Foot_plate', foot.removeSplitter())
 
 # ---------------- Quay theo de ----------------
@@ -119,7 +219,18 @@ shelf = box(-R_shelf, -(pin['y'][1] + 2.0), tr['ke_pin_z'],
             R_shelf, pin['y'][1] + 2.0, tr['ke_pin_z'] + tr['ke_pin_day'])
 shelf = shelf.common(cyl(R_shelf, tr['ke_pin_day'], (0, 0, tr['ke_pin_z']), (0, 0, 1)))
 drum = drum.fuse(shelf).removeSplitter()
-add('Base_drum', drum)
+drum = chamfer_first(drum, VAT_CANH, [rim(z1, R)])
+drum = chamfer_first(drum, VAT_DAY, [rim(z0, R)])
+kk = DANG['khe_tan_nhiet']
+r_khe = R - tr['thanh'] / 2
+for i in range(kk['so']):
+    ang = math.radians(kk['goc_tam'] + (i - (kk['so'] - 1) / 2) * kk['buoc_goc'])
+    sl = Part.makeBox(2.0 * R, kk['rong'], kk['z'][1] - kk['z'][0],
+                      V(-R, -kk['rong'] / 2, kk['z'][0]))
+    sl.rotate(V(0, 0, 0), V(0, 0, 1), math.degrees(ang))
+    sl.translate(V(r_khe * math.cos(ang), r_khe * math.sin(ang), 0))
+    drum = drum.cut(sl)
+add('Base_drum', drum.removeSplitter())
 
 g = d['banh_rang_nho']
 add('Pinion_24T', cyl(g['d'] / 2, g['day'], (g['tam'][0], g['tam'][1], g['z0']), (0, 0, 1)), ORANGE)
@@ -169,6 +280,10 @@ sw_proxy = Part.makeBox(swb.XLength, swb.YLength, swb.ZLength,
 holder = box(sb['x'][0], sb['y'][0], sb['z'][0], sb['x'][1], sb['y'][1], sb['z'][1])
 holder = holder.cut(cyl(R, sb['z'][1] - sb['z'][0] + 2.0, (0, 0, sb['z'][0] - 1.0), (0, 0, 1)))
 holder = holder.cut(cavity(sw_proxy))
+holder = chamfer_groups(holder, VAT_DAY, [lambda e: flat_z(e, sb['z'][0])])
+holder = chamfer_groups(holder, VAT_CANH, [
+    lambda e: flat_z(e, sb['z'][1]),
+    lambda e: abs(e.BoundBox.ZLength - (sb['z'][1] - sb['z'][0])) < 1e-3])
 add('Switch_holder', holder.removeSplitter())
 add('CB_Switch_XA007', sw_proxy, DARK)
 
@@ -208,9 +323,14 @@ th = ma['thap']
 turn = cyl(R, ma['day'], (0, 0, ma['z0']), (0, 0, 1)).fuse(
     box(th['x'][0], th['y'][0], ma['z0'] + ma['day'], th['x'][1], th['y'][1], th['z1']))
 turn = turn.cut(cavity(s1)).removeSplitter()
-add('Turntable', turn)
+turn = chamfer_first(turn, VAT_CANH, [rim(ma['z0'] + ma['day'], R)])
+turn = chamfer_first(turn, VAT_DAY, [rim(ma['z0'], R)])
+turn = chamfer_first(turn, VAT_CANH, [lambda e: flat_z(e, th['z1'])])
+turn = chamfer_first(turn, VAT_CANH, [
+    lambda e: abs(e.BoundBox.ZLength - (th['z1'] - ma['z0'] - ma['day'])) < 1e-3])
+add('Turntable', turn.removeSplitter())
 
-# Arm_upper_L / R: hinh san van dong (2 nua tron R r_dau tam J1,J2 + dai noi), day day.
+# Arm_upper_L / R: 2 dau bat giac (bao loi 2 hinh vuong canh 2*r_dau quanh J1, J2), moi goc vat.
 tt = P['tay_tren']
 thick = tt['day']
 rad = tt['r_dau']
@@ -220,14 +340,25 @@ hole = tt['lo_d']
 def upper(y):
     ax = (j2 - j1).normalize()
     nn = V(-ax.z, 0, ax.x)
-    pts = [j1 + nn * rad, j2 + nn * rad, j2 - nn * rad, j1 - nn * rad]
-    s = Part.Face(Part.makePolygon(pts + [pts[0]])).extrude(V(0, thick, 0))
+    lc = (j2 - j1).Length
+    v = VAT_ARM
+    pts = [(-rad + v, -rad), (lc + rad - v, -rad), (lc + rad, -rad + v),
+           (lc + rad, rad - v), (lc + rad - v, rad), (-rad + v, rad),
+           (-rad, rad - v), (-rad, -rad + v)]
+    poly = [j1 + ax * u + nn * w for u, w in pts]
+    s = Part.Face(Part.makePolygon(poly + [poly[0]])).extrude(V(0, thick, 0))
     s.translate(V(0, y, 0))
-    s = s.fuse(cyl(rad, thick, (j1.x, y, j1.z), (0, 1, 0)))
-    s = s.fuse(cyl(rad, thick, (j2.x, y, j2.z), (0, 1, 0)))
     for p in (j1, j2):
         s = s.cut(cyl(hole / 2, thick + 2.0, (p.x, y - 1.0, p.z), (0, 1, 0)))
-    return s.removeSplitter()
+    s = s.removeSplitter()
+    s = chamfer_first(s, VAT_DAY, [
+        lambda e: abs(e.BoundBox.YMin - y) < 1e-4 and abs(e.BoundBox.YMax - y) < 1e-4,
+        lambda e: abs(e.BoundBox.YMin - y) < 1e-4 and abs(e.BoundBox.YMax - y) < 1e-4 and is_line(e)])
+    s = chamfer_first(s, VAT_DAY, [
+        lambda e: abs(e.BoundBox.YMin - (y + thick)) < 1e-4 and abs(e.BoundBox.YMax - (y + thick)) < 1e-4,
+        lambda e: abs(e.BoundBox.YMin - (y + thick)) < 1e-4 and abs(e.BoundBox.YMax - (y + thick)) < 1e-4 and is_line(e)])
+    # khoet cho dia mam quay (goc duoi cua bat giac lan vao dia o tu the nghi)
+    return s.cut(turn).removeSplitter()
 
 
 add('Arm_upper_L', upper(yt))
@@ -243,6 +374,22 @@ fore = box(cf['s_sau'], cf['y'][0], cf['n_sau'][0],
            cf['s_doi'], cf['y'][1], cf['n_sau'][1]).fuse(
     box(cf['s_doi'], cf['y'][0], cf['n_truoc'][0],
         F, cf['y'][1], cf['n_truoc'][1]))
+# cat vat goc tren-truoc: mat phang s + n = L + n_truoc[1] - vat_cang_tay
+nmax = cf['n_truoc'][1]
+vf = VAT_FORE
+vcat = DANG['vat_cang_tay']
+tri = Part.Face(Part.makePolygon([
+    V(F - vcat, 0, nmax), V(F - vcat + 200.0, 0, nmax - 200.0),
+    V(F - vcat + 400.0, 0, nmax), V(F - vcat + 200.0, 0, nmax + 200.0),
+    V(F - vcat, 0, nmax)]))
+cutv = tri.extrude(V(0, cf['y'][1] - cf['y'][0] + 10.0, 0))
+cutv.translate(V(0, cf['y'][0] - 5.0, 0))
+if cutv.Volume < 0:
+    cutv.reverse()
+fore = fore.cut(cutv)
+fore = chamfer_groups(fore, vf, [
+    lambda e: par_y(e) and all(v.Point.x > cf['s_doi'] + 1e-6 for v in e.Vertexes),
+    lambda e: par_y(e) and all(v.Point.x < cf['s_doi'] - 1e-6 for v in e.Vertexes)])
 fore = bake(fore, mat)
 fore.translate(j2)
 fore = fore.cut(cavity(s2)).cut(cavity(s3))
@@ -252,7 +399,18 @@ hole_w = cyl(tv['d'] / 2 + K, F + 2.0 - (tv['s0'] - 1.0),
              (0, 0, 0), (1, 0, 0))  # tam dat sau khi doi he
 hole_w = bake(hole_w, mat)
 hole_w.translate(j2 + dv * (tv['s0'] - 1.0))
-fore = fore.cut(hole_w).removeSplitter()
+fore = fore.cut(hole_w)
+# logo STLAB khac sau 2 mat +-Y, chu doc xuoi tu mat do
+lg = DANG['logo']
+y0 = cf['y'][1]
+fontp = PROJ.parent.parent / lg['font']
+base_p = j2 + dv * lg['s'] + n * lg['n'] + V(0, y0, 0)
+base_m = j2 + dv * lg['s'] + n * lg['n'] + V(0, -y0, 0)
+txt_p = text_tool(lg['chu'], fontp, lg['dai'], lg['cao'], lg['sau'] + 0.1,
+                  ((-dv.x, 0, -dv.z), (n.x, 0, n.z), (0, -1, 0)), base_p)
+txt_m = text_tool(lg['chu'], fontp, lg['dai'], lg['cao'], lg['sau'] + 0.1,
+                  ((dv.x, 0, dv.z), (n.x, 0, n.z), (0, 1, 0)), base_m)
+fore = fore.cut(txt_p).cut(txt_m).removeSplitter()
 add('Forearm', fore)
 
 # Worm + Head + ngon.
@@ -265,7 +423,11 @@ dk = P['dau_kep']
 head = box(F, -dk['nua'], -dk['nua'], F + dk['dai'], dk['nua'], dk['nua'])
 head = bake(head, mat)
 head.translate(j2)
-add('Head', head.cut(worm))
+h2 = chamfer_first(head, VAT_HEAD, [lambda e: True])
+if h2 is head:
+    h2 = chamfer_groups(head, VAT_HEAD, [
+        lambda e: par_dir(e, dv), lambda e: par_dir(e, n), lambda e: par_dir(e, V(0, 1, 0))])
+add('Head', h2.cut(worm))
 
 ng = P['ngon']
 w = ng['tiet_dien']
@@ -294,3 +456,4 @@ bb = Part.makeCompound([o.Shape for o in doc.Objects
                         if o.isDerivedFrom('Part::Feature') and o.Shape.Solids]).BoundBox
 print('ARM OK %s T=(%.2f,%.2f) %.2f x %.2f x %.2f'
       % (pose, tip.x, tip.z, bb.XLength, bb.YLength, bb.ZLength))
+# FORM B OK

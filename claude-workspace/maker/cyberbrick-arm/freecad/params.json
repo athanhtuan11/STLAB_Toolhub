@@ -206,5 +206,34 @@
     "tam_voi_min": 140.0,
     "gap_ban_z_max": 12.0,
     "gap_ban_x_min": 70.0
+  },
+  "dang": {
+    "_ghi_chu": "Tuan chon phuong an B 2026-11-02 (design/form-spec.md). Claude chot: vat cang tay 6 (khoang S3 con thanh ~1,8), 5 khe tan nhiet +X, logo 2 mat. Canh tiep ban: VAT, khong bo.",
+    "phuong_an": "B",
+    "vat_day": 0.8,
+    "vat_canh": 1.8,
+    "vat_cang_tay_canh": 2.0,
+    "vat_dau_kep": 2.0,
+    "vat_cang_tay": 6.0,
+    "tay_tren_bat_giac_vat": 4.0,
+    "khe_tan_nhiet": {
+      "so": 5,
+      "rong": 1.6,
+      "z": [
+        14.0,
+        26.0
+      ],
+      "goc_tam": 0.0,
+      "buoc_goc": 12.0
+    },
+    "logo": {
+      "chu": "STLAB",
+      "font": "studio/design/fonts/BeVietnamPro-Bold.ttf",
+      "cao": 6.0,
+      "dai": 22.0,
+      "s": 32.1,
+      "n": 5.5,
+      "sau": 0.6
+    }
   }
 }
