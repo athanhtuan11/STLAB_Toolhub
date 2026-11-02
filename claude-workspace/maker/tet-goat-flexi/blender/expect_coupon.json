@@ -1,0 +1,5 @@
+{
+  "_": {"min_gap": 0.38, "link_max": 0.70},
+  "coupon-desk.stl": {"islands": 9, "linked_pairs_min": 6},
+  "coupon-keychain.stl": {"islands": 9, "linked_pairs_min": 6}
+}

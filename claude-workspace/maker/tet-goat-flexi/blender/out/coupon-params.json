@@ -1,0 +1,87 @@
+{
+  "unit": "mm",
+  "note": "Clearance coupon for print-in-place flexi goat; three chains per coupon.",
+  "chain_gap": 6.0,
+  "links_per_chain": 3,
+  "clearances_c": [
+    0.4,
+    0.5,
+    0.6
+  ],
+  "config": {
+    "desk": {
+      "W": 16.0,
+      "H": 8.0,
+      "S": 20.0,
+      "Ra": 8.4,
+      "g": 0.6,
+      "d": 4.0,
+      "T": 3.0,
+      "zg": 0.4,
+      "Rt": 4.0,
+      "sg": 0.6,
+      "phi": 15.0,
+      "text_h": 5.0,
+      "text_depth": 0.6,
+      "labels": [
+        "0.4",
+        "0.5",
+        "0.6"
+      ],
+      "Rh": 9.0,
+      "Rb": 4.6,
+      "hole_diameter": [
+        4.8,
+        5.0,
+        5.2
+      ],
+      "blade_wall_remaining": [
+        1.6,
+        1.5,
+        1.4
+      ],
+      "min_gap_theoretical_per_chain": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "keychain": {
+      "W": 10.0,
+      "H": 5.0,
+      "S": 12.0,
+      "Ra": 5.2,
+      "g": 0.6,
+      "d": 3.0,
+      "T": 2.0,
+      "zg": 0.4,
+      "Rt": 3.1,
+      "sg": 0.6,
+      "phi": 15.0,
+      "text_h": 3.0,
+      "text_depth": 0.4,
+      "labels": [
+        "4",
+        "5",
+        "6"
+      ],
+      "Rh": 5.8,
+      "Rb": 3.7,
+      "hole_diameter": [
+        3.8,
+        4.0,
+        4.2
+      ],
+      "blade_wall_remaining": [
+        1.2000000000000002,
+        1.1,
+        1.0
+      ],
+      "min_gap_theoretical_per_chain": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    }
+  }
+}
