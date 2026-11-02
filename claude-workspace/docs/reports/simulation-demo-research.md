@@ -1,6 +1,6 @@
 # Nghiên cứu mô phỏng và demo STLab
 
-Tra cứu web ngày **2026-11-02**; số sao là snapshot GitHub API cùng ngày, có thể thay đổi. Đây là nghiên cứu để Tuan chọn, không cài công cụ, không nối thiết bị thật và không coi mô phỏng là kiểm chứng an toàn.
+Tra cứu web ngày **2026-11-02**; số sao là snapshot GitHub API cùng ngày, có thể thay đổi. Đây là nghiên cứu để Tuan chọn, không cài công cụ, không nối thiết bị thật và không coi mô phỏng là kiểm chứng an toàn. **Quyết định Tuan 2026-11-02: làm bằng phần cứng thật, không dựng mô phỏng (linh kiện dễ kiếm) – báo cáo giữ để tham khảo.**
 
 ## 1. Boi canh STLab
 
