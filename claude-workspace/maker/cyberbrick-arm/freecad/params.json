@@ -1,0 +1,210 @@
+{
+  "_ghi_chu": [
+    "Khung lap rap cyberbrick-arm (Claude chot 2026-11-02). Don vi mm, goc do. He truc: X truoc, Y trai, Z len; goc = tam truc de xoay tren mat ban.",
+    "So do tu model tham khao tipflow (tools/model-study, docs/research-notes/tipflow-robotic-arm-fits.md): tay tren 55,86 (tam lo 07/11), cang tay 52,2 (lo 05), horn O20.",
+    "Linh kien = STEP chinh hang community/cyberbrick-official/models. Pin PC003 than 28,4 x 51,2 x 18,5 (do STL, bo day).",
+    "Trong de noi O70,6 (ban goc) -> O76 cao 48 de chua hop so + bo thu (tang duoi) + pin (tang tren). Chi tiet in o day la KHOI (massing), chua co ren/khop that.",
+    "L3 (co tay -> dau ngon) = 50: UOC LUONG tu chi tiet 09 + 14 ban goc - TODO do khi dung dau kep that.",
+    "Goc: vai = goc tay tren so voi +X trong mat XZ (nguoc kim dong ho, len la duong); khuyu = goc cang tay so voi tay tren (am = gap xuong). Cang tay tuyet doi = vai + khuyu."
+  ],
+  "khe": 0.4,
+  "de": {
+    "tam_day": {
+      "rong": 82.0,
+      "cao": 6.0,
+      "bo_goc_r": 8.0,
+      "hoc_r": 34.4,
+      "hoc_sau": 4.0
+    },
+    "trong": {
+      "d_ngoai": 76.0,
+      "thanh": 2.0,
+      "z0": 6.0,
+      "z1": 54.0,
+      "san": 2.0,
+      "ke_pin_z": 31.5,
+      "ke_pin_day": 1.5
+    },
+    "banh_rang_nho": {
+      "d": 24.0,
+      "day": 3.7,
+      "tam": [
+        16.0,
+        11.5
+      ],
+      "z0": 2.1
+    }
+  },
+  "mam": {
+    "z0": 54.0,
+    "day": 6.0,
+    "thap": {
+      "x": [
+        -31.0,
+        7.0
+      ],
+      "y": [
+        -17.5,
+        17.5
+      ],
+      "z1": 80.0
+    }
+  },
+  "vai": {
+    "J1": [
+      -6.0,
+      71.0
+    ]
+  },
+  "tay_tren": {
+    "L": 55.86,
+    "y_trong": 19.5,
+    "day": 4.0,
+    "r_dau": 10.0,
+    "lo_d": 5.5
+  },
+  "cang_tay": {
+    "L": 52.2,
+    "s_sau": -24.0,
+    "s_doi": 12.0,
+    "y": [
+      -19.0,
+      19.0
+    ],
+    "n_sau": [
+      -11.0,
+      11.0
+    ],
+    "n_truoc": [
+      -13.0,
+      24.0
+    ],
+    "_ghi_chu": "s = toa do doc cang tay tu J2 (huong J2->J3); n = phap tuyen trong mat XZ = huong cang tay xoay +90 do; y = truc Y the gioi. Doan sau (s_sau..s_doi) chua S2, doan truoc (s_doi..L) chua S3 - tai S3 doc theo n, lech ve +n (xa de)."
+  },
+  "dau_kep": {
+    "dai": 34.5,
+    "nua": 15.35
+  },
+  "truc_vit": {
+    "d": 9.7,
+    "dai": 31.3,
+    "s0": 50.2
+  },
+  "ngon": {
+    "L3": 50.0,
+    "tiet_dien": 8.0,
+    "ban_kinh": 9.0,
+    "goc": {
+      "L": 30.0,
+      "R": 150.0,
+      "D": 270.0
+    }
+  },
+  "linh_kien": {
+    "servo": "pg002-pg001-9g-servo-motor-with-clutch-protection/9g-servo-motor-with-clutch-protection.step",
+    "servo_so_do": {
+      "than_dai": 22.7,
+      "than_day": 12.0,
+      "truc_cach_dau_than": 6.0,
+      "cao_toi_dinh_truc": 27.3,
+      "tai_dai": 32.5
+    },
+    "motor_030": "la024-030-micro-dc-motor-with-sh1-0/030-micro-dc-motor-with-sh1-0.step",
+    "pin": "pc003-14500-7-4v-800mah-li-ion-battery/14500-7-4v-800mah-li-ion-battery.step",
+    "pin_than": [
+      28.4,
+      51.2,
+      18.5
+    ],
+    "bo_thu": "xa003-xa004-remote-control-receiver/remote-control-receiver.step",
+    "cong_tac": "xa007-power-switch-board-with-2pin-xh2-54-connector/power-switch-board-with-2pin-xh2-54-connector.step"
+  },
+  "bo_tri": {
+    "hop_so": {
+      "x": [
+        -27.2,
+        27.2
+      ],
+      "y": [
+        0.5,
+        22.5
+      ],
+      "z": [
+        8.0,
+        31.5
+      ]
+    },
+    "bo_thu": {
+      "x": [
+        -15.0,
+        15.0
+      ],
+      "y": [
+        -30.5,
+        -1.5
+      ],
+      "z": [
+        8.0,
+        29.5
+      ]
+    },
+    "pin": {
+      "x": [
+        -25.6,
+        25.6
+      ],
+      "y": [
+        -14.2,
+        14.2
+      ],
+      "z": [
+        33.0,
+        51.5
+      ]
+    },
+    "gia_cong_tac": {
+      "x": [
+        -60.0,
+        -36.0
+      ],
+      "y": [
+        -12.5,
+        12.5
+      ],
+      "z": [
+        10.0,
+        44.0
+      ]
+    }
+  },
+  "gioi_han": {
+    "vai": [
+      0.0,
+      120.0
+    ],
+    "khuyu": [
+      -170.0,
+      10.0
+    ]
+  },
+  "tu_the": {
+    "nghi": [
+      70.0,
+      -80.0
+    ],
+    "vuon_xa": [
+      20.0,
+      -20.0
+    ],
+    "gap_ban": [
+      33.95,
+      -101.1
+    ]
+  },
+  "tu_the_mac_dinh": "nghi",
+  "muc_tieu": {
+    "tam_voi_min": 140.0,
+    "gap_ban_z_max": 12.0,
+    "gap_ban_x_min": 70.0
+  }
+}
