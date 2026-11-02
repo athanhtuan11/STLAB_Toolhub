@@ -14,6 +14,14 @@
   </div>
 </div>
 
+<section class="card" style="margin-bottom:14px">
+  <h2>Vòng đời mẫu in</h2>
+  <div class="actions">
+    {% for stage in product_stages %}<button class="{% if product_stage == stage %}current{% endif %}" data-post="/api/products/{{ p.slug }}/stage/{{ stage }}" data-confirm="Chuyển sang {{ product_labels[stage] }}?" data-reload="1">{{ product_labels[stage] }}</button>{% endfor %}
+    <a class="btn" href="/quote">Báo giá</a>
+  </div>
+</section>
+
 {% if files|length > 1 %}
 <section class="card" style="margin-bottom:14px">
   <h3>Mở bằng phần mềm gốc <span class="muted">({{ files|length }} file)</span></h3>

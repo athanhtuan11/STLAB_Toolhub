@@ -9,12 +9,18 @@
   <button data-post="/api/open/_root">Mở cả workspace</button>
 </div>
 
+<section class="card" style="margin-bottom:14px">
+  <h2>Mẫu in</h2>
+  {% if tracked %}<ul>{% for row in tracked %}<li><a href="{{ url_for('hub.project_detail', slug=row.project.slug) }}">{{ row.project.title }}</a> · {{ row.label }} · {{ row.date }}</li>{% endfor %}</ul>
+  {% else %}<p class="muted">Chưa có mẫu in nào được theo dõi</p>{% endif %}
+</section>
+
 <section class="grid">
   {% for p in projects %}
   <article class="card">
     <div class="row"><h3 class="grow"><a href="{{ url_for('hub.project_detail', slug=p.slug) }}">{{ p.rel }}</a></h3>
       {% if p.todo %}<span class="badge">{{ p.todo }} TODO</span>{% else %}<span class="badge ok">đủ</span>{% endif %}</div>
-    <div class="muted">{{ p.title }}</div>
+    <div class="muted">{{ p.title }}{% if p.product_label %} · <span class="badge">{{ p.product_label }}</span>{% endif %}</div>
     <div class="muted">
       {% for l in p.links %}<span class="badge plain">{{ l.name }}</span> {% endfor %}
       {% for m in p.mcp %}<span class="badge">MCP {{ m }}</span> {% endfor %}

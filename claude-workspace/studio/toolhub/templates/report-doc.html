@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<p><a href="/reports">? B?o c?o</a> ? <code>{{ name }}</code></p>
+<article class="doc report-doc">{{ content|safe }}</article>
+{% endblock %}

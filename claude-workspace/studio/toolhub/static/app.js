@@ -18,6 +18,7 @@ async function post(url) {
 document.addEventListener("click", async (e) => {
   const btn = e.target.closest("button[data-post]");
   if (btn) {
+    if (btn.dataset.confirm && !confirm(btn.dataset.confirm)) return;
     btn.disabled = true;
     const old = btn.textContent;
     if (btn.dataset.busy) btn.textContent = btn.dataset.busy;

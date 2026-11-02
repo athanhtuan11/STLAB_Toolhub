@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Báo cáo nghiên cứu{% endblock %}
+{% block content %}
+<h1>Báo cáo nghiên cứu</h1>
+<section class="grid">
+{% for report in reports %}<article class="card"><h3><a href="{{ url_for('hub.reports_doc', name=report.name) }}">{{ report.title }}</a></h3><p class="muted">{{ report.name }} · {{ report.updated }}</p></article>{% endfor %}
+</section>
+{% endblock %}

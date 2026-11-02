@@ -2,6 +2,7 @@ import base64
 import io
 import json
 import os
+import re
 import subprocess
 import tempfile
 from datetime import datetime, timedelta
@@ -16,6 +17,7 @@ from . import ops
 from . import research
 from .ops import events
 from . import printprep
+from . import products
 from . import quote as quote_lib
 from . import usage
 from . import workspace as ws
@@ -29,7 +31,7 @@ def nav():
     main = [("hub.overview", "Trang chính"), ("hub.projects", "Dự án"), ("hub.library", "Linh kiện")]
     main.append(("hub.ops_page", "Điều hành"))
     main.append(("hub.research_page", "Nghiên cứu"))
-    more = [("hub.apps", "Ứng dụng & MCP"), ("hub.quote", "Báo giá"), ("hub.community", "Nguồn cộng đồng"),
+    more = [("hub.apps", "Ứng dụng & MCP"), ("hub.quote", "Báo giá"), ("hub.reports", "Báo cáo nghiên cứu"), ("hub.community", "Nguồn cộng đồng"),
             ("hub.skills", "Skills & agents"), ("hub.prompt", "Prompt library")]
     ep = request.endpoint or ""
     on = next((e for e, _ in main + more if ep == e or ep.startswith(e + "_")), None)
@@ -190,6 +192,35 @@ def community():
     return render_template("community.html", pins=ws.pins(), reports=ws.reports())
 
 
+REPORTS_DIR = ws.ROOT / "docs" / "reports"
+
+
+@bp.get("/reports")
+def reports():
+    rows = []
+    for path in REPORTS_DIR.glob("*.md"):
+        if path.name.endswith(".spec.md"):
+            continue
+        text = path.read_text(encoding="utf-8")
+        title = next((line[2:].strip() for line in text.splitlines() if line.startswith("# ")), path.name)
+        rows.append({"name": path.name, "title": title, "updated": datetime.fromtimestamp(path.stat().st_mtime).strftime("%Y-%m-%d"), "mtime": path.stat().st_mtime})
+    rows.sort(key=lambda row: row["mtime"], reverse=True)
+    return render_template("reports.html", reports=rows)
+
+
+@bp.get("/reports/<name>")
+def reports_doc(name):
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]*\.md", name) or name.endswith(".spec.md"):
+        abort(404)
+    path = (REPORTS_DIR / name).resolve()
+    if path.parent != REPORTS_DIR.resolve() or not path.is_file():
+        abort(404)
+    from . import mdrender
+    text = path.read_text(encoding="utf-8")
+    title = next((line[2:].strip() for line in text.splitlines() if line.startswith("# ")), name)
+    return render_template("report-doc.html", name=name, title=title, content=mdrender.render(text))
+
+
 @bp.get("/community/report/<name>")
 def community_report(name):
     text = ws.report(name)
@@ -212,7 +243,16 @@ def projects():
     ps = ws.projects()
     for p in ps:
         p["main_file"] = opener.primary(p["rel"])
-    return render_template("projects.html", projects=ps)
+    tracked = []
+    by_slug = {p["slug"]: p for p in ps}
+    for slug, record in products.all().items():
+        if slug in by_slug and record.get("stage") in products.STAGES:
+            tracked.append({"project": by_slug[slug], "record": record, "label": products.LABELS[record["stage"]], "date": record.get("updated", "")[:10]})
+    tracked.sort(key=lambda row: row["record"].get("updated", ""), reverse=True)
+    for p in ps:
+        record = products.get(p["slug"])
+        p["product_label"] = products.LABELS.get(record.get("stage")) if record else None
+    return render_template("projects.html", projects=ps, tracked=tracked)
 
 
 @bp.get("/projects/<slug>")
@@ -220,8 +260,21 @@ def project_detail(slug):
     p = ws.project(slug)
     if p is None:
         abort(404)
-    return render_template("project-detail.html", p=p, in3d=printprep.cau_hinh(p["rel"]) is not None,
-                           files=opener.files(p["rel"]))
+    record = products.get(slug)
+    return render_template("project-detail.html", p=p, product_stage=record.get("stage") if record else None,
+                           product_labels=products.LABELS, product_stages=products.STAGES,
+                           in3d=printprep.cau_hinh(p["rel"]) is not None, files=opener.files(p["rel"]))
+
+
+@bp.post("/api/products/<slug>/stage/<stage>")
+def api_product_stage(slug, stage):
+    if stage not in products.STAGES:
+        return jsonify({"ok": False, "msg": "Tr\u1ea1ng th\u00e1i kh\u00f4ng h\u1ee3p l\u1ec7"}), 400
+    p = ws.project(slug)
+    if p is None:
+        return jsonify({"ok": False, "msg": "Kh\u00f4ng c\u00f3 d\u1ef1 \u00e1n n\u00e0y"}), 404
+    products.set_stage(slug, stage)
+    return jsonify({"ok": True, "msg": f"\u0110\u00e3 chuy\u1ec3n {p['title']} sang {products.LABELS[stage]}"})
 
 
 # ---------- Chuan bi in (tools/robotics-cad/scripts/prepare-print.py) ----------

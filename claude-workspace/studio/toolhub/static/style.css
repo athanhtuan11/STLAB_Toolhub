@@ -27,6 +27,7 @@ button, .btn { font: inherit; font-size: 14px; border: 1px solid var(--line); ba
   padding: 7px 14px; border-radius: var(--r-control); cursor: pointer; display: inline-block; }
 button:hover, .btn:hover { border-color: var(--accent); text-decoration: none; }
 button.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
+button.current { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
 button:disabled { opacity: .55; cursor: progress; }
 .actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
