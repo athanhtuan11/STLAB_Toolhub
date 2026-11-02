@@ -15,7 +15,7 @@ quan trọng (Tuan 2026-11-02: "thiết kế hiện tại hơi xấu").
 2. Ra **design spec** `maker/<du-an>/design/form-spec.md` – đủ cụ thể để kỹ sư dựng CAD không phải đoán:
    - Ngôn ngữ hình khối (1 câu) + 3 từ khóa cảm giác; tỉ lệ các khối chính (mm, theo khung có sẵn – không đổi khớp/tầm với).
    - Từng chi tiết vỏ: dạng khối, bán kính bo cạnh (mm), vát, đường chia màu/đường ráp, chỗ khắc dấu lắp, chỗ logo STLAB.
-   - CMF: màu từng chi tiết theo **cuộn nhựa có thật** (mặc định Bambu PETG Basic – ghi tên màu hãng, TODO nếu chưa chắc),
+   - CMF: màu từng chi tiết (mặc định Bambu PETG Basic; Tuan tự chuẩn bị cuộn – KHÔNG hỏi Tuan về cuộn/tên màu),
      tối đa 2–3 màu + 1 điểm nhấn; bề mặt (Textured PEI mặt dưới, mặt in nhìn thấy).
    - 2–3 phương án (A/B/C) có đánh đổi, khuyến nghị 1.
 3. Render để duyệt: dùng công cụ render Blender của STLab (`tools/render/README.md` khi đã có; nếu chưa có thì dùng
