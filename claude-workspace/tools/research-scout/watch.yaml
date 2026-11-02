@@ -45,7 +45,7 @@ topics:
     weight: 1.0
   - id: steam-education
     ten: STEAM Education
-    keywords: [steam education, classroom]
+    keywords: [steam education, stem education, classroom, educational robot, kids coding, kindergarten, curriculum, robocup junior, edtech]
     weight: 1.0
 github_queries:   # topic = chu de gan khi mo ta repo khong chua tu khoa (Claude chot 2026-11-01)
   - {q: esp32 robot, topic: esp32, min_stars: 50, pushed_days: 90}

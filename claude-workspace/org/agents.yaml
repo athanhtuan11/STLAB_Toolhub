@@ -59,6 +59,40 @@ agents:
     trang_thai: chinh-thuc
     tu_ngay: 2026-10-26
 
+  - id: product-designer
+    chuc_danh: Thiết kế dáng sản phẩm
+    tang: 1
+    bao_cao_cho: claude-main
+    loai: claude-subagent
+    model: sonnet
+    chi_phi: claude-quota
+    ky_nang: [thiet-ke-dang, cmf, render, duyet-anh]
+    tool: [Read, Write, Edit, Glob, Grep, Bash]
+    mang: none
+    muc_du_lieu: internal
+    nguoi_duyet: claude-main
+    gate: khong
+    khi_het_han_muc: claude-main
+    trang_thai: thu-viec
+    tu_ngay: 2026-11-02
+
+  - id: edu-researcher
+    chuc_danh: Nghiên cứu giáo dục (mầm non – đại học)
+    tang: 1
+    bao_cao_cho: claude-main
+    loai: claude-subagent
+    model: haiku
+    chi_phi: claude-quota
+    ky_nang: [nghien-cuu, giao-duc, chuong-trinh, cuoc-thi]
+    tool: [Read, Write, Glob, Grep, WebSearch, WebFetch, mcp__plugin_deliberation_deliberation__ask-gemini]
+    mang: web-search
+    muc_du_lieu: public-tech
+    nguoi_duyet: claude-main
+    gate: khong
+    khi_het_han_muc: claude-main
+    trang_thai: thu-viec
+    tu_ngay: 2026-11-02
+
   - id: git-scribe
     chuc_danh: Quản lý git
     tang: 1
