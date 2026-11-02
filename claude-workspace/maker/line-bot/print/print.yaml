@@ -1,47 +1,38 @@
-# <project-name> - THONG TIN BAN IN (doc boi tools/robotics-cad/scripts/prepare-print.py)
-# Mau day du: maker/pushrod-arm/print/print.yaml. Duong dan tuong doi theo thu muc nay (print/).
-fcstd: ../freecad/<model>.FCStd
-# rest_pose: ../freecad/<model>_rest.json   # neu co macro mo phong: {Name: [[x,y,z],[q0,q1,q2,q3]]}
-machine: Bambu Lab A1 0.4 nozzle             # profile may trong Bambu Studio
-# Nhua mac dinh (ban nao khong khai filament): cuon Bambu PETG Basic - profile chinh hang
+# line-bot - THONG TIN BAN IN (doc boi tools/robotics-cad/scripts/prepare-print.py)
+# Model SINH tu freecad/scripts/build_line_bot.py doc freecad/params.json -> doi linh kien = sua params.json roi chay lai.
+fcstd: ../freecad/line_bot.FCStd
+machine: Bambu Lab A1 0.4 nozzle
 filament: Bambu PETG Basic @BBL A1
-# filament_overrides: {filament_max_volumetric_speed: ["8"]}   # ghi de khoa filament (gia tri dang list)
-stl: stl                                     # file sinh
-plates_dir: plates                           # file sinh: <plate>/<plate>.3mf + print-overview.png
+stl: stl
+plates_dir: plates
 
-# Tang 1 - tham so check.py (key=value). Quy uoc ten Label: tools/robotics-cad/CLAUDE.md
-# Thao lap (assembly_paths): moi cap dang cham phai tach duoc bang tinh tien (WARN neu ket). Cache theo noi dung FCStd.
-# allow = cap co chu dich (vit tu ren, ep, gian) - ghi ly do canh tung mau. Bo ca khoi nay = khong kiem.
+# Thao lap: chua co object vit trong model (vit M3 tu ren vao lo moi, them sau khi chot linh kien).
 assembly:
-  allow: ["*M2_5x*|*", "*M3x*|*"]
-  # known: ["A|B"]   # loi DA BIET dang cho xu ly: test khong do, prepare-print van WARN
+  allow: ["Ref_N20_*|Motor_mount_*", "Ref_N20_*|Ref_Wheel_*","Ref_Ball|Caster_mount", "Ref_Mega|Top_plate", "Ref_Battery|Base_plate"]
 
 check:
   - out=../freecad/check
-  - components=CB_*,LK_*,M2_5x*,M3x*      # linh kien mua: chi kiem hinh hoc + va cham
-  - ignore-pair=M2_5x*|*                   # vit trong lo: cho phep cham
-  # - mesh-pair=Gear_*|Pinion_*            # banh rang an khop / dem long: khe nho la dung
-  # - multi-solid=Spacer_*                 # object co y gom nhieu manh
+  - components=Ref_*                         # khoi tham chieu linh kien: chi kiem hinh hoc + va cham
+  - ignore-pair=Ref_N20_*|Motor_mount_*      # motor luon trong hoc ga
+  - ignore-pair=Ref_Ball|Caster_mount        # bi ep vao hoc cau
+  - ignore-pair=Ref_N20_*|Ref_Wheel_*        # truc motor cam vao banh
 
-# Huong in: moi chi tiet khop quy tac DAU TIEN (names = Label, glob). Chi tiet khong khop -> khong xuat.
+# Huong in: chi tiet in = cac Label khong Ref_*
 export:
   mesh: {linear_mm: 0.03, angular_rad: 0.2618}
   rules:
-    - {names: [Body_*], group: 01_Body}                       # in nguyen huong trong file
-    - {names: [Cover_*], group: 01_Body, rotate: {x: 180}}    # lat up
-    - {names: ["*_TPU"], group: 09_Pads, rotate: {x: 90}, suffix: _TPU}
-    # frame: Label doi tuong hoac [x,y,z, truc x,y,z, goc] - dua ve he toa do khung truoc khi xoay
-    # split_solids: true - object nhieu manh -> moi manh 1 STL
+    - {names: [Base_plate, Top_plate], group: 01_Plates}                                       # cot huong len, in nguyen huong
+    - {names: [Motor_mount_*, Caster_mount, Line_bracket], group: 02_Mounts, rotate: {x: 180}} # mat ap tam xuong ban
+    - {names: [Sonar_bracket], group: 02_Mounts}                                               # de xuong ban, vach dung
 
-common: {sparse_infill_pattern: grid}      # ghi de cho moi ban
+common: {sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
 
 plates:
-  P1_Body__0.20_PETG:
-    process: 0.20mm Standard @BBL A1       # profile chinh hang; filament lay mac dinh o tren
-    overrides: {wall_loops: "3", sparse_infill_density: "20%"}
-    stl: ["01_Body__*.stl"]
-  P2_Pads__TPU95A:
+  P1_Base__0.20_PETG:
     process: 0.20mm Standard @BBL A1
-    filament: Bambu TPU 95A @BBL A1
-    stl: ["*_TPU.stl"]
-    # exclude: ["*_old.stl"]
+    overrides: {wall_loops: "3", sparse_infill_density: "20%"}
+    stl: ["01_Plates__Base_plate*.stl"]
+  P2_Top_Mounts__0.20_PETG:
+    process: 0.20mm Standard @BBL A1
+    overrides: {wall_loops: "3", sparse_infill_density: "25%"}   # ga motor/bi chiu luc, vit tu ren can thanh day
+    stl: ["01_Plates__Top_plate*.stl", "02_Mounts__*.stl"]

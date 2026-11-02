@@ -128,6 +128,30 @@ class TBuild(unittest.TestCase):
                 self.assertFalse(m.isInside(p, 0.01, True), f"N20_{s} sat gia o {ten} (khe < {e:.2f} mm)")
             self.assertLess(self.o[f"Ref_N20_{s}"].Shape.common(m).Volume, 0.01, f"N20_{s} chong gia")
 
+    def test_10_sonar_dung_ngang(self):
+        # Claude them 2026-11-02: HC-SR04 bbox [dai 45, cao 20, sau 15] -> dai theo Y, cao theo Z, sau theo X (mat phat +X).
+        # Ban 2026-11-01 de dai 45 theo X -> Ref_Sonar dam vao Ref_Battery 1125 mm3 (check.py FAIL).
+        s = self.P["linh_kien"]["sr04"]
+        b = self.o["Ref_Sonar"].Shape.BoundBox
+        self.assertAlmostEqual(b.YLength, s["bbox"][0], delta=0.2, msg="sonar dai 45 phai theo Y")
+        self.assertAlmostEqual(b.ZLength, s["bbox"][1], delta=0.2, msg="sonar cao 20 phai theo Z")
+        self.assertLessEqual(b.XLength, s["bbox"][2] + 0.2, "sonar sau 15 theo X")
+        self.assertLessEqual(b.XMax, 70.0 + 0.01)
+        bp = self.o["Base_plate"].Shape.BoundBox
+        top_base = self.o["Ref_Driver"].Shape.BoundBox.ZMin           # mat tren tam duoi (driver nam tren mat)
+        self.assertAlmostEqual(b.Center.z, top_base + 15.0, delta=0.2, msg="tam sonar cao hon mat Base_plate 15")
+        for r in ("Ref_Battery", "Ref_Driver", "Ref_Mega", "Ref_Line_array"):
+            v = self.o["Ref_Sonar"].Shape.common(self.o[r].Shape).Volume
+            self.assertLess(v, 0.5, f"Ref_Sonar chong {r}: {v:.2f} mm3")
+        sb = self.o["Sonar_bracket"].Shape
+        self.assertGreaterEqual(sb.BoundBox.YLength, s["bbox"][0], "vach Sonar_bracket phai rong it nhat bang sonar")
+        # 2 lo mat tren vach, tam cach nhau mat_cach theo Y o do cao tam sonar
+        for y in (-s["mat_cach"] / 2, s["mat_cach"] / 2):
+            p = V((sb.BoundBox.XMax + sb.BoundBox.XMax - 3.0) / 2, y, b.Center.z)
+            self.assertFalse(sb.isInside(p, 0.01, True), f"thieu lo mat sonar tai y={y}")
+        self.assertLessEqual(sb.BoundBox.ZMax, self.o["Top_plate"].Shape.BoundBox.ZMin)
+        self.assertLessEqual(sb.BoundBox.XMax, bp.XMax + 0.01)
+
     def test_09_doi_tham_so(self):
         # doi banh 42 -> 48 va cot 35 -> 40: model dung lai, banh + bi van cham san, cam bien van 3 mm
         P2 = json.loads(PARAMS.read_text(encoding="utf-8"))

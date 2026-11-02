@@ -350,7 +350,7 @@ for dy in (-LINE_SCREW_DY, LINE_SCREW_DY):
 BRACKET_T = 3.0
 # SONAR_CX: tam sonar theo X (dung de tinh vi tri Ref_Sonar)
 SONAR_CX = 70.0 - BRACKET_T - sr04["bbox"][0] / 2.0
-SB_DE_X_BASE = 20.0  # chia se hang so voi phan sonar_bracket
+SB_DE_X_BASE = 10.0  # chia se hang so voi phan sonar_bracket
 SONAR_SCREW_X_BP = 70.0 - BRACKET_T - SB_DE_X_BASE / 2.0  # tam de
 SONAR_SCREW_DY = sr04["mat_cach"] / 2.0
 for dy in (-SONAR_SCREW_DY, SONAR_SCREW_DY):
@@ -564,44 +564,40 @@ add("Line_bracket", line_bracket_shape, COLOR_PRINT)
 
 # ===========================================================================
 # 8. SONAR_BRACKET + REF_SONAR
-# HC-SR04 dung dung o mui xe, mat phat huong +X
+# HC-SR04 nam ngang o mui xe, mat phat huong +X
 # Tam cao hon mat Base_plate 15
 # Bracket: vach dung co 2 lo Ø(mat_d+0.4) cach nhau mat_cach
 # De bat len Base_plate (2 vit M3)
 # Khong vuot bao X (max X = 70)
 # ===========================================================================
-# Sonar bbox [45, 20, 15]: X=45 (chieu truoc-sau), Y=20 (rong), Z=15 (cao)
-# Dung dung: mat phat (+X) la mat rong nhat
-# Tam sonar tai: x = SONAR_CX (tinh de khong vuot bao X=70)
-# z tam sonar: Z_BASE_TOP + 15 (tam cao hon mat Base_plate 15)
+# Sonar bbox [dai, cao, sau]: dai theo Y, cao theo Z, sau theo X
+# Tam sonar theo Y = 0; mat phat (+X) huong ra mui xe
+# z tam sonar cao hon mat Base_plate 15
 Z_SONAR_CX = Z_BASE_TOP + 15.0
 
-# Vach bracket tai x = SONAR_CX + sr04.bbox[0]/2 + BRACKET_T/2
-# (vach bat vao phia sau sonar, sonar gan ap vach)
-# De bat len Base_plate vach mat sau sonar tai x = SONAR_CX + sr04["bbox"][0]/2
+# Vach bracket tai x = 70 - BRACKET_T, phia sau sonar
 vach_x = 70.0 - BRACKET_T  # vach trong (mat sau sonar), x cua vach
 
-# Sonar: mat truoc tai vach_x - sr04["bbox"][0], mat sau tai vach_x
-# Kiem tra: mat truoc >= -70 (khong kha thi, but sonar chi dai 45)
-sonar_x_front = vach_x - sr04["bbox"][0]
+# Sonar: chieu sau theo X, chieu dai theo Y
+sonar_x_front = vach_x - sr04["bbox"][2]
 sonar_x_back = vach_x
 
 # Ref_Sonar: hop sonar
 ref_sonar = box(
     x=(sonar_x_front, sonar_x_back),
-    y=(-sr04["bbox"][1] / 2.0, sr04["bbox"][1] / 2.0),
-    z=(Z_SONAR_CX - sr04["bbox"][2] / 2.0, Z_SONAR_CX + sr04["bbox"][2] / 2.0),
+    y=(-sr04["bbox"][0] / 2.0, sr04["bbox"][0] / 2.0),
+    z=(Z_SONAR_CX - sr04["bbox"][1] / 2.0, Z_SONAR_CX + sr04["bbox"][1] / 2.0),
 )
 add("Ref_Sonar", ref_sonar, COLOR_SONAR)
 
 # Sonar bracket: vach dung tai x = vach_x..vach_x+BRACKET_T, noi lien voi de tren mat Base_plate
 SB_DE_T = LB_T         # day phan de
-SB_DE_Y = sr04["bbox"][1] + 4.0  # rong de va vach
+SB_DE_Y = sr04["bbox"][0] + 4.0  # rong de va vach
 SB_DE_X = 10.0                   # dai de theo X (lui vao trong 10mm, tranh chong Ref_Driver)
 
-# Vach dung: tu Z_BASE_TOP den Z_SONAR_CX + sr04.bbox[2]/2 + 1
+# Vach dung: tu Z_BASE_TOP den dinh sonar + 1
 sb_vach_z_lo = Z_BASE_TOP
-sb_vach_z_hi = Z_SONAR_CX + sr04["bbox"][2] / 2.0 + 1.0
+sb_vach_z_hi = Z_SONAR_CX + sr04["bbox"][1] / 2.0 + 1.0
 
 sb_vach = box(
     x=(vach_x, vach_x + BRACKET_T),
