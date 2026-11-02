@@ -66,3 +66,8 @@ credentials*.json
 
 # Thu muc tam cua executor (tools/delegate/delegate.py), xoa sau moi run
 .delegate-tmp/
+
+# File trung gian cua tools/render (render.py --out <dir>): luoi STL + scene/export json
+**/_stl/
+*-scene.json
+*-export.json
