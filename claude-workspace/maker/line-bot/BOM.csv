@@ -1,0 +1,18 @@
+﻿Loai,Ten,SL,Ban in,Nhua,Ghi chu
+linh kien mua,Ref_Ball,1,,,
+linh kien mua,Ref_Battery,1,,,
+linh kien mua,Ref_Driver,1,,,
+linh kien mua,Ref_Line_array,1,,,
+linh kien mua,Ref_Mega,1,,,
+linh kien mua,Ref_N20_L,1,,,
+linh kien mua,Ref_N20_R,1,,,
+linh kien mua,Ref_Sonar,1,,,
+linh kien mua,Ref_Wheel_L,1,,,
+linh kien mua,Ref_Wheel_R,1,,,
+in 3D,Base_plate,1,P1_Base__0.20_PETG,Bambu PETG Basic @BBL A1,57.59 cm³
+in 3D,Caster_mount,1,P2_Top_Mounts__0.20_PETG,Bambu PETG Basic @BBL A1,4.37 cm³
+in 3D,Line_bracket,1,P2_Top_Mounts__0.20_PETG,Bambu PETG Basic @BBL A1,10.09 cm³
+in 3D,Motor_mount_L,1,P2_Top_Mounts__0.20_PETG,Bambu PETG Basic @BBL A1,3.53 cm³
+in 3D,Motor_mount_R,1,P2_Top_Mounts__0.20_PETG,Bambu PETG Basic @BBL A1,3.53 cm³
+in 3D,Sonar_bracket,1,P2_Top_Mounts__0.20_PETG,Bambu PETG Basic @BBL A1,3.73 cm³
+in 3D,Top_plate,1,P2_Top_Mounts__0.20_PETG,Bambu PETG Basic @BBL A1,49.72 cm³
