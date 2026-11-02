@@ -1,6 +1,6 @@
 # Nghiên cứu cải tiến đường ống giao việc STLab
 
-Ngày: 2026-11-02. Các nguồn web dưới đây được kiểm tra ngày 2026-11-02. Đây là đề xuất; chưa sửa mã hay cấu hình.
+Ngày: 2026-11-02. Các nguồn web dưới đây được kiểm tra ngày 2026-11-02. Đây là đề xuất; chưa sửa mã hay cấu hình. **Cập nhật 2026-11-02 (Tuan duyệt): đã làm #1 đường dẫn tuyệt đối + viền nền, #2 Smooth by Angle (tools/render, gate 8/8), #3 khóa ghi allow + `worktree: true` tùy chọn (tools/delegate, test_parallel 12/12). Còn: gate tự kiểm (mutation), profile Codex, hướng dẫn reload agent.**
 
 ## 1. Su co thuc te
 
