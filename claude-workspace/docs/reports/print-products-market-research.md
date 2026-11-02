@@ -170,3 +170,39 @@ Codex tra; Claude chưa mở từng link – kiểm lại trước khi dùng. Li
 - Đồ phổ thông trên Shopee rẻ (móc khóa 20–30 nghìn, rồng 30–80 nghìn) → cạnh tranh giá khó; lợi thế STLab là đồ cá nhân hóa (bảng tên 65–150 nghìn, giá đỡ in tên 150 nghìn) và đồ ngách địa phương/STEAM.
 - So giá bán với giá vốn từ `/quote` trước khi chốt.
 - Muốn tiền mặt từ MakerWorld thì cần Exclusive (ràng buộc độc quyền chưa rõ) – nên bắt đầu đăng thường để lấy điểm + uy tín, quyết Exclusive sau.
+
+## 10. Hot trending (Codex tra 2026-11-02)
+
+Số liệu là tổng tích lũy hiển thị lúc tra, không phải xếp hạng 2026 đã kiểm. Bảng Trending MakerWorld tải động, chưa đọc được → TODO: Tuan chụp màn hình trang Trending để Claude đọc.
+
+### 10.1 Bằng chứng xu hướng
+
+| Xu hướng | Bằng chứng | Nguồn |
+|---|---|---|
+| Đồ tiện ích gia dụng (MakerWorld; số tải theo bài tổng hợp từ video, có thể đã đổi) | kẹp túi mini 100.000+; giá Scrub Daddy V2 84.700; rổ rửa rau Hydro Bowl 69.600; móc khăn tự khóa 67.400; nặn kem đánh răng có bánh cóc 64.300; dock iPhone StandBy 63.300; hộp chìa khóa hình gara 32.800; giá tablet tay cơ khí 22.000 | [aemind](https://www.aemind.com/best-makerworld-prints/?amp=1) |
+| Thú khớp nối/flexi (Printables) | Water Dragon 126,8K; Articulated Christmas Dragon 33,6K; bàn tay xương print-in-place 24,1K; rắn flexi 24K; mèo flexi móc khóa 19,5K | [tag articulatedmodel](https://www.printables.com/tag/articulatedmodel) |
+| Organizer/module (Printables) | Organizer Box XL Pro 41K; ngăn kéo module in nhanh 6.951; Next Gen USB-C Cable Organizer (tham số) 7.685 | [XL Pro](https://www.printables.com/model/1473064-organizer-box-xl-pro), [ngăn kéo module](https://www.printables.com/model/1770830-fastest-printing-modular-drawer-system), [USB-C](https://www.printables.com/model/1394215-next-gen-usb-c-cable-organizer) |
+| Fidget/clicker (Printables) | Dumpling Clicker, Squishy Dumpling trong mục Toys | [Toys](https://www.printables.com/model?category=30) |
+| Cuộc thi gần đây | MakerWorld: Halloween 2026; Make for Good: Accessibility (358 bài); Incense – nhang/trầm (461 bài); Nothing headphone accessory (242); Biomimicry (217). Printables: Halloween 2026 Make It Move; Camera Accessories; Thrustmaster shifter knob; CoralBoard case | [makerstats](https://makerstats.io/makerworld-contests/), [Camera Accessories](https://www.printables.com/contest/522-prototype-to-product-camera-accessories) |
+| VN: móc khóa in 3D (ShopeeAnalytics) | 162 sản phẩm / 73 shop / ~1.154 lượt bán cộng dồn trong dữ liệu của họ (cập nhật 30/10/2026, không phủ toàn Shopee); móc khóa flexi (sâu, mực) đang bán | [ShopeeAnalytics](https://www.shopeeanalytics.com/vn/search/market?keywords=m%C3%B3c+kho%C3%A1+in+3d) |
+
+- Chưa kiểm được: Gridfinity/Multiboard/Underware, đèn, desk toy "Tiny" 2026 – giả thuyết. TikTok Shop: TODO.
+
+### 10.2 Ràng buộc mới (Tuan 2026-11-02)
+
+- Chỉ 1 máy A1 có AMS lite → hạn chế AMS. Mẫu nhiều màu = tách part đơn sắc rồi ráp (snap/chốt theo fit-library), bản AMS chỉ là biến thể phụ.
+
+### 10.3 Đề xuất mẫu mới theo trending (thiết kế mới của STLab, không chép)
+
+**AN TOÀN – đế cắm nhang/trầm (mẫu 6):** PETG mềm khi nóng; tàn nhang có thể làm chảy/cháy → phải có lót kim loại/gốm hoặc chỉ là đế đỡ xa đầu lửa. Ngưỡng nhiệt PETG: TODO theo datasheet.
+
+| # | Mẫu | Bám xu hướng | Nét STLab | In | Ghi chú/rủi ro |
+|---|---|---|---|---|---|
+| 1 | Dê flexi (móc khóa + để bàn) cho Tết 2027 (năm Mùi) | thú flexi + mùa vụ | Tết, quà lì xì, đăng được cho cộng đồng châu Á | print-in-place 1 màu | ra trước Tết; ngày Tết chính xác TODO; khớp in liền cần thử khe |
+| 2 | Kẹp túi cà phê có thẻ tên/logo nông trại | kẹp túi 100.000+ tải | cà phê Lâm Đồng, roastery | 1 màu, có thể 2 part | không tuyên bố food-safe; lò xo/lực kẹp phải thử |
+| 3 | Clicker fidget hình hạt cà phê / bông atiso | fidget/clicker | biểu tượng Đà Lạt | 2–3 part đơn sắc ráp | chi tiết nhỏ, không nhắm trẻ nhỏ |
+| 4 | Organizer bàn học module + bảng tên | organizer module, bảng tên bán 65–150k | học sinh STLab, quà lớp | các part đơn sắc, chữ nổi cùng màu hoặc part chữ riêng | ghép khe theo fit-library |
+| 5 | Đồ trang trí Tết/Noel ghép part (hoa mai/đào, chậu mini) | mùa Nov–Feb | Tết Việt | mỗi màu 1 part, ráp chốt | thời vụ, phải ra trước giữa tháng 12 để kịp bán |
+| 6 | Đế cắm nhang/trầm | cuộc thi Incense 461 bài | văn hóa thờ cúng | 1 màu | xem cảnh báo AN TOÀN phía trên |
+
+Giữ từ mục 8: nhãn cây tham số, đế QR.
