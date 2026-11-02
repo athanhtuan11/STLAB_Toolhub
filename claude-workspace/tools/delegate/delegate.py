@@ -283,8 +283,9 @@ def lock_path(cwd_rel):
     return os.path.join(USAGE, "locks", re.sub(r"[^A-Za-z0-9_-]+", "_", cwd_rel) + ".json")
 
 
-def take_lock(cwd_rel, task, run_dir):
-    """1 tac vu / cwd: 2 phien Claude giao trung thu muc thi tu choi. Khoa cua tien trinh da chet (mat dien) = mo coi."""
+def take_lock(cwd_rel, task, run_dir, allow_ws=None):
+    """1 tac vu / cwd: 2 phien Claude giao trung thu muc thi tu choi. Khoa cua tien trinh da chet (mat dien) = mo coi.
+    Ghi them cwd + allow_ws (mau glob tuong doi WS) de run khac biet file nao dang duoc run nay so huu."""
     p = lock_path(cwd_rel)
     try:
         old = json.load(open(p, encoding="utf-8"))
@@ -293,7 +294,8 @@ def take_lock(cwd_rel, task, run_dir):
     except (OSError, ValueError, KeyError):
         pass
     os.makedirs(os.path.dirname(p), exist_ok=True)
-    json.dump(dict(pid=os.getpid(), task=task, start=now().isoformat(timespec="seconds"), run_dir=run_dir),
+    json.dump(dict(pid=os.getpid(), task=task, start=now().isoformat(timespec="seconds"), run_dir=run_dir,
+                   cwd=cwd_rel, allow_ws=list(allow_ws or [])),
               open(p, "w", encoding="utf-8"), ensure_ascii=False)
     return p
 
@@ -326,6 +328,35 @@ def _lock_alive(rd):
         if _same_dir(lk.get("run_dir"), rd) and _pid_ok(lk.get("pid")):
             return True
     return False
+
+
+def other_runs_claim(files, my_run_dir):
+    """File (tuong doi WS) dang nam trong allow cua MOT run khac con song -> khong tinh la ngoai allow cua run nay."""
+    ldir = os.path.join(USAGE, "locks")
+    try:
+        names = os.listdir(ldir)
+    except OSError:
+        return []
+    claimed = []
+    for f in names:
+        if not f.endswith(".json"):
+            continue
+        try:
+            lk = json.load(open(os.path.join(ldir, f), encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if not isinstance(lk, dict):
+            continue
+        if not _pid_ok(lk.get("pid")):                  # chu so huu da chet -> khoa mo coi, khong giu file
+            continue
+        if _same_dir(lk.get("run_dir"), my_run_dir):    # khoa cua chinh run nay
+            continue
+        pats = [p for p in (lk.get("allow_ws") or []) if isinstance(p, str)]
+        for x in files:
+            rel = str(x).replace("\\", "/")
+            if any(fnmatch.fnmatch(rel, p) for p in pats) and x not in claimed:
+                claimed.append(x)
+    return claimed
 
 
 def run_states():
@@ -439,6 +470,8 @@ def parse_spec(path):
     meta.setdefault("executor", "auto")
     meta.setdefault("ky_nang", None)
     meta.setdefault("read", [])                          # thu muc duoc DOC them (tuong doi claude-workspace), khong ghi
+    if not isinstance(meta.get("worktree"), bool):       # tuy chon: chay trong git worktree rieng (mac dinh False)
+        meta["worktree"] = bool(meta.get("worktree"))
     return meta, m.group(2).strip()
 
 
@@ -553,8 +586,9 @@ def run_proc(argv, cwd, stdin, timeout_s, env=None, shell=False):
     return out, code, round(time.time() - t)
 
 
-def git_changed(path):
-    """Tap file thay doi/moi (git status, duong dan tuong doi WS, dau '/')."""
+def git_changed_rel(path, base=None):
+    """Tap file thay doi/moi (git status, duong dan tuong doi `base`, dau '/')."""
+    base = base or WS
     p = subprocess.run(["git", "status", "--porcelain", "-uall", "--", "."], cwd=path, capture_output=True,
                        text=True, encoding="utf-8", errors="replace")
     top = subprocess.run(["git", "rev-parse", "--show-toplevel"], cwd=path, capture_output=True,
@@ -562,8 +596,13 @@ def git_changed(path):
     files = set()
     for line in p.stdout.splitlines():
         f = line[3:].split(" -> ")[-1].strip('"')
-        files.add(os.path.relpath(os.path.join(top, f), WS).replace("\\", "/"))
+        files.add(os.path.relpath(os.path.join(top, f), base).replace("\\", "/"))
     return files
+
+
+def git_changed(path):
+    """Tap file thay doi/moi (git status, duong dan tuong doi WS, dau '/')."""
+    return git_changed_rel(path, WS)
 
 
 def file_sig(f):
@@ -572,6 +611,153 @@ def file_sig(f):
         return (st.st_size, st.st_mtime_ns)
     except OSError:
         return None
+
+
+def _sig_at(root, rel):
+    try:
+        st = os.stat(os.path.join(root, rel))
+        return (st.st_size, st.st_mtime_ns)
+    except OSError:
+        return None
+
+
+def _is_link(path):
+    """Thu muc la junction/symlink -> KHONG di theo (tranh xoa/chép vao community goc)."""
+    try:
+        if os.path.islink(path):
+            return True
+        return bool(getattr(os.path, "isjunction", lambda p: False)(path))
+    except OSError:
+        return False
+
+
+def _walk_files(root):
+    """Duyet file trong root, bo qua .git va khong di vao junction/symlink."""
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [x for x in dirnames if x != ".git" and not _is_link(os.path.join(dirpath, x))]
+        for fn in filenames:
+            yield os.path.join(dirpath, fn)
+
+
+def _snapshot(root):
+    return {os.path.relpath(p, root).replace("\\", "/"): _sig_at(root, os.path.relpath(p, root))
+            for p in _walk_files(root)}
+
+
+_WT_INFO = {}
+
+
+def _wt_key(path):
+    return os.path.normcase(os.path.abspath(path))
+
+
+def make_worktree(run_dir):
+    """Tao git worktree rieng cho run; chep file chua commit, noi community/ bang junction, chep *.FCStd bi ignore.
+    Tra ve thu muc tuong ung WS trong worktree (de chay executor/gate tai do)."""
+    top = subprocess.run(["git", "-C", WS, "rev-parse", "--show-toplevel"], capture_output=True,
+                         text=True).stdout.strip()
+    if not top:
+        raise RuntimeError(f"khong tim thay git repo cho WS: {WS}")
+    ws_rel = os.path.relpath(WS, top)
+    name = os.path.basename(os.path.normpath(run_dir))
+    wt_root = os.path.join(USAGE, "delegate-wt", name)
+    os.makedirs(os.path.dirname(wt_root), exist_ok=True)
+    subprocess.run(["git", "-C", WS, "worktree", "add", "--detach", wt_root, "HEAD"], check=True,
+                   capture_output=True, text=True)
+
+    # Chep moi file chua commit (sua + moi, khong bi ignore) cua CA repo, giu duong dan tuong doi top.
+    st = subprocess.run(["git", "-C", top, "status", "--porcelain", "-uall"], capture_output=True,
+                        text=True, encoding="utf-8", errors="replace")
+    for line in st.stdout.splitlines():
+        if len(line) < 4:
+            continue
+        f = line[3:].split(" -> ")[-1].strip('"')
+        src = os.path.join(top, f)
+        if not os.path.isfile(src):
+            continue
+        dst = os.path.join(wt_root, f)
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        shutil.copy2(src, dst)
+
+    wt_ws = os.path.normpath(os.path.join(wt_root, ws_rel))
+
+    # community/ la nguon ghim chi doc: noi bang junction (khong chep, khong di theo khi xoa).
+    junction = None
+    comm_src = os.path.join(WS, "community")
+    if os.path.isdir(comm_src):
+        junction = os.path.join(wt_ws, "community")
+        if os.path.isdir(junction) and not _is_link(junction):
+            try:
+                os.rmdir(junction)                       # chi xoa duoc neu rong
+            except OSError:
+                junction = None
+        if junction and not os.path.exists(junction):
+            os.makedirs(os.path.dirname(junction), exist_ok=True)
+            subprocess.run(f'cmd /c mklink /J "{junction}" "{comm_src}"', shell=True,
+                           capture_output=True, text=True)
+
+    # File *.FCStd bi ignore nhung gate can doc -> chep vao worktree (giu duong dan).
+    comm_prefix = os.path.normcase(os.path.join(WS, "community")) + os.sep
+    for p in _walk_files(WS):
+        if os.path.normcase(p).startswith(comm_prefix):     # community/ chi doc: khong chep qua junction
+            continue
+        if not fnmatch.fnmatch(os.path.basename(p), "*.FCStd"):
+            continue
+        rel = os.path.relpath(p, WS)
+        dst = os.path.join(wt_ws, rel)
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        shutil.copy2(p, dst)
+
+    _WT_INFO[_wt_key(wt_ws)] = dict(root=wt_root, junction=junction, baseline=_snapshot(wt_ws))
+    return wt_ws
+
+
+def sync_back(wt_ws, allow_ws):
+    """Chep file thay doi/moi trong worktree (so voi luc tao) khop allow_ws ve WS. Tra (copied, skipped)."""
+    info = _WT_INFO.get(_wt_key(wt_ws)) or {}
+    base = info.get("baseline")
+    copied, skipped = [], []
+    for p in _walk_files(wt_ws):
+        rel = os.path.relpath(p, wt_ws).replace("\\", "/")
+        if base is not None and base.get(rel) == _sig_at(wt_ws, rel):
+            continue                                    # khong doi so voi luc tao worktree
+        if any(fnmatch.fnmatch(rel, pat) for pat in allow_ws if isinstance(pat, str)):
+            dst = os.path.join(WS, rel)
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            shutil.copy2(p, dst)
+            copied.append(rel)
+        else:
+            skipped.append(rel)
+    return copied, skipped
+
+
+def remove_worktree(wt_ws):
+    """Go junction bang os.rmdir TRUOC (khong theo link vao community goc), roi go git worktree."""
+    key = _wt_key(wt_ws)
+    info = _WT_INFO.pop(key, {})
+    wt_root = info.get("root")
+    if not wt_root:
+        wt_root = subprocess.run(["git", "-C", wt_ws, "rev-parse", "--show-toplevel"], capture_output=True,
+                                 text=True).stdout.strip() or os.path.dirname(wt_ws)
+    junction = info.get("junction") or os.path.join(wt_ws, "community")
+    if os.path.isdir(junction) and _is_link(junction):
+        try:
+            os.rmdir(junction)
+        except OSError:
+            pass
+    subprocess.run(["git", "-C", WS, "worktree", "remove", "--force", wt_root], capture_output=True, text=True)
+    subprocess.run(["git", "-C", WS, "worktree", "prune"], capture_output=True, text=True)
+    if os.path.exists(wt_root):
+        for dirpath, dirnames, _ in os.walk(wt_root):   # con lai: go moi junction roi moi xoa
+            for x in list(dirnames):
+                j = os.path.join(dirpath, x)
+                if _is_link(j):
+                    try:
+                        os.rmdir(j)
+                    except OSError:
+                        pass
+        shutil.rmtree(wt_root, ignore_errors=True)
+        subprocess.run(["git", "-C", WS, "worktree", "prune"], capture_output=True, text=True)
 
 
 TEXT_EXT = (".py", ".md", ".html", ".css", ".js", ".json", ".yaml", ".yml", ".txt", ".csv", ".c", ".h", ".cpp", ".ino")
@@ -652,6 +838,7 @@ def main():
     if not os.path.isdir(cwd):
         sys.exit(f"cwd khong ton tai: {cwd}")
     allow = [x if isinstance(x, str) else str(x) for x in meta["allow"]]
+    allow_ws = [(cwd_rel + "/" + p).replace("\\", "/") if cwd_rel else p.replace("\\", "/") for p in allow]
 
     choice = a.executor or meta["executor"]
     simulated = {x for x in a.simulate_limit.split(",") if x}
@@ -666,12 +853,12 @@ def main():
 
     run_dir = os.path.join(USAGE, "delegate-runs", now().strftime("%Y%m%d-%H%M%S") + "-" + meta["task"])
     os.makedirs(run_dir, exist_ok=True)
-    lock = take_lock(cwd_rel, meta["task"], run_dir)
+    lock = take_lock(cwd_rel, meta["task"], run_dir, allow_ws=allow_ws)
     json.dump(dict(state="running", pid=os.getpid(), spec=os.path.abspath(a.spec)),
               open(os.path.join(run_dir, "state.json"), "w", encoding="utf-8"), ensure_ascii=False)
     try:
         run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir,
-                 resumed_from=resume_from, resume_ctx=resume_ctx)
+                 resumed_from=resume_from, resume_ctx=resume_ctx, allow_ws=allow_ws)
     finally:
         try:
             os.remove(lock)
@@ -679,110 +866,127 @@ def main():
             pass
 
 
-def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resumed_from=None, resume_ctx=""):
-    # Thu muc tam rieng trong cwd: sandbox Codex chi cho ghi trong cwd -> test dung tempfile/LOCALAPPDATA khong bi chan
-    # (ESCALATE 2 lan 2026-10-27). Git bo qua (.gitignore), xoa khi xong.
-    tmpdir = os.path.join(cwd, ".delegate-tmp")
-    os.makedirs(tmpdir, exist_ok=True)
-    env = dict(os.environ, OPENCODE_CONFIG=os.path.join(HERE, "opencode.json"), KILO_CONFIG=os.path.join(HERE, "kilo.json"), TMP=tmpdir, TEMP=tmpdir, TMPDIR=tmpdir,
-               PYTHONUTF8="1", PYTHONIOENCODING="utf-8")
-    before = {f: file_sig(f) for f in git_changed(cwd)}
-    result = dict(task=meta["task"], cwd=cwd_rel, run_dir=run_dir, rounds=[], skipped=[], passed=False)
-    started_at = time.time()
-    first_executor = queue[0] if queue else "executor"
-    _event_emit("delegate", "run_start", f"{first_executor} nhan {meta['task']}", agent=first_executor, ref=run_dir)
-    if resumed_from:
-        result["resumed_from"] = resumed_from
-    extra = [os.path.join(WS, p) for p in meta["read"]]
-    read = (" and these READ-ONLY paths: " + ", ".join(extra)) if extra else ""
-    prompt = RULES.format(allow=", ".join(allow), gate=meta["gate"], task=meta["task"], body=body, read=read)
-    if resume_ctx:
-        prompt += "\n\n" + resume_ctx
+def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resumed_from=None, resume_ctx="",
+             allow_ws=None):
+    allow_ws = allow_ws if allow_ws is not None else \
+        [(cwd_rel + "/" + p).replace("\\", "/") if cwd_rel else p.replace("\\", "/") for p in allow]
+    use_wt = bool(meta.get("worktree"))
+    wt_ws = make_worktree(run_dir) if use_wt else None      # worktree rieng: executor/gate chay trong ban sao
+    work = os.path.join(wt_ws, cwd_rel) if use_wt else cwd
+    root = wt_ws if use_wt else WS
+    try:
+        # Thu muc tam rieng trong cwd: sandbox Codex chi cho ghi trong cwd -> test dung tempfile/LOCALAPPDATA khong bi chan
+        # (ESCALATE 2 lan 2026-10-27). Git bo qua (.gitignore), xoa khi xong.
+        tmpdir = os.path.join(work, ".delegate-tmp")
+        os.makedirs(tmpdir, exist_ok=True)
+        env = dict(os.environ, OPENCODE_CONFIG=os.path.join(HERE, "opencode.json"), KILO_CONFIG=os.path.join(HERE, "kilo.json"), TMP=tmpdir, TEMP=tmpdir, TMPDIR=tmpdir,
+                   PYTHONUTF8="1", PYTHONIOENCODING="utf-8")
+        before = {f: _sig_at(root, f) for f in git_changed_rel(work, root)}
+        result = dict(task=meta["task"], cwd=cwd_rel, run_dir=run_dir, rounds=[], skipped=[], passed=False)
+        started_at = time.time()
+        first_executor = queue[0] if queue else "executor"
+        _event_emit("delegate", "run_start", f"{first_executor} nhan {meta['task']}", agent=first_executor, ref=run_dir)
+        if resumed_from:
+            result["resumed_from"] = resumed_from
+        extra = [os.path.join(WS, p) for p in meta["read"]]
+        read = (" and these READ-ONLY paths: " + ", ".join(extra)) if extra else ""
+        prompt = RULES.format(allow=", ".join(allow), gate=meta["gate"], task=meta["task"], body=body, read=read)
+        if resume_ctx:
+            prompt += "\n\n" + resume_ctx
 
-    rnd = 0
-    while rnd < int(meta["max_rounds"]):
-        lim = load_limits()
-        name = next((n for n in queue if installed(n) and not is_limited(n, lim) and n not in simulated), None)
-        if not name:
-            result["skipped"] = [dict(executor=n, why="simulated" if n in simulated else
-                                      "not installed" if not installed(n) else "limited") for n in queue]
-            result["error"] = "het executor (han muc/chua cai)"
-            break
-        rnd += 1
-        open(os.path.join(run_dir, f"prompt-{rnd}.txt"), "w", encoding="utf-8").write(prompt)
-        argv, stdin = command(name, prompt)
-        out, code, secs = run_proc(argv, cwd, stdin, int(meta["timeout_min"]) * 60, env)
-        open(os.path.join(run_dir, f"{name}-{rnd}.log"), "w", encoding="utf-8").write(out)
-        lines = [x.strip() for x in ANSI_RE.sub("", out).splitlines() if x.strip()]
-        last = next((x for x in reversed(lines) if re.match(r"`?(DONE|BLOCKED|ESCALATE)", x)),
-                    (lines or [""])[-1])[:200]
-        r = dict(round=rnd, executor=name, exit=code, seconds=secs, last_line=last)
-        if re.match(r"`?ESCALATE", last):
-            # Bao len tren: executor thieu quyen/ngoai viec -> dung han, KHONG giao lai, Claude quyet (org/policy.yaml)
+        rnd = 0
+        while rnd < int(meta["max_rounds"]):
+            lim = load_limits()
+            name = next((n for n in queue if installed(n) and not is_limited(n, lim) and n not in simulated), None)
+            if not name:
+                result["skipped"] = [dict(executor=n, why="simulated" if n in simulated else
+                                          "not installed" if not installed(n) else "limited") for n in queue]
+                result["error"] = "het executor (han muc/chua cai)"
+                break
+            rnd += 1
+            open(os.path.join(run_dir, f"prompt-{rnd}.txt"), "w", encoding="utf-8").write(prompt)
+            argv, stdin = command(name, prompt)
+            out, code, secs = run_proc(argv, work, stdin, int(meta["timeout_min"]) * 60, env)
+            open(os.path.join(run_dir, f"{name}-{rnd}.log"), "w", encoding="utf-8").write(out)
+            lines = [x.strip() for x in ANSI_RE.sub("", out).splitlines() if x.strip()]
+            last = next((x for x in reversed(lines) if re.match(r"`?(DONE|BLOCKED|ESCALATE)", x)),
+                        (lines or [""])[-1])[:200]
+            r = dict(round=rnd, executor=name, exit=code, seconds=secs, last_line=last)
+            if re.match(r"`?ESCALATE", last):
+                # Bao len tren: executor thieu quyen/ngoai viec -> dung han, KHONG giao lai, Claude quyet (org/policy.yaml)
+                result["rounds"].append(r)
+                result["escalate"] = last.split(":", 1)[-1].strip(" `")
+                _event_emit("delegate", "round", f"round {rnd} ESCALATE", agent=name, ref=run_dir,
+                            data={"round": rnd, "verdict": "ESCALATE"})
+                break
+            if code != 0 and LIMIT_RE.search(out[-4000:]):
+                mark_limited(name, tail(out, 3))
+                r["limited"] = True
+                result["rounds"].append(r)
+                rnd -= 1                                    # vong nay khong tinh, chuyen executor ke tiep
+                continue
+            gout, gcode, gsecs = run_proc(meta["gate"], work, None, 20 * 60, shell=True)
+            open(os.path.join(run_dir, f"gate-{rnd}.log"), "w", encoding="utf-8").write(gout)
+            r.update(gate_exit=gcode, gate_seconds=gsecs, gate_tail=tail(gout, 5))
             result["rounds"].append(r)
-            result["escalate"] = last.split(":", 1)[-1].strip(" `")
-            _event_emit("delegate", "round", f"round {rnd} ESCALATE", agent=name, ref=run_dir,
-                        data={"round": rnd, "verdict": "ESCALATE"})
-            break
-        if code != 0 and LIMIT_RE.search(out[-4000:]):
-            mark_limited(name, tail(out, 3))
-            r["limited"] = True
-            result["rounds"].append(r)
-            rnd -= 1                                    # vong nay khong tinh, chuyen executor ke tiep
-            continue
-        gout, gcode, gsecs = run_proc(meta["gate"], cwd, None, 20 * 60, shell=True)
-        open(os.path.join(run_dir, f"gate-{rnd}.log"), "w", encoding="utf-8").write(gout)
-        r.update(gate_exit=gcode, gate_seconds=gsecs, gate_tail=tail(gout, 5))
-        result["rounds"].append(r)
-        _event_emit("delegate", "round", f"round {rnd} {'PASS' if gcode == 0 else 'FAIL'}", agent=name,
-                    ref=run_dir, data={"round": rnd, "verdict": "PASS" if gcode == 0 else "FAIL", "gate_exit": gcode})
-        bad = [f for f in git_changed(cwd) if before.get(f, "new") != file_sig(f) and mojibake(os.path.join(WS, f))]
-        if gcode == 0 and not bad:
-            result["passed"] = True
-            break
-        if bad:                                         # gate dat nhung file hong ma hoa -> giao lai kem nhac
-            r["encoding_broken"] = bad
-            gout = (f"ENCODING BROKEN in {bad}: Vietnamese letters became '?'. Rewrite these files with your "
-                    "file-editing tool only (apply_patch), never through a PowerShell pipe/Set-Content.\n" + gout)
-        prompt += RETRY.format(n=rnd + 1, tail=tail(gout))
+            _event_emit("delegate", "round", f"round {rnd} {'PASS' if gcode == 0 else 'FAIL'}", agent=name,
+                        ref=run_dir, data={"round": rnd, "verdict": "PASS" if gcode == 0 else "FAIL", "gate_exit": gcode})
+            bad = [f for f in git_changed_rel(work, root)
+                   if before.get(f, "new") != _sig_at(root, f) and mojibake(os.path.join(root, f))]
+            if gcode == 0 and not bad:
+                result["passed"] = True
+                break
+            if bad:                                         # gate dat nhung file hong ma hoa -> giao lai kem nhac
+                r["encoding_broken"] = bad
+                gout = (f"ENCODING BROKEN in {bad}: Vietnamese letters became '?'. Rewrite these files with your "
+                        "file-editing tool only (apply_patch), never through a PowerShell pipe/Set-Content.\n" + gout)
+            prompt += RETRY.format(n=rnd + 1, tail=tail(gout))
 
-    # Kiem file thay doi: cam + ngoai allow (so voi truoc khi chay)
-    shutil.rmtree(tmpdir, ignore_errors=True)
-    after = git_changed(cwd)
-    touched = sorted(f for f in after if before.get(f, "new") != file_sig(f))
-    def rel(f):
-        return os.path.relpath(os.path.join(WS, f), cwd).replace("\\", "/")
+        # Kiem file thay doi: cam + ngoai allow (so voi truoc khi chay)
+        shutil.rmtree(tmpdir, ignore_errors=True)
+        after = git_changed_rel(work, root)
+        touched = sorted(f for f in after if before.get(f, "new") != _sig_at(root, f))
+        def rel(f):
+            return os.path.relpath(os.path.join(root, f), work).replace("\\", "/")
 
-    forbidden = [f for f in touched if any(fnmatch.fnmatch(f, p) or fnmatch.fnmatch(os.path.basename(f), p)
-                                           for p in FORBIDDEN)]
-    outside = [f for f in touched if f not in forbidden and
-               (rel(f).startswith("..") or not any(fnmatch.fnmatch(rel(f), p) for p in allow))]
-    result.update(changed=touched, forbidden_touched=forbidden, outside_allow=outside)
-    broken = [f for f in touched if mojibake(os.path.join(WS, f))]
-    if broken:
-        # Loi ma hoa (3 lan 2026-10-27: Codex ghi file ANSI, chu tieng Viet thanh '?') -> khong nhan ket qua
-        result["passed"] = False
-        result["encoding_broken"] = broken
-        result["error"] = "file bi loi ma hoa (chu thanh '?' hoac khong phai UTF-8) – giao lai, nhac ghi UTF-8"
-    if forbidden:
-        result["passed"] = False
-        result["error"] = "executor dong vao file cam – Claude kiem tay, KHONG commit"
-    result["verdict"] = ("ESCALATE" if result.get("escalate") and not forbidden else
-                         "PASS" if result["passed"] and not outside else "WARN" if result["passed"] else "FAIL")
-    if result["verdict"] != "PASS":
-        result["handoff"] = write_handoff(run_dir, result)
-    if result["verdict"] == "ESCALATE" and _events:
-        try:
-            _events.add_approval(f"{result['rounds'][-1].get('executor', 'executor')}: {result.get('escalate', '')}",
-                                 source="delegate", ref=os.path.basename(os.path.normpath(run_dir)))
-        except Exception:
-            pass
-    _event_emit("delegate", "run_end", f"{meta['task']} {result['verdict']}", ref=run_dir,
-                data={"verdict": result["verdict"], "rounds": len(result["rounds"]), "seconds": round(time.time() - started_at)})
-    update_stats(result)                                # ghi thanh tich truoc khi chot result.json
-    json.dump(result, open(os.path.join(run_dir, "result.json"), "w", encoding="utf-8"), indent=1, ensure_ascii=False)
-    print(json.dumps(result, ensure_ascii=False))
-    sys.exit({"FAIL": 1, "ESCALATE": 2}.get(result["verdict"], 0))
+        forbidden = [f for f in touched if any(fnmatch.fnmatch(f, p) or fnmatch.fnmatch(os.path.basename(f), p)
+                                               for p in FORBIDDEN)]
+        claimed = other_runs_claim(touched, run_dir)        # file run KHAC con song dang so huu (khoa allow)
+        outside = [f for f in touched if f not in forbidden and f not in claimed and
+                   (rel(f).startswith("..") or not any(fnmatch.fnmatch(rel(f), p) for p in allow))]
+        result.update(changed=touched, forbidden_touched=forbidden, outside_allow=outside, other_runs=claimed)
+        broken = [f for f in touched if mojibake(os.path.join(root, f))]
+        if broken:
+            # Loi ma hoa (3 lan 2026-10-27: Codex ghi file ANSI, chu tieng Viet thanh '?') -> khong nhan ket qua
+            result["passed"] = False
+            result["encoding_broken"] = broken
+            result["error"] = "file bi loi ma hoa (chu thanh '?' hoac khong phai UTF-8) – giao lai, nhac ghi UTF-8"
+        if forbidden:
+            result["passed"] = False
+            result["error"] = "executor dong vao file cam – Claude kiem tay, KHONG commit"
+        if wt_ws and result["passed"]:                      # PASS: chep file allow tu worktree ve WS (khong git commit)
+            copied, not_synced = sync_back(wt_ws, allow_ws)
+            result["synced"] = copied
+            result["not_synced"] = not_synced
+        result["verdict"] = ("ESCALATE" if result.get("escalate") and not forbidden else
+                             "PASS" if result["passed"] and not outside else "WARN" if result["passed"] else "FAIL")
+        if result["verdict"] != "PASS":
+            result["handoff"] = write_handoff(run_dir, result)
+        if result["verdict"] == "ESCALATE" and _events:
+            try:
+                _events.add_approval(f"{result['rounds'][-1].get('executor', 'executor')}: {result.get('escalate', '')}",
+                                     source="delegate", ref=os.path.basename(os.path.normpath(run_dir)))
+            except Exception:
+                pass
+        _event_emit("delegate", "run_end", f"{meta['task']} {result['verdict']}", ref=run_dir,
+                    data={"verdict": result["verdict"], "rounds": len(result["rounds"]), "seconds": round(time.time() - started_at)})
+        update_stats(result)                                # ghi thanh tich truoc khi chot result.json
+        json.dump(result, open(os.path.join(run_dir, "result.json"), "w", encoding="utf-8"), indent=1, ensure_ascii=False)
+        print(json.dumps(result, ensure_ascii=False))
+        sys.exit({"FAIL": 1, "ESCALATE": 2}.get(result["verdict"], 0))
+    finally:
+        if wt_ws:
+            remove_worktree(wt_ws)
 
 
 if __name__ == "__main__":
