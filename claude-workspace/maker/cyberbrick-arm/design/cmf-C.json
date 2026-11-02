@@ -1,0 +1,86 @@
+{
+ "name": "C",
+ "rules": [
+  {
+   "names": [
+    "Foot_plate"
+   ],
+   "color": "#1E5A45",
+   "finish": "satin"
+  },
+  {
+   "names": [
+    "Base_drum"
+   ],
+   "color": "#F2F2EF",
+   "finish": "satin"
+  },
+  {
+   "names": [
+    "Turntable"
+   ],
+   "color": "#1E5A45",
+   "finish": "satin"
+  },
+  {
+   "names": [
+    "Arm_upper_L",
+    "Arm_upper_R"
+   ],
+   "color": "#1E5A45",
+   "finish": "satin"
+  },
+  {
+   "names": [
+    "Forearm"
+   ],
+   "color": "#1E5A45",
+   "finish": "satin"
+  },
+  {
+   "names": [
+    "Head"
+   ],
+   "color": "#F2F2EF",
+   "finish": "satin"
+  },
+  {
+   "names": [
+    "Finger_*",
+    "Finger_L",
+    "Finger_R",
+    "Finger_D"
+   ],
+   "color": "#E8B33A",
+   "finish": "satin"
+  },
+  {
+   "names": [
+    "Switch_holder"
+   ],
+   "color": "#E8B33A",
+   "finish": "satin"
+  },
+  {
+   "names": [
+    "Worm",
+    "Pinion_24T",
+    "Gearbox_shell"
+   ],
+   "color": "#e8e8e8",
+   "finish": "satin"
+  },
+  {
+   "names": [
+    "CB_*"
+   ],
+   "color": "#2a2a2a",
+   "finish": "matte"
+  }
+ ],
+ "default": {
+  "color": "#cfcfcf",
+  "finish": "satin"
+ },
+ "background": "#ECF1EF"
+}
