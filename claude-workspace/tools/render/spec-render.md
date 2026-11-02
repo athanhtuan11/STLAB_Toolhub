@@ -9,7 +9,7 @@ allow:
 gate: "python -m unittest tests/test_render.py -v"
 timeout_min: 40
 max_rounds: 3
-executor: codex
+executor: opencode
 ---
 
 # Mục tiêu
@@ -51,7 +51,7 @@ Ngắn (tiếng Việt): lệnh, định dạng cmf.json, các view, mẹo (eeve
 - Không tự chọn số khác bảng trên; thiếu gì → `ESCALATE: <cần gì>`.
 
 # Tiêu chí PASS
-Gate exit 0 (5 test). Thời gian 1 lần render eevee 800×600 hai view < 3 phút.
+Gate exit 0 (8 test). Thời gian 1 lần render eevee 800×600 hai view < 3 phút.
 
 # Sửa lần 2 (Claude 2026-11-02) – gate cũ PASS nhưng ảnh SAI
 Render thật line_bot.FCStd ra 1 khối trắng to chiếm gần hết khung (iso) và mặt phẳng xám (side34) – không thấy chi tiết nào.
@@ -65,3 +65,12 @@ Khối trắng = **Cube mặc định của Blender** (`--factory-startup` có s
 Sửa: đầu `blender_scene.py` xóa sạch scene trước khi nhập
 (`for o in list(bpy.data.objects): bpy.data.objects.remove(o, do_unlink=True)`, xóa luôn mesh/material/camera/light mồ côi),
 rồi mới import STL, dựng phông/đèn/camera. Kiểm lại hộp bao chỉ tính trên object STL. Gate 5 test; tự Read ảnh trước khi báo.
+
+# Lần 4 (Tuan duyệt đề xuất #1 + #2, 2026-11-02 – `docs/reports/delegate-pipeline-pain-2026-11.md`)
+1. **Đường dẫn tuyệt đối:** `render.py` đổi `model`, `--cmf`, `--out` sang tuyệt đối theo cwd của lệnh **trước** khi gọi
+   FreeCAD/Blender; scene.json chỉ chứa đường dẫn tuyệt đối; `render.filepath` trong Blender dùng đường dẫn tuyệt đối.
+2. **Viền ảnh = nền:** không để mép phông/sàn tối lọt khung ở mọi view (front ortho đang lộ dải đen dưới đáy): phông cong
+   đủ rộng/cao theo khung camera, hoặc world/film nền đúng màu `background`; 4 cạnh ảnh phải là nền.
+3. **Smooth by Angle:** bỏ vòng `use_smooth=True` cho mọi polygon; dùng "Smooth by Angle" 30° (Blender 4.1+:
+   `bpy.ops.object.shade_smooth_by_angle(angle=…)` hoặc modifier tương đương) để mặt phẳng CAD không loang.
+Gate: 8 test (thêm test_06 viền, test_07 đường dẫn tương đối, test_08 smooth). Tự Read ảnh trước khi báo xong.

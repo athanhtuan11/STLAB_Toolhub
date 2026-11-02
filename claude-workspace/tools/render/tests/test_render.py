@@ -87,5 +87,31 @@ class TRender(unittest.TestCase):
         self.assertTrue(0.15 < obj < 0.85, f"iso: vat the chiem {obj:.2f} khung")
 
 
+    def test_06_vien_anh_la_nen(self):
+        # Claude them 2026-11-02 (de xuat #1): 4 canh anh phai la nen suong - khong lot dai den/mep phong
+        bg = (0xEC, 0xF1, 0xEF)
+        for v in ("iso", "front"):
+            im = Image.open(self.out / f"t-{v}.png").convert("RGB")
+            w, h = im.size
+            pts = [(x, 2) for x in range(0, w, 8)] + [(x, h - 3) for x in range(0, w, 8)] +                   [(2, y) for y in range(0, h, 8)] + [(w - 3, y) for y in range(0, h, 8)]
+            bad = sum(1 for p in pts if sum(abs(a - b) for a, b in zip(im.getpixel(p), bg)) > 60)
+            self.assertLess(bad / len(pts), 0.03, f"{v}: {bad}/{len(pts)} diem vien khong phai nen (dai den?)")
+
+    def test_07_duong_dan_tuong_doi(self):
+        # de xuat #1: --out/--cmf tuong doi phai tinh theo cwd cua lenh, khong ghi ra C:\
+        cmd = [sys.executable, str(RENDER), str(FC), "--cmf", "cmf.json", "--out", "rel_out",
+               "--views", "iso", "--samples", "4", "--size", "320x240", "--name", "r"]
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=900, cwd=str(self.tmp))
+        self.assertEqual(r.returncode, 0, (r.stdout or "")[-1500:] + (r.stderr or "")[-1500:])
+        self.assertTrue((self.tmp / "rel_out" / "r-iso.png").exists(), "anh khong nam trong rel_out/ cua cwd")
+
+    def test_08_smooth_theo_goc(self):
+        # de xuat #2: khong lam min moi polygon (mat phang bi loang) - dung Smooth by Angle (Blender 4.1+)
+        src = (RENDER.parent / "blender_scene.py").read_text(encoding="utf-8")
+        self.assertIn("smooth_by_angle", src.lower().replace(" ", "_"), "chua dung Smooth by Angle")
+        self.assertNotRegex(src, r"for\s+\w+\s+in\s+\w+\.data\.polygons\s*:\s*\w+\.use_smooth\s*=\s*True",
+                            "van bat use_smooth cho moi polygon")
+
+
 if __name__ == "__main__":
     unittest.main()
