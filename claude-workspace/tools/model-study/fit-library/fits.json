@@ -426,6 +426,29 @@
    "confidence": 0.9,
    "verified": false,
    "note": "Lo chu thap keycap: tay dai 4,19, rong 1,25, sau 5,6; ong ngoai O5,71; day ong lui vao trong vay 4,3. Vay day 1,5. Keycap in mieng vay up xuong ban."
+  },
+  {
+   "id": "esp32-cam-case/pcb-pocket",
+   "interface": "esp32-cam-pcb-pocket",
+   "fit": "clearance",
+   "hole_mm": 40.2,
+   "shaft_mm": null,
+   "clearance_mm": null,
+   "nominal_mm": 40.5,
+   "source": {
+    "model": "community/unknown-esp32-cam-case (ESP32_CAM_CASE.step, Tuan tai 2026-11-03, tac gia/license chua ro)",
+    "parts": "S0 day: hoc mach; S1 nap: lo ong kinh",
+    "method": "step-measure + mesh-slice",
+    "ref": "docs/research-notes/esp32-s3-cam-hardware.md muc 6"
+   },
+   "print": {
+    "printer": "chua ro",
+    "material": "chua ro",
+    "proven": "khong ro da in that"
+   },
+   "confidence": 0.6,
+   "verified": false,
+   "note": "Hoc mach 40,2 x 27,2 mm (goc R1), mach tua go z+4,9 tu day trong, khong gian tren mach toi nap 7,7 mm. Hoc NHO hon 40,5 datasheet -> mach thuc co the ~40,0; khong dung lam mac dinh. Vo chi cho ESP32-CAM KHONG co de nap (duoi mach chi ~4 mm). Lo ong kinh nap O8,3 tai 9,4 mm tu canh ngan, giua chieu rong."
   }
  ]
 }

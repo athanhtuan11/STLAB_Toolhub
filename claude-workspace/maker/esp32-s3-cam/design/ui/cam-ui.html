@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STLab Cam</title>
+<!-- Mockup tĩnh bước 0 (esp32-s3-cam). Dữ liệu mẫu cố định; ?theme=dark đổi màu tối; ?temp=67.8 xem trạng thái cảnh báo.
+     Màu lấy từ studio/design/tokens.json (TODO: sinh tự động bằng build_tokens.py khi nhúng vào firmware).
+     Không mạng ngoài, không framework. Khi nhúng flash: bỏ @font-face (dùng font hệ thống) để nhẹ. -->
+<style>
+@font-face{font-family:"Be Vietnam Pro";font-weight:400;src:url("../../../../studio/design/fonts/BeVietnamPro-Regular.ttf")}
+@font-face{font-family:"Be Vietnam Pro";font-weight:600;src:url("../../../../studio/design/fonts/BeVietnamPro-SemiBold.ttf")}
+@font-face{font-family:"Be Vietnam Pro";font-weight:700;src:url("../../../../studio/design/fonts/BeVietnamPro-Bold.ttf")}
+:root{
+  --bg:#ECF1EF;--card:#FBFCFB;--text:#16231D;--muted:#56655E;--line:#D3DDD8;--accent:#1E5A45;--accent-soft:#DCEBE4;
+  --hl:#E8B33A;--on-accent:#fff;--ok:#257A45;--warn:#9A6400;--err:#B3341F;--off:#9AA7A1;--video-bg:#0d1411;
+  --r-c:8px;--r-card:12px;
+}
+html.dark{
+  --bg:#101714;--card:#18211D;--text:#E3EBE7;--muted:#9BABA3;--line:#2A3631;--accent:#6CC19B;--accent-soft:#1C3329;
+  --hl:#F0C152;--on-accent:#10281F;--ok:#5CCB86;--warn:#E8B33A;--err:#F07A63;--off:#56635D;--video-bg:#070b09;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:400 15px/1.45 "Be Vietnam Pro",system-ui,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1240px;margin:0 auto;padding:16px 24px 24px}
+header{display:flex;align-items:center;gap:14px;padding:6px 0 16px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:20px;letter-spacing:.04em}
+.logo i{display:block;width:6px;height:24px;background:var(--hl);border-radius:2px}
+.title{font-weight:600;color:var(--muted);font-size:15px}
+.spacer{flex:1}
+.pill{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-weight:600;font-size:14px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--ok)}
+.dot.warn{background:var(--warn)}.dot.err{background:var(--err)}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);padding:16px}
+.card h2{margin:0 0 10px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.video{position:relative;border-radius:var(--r-card);overflow:hidden;background:var(--video-bg);aspect-ratio:4/3;border:1px solid var(--line)}
+.video svg{display:block;width:100%;height:100%}
+.badge{position:absolute;top:12px;left:12px;display:flex;gap:8px;align-items:center;background:rgba(10,16,13,.72);color:#fff;border-radius:999px;padding:5px 12px;font-weight:600;font-size:13px}
+.badge b{width:8px;height:8px;border-radius:50%;background:#ff5a4d;display:block}
+.badge2{position:absolute;right:12px;bottom:12px;background:rgba(10,16,13,.72);color:#fff;border-radius:8px;padding:4px 10px;font-size:13px;font-variant-numeric:tabular-nums}
+.tools{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center}
+.btn{min-height:46px;padding:0 18px;border-radius:var(--r-c);border:1px solid var(--line);background:var(--card);color:var(--text);font:600 15px "Be Vietnam Pro",system-ui,sans-serif;display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn:focus-visible,select:focus-visible{outline:3px solid var(--hl);outline-offset:2px}
+.btn svg{width:20px;height:20px;flex:none}
+.sw{display:inline-flex;align-items:center;gap:10px;min-height:46px;padding:0 14px;border:1px solid var(--line);border-radius:var(--r-c);background:var(--card);font-weight:600}
+.sw s{display:block;width:40px;height:24px;border-radius:999px;background:var(--off);position:relative;text-decoration:none}
+.sw s:after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.15s}
+.sw.on s{background:var(--accent)}.sw.on s:after{left:19px}
+select{min-height:46px;padding:0 12px;border-radius:var(--r-c);border:1px solid var(--line);background:var(--card);color:var(--text);font:600 15px "Be Vietnam Pro",system-ui,sans-serif}
+.side{display:grid;gap:16px}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0;padding-top:0}
+.row span{color:var(--muted)}
+.row strong{font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.big{font-size:30px;font-weight:700;line-height:1.1}
+.status{display:flex;align-items:center;gap:8px;font-weight:600;margin-top:2px}
+.status.ok{color:var(--ok)}.status.warn{color:var(--warn)}.status.err{color:var(--err)}
+.bar{height:8px;border-radius:999px;background:var(--accent-soft);margin:10px 0 4px;position:relative;overflow:hidden}
+.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--ok)}
+.bar.warn i{background:var(--warn)}.bar.err i{background:var(--err)}
+.scale{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.note{margin-top:10px;padding:10px 12px;border-radius:var(--r-c);background:var(--accent-soft);font-size:13px}
+.note.warn{border-left:4px solid var(--warn)}.note.err{border-left:4px solid var(--err)}
+.copy{display:inline-flex;align-items:center;min-height:36px;padding:0 10px;border-radius:var(--r-c);border:1px solid var(--line);color:var(--accent);font-weight:600;font-size:14px}
+footer{margin-top:18px;color:var(--muted);font-size:13px;display:flex;gap:16px;flex-wrap:wrap}
+.signal{display:inline-flex;align-items:flex-end;gap:2px;height:16px;margin-right:8px;vertical-align:-2px}
+.signal u{display:block;width:4px;background:var(--ok);border-radius:1px;text-decoration:none}
+.signal u.off{background:var(--off);opacity:.5}
+@media (max-width:900px){
+  .wrap{padding:12px 14px 20px}
+  .grid{grid-template-columns:1fr}
+  .title,.hide-m{display:none}
+  .tools .btn.primary{flex:1 1 100%}
+  .tools .btn,.tools .sw,.tools select{flex:1 1 calc(50% - 5px);justify-content:center}
+  .tools select{width:100%}
+  .big{font-size:26px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><i></i>STLAB</div>
+    <div class="title">Camera ESP32-S3 · OV3660</div>
+    <div class="spacer"></div>
+    <div class="pill"><span class="dot" id="dot"></span><span id="pillt">Đang trực tiếp</span></div>
+  </header>
+
+  <div class="grid">
+    <main>
+      <div class="video" role="img" aria-label="Hình trực tiếp từ camera (ảnh minh họa)">
+        <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <defs>
+            <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfd9d4"/><stop offset="1" stop-color="#b9c6c0"/></linearGradient>
+            <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe6ee"/><stop offset="1" stop-color="#e7f1ea"/></linearGradient>
+            <linearGradient id="desk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b48a5e"/><stop offset="1" stop-color="#8f6a44"/></linearGradient>
+          </defs>
+          <rect width="800" height="600" fill="url(#wall)"/>
+          <rect x="70" y="60" width="300" height="250" rx="6" fill="#f4f5f3"/>
+          <rect x="82" y="72" width="276" height="226" fill="url(#sky)"/>
+          <g fill="#2f6b52"><path d="M110 298 l28 -90 l28 90z"/><path d="M160 298 l34 -120 l34 120z"/><path d="M230 298 l26 -80 l26 80z"/><path d="M290 298 l30 -100 l30 100z"/></g>
+          <rect x="217" y="72" width="6" height="226" fill="#f4f5f3"/><rect x="82" y="182" width="276" height="6" fill="#f4f5f3"/>
+          <rect x="440" y="120" width="230" height="140" rx="4" fill="#f4f5f3"/><rect x="452" y="132" width="206" height="116" fill="#dfe8e3"/>
+          <circle cx="520" cy="190" r="30" fill="#1E5A45"/><rect x="560" y="165" width="80" height="12" rx="3" fill="#E8B33A"/><rect x="560" y="190" width="60" height="9" rx="3" fill="#a9b8b1"/>
+          <rect x="0" y="420" width="800" height="180" fill="url(#desk)"/>
+          <rect x="0" y="420" width="800" height="8" fill="#7d5b3a"/>
+          <g><rect x="110" y="360" width="150" height="90" rx="6" fill="#2b3036"/><rect x="118" y="368" width="134" height="70" rx="3" fill="#3f6e9e"/><rect x="150" y="450" width="70" height="10" rx="3" fill="#2b3036"/></g>
+          <g><rect x="540" y="380" width="70" height="70" rx="8" fill="#e9ecea"/><circle cx="575" cy="410" r="10" fill="#1E5A45"/><rect x="552" y="428" width="46" height="6" rx="2" fill="#E8B33A"/></g>
+          <g><rect x="660" y="400" width="44" height="50" rx="4" fill="#c2577e"/><path d="M682 400 q-30 -50 -4 -80 q12 30 4 80z" fill="#4f6b3a"/><path d="M684 400 q30 -40 14 -70 q-18 26 -14 70z" fill="#2f6b52"/></g>
+        </svg>
+        <div class="badge"><b></b>TRỰC TIẾP</div>
+        <div class="badge2">800 × 600 · 18 fps</div>
+      </div>
+      <div class="tools">
+        <button class="btn primary" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Chụp ảnh</button>
+        <button class="btn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>Tải ảnh</button>
+        <label class="sw on" id="sw"><s></s>Lật ảnh 180°</label>
+        <select aria-label="Độ phân giải"><option>QVGA 320 × 240</option><option>VGA 640 × 480</option><option selected>SVGA 800 × 600</option><option>XGA 1024 × 768</option><option>UXGA 1600 × 1200</option></select>
+      </div>
+      <footer><span class="hide-m">Ảnh trên là minh họa. Luồng thật: /stream · ảnh tĩnh: /capture</span></footer>
+    </main>
+
+    <aside class="side">
+      <section class="card">
+        <h2>Kết nối</h2>
+        <div class="row"><span>Wi-Fi nhà</span><strong>VIETTEL_Suong</strong></div>
+        <div class="row"><span>Tín hiệu</span><strong><span class="signal" aria-hidden="true"><u style="height:5px"></u><u style="height:8px"></u><u style="height:12px"></u><u style="height:16px"></u></span>−49 dBm · Tốt</strong></div>
+        <div class="row"><span>Địa chỉ IP</span><strong>192.168.1.127</strong></div>
+        <div class="row"><span>Tên truy cập</span><strong><span class="copy">stlab-cam.local</span></strong></div>
+      </section>
+      <section class="card">
+        <h2>Chip</h2>
+        <div class="big" id="temp">53,8 °C</div>
+        <div class="status ok" id="tst"><span class="dot" id="tdot"></span><span id="ttxt">Bình thường</span></div>
+        <div class="bar" id="tbar"><i id="tfill" style="width:54%"></i></div>
+        <div class="scale"><span>30 °C</span><span>60 °C</span><span>80 °C</span></div>
+        <div class="note warn" id="tnote" style="display:none"></div>
+        <div class="row" style="margin-top:12px"><span>Tốc độ hình</span><strong>18 fps</strong></div>
+        <div class="row"><span>Độ phân giải</span><strong>SVGA 800 × 600</strong></div>
+      </section>
+    </aside>
+  </div>
+</div>
+<script>
+(function(){
+  var q=new URLSearchParams(location.search);
+  if(q.get('theme')==='dark')document.documentElement.classList.add('dark');
+  if(q.get('flip')==='0')document.getElementById('sw').classList.remove('on');
+  var t=parseFloat(q.get('temp')||'53.8'),cls='ok',txt='Bình thường',note='';
+  if(t>=70){cls='err';txt='Quá nóng';note='Chip quá nóng. Rút nguồn, để nguội, kiểm tra khe thoát nhiệt có bị che không.'}
+  else if(t>=60){cls='warn';txt='Hơi nóng';note='Chip đang nóng. Đặt camera nơi thoáng, đừng che khe trên và khe dưới thân máy.'}
+  var s=(t+'').replace('.',',');
+  document.getElementById('temp').textContent=s+' °C';
+  var st=document.getElementById('tst');st.className='status '+cls;
+  document.getElementById('ttxt').textContent=txt;
+  document.getElementById('tbar').className='bar '+(cls==='ok'?'':cls);
+  document.getElementById('tfill').style.width=Math.max(4,Math.min(100,(t-30)/50*100))+'%';
+  var d=document.getElementById('tdot');d.style.background='var(--'+cls+')';
+  if(note){var n=document.getElementById('tnote');n.style.display='block';n.className='note '+cls;n.textContent=note;
+    document.getElementById('dot').className='dot '+cls;document.getElementById('pillt').textContent=txt+' · '+s+' °C'}
+})();
+</script>
+</body>
+</html>

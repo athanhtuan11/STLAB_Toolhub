@@ -66,3 +66,35 @@ Codex tra web; Claude chưa mở từng link. Dự án: maker/esp32-s3-cam.
 - https://www.printables.com/model/142405-esp32-cam-indoor-and-outdoor-cases
 - https://www.printables.com/model/1749497-esp32-cam-no-cut-case-usb-c
 - MakerWorld: TODO.
+
+## 5. Kích thước cơ khí (tra cộng đồng 2026-11-03, Claude mở nguồn; Tuan không đo – dùng cho CAD giả định)
+
+- Mạch của Tuan thuộc dòng **"ESP32-S3-CAM" dạng ESP32-CAM**: 2 hàng header 8 chân, khe FPC 24 chân ở giữa, camera gập
+  nằm trên khe thẻ TF, chồng lên **đế nạp kiểu ESP32-CAM-MB** (CH340 + cổng USB + nút IO0/RST). Prusa ghi: mạch là
+  "bản sao kích thước của AI-Thinker ESP32-CAM", "không có tài liệu hay sơ đồ chính thức"; sơ đồ chân header:
+  trái 5V, GND, GPIO14, 47, 38, 39, 40, 41; phải 3V3, GND, GPIO0, 20, 19, RX, TX, RESET; TF dùng GPIO39/40/41;
+  status LED GPIO2, flash LED GPIO48 (theo Prusa – mạch Tuan đèn xanh là WS2812; GPIO48 khớp larryli, chưa thử).
+  https://github.com/prusa3d/Prusa-Firmware-ESP32-Cam/blob/master/doc/ESP32-S3-CAM/README.md
+- **AI-Thinker ESP32-CAM: 27 × 40,5 × 4,5 mm (±0,2 mm), 10 g** – theo datasheet V1.0 (trích lại bởi SunFounder, cnx-software;
+  Claude chưa đọc được trực tiếp PDF): https://docs.sunfounder.com/projects/zeus-car-dev/en/latest/hardware/cpn_esp_32_cam.html ,
+  https://www.cnx-software.com/2018/09/30/esp32-cam-esp32-camera-board/
+- Header bước 2,54 mm (chuẩn, thấy trên ảnh). Khoảng cách 2 hàng: **ước ~22,9 mm từ ảnh Prusa** (≈ 0,9" = 22,86 mm) – ƯỚC, chưa có nguồn số.
+- **Đế nạp ESP32-CAM-MB: ~40 × 27 mm, dày ~10 mm (tính cả header cái)** – số người bán, lệch nhau (39,8–40,5 × 25–27; bản USB-C ~48 mm).
+  https://probots.co.in/esp32-cam-mb-micro-usb-programmer-shield-type-a-ch340-serial-downloader.html ,
+  https://circuit.rocks/products/esp32-cam-usb-programmer-esp32-cam-mb-ov2640-2mp-wi-fi-ble-usb-c-ch340-8mb-psram
+- **Camera OV3660 24 chân loại chung: đầu camera ~8,5 × 8,5 × 4,2 mm, FPC 75 mm, FOV 66–160° tùy loại** – manual người bán,
+  không phải đúng mã WS-OV3660-8225N-40027 (mã này không tìm thấy): https://manuals.plus/ae/1005006848295902
+- Vỏ cộng đồng để đối chiếu khi CAD: MakerWorld 2688073 (ESP32-S3-CAM + OV3660 ống kính lớn – không mở được, 403),
+  Printables "ESP32 CAM Case" ac1dburn https://www.printables.com/model/568613-esp32-cam-case-by-ac1dburn
+- **Gợi ý cho CAD giả định:** khối mạch + đế nạp 27 × 40,5 mm, cao tổng ~TODO (4,5 mạch + header + đế ~10 → ước 20–25 mm
+  tính cả camera gập); cổng USB ở cạnh ngắn của đế nạp (theo ảnh Prusa). Dung sai lắp: khe 0,3–0,5 mm/bên + fit-library.
+
+## 6. Vỏ cộng đồng ESP32_CAM_CASE.step (Tuan tải 2026-11-03, tác giả/license chưa rõ → chỉ đọc số)
+
+- File: `community/unknown-esp32-cam-case/` (không commit). 2 part: đáy 58,65 × 29,82 × 14,15 mm, nắp 58,65 × 29,82 × 10,45 mm.
+- Hốc mạch **40,2 × 27,2 mm** (góc R1), mạch tựa gờ; dưới mạch chỉ ~4 mm; từ mặt mạch tới mặt dưới nắp 7,7 mm.
+  Lỗ ống kính trên nắp Ø8,3 mm, tâm cách cạnh ngắn hốc 9,4 mm, giữa chiều rộng. Ngăn phụ 17 mm + lỗ hông Ø6,5 mm.
+- **Kết luận: vỏ này cho ESP32-CAM đứng một mình (tháo đế nạp), KHÔNG vừa bộ 2 tầng của Tuan** (shield ESP32-S3-CAM cắm
+  chồng lên đế nạp CH340 + USB + nút IO0/RST). Dùng được: kích thước hốc mạch, vị trí ống kính.
+- Đế nạp đi kèm mạch S3: ảnh Prusa (board2.png) cho thấy đế cùng bề rộng, cổng USB + nút RST ở cạnh ngắn, IO0 cạnh bên.
+  Kích thước đế + khoảng chồng 2 tầng: chưa có nguồn số → CAD dùng ước ~40 × 27 × 10 mm (người bán) và in thử khối kiểm.

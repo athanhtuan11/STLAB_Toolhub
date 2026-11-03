@@ -41,6 +41,11 @@ Dự án Tuan bắt đầu 2026-11-03. Mạch **ESP32-S3-CAM N16R8** (16 MB flas
   `CONFIG_SCCB_HARDWARE_I2C_DRIVER_LEGACY=y` (IDF 5.5 cấm trộn 2 driver → abort khởi động).
 
 ## Trạng thái
+- 2026-11-03: **firmware chính `firmware/cam` v0.1.0** chạy trên mạch thật – test_cam.py PASS (xem + chụp cùng lúc, đóng tab
+  đột ngột ×5 không kẹt, tối đa 2 người xem, /control đổi độ phân giải), chạy video 20 phút: 0 lỗi, 10 fps, nhiệt tăng
+  65,8 → 69,8 °C rồi tự hạ 5 fps (về 66,8 °C). **Mạch trần đã gần 70 °C → vỏ bắt buộc khe đối lưu; đo lại khi lắp vỏ.**
+  Ảnh nằm nghiêng 90° (camera xoay 90° so với mạch) – chốt chiều khi CAD. Dáng: 2 mẫu – để bàn (D, đế xoay) + treo tường
+  (W), chung hộp + khung U, tilt vít M3 (design/). Thứ tự Tuan chốt: code → test → mới CAD (số mạch lấy cộng đồng).
 - 2026-11-03: Wi-Fi nhà chạy trên mạch thật: vào `VIETTEL_Suong` (2,4 GHz) IP 192.168.1.127, RSSI −46…−58 dBm, reset tự vào lại
   ~6,5 s, mDNS `stlab-cam.local` OK, stream SVGA ~18 fps (~570 KB/s) qua mạng nhà. Tiếp: Tuan xem hình → nhiệt khi stream lâu
   → bước 0 dáng vỏ + UI web.

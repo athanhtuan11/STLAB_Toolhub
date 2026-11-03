@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STLab Cam</title>
+<style>
+body{font-family:sans-serif;margin:0;background:#111;color:#eee}
+header{padding:8px 12px;background:#1d3557;font-weight:bold}
+main{display:flex;flex-wrap:wrap;gap:12px;padding:12px}
+#video{max-width:100%;width:640px;background:#000;min-height:240px}
+.box{background:#222;padding:10px;border-radius:6px;min-width:260px}
+label{display:block;margin:6px 0 2px}
+select,input[type=range],button{width:100%}
+button{padding:8px;margin-top:8px;font-size:15px}
+table{border-collapse:collapse;font-size:13px}
+td{padding:2px 8px 2px 0}
+.nong{color:#ff5252;font-weight:bold}
+</style>
+</head>
+<body>
+<header>STLab Cam – camera giám sát</header>
+<main>
+<div>
+<img id="video" alt="Đang chờ video...">
+<div style="font-size:12px;color:#aaa">Tối đa 2 người xem cùng lúc. Đóng tab là tự giải phóng.</div>
+</div>
+<div class="box">
+<button id="btn-chup">Chụp ảnh</button>
+<label>Độ phân giải
+<select id="framesize">
+<option value="6">QVGA 320x240</option>
+<option value="10">VGA 640x480</option>
+<option value="11">SVGA 800x600</option>
+<option value="12">XGA 1024x768</option>
+<option value="13">HD 1280x720</option>
+<option value="15">UXGA 1600x1200</option>
+<option value="19">QXGA 2048x1536</option>
+</select></label>
+<label><input type="checkbox" id="vflip"> Lật dọc</label>
+<label><input type="checkbox" id="hmirror"> Lật ngang</label>
+<label>Độ sáng <span id="v-brightness"></span><input type="range" id="brightness" min="-2" max="2" step="1"></label>
+<label>Tương phản <span id="v-contrast"></span><input type="range" id="contrast" min="-2" max="2" step="1"></label>
+<label>Tốc độ khung hình (fps) <span id="v-fps"></span><input type="range" id="fps" min="1" max="25" step="1"></label>
+</div>
+<div class="box">
+<table id="tt"></table>
+</div>
+</main>
+<script>
+var $=function(i){return document.getElementById(i)};
+var host=location.hostname;
+function startVideo(){$('video').src=location.protocol+'//'+host+':81/stream?t='+Date.now();}
+window.addEventListener('pagehide',function(){$('video').src='';});
+$('video').onerror=function(){setTimeout(startVideo,3000);};
+$('btn-chup').onclick=function(){window.open('/capture?t='+Date.now(),'_blank');};
+function ctl(v,x){return fetch('/control?var='+v+'&val='+x).then(function(r){if(!r.ok){alert('Giá trị không hợp lệ');}});}
+$('framesize').onchange=function(){ctl('framesize',this.value);};
+['vflip','hmirror'].forEach(function(k){$(k).onchange=function(){ctl(k,this.checked?1:0);};});
+['brightness','contrast','fps'].forEach(function(k){
+  $(k).oninput=function(){$('v-'+k).textContent=this.value;};
+  $(k).onchange=function(){ctl(k,this.value);};
+});
+var fsMap={QVGA:6,VGA:10,SVGA:11,XGA:12,HD:13,UXGA:15,QXGA:19};
+var first=true;
+function refresh(){
+  fetch('/status').then(function(r){return r.json();}).then(function(s){
+    if(first){
+      first=false;
+      $('framesize').value=fsMap[s.framesize];
+      $('vflip').checked=!!s.vflip;$('hmirror').checked=!!s.hmirror;
+      ['brightness','contrast'].forEach(function(k){$(k).value=s[k];$('v-'+k).textContent=s[k];});
+      $('fps').value=s.fps_cai;$('v-fps').textContent=s.fps_cai;
+    }
+    var rows=[['Nhiệt độ chip',s.nhiet_do_chip+' °C'+(s.nong?' (NÓNG - đã hạ fps)':''),s.nong],
+      ['FPS cài / thực',s.fps_cai+' / '+s.fps_thuc],['Người xem',s.so_nguoi_xem],
+      ['Độ phân giải',s.framesize+' (chất lượng '+s.quality+')'],
+      ['Chạy được',s.uptime_s+' s'],['Heap trống',s.heap_free],['PSRAM trống',s.psram_free],
+      ['Khung lỗi / khởi động lại cam',s.frame_loi+' / '+s.cam_reinit],
+      ['Wi-Fi nhà',s.sta_connected?(s.sta_ssid+' '+s.sta_ip+' ('+s.sta_rssi+' dBm)'):'chưa kết nối'],
+      ['Tên mDNS',s.mdns],['AP dự phòng',s.ap_ssid]];
+    $('tt').innerHTML=rows.map(function(r){return '<tr><td>'+r[0]+'</td><td'+(r[2]?' class="nong"':'')+'>'+r[1]+'</td></tr>';}).join('');
+  }).catch(function(){});
+}
+startVideo();refresh();setInterval(refresh,2000);
+</script>
+</body>
+</html>
