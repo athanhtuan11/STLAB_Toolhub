@@ -1,0 +1,54 @@
+{
+  "_ghi_chu": [
+    "Mau D (de ban) esp32-s3-cam - Claude chot 2026-11-03. Don vi mm. Truc: X phai, Y ra SAU (mat truoc o y nho), Z len; goc = tam day De.",
+    "Khoi mach = bo 2 tang (shield ESP32-S3-CAM cam tren de nap CH340): so cong dong research-notes esp32-s3-cam-hardware.md muc 5-6, CHUA do that -> in Coupon truoc.",
+    "Khe theo fit-library: chot xoay rotate-joint-8.5mm (tipflow, khe 0,4), vit M2.5 tu ren 2,2 / xuyen 2,8 (mec1). M3 chua co trong kho -> lay tu Coupon (3 co).",
+    "M3: lo xuyen danh nghia ISO 273 trung binh 3,4; dai oc ISO 4032 M3 s=5,5 m=2,4. Gia tri dung = co Coupon Tuan chon sau khi in."
+  ],
+  "mach": {
+    "pcb_w": 27.0, "pcb_h": 40.5, "pcb_t": 1.6,
+    "khe_moi_ben": 0.3,
+    "stack_t": 22.0,
+    "cam_cao_tren_pcb": 6.0,
+    "ong_kinh_cach_canh_tren": 9.4,
+    "_nguon": "27 x 40,5 ESP32-CAM datasheet (trich SunFounder/cnx); stack_t 22 = uoc 4,5 + de nap ~10 + header/linh kien; cam_cao 6 = dau camera 4,2 + khe TF ~1,8 (uoc); ong kinh 9,4 tu vo cong dong ESP32_CAM_CASE"
+  },
+  "than": {"w": 56.0, "h": 64.0, "d": 37.0, "r_goc": 5.0, "thanh": 2.0},
+  "mat_truoc": {
+    "t": 3.0,
+    "lo_ong_kinh_d": 8.3,
+    "vong_trang_tri_d": 26.0, "vong_trang_tri_sau": 0.6,
+    "den_d": 3.4, "den_da_mong": 0.5, "den_cach_nhau": 7.0, "den_duoi_ong_kinh": 16.0,
+    "chu": "STLAB", "chu_cao": 4.6, "chu_sau": 0.6, "chu_duoi_den": 7.0,
+    "font": "C:/Windows/Fonts/arialbd.ttf",
+    "vit_m25_xuyen": 2.8, "vit_m25_tu_ren": 2.2, "vit_cach_canh": 5.0, "tru_vit_d": 6.0, "tru_vit_sau": 8.0
+  },
+  "khe_nhiet": {"so_khe": 6, "rong": 2.0, "dai": 18.0, "buoc": 4.0},
+  "usb": {"o_rong_x": 16.0, "o_sau_y": 12.0, "bo_mep": 1.5},
+  "truc_nghieng": {
+    "cao_tam_tren_dia": 52.0,
+    "m3_xuyen": 3.4, "dai_oc_s": 5.8, "dai_oc_sau": 2.6,
+    "tru_than_d": 12.0, "tru_than_dai": 3.5,
+    "loc_dau_vit_d": 6.2, "loc_dau_vit_sau": 2.0,
+    "vit": "M3x12 dau tru (DIN 912) hoac dau tron",
+    "khe_tay_than": 0.6
+  },
+  "khung_u": {"tay_day": 7.0, "tay_sau_y": 20.0, "tay_cao": 70.0},
+  "de_xoay": {
+    "de_d": 86.0, "de_cao": 10.0, "lom_d": 77.0, "lom_sau": 4.0,
+    "dia_d": 76.0, "dia_day": 6.0,
+    "chot_d": 8.0, "lo_dia_d": 8.4,
+    "loc_dia_d": 15.0, "loc_dia_sau": 2.5,
+    "nap_chot_d": 14.0, "nap_chot_day": 2.0, "khe_doc": 0.2,
+    "lo_khoa_d": 4.2, "lo_khoa_dau_d": 8.5, "lo_khoa_cach": 58.0,
+    "vung_3m_d": 50.0, "vung_3m_sau": 0.6
+  },
+  "coupon": {
+    "m3_xuyen": [3.3, 3.4, 3.5],
+    "dai_oc_s": [5.6, 5.8, 6.0],
+    "lo_ong_kinh": [8.3, 8.6, 9.0],
+    "den_da_mong": [0.4, 0.6],
+    "chot_lo": [[8.0, 8.4]],
+    "khoi_mach_khe": 0.3
+  }
+}

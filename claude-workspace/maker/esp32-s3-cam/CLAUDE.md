@@ -41,6 +41,11 @@ Dự án Tuan bắt đầu 2026-11-03. Mạch **ESP32-S3-CAM N16R8** (16 MB flas
   `CONFIG_SCCB_HARDWARE_I2C_DRIVER_LEGACY=y` (IDF 5.5 cấm trộn 2 driver → abort khởi động).
 
 ## Trạng thái
+- 2026-11-03: **CAD mẫu D** `freecad/` (params.json + scripts/build_cam_d.py + gate tests/test_build.py 11/11 PASS):
+  Body, Bezel, U_frame (liền đĩa xoay), Base, Pin_cap + Coupon/Coupon_ring; STL hướng in ở `freecad/scripts/stl/`.
+  Số mạch lấy cộng đồng (chưa đo) → **in Coupon trước** (M3 3,3/3,4/3,5; đai ốc 5,6/5,8/6,0; ống kính 8,3/8,6/9,0; da đèn
+  0,4/0,6; chốt Ø8 + vòng 8,4; khung thử mạch 27,6 × 41,1) → Tuan chọn cỡ → sửa params → in vỏ. Vít: 4 × M2.5 tự ren (mặt trước),
+  2 × M3×12 + đai ốc (trục nghiêng), 1 × M2.5 (nắp chốt). Vị trí đèn trên mạch thật: TODO.
 - 2026-11-03: **firmware chính `firmware/cam` v0.1.0** chạy trên mạch thật – test_cam.py PASS (xem + chụp cùng lúc, đóng tab
   đột ngột ×5 không kẹt, tối đa 2 người xem, /control đổi độ phân giải), chạy video 20 phút: 0 lỗi, 10 fps, nhiệt tăng
   65,8 → 69,8 °C rồi tự hạ 5 fps (về 66,8 °C). **Mạch trần đã gần 70 °C → vỏ bắt buộc khe đối lưu; đo lại khi lắp vỏ.**
