@@ -218,7 +218,7 @@
       </details>
 
       <section class="card" style="margin-top:16px">
-        <h2>Lịch sử báo giá</h2>
+        <h2>Lịch sử báo giá <a href="/quote/catalog" style="font-size:13px;font-weight:400;margin-left:10px">Danh mục mẫu →</a></h2>
         <table class="hist">
           <thead><tr><th>Số</th><th>Ngày</th><th>Khách</th><th>Tổng</th></tr></thead>
           <tbody>
@@ -905,7 +905,7 @@
     const r = await fetch("/api/quote/save", { method: "POST", headers: HJ, body: JSON.stringify(body) });
     const j = await r.json();
     if (!r.ok) { toast(false, j.error || "Không lưu được báo giá"); return; }
-    toast(true, "Đã lưu " + j.number);
+    toast(true, "Đã lưu " + j.number + (j.catalog_id ? " · đã cập nhật Danh mục mẫu" : ""));
     window.open("/quote/" + j.id, "_blank");
   });
 

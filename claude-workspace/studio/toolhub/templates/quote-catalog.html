@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Danh mục mẫu{% endblock %}
+{% block content %}
+<style>
+#cat-page .head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 14px; }
+#cat-page .head h1 { margin: 0; font-size: 20px; }
+#cat-page .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+#cat-page .item { border: 1px solid var(--line); border-radius: var(--r-card); background: var(--card); padding: 10px;
+  display: flex; flex-direction: column; gap: 8px; }
+#cat-page .ph { width: 100%; aspect-ratio: 16 / 9; border-radius: 6px; background: var(--bg); overflow: hidden;
+  display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 13px; }
+#cat-page .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+#cat-page label.field { display: flex; flex-direction: column; gap: 3px; font-size: 12px; color: var(--muted); }
+#cat-page input[type=text], #cat-page input[type=number], #cat-page textarea { font: inherit; font-size: 14px;
+  padding: 5px 8px; border: 1px solid var(--line); border-radius: var(--r-control); background: var(--bg);
+  color: var(--text); width: 100%; box-sizing: border-box; }
+#cat-page textarea { min-height: 44px; resize: vertical; }
+#cat-page .row3 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+#cat-page .small { font-size: 12px; color: var(--muted); }
+#cat-page .err { color: var(--err); font-size: 13px; }
+#cat-page .acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+#cat-page .acts label { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+#cat-page button.x { color: var(--err); }
+</style>
+<div id="cat-page">
+  <div class="head">
+    <h1>Danh mục mẫu</h1>
+    <a class="primary" href="/quote/catalog.xlsx">Xuất Excel (tất cả mẫu)</a>
+    <button type="button" id="add-manual">Thêm mẫu tay</button>
+    <a href="/quote">← Về Báo giá</a>
+  </div>
+  <p class="small">Lưu báo giá là mẫu tự vào đây · ảnh tự ghép phông STLab</p>
+  <div class="grid" id="grid">
+    {% for it in items %}
+    <div class="item" data-id="{{ it.id }}">
+      <div class="ph">{% if it.photo %}<img src="/quote/catalog/{{ it.id }}/photo?v={{ it.updated_at }}" alt="">{% else %}Chưa có ảnh{% endif %}</div>
+      <label class="field">Tên mẫu<input type="text" data-f="name" value="{{ it.name or '' }}"></label>
+      <div class="row3">
+        <label class="field">Khối lượng (g)<input type="number" step="any" data-f="grams" value="{{ '' if it.grams is none else it.grams }}"></label>
+        <label class="field">Giá lẻ (đ)<input type="number" step="any" data-f="unit_price" value="{{ '' if it.unit_price is none else it.unit_price }}"></label>
+        <label class="field">Giá sỉ 1 (đ)<input type="number" step="any" data-f="price_bulk1" value="{{ '' if it.price_bulk1 is none else it.price_bulk1 }}"></label>
+        <label class="field">Giá sỉ 2 (đ)<input type="number" step="any" data-f="price_bulk2" value="{{ '' if it.price_bulk2 is none else it.price_bulk2 }}"></label>
+      </div>
+      <label class="field">Ghi chú<textarea data-f="note">{{ it.note or '' }}</textarea></label>
+      {% if it.quote_id %}<div class="small">Từ báo giá <a href="/quote/{{ it.quote_id }}" target="_blank">{{ it.quote_id }}</a></div>{% endif %}
+      <div class="acts">
+        <button type="button" class="upload">Tải ảnh chụp</button>
+        <input type="file" accept="image/*" hidden>
+        <label><input type="checkbox" class="keep"> Giữ nguyên ảnh (đã có phông)</label>
+        <button type="button" class="x del">Xóa</button>
+      </div>
+      <div class="err msg"></div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<script>
+(function () {
+  const HJ = { "X-Studio": "1", "Content-Type": "application/json" };
+  const grid = document.getElementById("grid");
+  const FIELDS = ["name", "grams", "unit_price", "price_bulk1", "price_bulk2", "note"];
+
+  function setMsg(card, text) { card.querySelector(".msg").textContent = text || ""; }
+
+  function bind(card) {
+    const id = card.dataset.id;
+    let timer = null;
+    const save = async () => {
+      const body = {};
+      FIELDS.forEach(f => { body[f] = card.querySelector('[data-f="' + f + '"]').value; });
+      try {
+        const r = await fetch("/api/quote/catalog/" + id, { method: "POST", headers: HJ, body: JSON.stringify(body) });
+        const j = await r.json();
+        if (!r.ok) { setMsg(card, j.error || "Không lưu được"); return; }
+        setMsg(card, "");
+      } catch (e) { setMsg(card, "Không lưu được: " + e); }
+    };
+    card.querySelectorAll("[data-f]").forEach(el => {
+      el.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(save, 600); });
+    });
+    const file = card.querySelector('input[type=file]');
+    card.querySelector(".upload").addEventListener("click", () => file.click());
+    file.addEventListener("change", async () => {
+      if (!file.files.length) return;
+      const fd = new FormData();
+      fd.append("file", file.files[0]);
+      if (card.querySelector(".keep").checked) fd.append("keep", "1");
+      setMsg(card, "Đang tách nền…");
+      try {
+        const r = await fetch("/api/quote/catalog/" + id + "/photo", { method: "POST", headers: { "X-Studio": "1" }, body: fd });
+        const j = await r.json();
+        if (!r.ok) { setMsg(card, j.error || "Không xử lý được ảnh"); return; }
+        card.querySelector(".ph").innerHTML = '<img alt="" src="' + j.photo_url + '">';
+        setMsg(card, "");
+      } catch (e) { setMsg(card, "Lỗi tải ảnh: " + e); }
+      file.value = "";
+    });
+    card.querySelector(".del").addEventListener("click", async () => {
+      if (!confirm("Xóa mẫu này khỏi danh mục?")) return;
+      try {
+        const r = await fetch("/api/quote/catalog/" + id + "/delete", { method: "POST", headers: HJ, body: "{}" });
+        const j = await r.json();
+        if (!r.ok) { setMsg(card, j.error || "Không xóa được"); return; }
+        card.remove();
+      } catch (e) { setMsg(card, "Không xóa được: " + e); }
+    });
+  }
+
+  grid.querySelectorAll(".item").forEach(bind);
+
+  document.getElementById("add-manual").addEventListener("click", async () => {
+    const name = prompt("Tên mẫu mới:");
+    if (!name || !name.trim()) return;
+    const r = await fetch("/api/quote/catalog", { method: "POST", headers: HJ, body: JSON.stringify({ name: name.trim() }) });
+    if (r.ok) location.reload();
+    else { const j = await r.json(); alert(j.error || "Không tạo được mẫu"); }
+  });
+})();
+</script>
+{% endblock %}

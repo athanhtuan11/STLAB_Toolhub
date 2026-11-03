@@ -12,6 +12,7 @@ from flask import Blueprint, abort, jsonify, render_template, request, send_file
 
 import launcher
 
+from . import catalog
 from . import opener
 from . import ops
 from . import research
@@ -756,9 +757,120 @@ def api_quote_save():
                                    data.get("title") or "", parsed, calc, data.get("note") or "",
                                    materials_map=mapping)
         qd = quote_lib.get_quote(conn, qid)
+        cid = None
+        key = _item(data).get("model_key")
+        if key:
+            cid = catalog.upsert_from_quote(conn, key, data.get("title") or "", parsed, _pricing_now(),
+                                            extras=_extras(data), materials_map=mapping, quote_id=qid)
+            it = catalog.get(conn, cid)
+            if it and not it.get("photo"):
+                png = next((p["image_png"] for p in parsed["plates"][:1] if p.get("image_png")), None)
+                if png:
+                    try:
+                        catalog.set_photo(conn, cid, png, compose=True)
+                    except Exception:
+                        pass
     finally:
         conn.close()
-    return jsonify({"id": qid, "number": qd["number"]})
+    return jsonify({"id": qid, "number": qd["number"], "catalog_id": cid})
+
+
+# ---------- Danh muc mau (toolhub/catalog.py) ----------
+@bp.get("/quote/catalog")
+def quote_catalog():
+    conn = quote_lib.connect()
+    try:
+        items = catalog.list_all(conn)
+        pricing = quote_lib.get_pricing(conn)
+    finally:
+        conn.close()
+    return render_template("quote-catalog.html", items=items, pricing=pricing)
+
+
+@bp.get("/quote/catalog.xlsx")
+def quote_catalog_xlsx():
+    conn = quote_lib.connect()
+    try:
+        data = catalog.export_xlsx(conn, quote_lib.get_pricing(conn))
+    finally:
+        conn.close()
+    return send_file(io.BytesIO(data), mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                     download_name=f"BaoGia-STLab-{datetime.now().strftime('%Y%m%d')}.xlsx", as_attachment=True)
+
+
+@bp.get("/quote/catalog/<int:id>/photo")
+def quote_catalog_photo(id):
+    conn = quote_lib.connect()
+    try:
+        it = catalog.get(conn, id)
+    finally:
+        conn.close()
+    p = catalog.photo_dir() / it["photo"] if it and it.get("photo") else None
+    if not p or not p.exists():
+        abort(404)
+    return send_file(p, mimetype="image/jpeg")
+
+
+@bp.post("/api/quote/catalog")
+def api_catalog_create():
+    d = request.get_json(silent=True) or {}
+    name = str(d.get("name") or "").strip()
+    if not name:
+        return jsonify({"error": "Tên mẫu không được để trống"}), 400
+    conn = quote_lib.connect()
+    try:
+        cid = catalog.create(conn, name, grams=d.get("grams"), unit_price=d.get("unit_price"),
+                             price_bulk1=d.get("price_bulk1"), price_bulk2=d.get("price_bulk2"),
+                             note=str(d.get("note") or ""))
+    finally:
+        conn.close()
+    return jsonify({"id": cid})
+
+
+@bp.post("/api/quote/catalog/<int:id>")
+def api_catalog_update(id):
+    d = request.get_json(silent=True) or {}
+    conn = quote_lib.connect()
+    try:
+        it = catalog.update(conn, id, **{k: v for k, v in d.items() if isinstance(k, str)})
+    finally:
+        conn.close()
+    if it is None:
+        return jsonify({"error": "Không tìm thấy mẫu"}), 404
+    return jsonify(it)
+
+
+@bp.post("/api/quote/catalog/<int:id>/delete")
+def api_catalog_delete(id):
+    conn = quote_lib.connect()
+    try:
+        if catalog.get(conn, id) is None:
+            return jsonify({"error": "Không tìm thấy mẫu"}), 404
+        catalog.delete(conn, id)
+    finally:
+        conn.close()
+    return jsonify({"ok": True})
+
+
+@bp.post("/api/quote/catalog/<int:id>/photo")
+def api_catalog_photo(id):
+    conn = quote_lib.connect()
+    try:
+        it = catalog.get(conn, id)
+        if it is None:
+            return jsonify({"error": "Không tìm thấy mẫu"}), 404
+        f = request.files.get("file")
+        if not f or not f.filename:
+            return jsonify({"error": "Chưa chọn ảnh"}), 400
+        keep = str(request.form.get("keep") or "") in ("1", "true", "on")
+        try:
+            catalog.set_photo(conn, id, f.read(), compose=not keep)
+        except Exception as e:
+            return jsonify({"error": f"Không xử lý được ảnh / tách nền: {e}"}), 500
+        it = catalog.get(conn, id)
+    finally:
+        conn.close()
+    return jsonify({"photo_url": f"/quote/catalog/{id}/photo?v={it['updated_at']}"})
 
 
 @bp.get("/quote/<int:id>")
