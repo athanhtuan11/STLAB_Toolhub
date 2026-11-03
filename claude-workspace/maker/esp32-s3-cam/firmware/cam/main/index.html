@@ -1,88 +1,323 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>STLab Cam</title>
 <style>
-body{font-family:sans-serif;margin:0;background:#111;color:#eee}
-header{padding:8px 12px;background:#1d3557;font-weight:bold}
-main{display:flex;flex-wrap:wrap;gap:12px;padding:12px}
-#video{max-width:100%;width:640px;background:#000;min-height:240px}
-.box{background:#222;padding:10px;border-radius:6px;min-width:260px}
-label{display:block;margin:6px 0 2px}
-select,input[type=range],button{width:100%}
-button{padding:8px;margin-top:8px;font-size:15px}
-table{border-collapse:collapse;font-size:13px}
-td{padding:2px 8px 2px 0}
-.nong{color:#ff5252;font-weight:bold}
+:root{
+  --bg:#ECF1EF;--card:#FBFCFB;--text:#16231D;--muted:#56655E;--line:#D3DDD8;--accent:#1E5A45;--accent-soft:#DCEBE4;
+  --hl:#E8B33A;--on-accent:#fff;--ok:#257A45;--warn:#9A6400;--err:#B3341F;--off:#9AA7A1;--video-bg:#0d1411;
+  --r-c:8px;--r-card:12px;
+}
+@media (prefers-color-scheme:dark){
+:root{
+  --bg:#101714;--card:#18211D;--text:#E3EBE7;--muted:#9BABA3;--line:#2A3631;--accent:#6CC19B;--accent-soft:#1C3329;
+  --hl:#F0C152;--on-accent:#10281F;--ok:#5CCB86;--warn:#E8B33A;--err:#F07A63;--off:#56635D;--video-bg:#070b09;
+}
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:400 15px/1.45 system-ui,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1240px;margin:0 auto;padding:16px 24px 24px}
+header{display:flex;align-items:center;gap:14px;padding:6px 0 16px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:20px;letter-spacing:.04em}
+.logo i{display:block;width:6px;height:24px;background:var(--hl);border-radius:2px}
+.title{font-weight:600;color:var(--muted);font-size:15px}
+.spacer{flex:1}
+.pill{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-weight:600;font-size:14px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--ok);flex:none}
+.dot.warn{background:var(--warn)}.dot.err{background:var(--err)}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);padding:16px}
+.card h2{margin:0 0 10px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.vbox{width:100%}
+.video{position:relative;border-radius:var(--r-card);overflow:hidden;background:var(--video-bg);border:1px solid var(--line);margin:0 auto;width:100%;aspect-ratio:4/3}
+.video img{position:absolute;left:50%;top:50%;display:block;transform:translate(-50%,-50%);background:var(--video-bg)}
+.vmsg{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:16px;color:#fff;background:rgba(10,16,13,.82);font-weight:600}
+.vmsg.show{display:flex}
+.badge{position:absolute;top:12px;left:12px;display:flex;gap:8px;align-items:center;background:rgba(10,16,13,.72);color:#fff;border-radius:999px;padding:5px 12px;font-weight:600;font-size:13px;z-index:2}
+.badge b{width:8px;height:8px;border-radius:50%;background:#ff5a4d;display:block}
+.badge2{position:absolute;right:12px;bottom:12px;background:rgba(10,16,13,.72);color:#fff;border-radius:8px;padding:4px 10px;font-size:13px;font-variant-numeric:tabular-nums;z-index:2}
+.tools{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center}
+.btn{min-height:46px;padding:0 18px;border-radius:var(--r-c);border:1px solid var(--line);background:var(--card);color:var(--text);font:600 15px system-ui,"Segoe UI",Roboto,sans-serif;display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn:focus-visible,select:focus-visible,input:focus-visible,.sw:focus-visible{outline:3px solid var(--hl);outline-offset:2px}
+.btn svg{width:20px;height:20px;flex:none}
+.sw{display:inline-flex;align-items:center;gap:10px;min-height:46px;padding:0 14px;border:1px solid var(--line);border-radius:var(--r-c);background:var(--card);font-weight:600;cursor:pointer;user-select:none}
+.sw s{display:block;width:40px;height:24px;border-radius:999px;background:var(--off);position:relative;text-decoration:none;flex:none}
+.sw s:after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.15s}
+.sw.on s{background:var(--accent)}.sw.on s:after{left:19px}
+select{min-height:46px;padding:0 12px;border-radius:var(--r-c);border:1px solid var(--line);background:var(--card);color:var(--text);font:600 15px system-ui,"Segoe UI",Roboto,sans-serif}
+.sliders{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+.sl{display:flex;flex-direction:column;gap:4px;font-weight:600}
+.sl span{display:flex;justify-content:space-between;color:var(--muted);font-size:13px}
+.sl input{width:100%;accent-color:var(--accent);min-height:32px}
+.preview{display:none;margin-top:14px}
+.preview.show{display:block}
+.preview img{display:block;max-width:240px;width:100%;height:auto;border-radius:var(--r-c);border:1px solid var(--line)}
+.toast{margin-top:10px;padding:8px 12px;border-radius:var(--r-c);background:var(--accent-soft);border-left:4px solid var(--err);font-size:13px;display:none}
+.toast.show{display:block}
+.side{display:grid;gap:16px}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0;padding-top:0}
+.row span{color:var(--muted)}
+.row strong{font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.big{font-size:30px;font-weight:700;line-height:1.1}
+.status{display:flex;align-items:center;gap:8px;font-weight:600;margin-top:2px}
+.status.ok{color:var(--ok)}.status.warn{color:var(--warn)}.status.err{color:var(--err)}
+.bar{height:8px;border-radius:999px;background:var(--accent-soft);margin:10px 0 4px;position:relative;overflow:hidden}
+.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--ok)}
+.bar.warn i{background:var(--warn)}.bar.err i{background:var(--err)}
+.scale{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.note{margin-top:10px;padding:10px 12px;border-radius:var(--r-c);background:var(--accent-soft);font-size:13px}
+.note.warn{border-left:4px solid var(--warn)}.note.err{border-left:4px solid var(--err)}
+.copy{display:inline-flex;align-items:center;min-height:36px;padding:0 10px;border-radius:var(--r-c);border:1px solid var(--line);color:var(--accent);font-weight:600;font-size:14px}
+footer{margin-top:18px;color:var(--muted);font-size:13px;display:flex;gap:16px;flex-wrap:wrap}
+.signal{display:inline-flex;align-items:flex-end;gap:2px;height:16px;margin-right:8px;vertical-align:-2px}
+.signal u{display:block;width:4px;background:var(--ok);border-radius:1px;text-decoration:none}
+.signal u.off{background:var(--off);opacity:.5}
+@media (max-width:900px){
+  .wrap{padding:12px 14px 20px}
+  .grid{grid-template-columns:1fr}
+  .title,.hide-m{display:none}
+  .tools .btn.primary{flex:1 1 100%}
+  .tools .btn,.tools .sw,.tools select{flex:1 1 calc(50% - 5px);justify-content:center}
+  .tools select{width:100%}
+  .sliders{grid-template-columns:1fr}
+  .big{font-size:26px}
+}
 </style>
 </head>
 <body>
-<header>STLab Cam – camera giám sát</header>
-<main>
-<div>
-<img id="video" alt="Đang chờ video...">
-<div style="font-size:12px;color:#aaa">Tối đa 2 người xem cùng lúc. Đóng tab là tự giải phóng.</div>
+<div class="wrap">
+  <header>
+    <div class="logo"><i></i>STLAB</div>
+    <div class="title">Camera ESP32-S3 · OV3660</div>
+    <div class="spacer"></div>
+    <div class="pill"><span class="dot err" id="dot"></span><span id="pillt">Đang kết nối…</span></div>
+  </header>
+
+  <div class="grid">
+    <main>
+      <div class="vbox" id="vbox">
+        <div class="video" id="video-box">
+          <img id="video" alt="Hình trực tiếp từ camera">
+          <div class="vmsg" id="vmsg"><div id="vmsgt"></div><button class="btn" type="button" id="btn-retry">Thử lại</button></div>
+          <div class="badge"><b></b>TRỰC TIẾP</div>
+          <div class="badge2" id="badge2">— · — fps</div>
+        </div>
+      </div>
+      <div class="tools">
+        <button class="btn primary" type="button" id="btn-chup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Chụp ảnh</button>
+        <button class="btn" type="button" id="btn-tai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>Tải ảnh</button>
+        <label class="sw" id="sw" tabindex="0" role="switch" aria-checked="false"><s></s>Lật 180°</label>
+        <button class="btn" type="button" id="btn-rot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-3-6.2M20 4v5h-5"/></svg><span id="rottxt">Xoay 90°</span></button>
+        <select id="sel-fs" aria-label="Độ phân giải">
+          <option value="6">QVGA 320 × 240</option><option value="10">VGA 640 × 480</option><option value="11">SVGA 800 × 600</option><option value="12">XGA 1024 × 768</option><option value="13">HD 1280 × 720</option>
+        </select>
+      </div>
+      <div class="sliders">
+        <label class="sl"><span>Sáng <b id="v-br">0</b></span><input type="range" id="in-br" min="-2" max="2" step="1" value="0"></label>
+        <label class="sl"><span>Tương phản <b id="v-ct">0</b></span><input type="range" id="in-ct" min="-2" max="2" step="1" value="0"></label>
+        <label class="sl"><span>fps <b id="v-fps">10</b></span><input type="range" id="in-fps" min="1" max="25" step="1" value="10"></label>
+      </div>
+      <div class="toast" id="toast"></div>
+      <div class="preview" id="preview"><img id="previmg" alt="Ảnh vừa chụp"></div>
+      <footer><span class="hide-m">Luồng trực tiếp: cổng 81 /stream · ảnh tĩnh: /capture · tối đa 2 người xem cùng lúc</span></footer>
+    </main>
+
+    <aside class="side">
+      <section class="card">
+        <h2>Kết nối</h2>
+        <div class="row"><span>Wi-Fi nhà</span><strong id="sta_ssid">—</strong></div>
+        <div class="row"><span>Tín hiệu</span><strong><span class="signal" id="sig" aria-hidden="true"><u style="height:5px"></u><u style="height:8px"></u><u style="height:12px"></u><u style="height:16px"></u></span><span id="sta_rssi">—</span></strong></div>
+        <div class="row"><span>Địa chỉ IP</span><strong id="sta_ip">—</strong></div>
+        <div class="row"><span>Tên truy cập</span><strong><span class="copy">stlab-cam.local</span></strong></div>
+      </section>
+      <section class="card">
+        <h2>Chip</h2>
+        <div class="big" id="temp">—</div>
+        <div class="status ok" id="tst"><span class="dot" id="tdot"></span><span id="ttxt">—</span></div>
+        <div class="bar" id="tbar"><i id="tfill" style="width:4%"></i></div>
+        <div class="scale"><span>30 °C</span><span>60 °C</span><span>80 °C</span></div>
+        <div class="note warn" id="tnote" style="display:none"></div>
+        <div class="row" style="margin-top:12px"><span>Tốc độ hình</span><strong id="fpsrow">—</strong></div>
+        <div class="row"><span>Độ phân giải</span><strong id="fsrow">—</strong></div>
+        <div class="row"><span>Người xem</span><strong id="viewers">—</strong></div>
+      </section>
+    </aside>
+  </div>
 </div>
-<div class="box">
-<button id="btn-chup">Chụp ảnh</button>
-<label>Độ phân giải
-<select id="framesize">
-<option value="6">QVGA 320x240</option>
-<option value="10">VGA 640x480</option>
-<option value="11">SVGA 800x600</option>
-<option value="12">XGA 1024x768</option>
-<option value="13">HD 1280x720</option>
-<option value="15">UXGA 1600x1200</option>
-<option value="19">QXGA 2048x1536</option>
-</select></label>
-<label><input type="checkbox" id="vflip"> Lật dọc</label>
-<label><input type="checkbox" id="hmirror"> Lật ngang</label>
-<label>Độ sáng <span id="v-brightness"></span><input type="range" id="brightness" min="-2" max="2" step="1"></label>
-<label>Tương phản <span id="v-contrast"></span><input type="range" id="contrast" min="-2" max="2" step="1"></label>
-<label>Tốc độ khung hình (fps) <span id="v-fps"></span><input type="range" id="fps" min="1" max="25" step="1"></label>
-</div>
-<div class="box">
-<table id="tt"></table>
-</div>
-</main>
 <script>
-var $=function(i){return document.getElementById(i)};
-var host=location.hostname;
-function startVideo(){$('video').src=location.protocol+'//'+host+':81/stream?t='+Date.now();}
-window.addEventListener('pagehide',function(){$('video').src='';});
-$('video').onerror=function(){setTimeout(startVideo,3000);};
-$('btn-chup').onclick=function(){window.open('/capture?t='+Date.now(),'_blank');};
-function ctl(v,x){return fetch('/control?var='+v+'&val='+x).then(function(r){if(!r.ok){alert('Giá trị không hợp lệ');}});}
-$('framesize').onchange=function(){ctl('framesize',this.value);};
-['vflip','hmirror'].forEach(function(k){$(k).onchange=function(){ctl(k,this.checked?1:0);};});
-['brightness','contrast','fps'].forEach(function(k){
-  $(k).oninput=function(){$('v-'+k).textContent=this.value;};
-  $(k).onchange=function(){ctl(k,this.value);};
-});
-var fsMap={QVGA:6,VGA:10,SVGA:11,XGA:12,HD:13,UXGA:15,QXGA:19};
-var first=true;
-function refresh(){
-  fetch('/status').then(function(r){return r.json();}).then(function(s){
-    if(first){
-      first=false;
-      $('framesize').value=fsMap[s.framesize];
-      $('vflip').checked=!!s.vflip;$('hmirror').checked=!!s.hmirror;
-      ['brightness','contrast'].forEach(function(k){$(k).value=s[k];$('v-'+k).textContent=s[k];});
-      $('fps').value=s.fps_cai;$('v-fps').textContent=s.fps_cai;
+(function(){
+  // TODO Tuan chốt ngưỡng nhiệt hiển thị (°C): từ WARN_C vàng, từ HOT_C đỏ
+  var WARN_C=60, HOT_C=70;
+  var DIMS={QVGA:[320,240],VGA:[640,480],SVGA:[800,600],XGA:[1024,768],HD:[1280,720],UXGA:[1600,1200],QXGA:[2048,1536]};
+  var ROTS=[0,90,180,270];
+  var $=function(i){return document.getElementById(i)};
+  var st=null, lastOk=false, retryTimer=null, streamFail=false, lastBlob=null, busy={};
+
+  function toast(m){var t=$('toast');t.textContent=m;t.className='toast show';clearTimeout(toast.h);toast.h=setTimeout(function(){t.className='toast'},5000)}
+  function fmt1(x){return (Math.round(x*10)/10+'').replace('.',',')}
+
+  // ---------- điều khiển ----------
+  function ctl(v,val){
+    return fetch('/control?var='+v+'&val='+val,{cache:'no-store'}).then(function(r){
+      if(!r.ok)throw new Error(r.status);
+      if(st)st[v]=val;
+    }).catch(function(){toast('Không đổi được '+v+' – thử lại.')});
+  }
+  $('sw').onclick=function(){
+    var on=!(st&&st.vflip===1&&st.hmirror===1),v=on?1:0;
+    $('sw').className='sw'+(on?' on':'');$('sw').setAttribute('aria-checked',on);
+    ctl('vflip',v).then(function(){return ctl('hmirror',v)});
+  };
+  $('sw').onkeydown=function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();$('sw').onclick()}};
+  $('btn-rot').onclick=function(){
+    var cur=st?st.rotate:0,nx=ROTS[(ROTS.indexOf(cur)+1)%4];
+    if(st)st.rotate=nx;layout();
+    ctl('rotate',nx);
+  };
+  $('sel-fs').onchange=function(){busy.fs=1;ctl('framesize',this.value).then(function(){busy.fs=0})};
+  [['in-br','v-br','brightness'],['in-ct','v-ct','contrast'],['in-fps','v-fps','fps']].forEach(function(a){
+    var el=$(a[0]);
+    el.oninput=function(){$(a[1]).textContent=el.value};
+    el.onchange=function(){ctl(a[2],el.value)};
+  });
+
+  // ---------- ảnh ----------
+  function stamp(){
+    var d=new Date(),p=function(n){return (n<10?'0':'')+n};
+    return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds());
+  }
+  function getPhoto(){
+    return fetch('/capture?t='+Date.now(),{cache:'no-store'}).then(function(r){
+      if(!r.ok)throw new Error(r.status);return r.blob();
+    }).then(function(b){
+      var rot=st?st.rotate:0;
+      if(!rot)return b;
+      return new Promise(function(res,rej){
+        var im=new Image(),u=URL.createObjectURL(b);
+        im.onload=function(){
+          var w=im.naturalWidth,h=im.naturalHeight,odd=rot===90||rot===270;
+          var c=document.createElement('canvas');c.width=odd?h:w;c.height=odd?w:h;
+          var x=c.getContext('2d');x.translate(c.width/2,c.height/2);x.rotate(rot*Math.PI/180);x.drawImage(im,-w/2,-h/2);
+          URL.revokeObjectURL(u);
+          c.toBlob(function(o){o?res(o):rej(new Error('canvas'))},'image/jpeg',0.92);
+        };
+        im.onerror=function(){URL.revokeObjectURL(u);rej(new Error('img'))};
+        im.src=u;
+      });
+    });
+  }
+  function showPrev(b){
+    if($('previmg').src)URL.revokeObjectURL($('previmg').src);
+    $('previmg').src=URL.createObjectURL(b);$('preview').className='preview show';
+  }
+  $('btn-chup').onclick=function(){
+    getPhoto().then(function(b){lastBlob=b;showPrev(b)}).catch(function(){toast('Không chụp được ảnh – thử lại.')});
+  };
+  $('btn-tai').onclick=function(){
+    (lastBlob?Promise.resolve(lastBlob):getPhoto()).then(function(b){
+      lastBlob=b;showPrev(b);
+      var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='stlab-cam-'+stamp()+'.jpg';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(a.href)},4000);
+    }).catch(function(){toast('Không tải được ảnh – thử lại.')});
+  };
+
+  // ---------- video ----------
+  function layout(){
+    var rot=st?st.rotate:0,odd=rot===90||rot===270;
+    var d=(st&&DIMS[st.framesize])||[800,600];
+    var dw=odd?d[1]:d[0],dh=odd?d[0]:d[1];
+    var availW=$('vbox').clientWidth||320,maxH=Math.max(240,window.innerHeight*0.8);
+    var k=Math.min(availW/dw,maxH/dh),cw=Math.round(dw*k),ch=Math.round(dh*k);
+    var box=$('video-box'),im=$('video');
+    box.style.width=cw+'px';box.style.height=ch+'px';box.style.aspectRatio='auto';
+    im.style.width=(odd?ch:cw)+'px';im.style.height=(odd?cw:ch)+'px';
+    im.style.transform='translate(-50%,-50%) rotate('+rot+'deg)';
+    $('rottxt').textContent='Xoay 90°'+(rot?' ('+rot+'°)':'');
+  }
+  window.addEventListener('resize',layout);
+  function vmsg(t,btn){
+    $('vmsgt').textContent=t||'';$('btn-retry').style.display=btn?'':'none';
+    $('vmsg').className='vmsg'+(t?' show':'');
+  }
+  function startStream(){
+    clearTimeout(retryTimer);streamFail=false;
+    var u=location.protocol+'//'+location.hostname+':81/stream?t='+Date.now();$('video').src=u;
+  }
+  $('video').onload=function(){streamFail=false;vmsg('')};
+  $('video').onerror=function(){
+    streamFail=true;
+    if(st&&st.so_nguoi_xem>=2){
+      vmsg('Đã đủ 2 người xem – thử lại sau',true);
+    }else{
+      vmsg('Mất kết nối hình – đang thử lại…',true);
+      clearTimeout(retryTimer);retryTimer=setTimeout(startStream,4000);
     }
-    var rows=[['Nhiệt độ chip',s.nhiet_do_chip+' °C'+(s.nong?' (NÓNG - đã hạ fps)':''),s.nong],
-      ['FPS cài / thực',s.fps_cai+' / '+s.fps_thuc],['Người xem',s.so_nguoi_xem],
-      ['Độ phân giải',s.framesize+' (chất lượng '+s.quality+')'],
-      ['Chạy được',s.uptime_s+' s'],['Heap trống',s.heap_free],['PSRAM trống',s.psram_free],
-      ['Khung lỗi / khởi động lại cam',s.frame_loi+' / '+s.cam_reinit],
-      ['Wi-Fi nhà',s.sta_connected?(s.sta_ssid+' '+s.sta_ip+' ('+s.sta_rssi+' dBm)'):'chưa kết nối'],
-      ['Tên mDNS',s.mdns],['AP dự phòng',s.ap_ssid]];
-    $('tt').innerHTML=rows.map(function(r){return '<tr><td>'+r[0]+'</td><td'+(r[2]?' class="nong"':'')+'>'+r[1]+'</td></tr>';}).join('');
-  }).catch(function(){});
-}
-startVideo();refresh();setInterval(refresh,2000);
+  };
+  $('btn-retry').onclick=function(){vmsg('Đang kết nối…',false);startStream()};
+
+  // ---------- trạng thái ----------
+  function setPill(cls,txt){$('dot').className='dot '+cls;$('pillt').textContent=txt}
+  function render(s){
+    st=s;
+    $('sta_ssid').textContent=s.sta_ssid||'Chưa kết nối';
+    $('sta_ip').textContent=s.sta_ip||'—';
+    var rs=s.sta_rssi,lv=0,lt='';
+    if(s.sta_connected&&rs<0){lv=rs>=-60?4:rs>=-67?3:rs>=-75?2:1;lt=rs>=-60?'Tốt':rs>=-75?'Khá':'Yếu'}
+    $('sta_rssi').textContent=lt?('−'+Math.abs(rs)+' dBm · '+lt):'—';
+    var us=$('sig').children;
+    for(var i=0;i<4;i++)us[i].className=i<lv?'':'off';
+    var t=s.nhiet_do_chip,cls='ok',txt='Bình thường',note='';
+    if(t>-100){
+      if(t>=HOT_C){cls='err';txt='Quá nóng';note='Chip quá nóng. Rút nguồn, để nguội, kiểm tra khe thoát nhiệt có bị che không.'}
+      else if(t>=WARN_C){cls='warn';txt='Hơi nóng';note='Chip đang nóng. Đặt camera nơi thoáng, đừng che khe trên và khe dưới thân máy.'}
+      $('temp').textContent=fmt1(t)+' °C';
+      $('tfill').style.width=Math.max(4,Math.min(100,(t-30)/50*100))+'%';
+    }else{$('temp').textContent='—';txt='Chưa đọc được'}
+    if(s.nong){note=(note?note+' ':'')+'Đang hạ fps do nóng.'; if(cls==='ok')cls='warn'}
+    $('tst').className='status '+cls;$('ttxt').textContent=txt;
+    $('tbar').className='bar '+(cls==='ok'?'':cls);
+    $('tdot').className='dot '+(cls==='ok'?'':cls);
+    var n=$('tnote');n.style.display=note?'block':'none';n.className='note '+(cls==='err'?'err':'warn');n.textContent=note;
+    var d=DIMS[s.framesize]||[0,0];
+    var res=s.framesize+(d[0]?' '+d[0]+' × '+d[1]:'');
+    $('fpsrow').textContent=fmt1(s.fps_thuc)+' / '+s.fps_cai+' fps';
+    $('fsrow').textContent=res;
+    $('viewers').textContent=s.so_nguoi_xem+' / 2';
+    $('badge2').textContent=(d[0]?d[0]+' × '+d[1]+' · ':'')+fmt1(s.fps_thuc)+' fps';
+    if(!s.cam_ok)setPill('err','Camera lỗi');
+    else if(note)setPill(cls,txt+' · '+fmt1(t)+' °C');
+    else setPill('ok','Đang trực tiếp');
+    // đồng bộ điều khiển (không đè khi đang kéo)
+    var on=s.vflip===1&&s.hmirror===1;
+    $('sw').className='sw'+(on?' on':'');$('sw').setAttribute('aria-checked',on);
+    if(!busy.fs){
+      var o=$('sel-fs').querySelector('option[value="'+({QVGA:6,VGA:10,SVGA:11,XGA:12,HD:13}[s.framesize]||'')+'"]');
+      if(o)o.selected=true;
+    }
+    [['in-br','v-br',s.brightness],['in-ct','v-ct',s.contrast],['in-fps','v-fps',s.fps_cai]].forEach(function(a){
+      if(document.activeElement!==$(a[0])){$(a[0]).value=a[2];$(a[1]).textContent=a[2]}
+    });
+    layout();
+  }
+  function poll(){
+    fetch('/status',{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()}).then(function(s){
+      var back=!lastOk;lastOk=true;render(s);
+      if(back&&streamFail&&s.so_nguoi_xem<2)startStream();
+    }).catch(function(){
+      lastOk=false;setPill('err','Mất kết nối');
+    });
+  }
+  layout();
+  startStream();
+  poll();
+  setInterval(poll,2000);
+})();
 </script>
 </body>
 </html>

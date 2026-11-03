@@ -4,7 +4,7 @@ Ngày 2026-11-03 · product-designer · Tuan duyệt bằng ảnh: `contact-shee
 Khối minh họa dựng bằng `make_concepts.py` (Blender 5.2, Cycles), **chưa phải CAD**. Không đổi mạch, không sửa firmware.
 Ghi chú: "khối 27 × 40,5 × 12 mm" trong ảnh A/B/C ban đầu là giả định cũ; D dùng khối mục 0 (27 × 40,5 × 20–25 mm).
 
-> **Phương án D được Tuan chọn ngày 2026-11-03** (mục 2b). A/B/C giữ để tham khảo.
+> **Chốt 2026-11-03: 2 mẫu. ĐỂ BÀN = phương án D (mục 2b). TREO TƯỜNG = mẫu W (mục 2c), dùng chung hộp + khung U + đĩa + vành với D.** A/B/C giữ để tham khảo.
 
 ## 0. Khối mạch dùng cho CAD (số cộng đồng, ƯỚC – in thử để kiểm)
 
@@ -14,7 +14,7 @@ Nguồn: `docs/research-notes/esp32-s3-cam-hardware.md` mục 5 (Tuan không đo
 - **Khối tổng ước 27 × 40,5 × 20–25 mm** (ƯỚC). Mạch đứng thẳng, mặt 27 × 40,5 song song mặt trước, ống kính ra mặt trước.
   Hộc mạch 31 × 44,5 × 28 mm (dư 2 mm mỗi bên + chỗ FPC); hộp D sâu 40 mm = bezel 3 + hộc 28 + thành sau ≥ 1,6 + gờ giữ ⇒ vẫn đủ, tỉ lệ 56 × 40 × 64 vẫn đẹp (kiểm trên ảnh), không cần làm sâu hơn. Nếu số thật > 25 mm → tăng sâu hộp, thêm 4–5 mm.
 - Nút IO0/RST ở đế nạp cạnh ngắn: cần lỗ chọc kim hoặc nút nhấn xuyên vỏ (TODO khi CAD biết vị trí – xem ảnh mạch thật; không bịa tọa độ).
-- Các giá trị chưa có nguồn (TODO, đo/ảnh mạch lúc CAD): tâm ống kính (render giả định lệch lên 9 mm), tọa độ 2 đèn (giả định Ø3,4 cách nhau 7 mm, dưới ống kính 12–14 mm), lỗ bắt vít (nếu có – nếu không thì kẹp bằng gờ + nắp), kích thước đầu cáp mini USB (đầu thẳng cần ≥ ~ 30 mm phía dưới; **khuyến nghị cáp mini USB đầu vuông góc** hoặc dùng ô cắt sau-dưới cho cáp uốn ra sau).
+- Các giá trị chưa có nguồn (TODO, đo/ảnh mạch lúc CAD): tâm ống kính (vỏ cộng đồng ESP32_CAM_CASE: tâm cách cạnh ngắn hốc 9,4 mm, giữa chiều rộng, lỗ Ø8,3 mm ⇒ lệch lên ≈ 10,9 mm so với tâm mạch 40,5 mm; render dùng 8–9 mm; research-notes mục 6), tọa độ 2 đèn (giả định Ø3,4 cách nhau 7 mm, dưới ống kính 12–14 mm), lỗ bắt vít (nếu có – nếu không thì kẹp bằng gờ + nắp), kích thước đầu cáp mini USB (đầu thẳng cần ≥ ~ 30 mm phía dưới; **khuyến nghị cáp mini USB đầu vuông góc** hoặc dùng ô cắt sau-dưới cho cáp uốn ra sau).
 - **Chiều camera:** module camera thật nằm **NGHIÊNG 90° so với mạch** (ảnh test bị xoay 90°, không phải 180°). CAD đặt mạch xoay 90° trong hộp sao cho ảnh thẳng; firmware chỉ lật 180°. Chiều +90°/−90°: xác định lúc in thử.
 
 ## 1. Ngôn ngữ hình khối chung
@@ -123,13 +123,47 @@ Dùng palette `studio/design/tokens.json` sáng (trang ESP32 giữ bộ sáng) +
 - **Màu (1 phối)**: thân trắng, khung mặt trước đen, **khung U + đĩa + đế xanh thông**, đầu vít kim loại tối, chấm vàng nhấn cạnh STLAB. Chọn xanh thông cho khung U/đế vì kết nối với mặt "mắt" của A/C, hài hòa với thân trắng và khung đen; đế đen sẽ nặng nề hơn. Màu chỉ để tham khảo; Tuan tự chỉnh theo nhựa có sẵn.
 - Đánh đổi: nhiều part hơn B (thêm đế + đĩa), cao ≈ 96 mm, đế Ø86 chiếm bàn hơn B; đổi lại pan + tilt + treo tường và nhìn gọn, ổn định.
 
+## 2c. Mẫu W – TREO TƯỜNG (Tuan chốt 2026-11-03)
+
+Ảnh: `contact-sheet-W.png`, `concepts/W-treo-{truoc,ben,tuong,no}.png` (`tuong` = W trên mảng tường cạnh ổ điện 86 mm).
+Ý tưởng: **dùng chung hộp + khung U + đĩa xoay + vành với D**, chỉ thay "đế để bàn" bằng **giá treo tường** nâng đỡ vành.
+
+- **Giá treo W (1 part đen, 3 phần liền khối):** ① tấm tường 70 × 130 × 6 mm bo R2,5, **2 lỗ vít đầu chìm** (cách nhau ~106 mm dọc; TODO đường kính theo vít dùng, lỗ côn chìm đầu) + vùng dán 3M mặt sau 50 × 100 mm lõm 0,6 mm
+  ② tay đỡ chữ L nhô **70 mm** ra khỏi tường (rộng 40, dày 5,6 mm) + gân tam giác 6 mm tăng cứng ③ **mâm tròn Ø90 × 5,6 mm** ở đầu tay đỡ để vành D đặt lên.
+- **Vành D bắt lên mâm bằng 2 vít** qua 2 lỗ đáy của vành (chính 2 lỗ treo của D – tái dùng, không thêm lỗ). Vành giữ chốt giữa + 3 tai ma sát; đĩa xoay + khung U + hộp lên trên y như D.
+  Vì trục chốt **thẳng đứng** khi treo tường, camera **pan ngang quanh trục thẳng đứng**, tilt bằng vít M3 hai bên như D (Tuan đã chốt).
+  Khe/ma sát/nấc: **lấy từ fit-library khi CAD**, không đặt số ở đây. Khe quét khi pan: trục chốt cách tường 70 mm, bán kính quét lớn nhất của đĩa Ø76 = 38 mm ⇒ cách tường ≥ 32 mm; hộp quét bán kính ≈ 34 mm. Không chạm tường.
+- **Dây USB:** từ cổng USB sau-dưới thân (đầu cáp vuông góc ra sau), uốn qua mép vành, **nằm dọc mặt trên tay đỡ trong 2 kẹp dây** (kẹp xanh in rời, nhấn vào rãnh – fit: TODO), rồi theo tấm tường xuống dưới. Không treo lủng lẳng.
+  **Giới hạn pan ±135° bằng chốt chặn trên vành** (TODO quyết ở CAD) để dây không bị xoắn; chừa vòng dây 20 mm.
+- **Lật ngược (treo dưới kệ / mép trần):** gắn tấm tường lật 180° trên mặt đứng: tay đỡ ở phía trên, camera **treo bên dưới** mâm; trục vẫn thẳng đứng. Ảnh sẽ **ngược 180° ⇒ firmware bật lật ảnh 180°** (nút "Lật ảnh" trên web) để bù; khe nhiệt thân vẫn hút dưới – thoát trên theo hộp nên khi lật thì chiều đối lưu đổi: **cần Tuan chấp nhận hoặc không dùng lật cho tải nhiệt cao** (xem câu mở). Lắp lên trần phẳng (mặt ngang): chưa hỗ trợ (cần tấm trần riêng – đề xuất sau).
+- **Lựa chọn phụ (không render):** nếu tay đỡ nhô 70 mm bị cho là vướng, dùng tay ngắn 45 mm với mâm Ø90 cắt phẳng phía tường (mâm D-shape) – pan còn ±100°. Tôi không khuyến nghị vì mất pan rộng.
+- **In (suy luận hình học, chưa slice):** tấm tường nằm phẳng xuống bàn, tay đỡ + mâm dựng lên (L phải in nằm nghiêng hoặc 3 part rời để tránh lực xé lớp): **đề xuất in tấm tường + tay đỡ nằm ngang cạnh nhau rồi ghép bằng 2 vít**, hoặc in cả giá nằm nghiêng 45° (cần vát). Chốt ở CAD. Không support.
+- **Màu (1 phối):** giá treo đen; hộp, khung mặt trước, khung U + đĩa + vành giữ như D (trắng / đen / xanh thông).
+- Đánh đổi: nhô 70 mm + cao thêm 26 mm so với D, cần 2 vít vào tường (kiểm vật liệu tường: bê tông/gạch cần tắc kê – TODO) nhưng pan thật ngay trên tường.
+
+### Bảng part dùng chung D ↔ W
+
+| Part | D (để bàn) | W (treo tường) | Ghi chú |
+|---|---|---|---|
+| Thân hộp + nắp sau (trắng) | ✔ | ✔ | khe nhiệt + ô USB sau-dưới |
+| Khung mặt trước (đen, ống kính + 2 đèn + STLAB) | ✔ | ✔ | |
+| Khung U + đĩa xoay (xanh thông, liền) | ✔ | ✔ | pan/tilt như nhau |
+| Vành đế Ø86 (chốt giữa + 3 tai ma sát) | ✔ nằm trên bàn (đáy có 2 lỗ treo + 3M) | ✔ bắt lên mâm bằng 2 vít (dùng lại 2 lỗ đáy) | dùng chung, cùng file |
+| Vít M3 + đai ốc/insert + long đen (trục tilt, 2 bộ) | ✔ | ✔ | chiều dài vít, kiểu đai ốc, khe: fit-library khi CAD |
+| Giá treo W (tấm tường + tay đỡ + mâm) | – | ✔ riêng W | 2 vít tường + 2 vít M3 bắt vành (TODO cỡ vít) |
+| Kẹp dây USB × 2 | – | ✔ riêng W | |
+| Vít vành → mâm × 2 | – | ✔ | ít loại vít: dùng M3 cùng loại với trục tilt nếu có thể (TODO) |
+
+Khối mạch cho cả D và W: **bộ 2 tầng** (shield ESP32-S3-CAM cắm chồng lên đế nạp CH340 + USB + nút IO0/RST), ước 27 × 40,5 × 20–25 mm – research-notes mục 5–6. Vỏ cộng đồng (mục 6) chỉ dành cho mạch không đế nạp nên **không vừa**; chỉ lấy tham khảo vị trí ống kính.
+
 ## 6. Câu còn mở
 
 1. **Ngưỡng cảnh báo nhiệt web 60 / 70 °C** – Tuan chưa trả lời (đề xuất < 60 xanh, 60–70 vàng, ≥ 70 đỏ; TODO chỉnh theo đo thực).
 2. Chiều xoay mạch 90° trong hộp (+90° hay −90°) – xác định khi in thử (mục 0).
 3. Treo tường với D: đế dính tường thì trục pan nằm ngang; chọn hướng treo (treo ngửa/trần hoặc bỏ pan khi treo tường). Đề xuất: khi treo tường dùng khóa đĩa (không xoay), chỉ tilt.
 4. Giữ đĩa xoay: snap hay vít ở đầu chốt (quyết lúc dựng CAD).
-5. In thử kiểm khối mạch (số cộng đồng, mục 0) trước khi chốt CAD.
+5. Lật ngược W (treo dưới kệ): hút dưới/thoát trên bị đảo khi lật – chấp nhận hay chặn không cho lật? Đề xuất: cho lật nhưng ghi cảnh báo nhiệt (cần đo khi lật).
+6. In thử kiểm khối mạch (số cộng đồng, mục 0) trước khi chốt CAD.
 
 (Đã chốt: phương án D; trục tilt = vít M3 + đai ốc/insert.)
 
@@ -148,3 +182,9 @@ Dùng palette `studio/design/tokens.json` sáng (trang ESP32 giữ bộ sáng) +
 2. Lần 1: ảnh "nghiêng + xoay" lệch khung vì khớp cha-con sai (phép nghịch đảo tính trước khi cập nhật vị trí) → cập nhật cảnh trước khi gán.
 3. Thêm ảnh tách rời để thấy chốt, tai ma sát và đáy lật (lỗ treo, vùng dán 3M).
 4. Đổi khối mạch theo số cộng đồng (27 × 40,5 × 20–25 mm): nâng hộp D thêm 8 mm (tâm trục 64 mm) để cáp/đầu USB có chỗ; tay U cao 70 mm.
+
+## 9. Đã sửa gì sau khi nhìn ảnh (mẫu W)
+
+1. Lần 1: cụm hộp + khung U nằm dưới sàn, lệch khỏi mâm (phép gán cha–con huỷ vị trí dời) → gán không nghịch đảo, vị trí dời đúng.
+2. Lần 1: mâm có ô đen vuông (mặt tay đỡ trùng phẳng với mặt mâm, nhấp nháy) → hạ mặt tay đỡ 0,4 mm.
+3. Tường trắng lóa, mất khối → tường xám be đậm hơn, giảm đèn; chỉnh khung hình cho thấy trọn hộp.

@@ -96,7 +96,7 @@ st = status()
 ok(st is not None, "/status JSON")
 if not st:
     sys.exit(1)
-ok(st.get("version") == "0.1.0", "version %s" % st.get("version"))
+ok(st.get("version") in ("0.1.0", "0.2.0"), "version %s" % st.get("version"))
 ok(st.get("vflip") == 1 and st.get("hmirror") == 1, "mac dinh vflip=1 hmirror=1")
 c, b, t = get("/")
 ok(c == 200 and b"81" in b, "trang / %s" % c)
@@ -156,6 +156,14 @@ c, _, _ = get("/control?var=khongco&val=1")
 ok(c == 400, "var sai -> %s" % c)
 c, _, _ = get("/control?var=quality&val=99")
 ok(c == 400, "quality 99 -> %s" % c)
+if st.get("version") == "0.2.0":
+    c, _, _ = get("/control?var=rotate&val=90")
+    ok(c == 200 and (status() or {}).get("rotate") == 90, "rotate 90 luu + /status")
+    c, _, _ = get("/control?var=rotate&val=45")
+    ok(c == 400, "rotate 45 -> %s" % c)
+    get("/control?var=rotate&val=0")
+    c, b, _ = get("/")
+    ok(c == 200 and "Chụp ảnh".encode("utf-8") in b, "trang / giao dien moi")
 st = status() or {}
 ok(st.get("cam_reinit") == 0, "cam_reinit %s (frame_loi %s)" % (st.get("cam_reinit"), st.get("frame_loi")))
 print("   nhiet %s C, nong %s, heap %s, psram %s" % (st.get("nhiet_do_chip"), st.get("nong"),

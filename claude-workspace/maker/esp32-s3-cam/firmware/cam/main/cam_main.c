@@ -1,4 +1,4 @@
-// Firmware chinh v0.1.0: camera giam sat ESP32-S3-CAM N16R8 + OV3660.
+// Firmware chinh v0.2.0: camera giam sat ESP32-S3-CAM N16R8 + OV3660.
 // - Chi MOT task camera goi esp_camera_fb_get, copy JPEG sang "khung moi nhat" (PSRAM, dem tham chieu).
 // - Server cong 80: /, /capture, /status, /control. Server cong 81: /stream (MJPEG, moi nguoi xem 1 task rieng).
 // - Khong ai giu camera_fb_t ngoai task camera, va task camera tra ngay sau khi copy.
@@ -31,7 +31,7 @@
 
 #include "wifi_nha.h"
 
-#define CAM_VERSION "0.1.0"
+#define CAM_VERSION "0.2.0"
 
 // Nguong nhiet: TODO chua co nguon datasheet (xem README), dat theo yeu cau spec.
 #define TEMP_HOT_C 70.0f
@@ -66,11 +66,13 @@ typedef struct {
     int fps;
     int aec;
     int ae_level;
+    int rotate;  // 0/90/180/270: chi luu, trang web tu xoay hien thi
 } cam_cfg_t;
 
 static cam_cfg_t g_cfg = {
     .framesize = FRAMESIZE_SVGA, .quality = 12, .vflip = 1, .hmirror = 1,
     .brightness = 0, .contrast = 0, .saturation = 0, .fps = 10, .aec = 1, .ae_level = 0,
+    .rotate = 0,
 };
 
 typedef struct {
@@ -111,7 +113,8 @@ static bool cfg_valid(const cam_cfg_t *c)
            (c->vflip == 0 || c->vflip == 1) && (c->hmirror == 0 || c->hmirror == 1) &&
            c->brightness >= -2 && c->brightness <= 2 && c->contrast >= -2 && c->contrast <= 2 &&
            c->saturation >= -2 && c->saturation <= 2 && c->fps >= 1 && c->fps <= 25 &&
-           (c->aec == 0 || c->aec == 1) && c->ae_level >= -2 && c->ae_level <= 2;
+           (c->aec == 0 || c->aec == 1) && c->ae_level >= -2 && c->ae_level <= 2 &&
+           (c->rotate == 0 || c->rotate == 90 || c->rotate == 180 || c->rotate == 270);
 }
 
 static void cfg_load(void)
@@ -476,12 +479,12 @@ static esp_err_t status_get(httpd_req_t *req)
         "{\"version\":\"" CAM_VERSION "\",\"uptime_s\":%" PRId64 ",\"nhiet_do_chip\":%.1f,\"nong\":%s,"
         "\"fps_cai\":%d,\"fps_thuc\":%.1f,\"so_nguoi_xem\":%d,\"framesize\":\"%s\",\"quality\":%d,"
         "\"vflip\":%d,\"hmirror\":%d,\"brightness\":%d,\"contrast\":%d,\"saturation\":%d,"
-        "\"aec\":%d,\"ae_level\":%d,\"heap_free\":%u,\"psram_free\":%u,\"frame_loi\":%u,"
+        "\"aec\":%d,\"ae_level\":%d,\"rotate\":%d,\"heap_free\":%u,\"psram_free\":%u,\"frame_loi\":%u,"
         "\"cam_reinit\":%u,\"cam_ok\":%s,%s,\"ap_ssid\":\"%s\"}",
         (esp_timer_get_time() - s_boot_us) / 1000000, (double)s_temp, s_nong ? "true" : "false",
         g_cfg.fps, (double)s_fps_thuc, (int)s_viewers, fs_name(g_cfg.framesize), g_cfg.quality,
         g_cfg.vflip, g_cfg.hmirror, g_cfg.brightness, g_cfg.contrast, g_cfg.saturation,
-        g_cfg.aec, g_cfg.ae_level, (unsigned)esp_get_free_heap_size(),
+        g_cfg.aec, g_cfg.ae_level, g_cfg.rotate, (unsigned)esp_get_free_heap_size(),
         (unsigned)heap_caps_get_free_size(MALLOC_CAP_SPIRAM), (unsigned)s_frame_loi,
         (unsigned)s_cam_reinit, s_cam_ok ? "true" : "false", nha, s_ap_ssid);
     if (n < 0 || n >= (int)sizeof(buf)) {
@@ -567,6 +570,8 @@ static esp_err_t control_get(httpd_req_t *req)
         n.aec = val;
     } else if (strcmp(var, "ae_level") == 0) {
         n.ae_level = val;
+    } else if (strcmp(var, "rotate") == 0) {
+        n.rotate = val;
     } else {
         return httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "var khong hop le");
     }

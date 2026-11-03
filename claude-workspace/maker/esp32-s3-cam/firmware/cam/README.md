@@ -1,4 +1,4 @@
-# STLab Cam – firmware chính v0.1.0
+# STLab Cam – firmware chính v0.2.0
 
 Camera giám sát ESP32-S3-CAM N16R8 + OV3660. Ưu tiên: chạy ổn định, xem video và chụp cùng lúc, không kẹt khi đóng tab, không quá nóng.
 
@@ -16,7 +16,7 @@ AP dự phòng: SSID `STLAB-CAM-xxxx` (xxxx = 2 byte cuối MAC), mật khẩu =
 ## Endpoint
 - Cổng 80: `/` (trang web), `/capture` (JPEG khung mới), `/status` (JSON), `/control`.
 - Cổng 81: `/stream` (MJPEG, tối đa 2 người xem; người thứ 3 nhận 503 "Toi da 2 nguoi xem").
-- `/status`: version, uptime_s, nhiet_do_chip, nong, fps_cai, fps_thuc, so_nguoi_xem, framesize, quality, vflip, hmirror, brightness, contrast, saturation, aec, ae_level, heap_free, psram_free, frame_loi, cam_reinit, cam_ok, sta_ssid/sta_ip/sta_rssi/sta_connected, mdns, ap_ssid.
+- `/status`: version, uptime_s, nhiet_do_chip, nong, fps_cai, fps_thuc, so_nguoi_xem, framesize, quality, vflip, hmirror, brightness, contrast, saturation, aec, ae_level, heap_free, psram_free, frame_loi, cam_reinit, cam_ok, rotate, sta_ssid/sta_ip/sta_rssi/sta_connected, mdns, ap_ssid.
 
 ## /control?var=<tên>&val=<số>
 | var | giá trị | mặc định |
@@ -28,8 +28,16 @@ AP dự phòng: SSID `STLAB-CAM-xxxx` (xxxx = 2 byte cuối MAC), mật khẩu =
 | fps | 1–25 (fps stream) | 10 |
 | aec | 0/1 (tự phơi sáng) | 1 |
 | ae_level | −2..2 | 0 |
+| rotate | 0/90/180/270 (chỉ lưu NVS; trang web tự xoay hiển thị và xoay khi tải ảnh) | 0 |
 
 Sai tên/giá trị → HTTP 400. Lưu NVS namespace `cam_cfg`, nạp lại khi khởi động.
+
+## Giao diện v0.2 (main/index.html)
+- Một file ≤ 40 KB, nhúng vào flash (`EMBED_TXTFILES`), không tài nguyên ngoài, tự sáng/tối theo `prefers-color-scheme`, chạy cả khi mở qua AP `192.168.4.1`.
+- Video `<img id="video">` lấy `http://<location.hostname>:81/stream`. Lỗi stream: nếu `/status` báo ≥ 2 người xem thì hiện "Đã đủ 2 người xem – thử lại sau" + nút Thử lại; ngược lại tự thử lại sau 4 s.
+- `/status` cập nhật mỗi 2 s; mất kết nối → chấm đỏ "Mất kết nối", tự thử lại. Ngưỡng nhiệt hiển thị 60/70 °C là hằng số đầu script (`// TODO Tuan chốt ngưỡng`).
+- Nút: Chụp ảnh (xem trước), Tải ảnh (`stlab-cam-YYYYMMDD-HHMMSS.jpg`, xoay bằng canvas nếu rotate ≠ 0), Lật 180° (vflip + hmirror), Xoay 90°, độ phân giải, Sáng / Tương phản / fps.
+- Đổi struct cấu hình (thêm `rotate`) làm blob NVS cũ không còn khớp kích thước → lần nạp đầu về mặc định (SVGA, lật 180°, 10 fps).
 
 ## Kiến trúc
 - Một task camera duy nhất gọi `esp_camera_fb_get`: lấy khung theo nhịp fps, copy JPEG vào "khung mới nhất" (5 ô PSRAM, đếm tham chiếu), trả `camera_fb_t` ngay. Stream và capture chỉ đọc khung đã copy.
