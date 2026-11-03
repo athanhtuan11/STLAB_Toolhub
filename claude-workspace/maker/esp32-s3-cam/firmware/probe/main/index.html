@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STLab – Dò camera ESP32-S3</title>
+<style>
+body{font-family:system-ui,"Segoe UI",Arial,sans-serif;margin:0;background:#101418;color:#e8eef3}
+header{background:#1b5e20;padding:12px 16px}
+h1{font-size:18px;margin:0}
+.wrap{padding:12px;max-width:900px;margin:0 auto}
+img{width:100%;background:#000;border-radius:10px;display:block}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+select,button{font-size:16px;padding:10px 12px;border-radius:10px;border:0}
+button{background:#43a047;color:#fff;font-weight:600}
+select{background:#263238;color:#fff}
+table{width:100%;border-collapse:collapse;margin-top:8px}
+td{padding:7px 6px;border-bottom:1px solid #2b3640;font-size:14px}
+td:first-child{color:#90a4ae;width:42%}
+</style>
+</head>
+<body>
+<header><h1>STLab – Dò camera ESP32-S3</h1></header>
+<div class="wrap">
+  <img id="anh" src="/stream" alt="Luồng camera">
+  <div class="bar">
+    <button onclick="chup()">Chụp ảnh</button>
+    <select id="fs" onchange="gui()">
+      <option value="QVGA">QVGA 320×240</option>
+      <option value="VGA">VGA 640×480</option>
+      <option value="SVGA" selected>SVGA 800×600</option>
+      <option value="XGA">XGA 1024×768</option>
+      <option value="UXGA">UXGA 1600×1200</option>
+      <option value="QXGA">QXGA 2048×1536</option>
+    </select>
+    <select id="q" onchange="gui()">
+      <option value="8">Chất lượng cao (8)</option>
+      <option value="12" selected>Chất lượng vừa (12)</option>
+      <option value="20">Chất lượng thấp (20)</option>
+      <option value="30">Rất thấp (30)</option>
+    </select>
+  </div>
+  <table id="tt"><tr><td>Đang tải…</td><td></td></tr></table>
+</div>
+<script>
+function chup(){
+  fetch('/capture').then(function(r){return r.blob();}).then(function(b){
+    document.getElementById('anh').src = URL.createObjectURL(b);
+  }).catch(function(){});
+}
+function gui(){
+  var f = document.getElementById('fs').value;
+  var q = document.getElementById('q').value;
+  fetch('/control?framesize=' + encodeURIComponent(f) + '&quality=' + encodeURIComponent(q))
+    .then(function(){ document.getElementById('anh').src = '/stream?t=' + Date.now(); })
+    .catch(function(){});
+}
+function hienThi(j){
+  var dong = [
+    ['Bộ chân', j.bo_chan],
+    ['Lỗi', j.loi ? j.loi : 'không có'],
+    ['XCLK', j.xclk_mhz + ' MHz'],
+    ['PID', j.pid],
+    ['Cảm biến', j.ten_cam_bien],
+    ['Độ phân giải', j.framesize],
+    ['FPS (trung bình 5 giây)', j.fps_do_duoc],
+    ['Chip', j.chip],
+    ['Flash', Math.round(j.flash / 1048576) + ' MB'],
+    ['PSRAM', Math.round(j.psram / 1048576) + ' MB'],
+    ['Heap trống', Math.round(j.heap_free / 1024) + ' KB'],
+    ['PSRAM trống', Math.round(j.psram_free / 1024) + ' KB'],
+    ['Nhiệt độ chip', j.nhiet_do_chip + ' °C'],
+    ['Thời gian chạy', j.uptime_s + ' giây']
+  ];
+  var html = '';
+  for (var i = 0; i < dong.length; i++) {
+    html += '<tr><td>' + dong[i][0] + '</td><td>' + dong[i][1] + '</td></tr>';
+  }
+  document.getElementById('tt').innerHTML = html;
+}
+function capNhat(){
+  fetch('/status').then(function(r){return r.json();}).then(hienThi).catch(function(){});
+}
+setInterval(capNhat, 2000);
+capNhat();
+</script>
+</body>
+</html>
