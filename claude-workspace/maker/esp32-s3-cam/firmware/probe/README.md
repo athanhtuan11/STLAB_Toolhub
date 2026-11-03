@@ -45,3 +45,19 @@ trang web xem hình + trạng thái.
   SIOD/SIOC từng bộ và vẫn bật Wi-Fi + trang `/status` để báo lỗi.
 - Muốn thêm bộ chân khác: sửa mảng `s_pin_sets` trong `main/probe_main.c` (chỉ thêm khi có nguồn
   xác nhận, không tự đoán chân).
+
+## Xem trên máy tính
+
+Cài Wi-Fi nhà cho mạch một lần (mạch lưu trong NVS, không nằm trong mã), sau đó mở trình duyệt:
+
+```bat
+C:\Espressif\python_env\idf5.5_py3.11_env\Scripts\python.exe wifi-setup.py --port COM6
+```
+
+- Mặc định lấy SSID mạng Windows đang kết nối và mật khẩu từ profile Windows; không đọc được thì hỏi (ẩn).
+- Tùy chọn: `--ssid TEN` (mạng khác), `--ask` (tự nhập mật khẩu), `--status` (xem trạng thái), `--clear` (xóa Wi-Fi nhà).
+- Xong script in `Mo: http://stlab-cam.local  (IP: x.x.x.x)`. Mật khẩu không bao giờ được in hay ghi file.
+- Chỉ Wi-Fi 2,4 GHz (ESP32-S3 không có 5 GHz); router phát chung tên 2,4 + 5 GHz vẫn dùng được.
+- Máy tính và mạch phải cùng một mạng.
+- AP `STLAB-CAM-xxxx` vẫn bật để dự phòng (http://192.168.4.1).
+- Khi mạch vào router, kênh của AP đổi theo kênh router (giới hạn của chế độ AP+STA), nên điện thoại đang nối AP có thể rớt vài giây.

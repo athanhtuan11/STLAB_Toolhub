@@ -27,6 +27,8 @@
 #include "nvs_flash.h"
 #include "esp_http_server.h"
 
+#include "wifi_nha.h"
+
 #include "driver/i2c.h"
 #include "driver/temperature_sensor.h"
 
@@ -58,14 +60,7 @@ static const cam_pin_set_t s_pin_sets[] = {
         .pwdn = -1, .reset = -1,
     },
     // TODO: them bo chan moi o day khi co nguon xac nhan (khong tu doan chan).
-    // {
-    //     .name = "TEN_BO",
-    //     .xclk = ..., .siod = ..., .sioc = ...,
-    //     .d0 = ..., .d1 = ..., .d2 = ..., .d3 = ...,
-    //     .d4 = ..., .d5 = ..., .d6 = ..., .d7 = ...,
-    //     .vsync = ..., .href = ..., .pclk = ...,
-    //     .pwdn = ..., .reset = ...,
-    // },
+    // Dinh dang moi dong giong bo FREENOVE_GOOUUU o tren (name, xclk, siod, sioc, d0..d7, vsync, href, pclk, pwdn, reset).
 };
 #define PIN_SET_COUNT (sizeof(s_pin_sets) / sizeof(s_pin_sets[0]))
 
@@ -391,9 +386,11 @@ static void wifi_start_ap(void)
     wc.ap.max_connection = 4;
     wc.ap.authmode = WIFI_AUTH_WPA2_PSK;
 
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
+    wifi_nha_init();
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wc));
     ESP_ERROR_CHECK(esp_wifi_start());
+    wifi_nha_start();
 
     ESP_LOGI(TAG, "[DO] Wi-Fi AP: SSID=%s, mat khau=%s, dia chi=http://192.168.4.1",
              g_ssid, g_pass);
@@ -420,20 +417,23 @@ static esp_err_t status_get(httpd_req_t *req)
     char pidbuf[8];
     snprintf(pidbuf, sizeof(pidbuf), "0x%04X", g.pid);
 
-    char buf[960];
+    char nha[320];
+    wifi_nha_status_json(nha, sizeof(nha));
+
+    char buf[1400];
     int n = snprintf(buf, sizeof(buf),
         "{\"chip\":\"%s\",\"flash\":%" PRIu32 ",\"psram\":%u,"
         "\"bo_chan\":\"%s\",\"xclk_mhz\":%d,\"pid\":\"%s\","
         "\"ten_cam_bien\":\"%s\",\"framesize\":\"%s\","
         "\"fps_do_duoc\":%.1f,\"heap_free\":%u,\"psram_free\":%u,"
-        "\"nhiet_do_chip\":%.1f,\"uptime_s\":%" PRId64 ",\"loi\":\"%s\"}",
+        "\"nhiet_do_chip\":%.1f,\"uptime_s\":%" PRId64 ",\"loi\":\"%s\",%s}",
         g.chip, flash_size, (unsigned)psram_size,
         g.bo_chan, g.xclk_mhz, pidbuf,
         g.ten_cam_bien, fs_name(g.framesize),
         (double)g.fps,
         (unsigned)esp_get_free_heap_size(),
         (unsigned)heap_caps_get_free_size(MALLOC_CAP_SPIRAM),
-        (double)temp, uptime_s, g.loi);
+        (double)temp, uptime_s, g.loi, nha);
 
     if (n < 0) {
         return httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "loi tao JSON");

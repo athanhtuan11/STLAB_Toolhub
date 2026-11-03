@@ -25,6 +25,8 @@ Dự án Tuan bắt đầu 2026-11-03. Mạch **ESP32-S3-CAM N16R8** (16 MB flas
 - `firmware/probe/` (ESP-IDF 5.5.4): dò chip/PSRAM/flash, thử bộ chân camera, đọc PID cảm biến, phát Wi-Fi AP
   `STLAB-CAM-xxxx` (mật khẩu in ra cổng serial, sinh từ MAC – không lưu trong mã) + trang xem hình.
   Build: `powershell -ExecutionPolicy Bypass -File build.ps1`; nạp + xem log: `flash.bat COMx`.
+- Wi-Fi nhà (`main/wifi_nha.c`, chế độ AP+STA): `python wifi-setup.py --port COM6` tự lấy SSID + mật khẩu từ Windows, gửi qua
+  UART, mạch lưu NVS → xem tại `http://stlab-cam.local`. Mật khẩu không nằm trong mã/file/log. Chỉ Wi-Fi 2,4 GHz.
 
 ## Kết quả dò phần cứng (2026-11-03, mạch thật của Tuan)
 - Chip ESP32-S3R8 QFN56 rev v0.2 (hàn thẳng, không module), thạch anh 40 MHz; PSRAM 8 MB octal trong chip (AP gen 3,
@@ -39,5 +41,8 @@ Dự án Tuan bắt đầu 2026-11-03. Mạch **ESP32-S3-CAM N16R8** (16 MB flas
   `CONFIG_SCCB_HARDWARE_I2C_DRIVER_LEGACY=y` (IDF 5.5 cấm trộn 2 driver → abort khởi động).
 
 ## Trạng thái
+- 2026-11-03: Wi-Fi nhà chạy trên mạch thật: vào `VIETTEL_Suong` (2,4 GHz) IP 192.168.1.127, RSSI −46…−58 dBm, reset tự vào lại
+  ~6,5 s, mDNS `stlab-cam.local` OK, stream SVGA ~18 fps (~570 KB/s) qua mạng nhà. Tiếp: Tuan xem hình → nhiệt khi stream lâu
+  → bước 0 dáng vỏ + UI web.
 - 2026-11-03: firmware dò chạy trên mạch thật. Tiếp: Tuan xem hình qua AP → đo fps stream/nhiệt khi chạy lâu → bước 0 dáng
   vỏ + giao diện web → chọn thứ tự 4 hướng.

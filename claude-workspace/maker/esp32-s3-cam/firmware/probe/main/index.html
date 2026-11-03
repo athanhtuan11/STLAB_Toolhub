@@ -70,7 +70,9 @@ function hienThi(j){
     ['Heap trống', Math.round(j.heap_free / 1024) + ' KB'],
     ['PSRAM trống', Math.round(j.psram_free / 1024) + ' KB'],
     ['Nhiệt độ chip', j.nhiet_do_chip + ' °C'],
-    ['Thời gian chạy', j.uptime_s + ' giây']
+    ['Thời gian chạy', j.uptime_s + ' giây'],
+    ['Wi-Fi nhà', j.sta_connected ? (j.sta_ssid + ' (' + j.sta_rssi + ' dBm)') : (j.sta_ssid ? j.sta_ssid + ' – chưa kết nối' : 'chưa cài')],
+    ['Địa chỉ truy cập', j.sta_connected ? ('http://' + j.mdns + ' hoặc http://' + j.sta_ip) : 'http://192.168.4.1 (AP dự phòng)']
   ];
   var html = '';
   for (var i = 0; i < dong.length; i++) {
