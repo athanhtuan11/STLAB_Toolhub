@@ -1,10 +1,4 @@
-# Gate mau thu lap switch MX (Claude viet, executor KHONG sua).
-# Chay: blender -b --python-exit-code 1 -P gate_switch_coupon.py -- <out_dir>
-# Kiem (theo HUONG IN, day z = 0):
-#  plate-coupon.stl: 1 khoi kin; cat ngang z = 0,75 (giua tam 1,5) co 3 lo vuong 14,00 / 14,10 / 14,20 (+-0,03);
-#                    tam day dung 1,5: cat z = 1,6 thay hoc duoi rong >= 15,2 (khong con tam).
-#  stem-coupon.stl : 3 khoi kin; cat ngang cach mat tren 2,0 mm co lo chu thap moi khoi:
-#                    canh dai 4,33 / 4,43 / 4,53, be rong tay 1,35 / 1,45 / 1,55 (+-0,03); sau lo >= 3,8.
+# Ham chung cho gate (Claude viet, executor KHONG sua).
 import bpy, bmesh, sys
 from pathlib import Path
 
@@ -96,48 +90,12 @@ def inner(boxes):
     return [b for b in boxes if b is not big]
 
 
-# ---- plate ----
-bm = load("plate-coupon.stl")
-if bm:
-    check_solid("plate-coupon.stl", bm, 1)
-    holes = sorted(inner(loops_at(bm, 0.75)), key=lambda b: b[0])
-    sizes = [(round(b[1] - b[0], 3), round(b[3] - b[2], 3)) for b in holes]
-    print("lo tam z=0.75:", sizes)
-    if len(holes) != 3:
-        fails.append(f"plate: can 3 lo o z = 0,75, thay {len(holes)}")
-    else:
-        for (w, h), want in zip(sizes, (14.00, 14.10, 14.20)):
-            if abs(w - want) > TOL or abs(h - want) > TOL:
-                fails.append(f"plate: lo {w}x{h}, can {want}x{want}")
-    cav = sorted(inner(loops_at(bm, 1.6)), key=lambda b: b[0])
-    print("hoc z=1.6:", [(round(b[1] - b[0], 2), round(b[3] - b[2], 2)) for b in cav])
-    if len(cav) != 3 or any(min(b[1] - b[0], b[3] - b[2]) < 15.2 for b in cav):
-        fails.append("plate: o z = 1,6 phai la 3 hoc rong >= 15,2 (tam chi day 1,5)")
-    bm.free()
 
-# ---- stems ----
-bm = load("stem-coupon.stl")
-if bm:
-    top = check_solid("stem-coupon.stl", bm, 3)
-    crosses = [b for b in inner(loops_at(bm, top - 2.0)) if (b[1] - b[0]) < 6]
-    # moi coc co 1 vong ngoai rieng -> lay vong nho (lo chu thap) theo X tang dan
-    crosses = sorted(crosses, key=lambda b: b[0])
-    sizes = [(round(b[1] - b[0], 3), round(b[3] - b[2], 3)) for b in crosses]
-    print("lo chu thap:", sizes)
-    if len(crosses) != 3:
-        fails.append(f"stem: can 3 lo chu thap, thay {len(crosses)}")
-    else:
-        for (w, h), want in zip(sizes, (4.33, 4.43, 4.53)):
-            if abs(w - want) > TOL or abs(h - want) > TOL:
-                fails.append(f"stem: lo chu thap {w}x{h}, can {want}x{want}")
-    deep = [b for b in inner(loops_at(bm, top - 3.8)) if (b[1] - b[0]) < 6]
-    if len(deep) != 3:
-        fails.append("stem: lo chu thap phai sau >= 3,8 mm")
-    bm.free()
 
-if fails:
-    print("FAIL", len(fails))
-    for f in fails:
-        print(" -", f)
-    sys.exit(1)
-print("PASS gate_switch_coupon")
+def done(name):
+    if fails:
+        print("FAIL", len(fails))
+        for f in fails:
+            print(" -", f)
+        sys.exit(1)
+    print("PASS", name)

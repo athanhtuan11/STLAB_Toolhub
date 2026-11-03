@@ -376,6 +376,56 @@
    "confidence": 0.9,
    "verified": false,
    "note": "Nam cham O4x2: shaft lay theo danh nghia trong huong dan, khong do. Tac gia van nho keo 502 o vo duoi; chu y cung cuc."
+  },
+  {
+   "id": "catpaw/mx-socket",
+   "interface": "mx-switch-socket-no-pcb",
+   "fit": "press",
+   "hole_mm": 14.0,
+   "shaft_mm": 14.0,
+   "clearance_mm": 0.0,
+   "nominal_mm": 14.0,
+   "source": {
+    "model": "makerworld-voxo3d-cute-cat-paw-clicker",
+    "parts": "01 body: lo vuong (xoay 45 do) cat lat z 2,6-11,2",
+    "method": "stl-slice",
+    "ref": "docs/research-notes/cat-paw-clicker-fits.md"
+   },
+   "print": {
+    "printer": "Bambu A1 0.4, lop 0.2",
+    "material": "Bambu PETG Basic",
+    "xy_hole_compensation": 0,
+    "elefant_foot_compensation": 0.075,
+    "proven": "san pham hoan thien, tac gia in + chay that"
+   },
+   "confidence": 0.95,
+   "verified": false,
+   "note": "O switch MX khong PCB: lo vuong 14,00 sau 8,58 tu mieng (day kin); ranh V 45 do cho ngam: tu 1,94 den 3,44 duoi mieng, sau nhat 2,69 duoi mieng rong 15,44 (+0,72 moi ben). Than in dung, mieng huong len. Mieng nam o day hoc keycap sau 4,12."
+  },
+  {
+   "id": "catpaw/mx-keycap-cross",
+   "interface": "mx-keycap-stem-socket",
+   "fit": "press",
+   "hole_mm": 4.19,
+   "shaft_mm": null,
+   "clearance_mm": null,
+   "nominal_mm": 4.0,
+   "source": {
+    "model": "makerworld-voxo3d-cute-cat-paw-clicker",
+    "parts": "02 up: ong O5,71, lo chu thap",
+    "method": "stl-slice",
+    "ref": "docs/research-notes/cat-paw-clicker-fits.md"
+   },
+   "print": {
+    "printer": "Bambu A1 0.4, lop 0.2",
+    "material": "Bambu PETG Basic",
+    "xy_hole_compensation": 0,
+    "elefant_foot_compensation": 0.075,
+    "proven": "san pham hoan thien, tac gia in + chay that"
+   },
+   "confidence": 0.9,
+   "verified": false,
+   "note": "Lo chu thap keycap: tay dai 4,19, rong 1,25, sau 5,6; ong ngoai O5,71; day ong lui vao trong vay 4,3. Vay day 1,5. Keycap in mieng vay up xuong ban."
   }
  ]
 }

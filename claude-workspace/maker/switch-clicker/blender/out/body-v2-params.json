@@ -1,0 +1,64 @@
+{
+  "unit": "mm",
+  "orientation": "print == use: z=0 bottom (engraved), z=15.31 top rim",
+  "body": {
+    "x": 34.0,
+    "y": 30.0,
+    "z": 15.31,
+    "center_xy": [
+      0.0,
+      0.0
+    ]
+  },
+  "vertical_corner_radius": 4.8,
+  "top_edge_fillet_r": 2.0,
+  "bottom_edge_chamfer_45": 0.6,
+  "keycap_pocket": {
+    "diameter": 27.0,
+    "z0": 11.19,
+    "z1": 15.31,
+    "mouth_fillet_r": 0.6
+  },
+  "switch_opening": {
+    "square": 14.0,
+    "z0": 2.61,
+    "z1": 11.19,
+    "closed_bottom_thickness": 2.61,
+    "v_notch": {
+      "z0": 7.75,
+      "z_mid": 8.5,
+      "z1": 9.25,
+      "expansion_per_side": 0.72,
+      "width_at_mid": 15.44,
+      "face_angle_deg": 43.83
+    }
+  },
+  "hanging_ring": {
+    "outer_diameter": 12.0,
+    "hole_diameter": 5.4,
+    "thickness": 4.0,
+    "center": [
+      -20.5,
+      14.0
+    ],
+    "edge_fillet_r": 1.0,
+    "bed_chamfer": 0.4,
+    "segments": 128
+  },
+  "engraving": {
+    "face_z": 0.0,
+    "text": "STLAB",
+    "text_height": 4.0,
+    "text_width": 19.398,
+    "stroke_min": 0.8,
+    "text_center": [
+      0.0,
+      -8.0
+    ],
+    "depth": 0.4,
+    "reads_from": "below",
+    "font": "C:\\Windows\\Fonts\\ariblk.ttf"
+  },
+  "boolean_solver": "EXACT",
+  "source_mx": "fit-library catpaw/mx-socket (voxo3d Cat Paw Clicker, printed on Bambu A1 + PETG Basic): MX plate hole 14.00 square; switch sits in a 14.00 square opening with a 0.72 V-notch all around."
+}

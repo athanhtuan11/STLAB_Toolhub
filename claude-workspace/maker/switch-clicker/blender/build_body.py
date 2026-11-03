@@ -1,10 +1,11 @@
-"""Build body A of the STLab switch-clicker keychain (Blender 5.2).
+"""Build body v2 of the STLab switch-clicker keychain (Blender 5.2).
 
 Run: blender -b --python-exit-code 1 -P build_body.py -- out
-Units: 1 = 1 mm. STL is in PRINT orientation:
-    z = 0   -> top face when in use (switch plate face, sits on the bed)
-    z = 14  -> bottom when in use (engraved face, points up while printing)
-The part is printed flipped so the plate and the hanging ring touch the bed.
+Units: 1 = 1 mm. The STL is in PRINT orientation == USE orientation:
+    z = 0      -> bottom face when in use (engraved face on the bed)
+    z = 15.31  -> top rim around the keycap pocket
+
+All dimensions are variables at the top of this file.
 """
 
 import json
@@ -14,7 +15,6 @@ from pathlib import Path
 
 import bmesh
 import bpy
-from mathutils import Vector
 
 argv = sys.argv
 OUT = Path(argv[argv.index("--") + 1]) if "--" in argv else Path("out")
@@ -25,17 +25,23 @@ OUT.mkdir(parents=True, exist_ok=True)
 
 BODY_X = 34.0
 BODY_Y = 30.0
-BODY_Z = 14.0
+BODY_Z = 15.31
 CORNER_R = 4.8
+TOP_FILLET_R = 2.0
+BOT_CHAMFER = 0.6
 
-TOP_FILLET_R = 3.0
-TOP_CHAMFER_H = 0.8
-BOTTOM_FILLET_R = 1.0
+POCKET_D = 27.0
+POCKET_Z0 = 11.19
+POCKET_MOUTH_R = 0.6
 
-PLATE = 1.5
 HOLE = 14.0
-POCKET = 15.4
-POCKET_Z1 = 11.8
+HOLE_Z0 = 2.61
+HOLE_Z1 = 11.19
+
+V_Z0 = 7.75
+V_ZMID = 8.50
+V_Z1 = 9.25
+V_EXT = 0.72
 
 RING_OD = 12.0
 RING_HOLE = 5.4
@@ -44,26 +50,25 @@ RING_CX = -20.5
 RING_CY = 14.0
 RING_EDGE_R = 1.0
 RING_BED_CHAMFER = 0.4
-RING_SEG = 96
+RING_SEG = 128
 
 TEXT = "STLAB"
 TEXT_H = 4.0
-TEXT_DEPTH = 0.6
+TEXT_DEPTH = 0.4
 TEXT_CX = 0.0
-TEXT_CY = -6.0
+TEXT_CY = -8.0
+TEXT_STROKE_MIN = 0.8
 TEXT_FONT = r"C:\Windows\Fonts\ariblk.ttf"
-ARROW_H = 3.0
-ARROW_HALF_W = ARROW_H / math.sqrt(3.0)
-ARROW_CX = 0.0
-ARROW_CY = 6.0
 
-N_CORNER = 12
-N_TOP_FILLET = 10
-N_BOTTOM_FILLET = 6
+N_CORNER = 24
+N_TOP_FILLET = 16
+SEG = 128
+N_MOUTH = 12
 
 MX_SOURCE = (
-    "Cherry MX datasheet: lo 14,0 +-0,05, tam 1,5; "
-    "vo duoi tam 5,0 + chan 3,3"
+    "fit-library catpaw/mx-socket (voxo3d Cat Paw Clicker, printed on "
+    "Bambu A1 + PETG Basic): MX plate hole 14.00 square; switch sits "
+    "in a 14.00 square opening with a 0.72 V-notch all around."
 )
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -99,46 +104,46 @@ def apply_boolean(target, tool, operation="DIFFERENCE"):
     bpy.context.view_layer.update()
 
 
-def rounded_outline(inset, z, n_corner):
-    """CCW rounded-rectangle outline inset from the nominal 34 x 30 wall."""
+def clean(ob, dist=1e-6):
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts[:], dist=dist)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    bm.to_mesh(ob.data)
+    bm.free()
+    ob.data.update()
+    bpy.context.view_layer.update()
+
+
+def rounded_outline(inset, z):
+    """CCW rounded-rectangle outline, inset from the 34 x 30 wall."""
     hx = BODY_X / 2.0 - inset
     hy = BODY_Y / 2.0 - inset
-    r = max(CORNER_R - inset, 0.02)
+    r = max(CORNER_R - inset, 1e-3)
     ax = hx - r
     ay = hy - r
     pts = []
-    corners = (
+    for cx, cy, a0 in (
         (ax, ay, 0.0),
         (-ax, ay, 90.0),
         (-ax, -ay, 180.0),
         (ax, -ay, 270.0),
-    )
-    for cx, cy, a0 in corners:
-        for k in range(n_corner + 1):
-            a = math.radians(a0 + 90.0 * k / n_corner)
+    ):
+        for k in range(N_CORNER + 1):
+            a = math.radians(a0 + 90.0 * k / N_CORNER)
             pts.append((cx + r * math.cos(a), cy + r * math.sin(a), z))
     return pts
 
 
 def body_profile():
-    """(inset, z) from the bed face up to the engraved face."""
-    levels = [(TOP_CHAMFER_H + TOP_FILLET_R, 0.0), (TOP_FILLET_R, TOP_CHAMFER_H)]
+    """(inset, z) levels from the bed face (z=0) to the top face."""
+    levels = [(BOT_CHAMFER, 0.0), (0.0, BOT_CHAMFER)]
+    zc = BODY_Z - TOP_FILLET_R
+    levels.append((0.0, zc))
     for k in range(1, N_TOP_FILLET + 1):
-        th = math.radians(270.0 - 90.0 * k / N_TOP_FILLET)
+        t = math.radians(90.0 * k / N_TOP_FILLET)
         levels.append(
-            (
-                TOP_FILLET_R + TOP_FILLET_R * math.cos(th),
-                TOP_CHAMFER_H + TOP_FILLET_R + TOP_FILLET_R * math.sin(th),
-            )
-        )
-    levels.append((0.0, BODY_Z - BOTTOM_FILLET_R))
-    for k in range(1, N_BOTTOM_FILLET + 1):
-        th = math.radians(180.0 - 90.0 * k / N_BOTTOM_FILLET)
-        levels.append(
-            (
-                BOTTOM_FILLET_R + BOTTOM_FILLET_R * math.cos(th),
-                BODY_Z - BOTTOM_FILLET_R + BOTTOM_FILLET_R * math.sin(th),
-            )
+            (TOP_FILLET_R - TOP_FILLET_R * math.cos(t), zc + TOP_FILLET_R * math.sin(t))
         )
     return levels
 
@@ -147,7 +152,7 @@ def make_body():
     bm = bmesh.new()
     rings = []
     for inset, z in body_profile():
-        rings.append([bm.verts.new(p) for p in rounded_outline(inset, z, N_CORNER)])
+        rings.append([bm.verts.new(p) for p in rounded_outline(inset, z)])
     m = len(rings[0])
     for i in range(len(rings) - 1):
         a, b = rings[i], rings[i + 1]
@@ -157,7 +162,7 @@ def make_body():
     bm.faces.new(list(reversed(rings[0])))
     bm.faces.new(rings[-1])
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
-    return obj_from_bm("body-a", bm)
+    return obj_from_bm("body-v2", bm)
 
 
 def make_ring():
@@ -187,7 +192,7 @@ def make_ring():
         geom=top,
         offset=RING_EDGE_R,
         offset_type="OFFSET",
-        segments=12,
+        segments=16,
         profile=0.5,
         affect="EDGES",
         clamp_overlap=True,
@@ -204,31 +209,79 @@ def make_ring():
         clamp_overlap=True,
     )
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
-    return obj_from_bm("ring", bm)
+    return obj_from_bm("ring-v2", bm)
 
 
-def stepped_cutter(name, cx, cy, inner, outer, z0, z1, z2):
-    """Square hole below z1, wider pocket above z1."""
+def loft_rings(name, rings, close=True):
+    """Closed loft through a list of equal-length vertex coordinate rings."""
     bm = bmesh.new()
-    sq = ((-1, -1), (1, -1), (1, 1), (-1, 1))
-    hi = inner / 2.0
-    ho = outer / 2.0
-    ai = [bm.verts.new((cx + sx * hi, cy + sy * hi, z0)) for sx, sy in sq]
-    bi = [bm.verts.new((cx + sx * hi, cy + sy * hi, z1)) for sx, sy in sq]
-    bo = [bm.verts.new((cx + sx * ho, cy + sy * ho, z1)) for sx, sy in sq]
-    co = [bm.verts.new((cx + sx * ho, cy + sy * ho, z2)) for sx, sy in sq]
-    bm.faces.new(ai[::-1])
-    bm.faces.new(co)
-    for i in range(4):
-        j = (i + 1) % 4
-        bm.faces.new((ai[i], ai[j], bi[j], bi[i]))
-        bm.faces.new((bi[i], bi[j], bo[j], bo[i]))
-        bm.faces.new((bo[i], bo[j], co[j], co[i]))
+    vs = [[bm.verts.new(p) for p in ring] for ring in rings]
+    m = len(vs[0])
+    for i in range(len(vs) - 1):
+        a, b = vs[i], vs[i + 1]
+        for j in range(m):
+            k = (j + 1) % m
+            bm.faces.new((a[j], a[k], b[k], b[j]))
+    if close:
+        bm.faces.new(list(reversed(vs[0])))
+        bm.faces.new(vs[-1])
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
     return obj_from_bm(name, bm)
 
 
-def text_cutter(name, body, cap_h, cx, cy, z0, z1, font_path):
+def square_ring(side, z):
+    h = side / 2.0
+    return [(h, -h, z), (h, h, z), (-h, h, z), (-h, -h, z)]
+
+
+def make_switch_cutter():
+    """Square hole 14 -> V-notch 15.44 at z 8.5 -> 14, open above the floor."""
+    rings = [
+        square_ring(HOLE, HOLE_Z0),
+        square_ring(HOLE, V_Z0),
+        square_ring(HOLE + 2.0 * V_EXT, V_ZMID),
+        square_ring(HOLE, V_Z1),
+        square_ring(HOLE, HOLE_Z1 + 0.4),
+    ]
+    return loft_rings("switch-cutter", rings)
+
+
+def pocket_profile():
+    """(radius, z) of the keycap pocket, with the R0.6 mouth flare."""
+    zc = BODY_Z - POCKET_MOUTH_R
+    r = POCKET_D / 2.0
+    levels = [(r, POCKET_Z0), (r, zc)]
+    for k in range(1, N_MOUTH + 1):
+        t = math.radians(90.0 * k / N_MOUTH)
+        levels.append(
+            (r + POCKET_MOUTH_R - POCKET_MOUTH_R * math.cos(t),
+             zc + POCKET_MOUTH_R * math.sin(t))
+        )
+    levels.append((r + POCKET_MOUTH_R, BODY_Z + 0.7))
+    return levels
+
+
+def make_pocket_cutter():
+    profile = pocket_profile()
+    rings = []
+    for rad, z in profile:
+        rings.append(
+            [
+                (rad * math.cos(2.0 * math.pi * k / SEG),
+                 rad * math.sin(2.0 * math.pi * k / SEG),
+                 z)
+                for k in range(SEG)
+            ]
+        )
+    return loft_rings("pocket-cutter", rings)
+
+
+def text_cutter(name, body, cx, cy, height, max_width, z0, z1, mirror_axis):
+    """Cut the string into the face at z0..z1.
+
+    mirror_axis 'x' or 'y' flips the glyphs so the text reads correctly
+    when the finished face is viewed from its real side.
+    """
     cu = bpy.data.curves.new(name + "-font", "FONT")
     cu.body = body
     cu.size = 10.0
@@ -237,7 +290,7 @@ def text_cutter(name, body, cap_h, cx, cy, z0, z1, font_path):
     cu.align_x = "CENTER"
     cu.align_y = "CENTER"
     try:
-        cu.font = bpy.data.fonts.load(font_path, check_existing=True)
+        cu.font = bpy.data.fonts.load(TEXT_FONT, check_existing=True)
     except Exception:
         pass
     ob = bpy.data.objects.new(name + "-text", cu)
@@ -263,28 +316,30 @@ def text_cutter(name, body, cap_h, cx, cy, z0, z1, font_path):
     cxs = (min(xs) + max(xs)) / 2.0
     cys = (min(ys) + max(ys)) / 2.0
     zmin = min(zs)
-    sx = cap_h / (max(ys) - min(ys))
-    sz = (z1 - z0) / (max(zs) - min(zs))
     bmesh.ops.translate(bm, vec=(-cxs, -cys, -zmin), verts=bm.verts[:])
-    bmesh.ops.scale(bm, vec=(sx, sx, sz), verts=bm.verts[:])
+
+    w = max(xs) - min(xs)
+    h = max(ys) - min(ys)
+    s = height / h
+    if max_width is not None and w * s > max_width:
+        s = max_width / w
+
+    if mirror_axis == "x":
+        bmesh.ops.scale(bm, vec=(-s, s, 1.0), verts=bm.verts[:])
+    elif mirror_axis == "y":
+        bmesh.ops.scale(bm, vec=(s, -s, 1.0), verts=bm.verts[:])
+    else:
+        bmesh.ops.scale(bm, vec=(s, s, 1.0), verts=bm.verts[:])
+
+    zs2 = [v.co.z for v in bm.verts]
+    bmesh.ops.scale(
+        bm,
+        vec=(1.0, 1.0, (z1 - z0) / (max(zs2) - min(zs2))),
+        verts=bm.verts[:],
+    )
     bmesh.ops.translate(bm, vec=(cx, cy, z0), verts=bm.verts[:])
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
-    return obj_from_bm(name, bm)
-
-
-def triangle_cutter(name, cx, cy, height, half_w, z0, z1):
-    bm = bmesh.new()
-    pts = ((cx, cy + height / 2.0), (cx - half_w, cy - height / 2.0),
-           (cx + half_w, cy - height / 2.0))
-    lo = [bm.verts.new((x, y, z0)) for x, y in pts]
-    hi = [bm.verts.new((x, y, z1)) for x, y in pts]
-    bm.faces.new(lo[::-1])
-    bm.faces.new(hi)
-    for i in range(3):
-        j = (i + 1) % 3
-        bm.faces.new((lo[i], lo[j], hi[j], hi[i]))
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
-    return obj_from_bm(name, bm)
+    return obj_from_bm(name, bm), w * s, h * s
 
 
 def export_stl(path, objects):
@@ -310,58 +365,56 @@ body = make_body()
 ring = make_ring()
 apply_boolean(body, ring, "UNION")
 
-cutter = stepped_cutter(
-    "hole-cutter", 0.0, 0.0, HOLE, POCKET, -1.0, PLATE, POCKET_Z1
-)
-apply_boolean(body, cutter, "DIFFERENCE")
+switch = make_switch_cutter()
+apply_boolean(body, switch, "DIFFERENCE")
 
-engrave_top = BODY_Z + 0.5
-engrave_bottom = BODY_Z - TEXT_DEPTH
+pocket = make_pocket_cutter()
+apply_boolean(body, pocket, "DIFFERENCE")
 
-txt = text_cutter(
-    "text-cutter", TEXT, TEXT_H, TEXT_CX, TEXT_CY,
-    engrave_bottom, engrave_top, TEXT_FONT,
+txt, text_w, text_h = text_cutter(
+    "text-bottom-cutter", TEXT, TEXT_CX, TEXT_CY,
+    TEXT_H, None, -0.5, TEXT_DEPTH, "x",
 )
 apply_boolean(body, txt, "DIFFERENCE")
 
-arrow = triangle_cutter(
-    "arrow-cutter", ARROW_CX, ARROW_CY, ARROW_H, ARROW_HALF_W,
-    engrave_bottom, engrave_top,
-)
-apply_boolean(body, arrow, "DIFFERENCE")
-
-# clean up tiny boolean seams so the mesh is a single watertight solid
-bm = bmesh.new()
-bm.from_mesh(body.data)
-bmesh.ops.remove_doubles(bm, verts=bm.verts[:], dist=1e-6)
-bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
-bm.to_mesh(body.data)
-bm.free()
-body.data.update()
-bpy.context.view_layer.update()
-
-export_stl(OUT / "body-a.stl", [body])
+clean(body)
+export_stl(OUT / "body-v2.stl", [body])
 
 # ------------------------------------------------------------------- params ---
 
 params = {
     "unit": "mm",
-    "orientation": "print: z=0 = plate/top face on bed; z=14 = bottom when in use",
-    "body": {"x": BODY_X, "y": BODY_Y, "z": BODY_Z, "center_xy": [0.0, 0.0]},
-    "corner_radius_vertical": CORNER_R,
-    "top_face_edge": {
-        "fillet_r": TOP_FILLET_R,
-        "bed_chamfer_45_height": TOP_CHAMFER_H,
+    "orientation": "print == use: z=0 bottom (engraved), z=15.31 top rim",
+    "body": {
+        "x": BODY_X,
+        "y": BODY_Y,
+        "z": BODY_Z,
+        "center_xy": [0.0, 0.0],
     },
-    "bottom_face_edge_fillet_r": BOTTOM_FILLET_R,
-    "plate_thickness": PLATE,
-    "hole": {"side": HOLE, "z0": 0.0, "z1": PLATE, "center": [0.0, 0.0]},
-    "pocket": {
-        "side": POCKET,
-        "z0": PLATE,
-        "z1": POCKET_Z1,
-        "center": [0.0, 0.0],
-        "closed_bottom_thickness": round(BODY_Z - POCKET_Z1, 3),
+    "vertical_corner_radius": CORNER_R,
+    "top_edge_fillet_r": TOP_FILLET_R,
+    "bottom_edge_chamfer_45": BOT_CHAMFER,
+    "keycap_pocket": {
+        "diameter": POCKET_D,
+        "z0": POCKET_Z0,
+        "z1": BODY_Z,
+        "mouth_fillet_r": POCKET_MOUTH_R,
+    },
+    "switch_opening": {
+        "square": HOLE,
+        "z0": HOLE_Z0,
+        "z1": HOLE_Z1,
+        "closed_bottom_thickness": HOLE_Z0,
+        "v_notch": {
+            "z0": V_Z0,
+            "z_mid": V_ZMID,
+            "z1": V_Z1,
+            "expansion_per_side": V_EXT,
+            "width_at_mid": HOLE + 2.0 * V_EXT,
+            "face_angle_deg": round(
+                math.degrees(math.atan2(V_EXT, V_ZMID - V_Z0)), 2
+            ),
+        },
     },
     "hanging_ring": {
         "outer_diameter": RING_OD,
@@ -373,105 +426,21 @@ params = {
         "segments": RING_SEG,
     },
     "engraving": {
-        "face_z": BODY_Z,
+        "face_z": 0.0,
         "text": TEXT,
-        "text_height": TEXT_H,
-        "stroke_min": 0.8,
+        "text_height": round(text_h, 3),
+        "text_width": round(text_w, 3),
+        "stroke_min": TEXT_STROKE_MIN,
         "text_center": [TEXT_CX, TEXT_CY],
         "depth": TEXT_DEPTH,
+        "reads_from": "below",
         "font": TEXT_FONT,
-        "arrow": {
-            "shape": "equilateral filled triangle",
-            "height": ARROW_H,
-            "half_width": round(ARROW_HALF_W, 3),
-            "center": [ARROW_CX, ARROW_CY],
-            "direction": "+Y",
-        },
     },
     "boolean_solver": "EXACT",
-    "nguon_mx": MX_SOURCE,
+    "source_mx": MX_SOURCE,
 }
-with (OUT / "body-a-params.json").open("w", encoding="utf-8") as fh:
+with (OUT / "body-v2-params.json").open("w", encoding="utf-8") as fh:
     json.dump(params, fh, indent=2, ensure_ascii=False)
     fh.write("\n")
 
-# ------------------------------------------------------------------ preview ---
-
-mat_body = bpy.data.materials.new("body-charcoal")
-mat_body.use_nodes = True
-bsdf = mat_body.node_tree.nodes.get("Principled BSDF")
-bsdf.inputs["Base Color"].default_value = (0.12, 0.13, 0.15, 1.0)
-bsdf.inputs["Roughness"].default_value = 0.55
-body.data.materials.clear()
-body.data.materials.append(mat_body)
-
-body_print = body
-body_print.location = (-38.0, 0.0, 0.0)
-
-body_use = bpy.data.objects.new("body-a-use", body.data)
-scene.collection.objects.link(body_use)
-body_use.rotation_euler = (math.pi, 0.0, 0.0)
-body_use.location = (38.0, 0.0, BODY_Z)
-
-floor = bmesh.new()
-fv = [
-    floor.verts.new(p)
-    for p in (
-        (-220.0, -220.0, -0.3), (220.0, -220.0, -0.3),
-        (220.0, 220.0, -0.3), (-220.0, 220.0, -0.3),
-    )
-]
-floor.faces.new(fv)
-floor_ob = obj_from_bm("floor", floor)
-mat_floor = bpy.data.materials.new("floor")
-mat_floor.use_nodes = True
-bsdf = mat_floor.node_tree.nodes.get("Principled BSDF")
-bsdf.inputs["Base Color"].default_value = (0.85, 0.85, 0.84, 1.0)
-bsdf.inputs["Roughness"].default_value = 0.7
-floor_ob.data.materials.append(mat_floor)
-
-world = bpy.data.worlds.new("preview-world")
-world.use_nodes = True
-bg = world.node_tree.nodes.get("Background")
-bg.inputs[0].default_value = (0.9, 0.9, 0.9, 1.0)
-bg.inputs[1].default_value = 0.14
-scene.world = world
-
-light_data = bpy.data.lights.new("sun", "SUN")
-light_data.energy = 3.2
-light_data.angle = math.radians(3.0)
-sun = bpy.data.objects.new("sun", light_data)
-sun.rotation_euler = (math.radians(42.0), math.radians(10.0), math.radians(28.0))
-scene.collection.objects.link(sun)
-
-fill_data = bpy.data.lights.new("fill", "SUN")
-fill_data.energy = 0.6
-fill_data.angle = math.radians(20.0)
-fill = bpy.data.objects.new("fill", fill_data)
-fill.rotation_euler = (math.radians(-48.0), math.radians(-18.0), math.radians(-32.0))
-scene.collection.objects.link(fill)
-
-cam_data = bpy.data.cameras.new("preview-cam")
-cam_data.lens = 52.0
-cam = bpy.data.objects.new("preview-cam", cam_data)
-target = Vector((-4.0, 0.0, 8.0))
-cam.location = Vector((-4.0, -215.0, 128.0))
-direction = target - cam.location
-cam.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
-scene.collection.objects.link(cam)
-scene.camera = cam
-
-scene.render.engine = "BLENDER_EEVEE"
-scene.eevee.taa_render_samples = 64
-scene.eevee.use_fast_gi = True
-scene.render.resolution_x = 1600
-scene.render.resolution_y = 1000
-scene.render.resolution_percentage = 100
-scene.render.image_settings.file_format = "PNG"
-scene.render.filepath = str(OUT / "body-a-preview.png")
-scene.view_settings.view_transform = "Standard"
-scene.view_settings.look = "None"
-
-bpy.ops.render.render(write_still=True)
-
-print("BUILD OK", OUT)
+print("BUILD OK", OUT / "body-v2.stl")

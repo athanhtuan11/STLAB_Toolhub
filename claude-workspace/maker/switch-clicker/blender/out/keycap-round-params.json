@@ -1,0 +1,43 @@
+{
+  "unit": "mm",
+  "orientation": "print: cap upside down, top face on the bed (z=0), skirt mouth up (z=11.3)",
+  "body": {
+    "diameter": 26.0,
+    "height": 11.3,
+    "top_edge_chamfer_45": 1.2
+  },
+  "skirt": {
+    "inner_diameter": 23.0,
+    "outer_diameter": 26.0,
+    "wall": 1.5,
+    "top_plate": 1.4,
+    "mouth_z": 11.3
+  },
+  "stem": {
+    "outer_diameter": 5.71,
+    "z0": 1.4,
+    "z1": 7.0,
+    "end_inside_mouth": 4.3
+  },
+  "cross": {
+    "length": 4.19,
+    "width": 1.25,
+    "depth": 5.6,
+    "z_open": 7.0,
+    "z_bottom": 1.4,
+    "mouth_chamfer_45": 0.2
+  },
+  "engraving": {
+    "face_z": 0.0,
+    "text": "STLAB",
+    "text_height": 3.918,
+    "text_width": 19.0,
+    "max_width": 19.0,
+    "stroke_min": 0.8,
+    "depth": 0.6,
+    "reads_from": "above, keycap in use",
+    "font": "C:\\Windows\\Fonts\\ariblk.ttf"
+  },
+  "boolean_solver": "EXACT",
+  "source_mx": "fit-library catpaw/mx-keycap-cross (printed on Bambu A1 + PETG Basic): cross 4.19 long x 1.25 wide, 5.6 deep; stem OD 5.71; stem end 4.3 inside the skirt mouth."
+}
