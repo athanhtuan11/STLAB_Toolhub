@@ -1,0 +1,75 @@
+{
+  "unit": "mm",
+  "orientation": "print: z=0 = plate/top face on bed; z=14 = bottom when in use",
+  "body": {
+    "x": 34.0,
+    "y": 30.0,
+    "z": 14.0,
+    "center_xy": [
+      0.0,
+      0.0
+    ]
+  },
+  "corner_radius_vertical": 4.8,
+  "top_face_edge": {
+    "fillet_r": 3.0,
+    "bed_chamfer_45_height": 0.8
+  },
+  "bottom_face_edge_fillet_r": 1.0,
+  "plate_thickness": 1.5,
+  "hole": {
+    "side": 14.0,
+    "z0": 0.0,
+    "z1": 1.5,
+    "center": [
+      0.0,
+      0.0
+    ]
+  },
+  "pocket": {
+    "side": 15.4,
+    "z0": 1.5,
+    "z1": 11.8,
+    "center": [
+      0.0,
+      0.0
+    ],
+    "closed_bottom_thickness": 2.2
+  },
+  "hanging_ring": {
+    "outer_diameter": 12.0,
+    "hole_diameter": 5.4,
+    "thickness": 4.0,
+    "center": [
+      -20.5,
+      14.0
+    ],
+    "edge_fillet_r": 1.0,
+    "bed_chamfer": 0.4,
+    "segments": 96
+  },
+  "engraving": {
+    "face_z": 14.0,
+    "text": "STLAB",
+    "text_height": 4.0,
+    "stroke_min": 0.8,
+    "text_center": [
+      0.0,
+      -6.0
+    ],
+    "depth": 0.6,
+    "font": "C:\\Windows\\Fonts\\ariblk.ttf",
+    "arrow": {
+      "shape": "equilateral filled triangle",
+      "height": 3.0,
+      "half_width": 1.732,
+      "center": [
+        0.0,
+        6.0
+      ],
+      "direction": "+Y"
+    }
+  },
+  "boolean_solver": "EXACT",
+  "nguon_mx": "Cherry MX datasheet: lo 14,0 +-0,05, tam 1,5; vo duoi tam 5,0 + chan 3,3"
+}
