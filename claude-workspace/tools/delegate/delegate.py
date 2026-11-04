@@ -1,6 +1,6 @@
-# Giao viec code/script cho executor free (Codex -> OpenCode -> Kilo -> agy-sonnet -> Copilot -> agy) theo spec.md Claude viet, tu chay gate.
+# Giao viec code/script cho executor free (Codex -> OpenCode -> Kilo -> agy-sonnet -> Copilot -> Goose -> agy) theo spec.md Claude viet, tu chay gate.
 # Claude chi doc dong JSON cuoi (result.json); log dai nam trong thu muc run.
-#   python tools/delegate/delegate.py <spec.md> [--executor auto|codex|opencode|kilo|agy-sonnet|copilot|agy] [--simulate-limit codex]
+#   python tools/delegate/delegate.py <spec.md> [--executor auto|codex|opencode|kilo|agy-sonnet|copilot|goose|agy] [--simulate-limit codex]
 #   python tools/delegate/delegate.py --status            # executor nao dang het han muc
 #   python tools/delegate/delegate.py --clear-limit codex # xoa danh dau het han muc
 #   python tools/delegate/delegate.py --stats [--rebuild] # thanh tich tung executor (JSON: gate_pass/rounds)
@@ -14,7 +14,7 @@
 # Han muc: %LOCALAPPDATA%/stlab-usage/executors.json {executor: {limited_until, reason}}
 # Thanh tich: %LOCALAPPDATA%/stlab-usage/agent-stats.json {executor: {rounds, gate_pass, pass_round1,
 #      limited, escalate, seconds}}; update_stats moi run, --stats --rebuild tinh lai tu lich su run.
-import argparse, datetime as dt, fnmatch, json, os, re, shutil, subprocess, sys, time
+import argparse, codecs, datetime as dt, fnmatch, json, os, queue as queue_module, re, shutil, signal, subprocess, sys, threading, time
 import yaml
 
 
@@ -36,8 +36,10 @@ def _event_emit(*args, **kwargs):
 WS = os.path.abspath(os.path.join(HERE, "..", ".."))
 USAGE = os.path.join(os.environ.get("LOCALAPPDATA", os.path.expanduser("~")), "stlab-usage")
 LIMITS = os.path.join(USAGE, "executors.json")
-ADAPTERS = {"codex": "codex", "opencode": "opencode", "kilo": "kilo", "agy-sonnet": "agy-sonnet", "copilot": "copilot", "agy": "agy"}
-STAT_FIELDS = ("rounds", "gate_pass", "pass_round1", "limited", "escalate", "seconds")
+ADAPTERS = {"codex": "codex", "opencode": "opencode", "kilo": "kilo", "agy-sonnet": "agy-sonnet", "copilot": "copilot", "goose": "goose", "agy": "agy"}
+STAT_FIELDS = ("rounds", "gate_pass", "pass_round1", "limited", "stalled", "escalate", "seconds")
+STALL_MIN = float(os.environ.get("DELEGATE_STALL_MIN", "6"))
+NEED_WORKTREE = {"goose"}
 
 def load_org(org_dir=None):
     """Nap so nhan su va policy; loi/hong so phai duoc bao ro."""
@@ -78,7 +80,7 @@ def load_org(org_dir=None):
                 agents=agents, policy=policy)
 
 ORG = load_org()
-ORDER, COOLDOWN_H, FORBIDDEN = ORG["order"], ORG["cooldown"], ORG["forbidden"]
+ORDER, COOLDOWN_H, FORBIDDEN = ORG["order"], {n: ORG["cooldown"][n] for n in ORG["order"]}, ORG["forbidden"]
 # Khong giao ra ngoai: du lieu phu huynh, nguon cong dong ghim
 REFUSE_CWD = ["stlab/parent-reports", "community"]
 # Executor khong duoc dong toi (kiem bang git status sau khi chay)
@@ -144,7 +146,7 @@ def reset_from_reason(reason):
 
 def mark_limited(name, reason, until=None):
     lim = load_limits()
-    until = until or reset_from_reason(reason) or now() + dt.timedelta(hours=COOLDOWN_H[name])
+    until = until or reset_from_reason(reason) or now() + dt.timedelta(hours=COOLDOWN_H.get(name, ORG["cooldown"][name]))
     lim[name] = dict(limited_until=until.isoformat(timespec="minutes"), reason=reason[:200])
     save_limits(lim)
 
@@ -200,6 +202,12 @@ def tally(stats, result):
         if r.get("limited"):
             s["limited"] += 1
             continue
+        if r.get("stalled"):
+            s["stalled"] = s.get("stalled", 0) + 1
+            secs = r.get("seconds")
+            if isinstance(secs, (int, float)):
+                s["seconds"] += int(secs)
+            continue
         s["rounds"] += 1
         if r.get("gate_exit") == 0:
             s["gate_pass"] += 1
@@ -231,6 +239,39 @@ def run_roots():
     if os.path.isdir(parent) and os.path.normcase(os.path.abspath(parent)) != os.path.normcase(os.path.abspath(primary)):
         return [parent]
     return [primary]
+
+
+def recent_counts(days=7, root=None):
+    """Count executor log files in recent date-stamped run directories."""
+    roots = [root] if root is not None else run_roots()
+    cutoff = (dt.date.today() - dt.timedelta(days=max(1, int(days)) - 1)).strftime("%Y%m%d")
+    counts = {}
+    log_re = re.compile(r"^(.+)-\d+\.log$")
+    for runs_root in roots:
+        try:
+            run_names = os.listdir(runs_root)
+        except OSError:
+            continue
+        for run_name in run_names:
+            if not re.match(r"^\d{8}-", run_name) or run_name[:8] < cutoff:
+                continue
+            run_dir = os.path.join(runs_root, run_name)
+            if not os.path.isdir(run_dir):
+                continue
+            try:
+                for filename in os.listdir(run_dir):
+                    match = log_re.match(filename)
+                    if match and os.path.isfile(os.path.join(run_dir, filename)):
+                        name = match.group(1)
+                        counts[name] = counts.get(name, 0) + 1
+            except OSError:
+                continue
+    return counts
+
+
+def order_fair(queue, counts):
+    """Order executors by recent rounds, retaining the original order for ties."""
+    return sorted(queue, key=lambda name: counts.get(name, 0))
 
 
 def rebuild_stats():
@@ -525,8 +566,21 @@ def _copilot(prompt):
         argv += ["--model", model]
     return argv, prompt
 
+def _goose(prompt):
+    exe = shutil.which("goose")
+    profile = os.environ.get("USERPROFILE")
+    if not exe and profile:
+        candidate = os.path.join(profile, ".local", "goose", "goose-package", "goose.exe")
+        exe = candidate if os.path.exists(candidate) else None
+    return [exe, "run", "--no-session", "-i", "-", "--provider", "google",
+            "--model", ORG["model"]["goose"]], prompt
+
 ADAPTERS.update(codex=_codex, opencode=_opencode, kilo=_kilo,
-                **{"agy-sonnet": _agy_sonnet}, copilot=_copilot, agy=_agy)
+                **{"agy-sonnet": _agy_sonnet}, copilot=_copilot, goose=_goose, agy=_agy)
+
+def needs_worktree(meta, queue, fallback_queue=None):
+    return bool(meta.get("worktree") is True or
+                any(name in NEED_WORKTREE for name in (queue or []) + (fallback_queue or [])))
 
 def command(name, prompt):
     try:
@@ -535,10 +589,11 @@ def command(name, prompt):
         raise ValueError(name) from e
 
 
-def pick_queue(meta, cwd_rel, org):
-    """Chon executor theo ky_nang/chi dinh va gioi han muc du lieu."""
+def pick_queue(meta, cwd_rel, org, counts=None):
+    """Chon executor theo ky_nang/chi dinh va gioi han muc du lieu; counts (recent_counts) -> xoay vong order_fair."""
     agents, policy = org["agents"], org["policy"]
     choice = meta.get("executor", "auto")
+    fair = choice in (None, "auto")
     if choice not in (None, "auto"):
         if choice not in agents or choice not in ADAPTERS:
             raise ValueError(f"executor khong hop le: {choice}")
@@ -546,6 +601,7 @@ def pick_queue(meta, cwd_rel, org):
             raise ValueError(f"executor da nghi viec: {choice} (doi trang_thai trong org/agents.yaml neu can)")
         queue = [choice]
     elif meta.get("ky_nang") is not None:
+        fair = True
         skills = meta["ky_nang"]
         skills = [skills] if isinstance(skills, str) else skills
         if not isinstance(skills, list) or not skills:
@@ -568,6 +624,8 @@ def pick_queue(meta, cwd_rel, org):
     queue = [i for i in queue if agents[i].get("muc_du_lieu") in levels and levels.index(agents[i]["muc_du_lieu"]) >= levels.index(level)]
     if not queue:
         raise ValueError("khong executor nao du muc du lieu")
+    if fair and counts is not None:
+        queue = order_fair(queue, counts)
     return queue
 
 def installed(name):
@@ -584,6 +642,147 @@ def run_proc(argv, cwd, stdin, timeout_s, env=None, shell=False):
         out = (e.stdout or b"").decode("utf-8", "replace") if isinstance(e.stdout, bytes) else (e.stdout or "")
         out, code = out + f"\n[delegate] TIMEOUT {timeout_s} s", -1
     return out, code, round(time.time() - t)
+
+
+def clean_env(env=None):
+    """Return a copy of the environment without inherited MSYS variables."""
+    result = dict(os.environ if env is None else env)
+    blocked = {"MSYSTEM", "MSYSTEM_PREFIX", "MSYSTEM_CHOST", "MINGW_PREFIX", "MSYS", "CHERE_INVOKING"}
+    for key in list(result):
+        if key.upper() in blocked:
+            result.pop(key, None)
+    return result
+
+
+def _watch_snapshot(watch_dir):
+    ignored = {".git", "build", "managed_components", "node_modules", ".delegate-tmp"}
+    snapshot = {}
+    for current, dirs, files in os.walk(watch_dir):
+        dirs[:] = [name for name in dirs if name.lower() not in ignored]
+        for filename in files:
+            path = os.path.join(current, filename)
+            try:
+                snapshot[path] = os.stat(path).st_mtime_ns
+            except OSError:
+                continue
+    return snapshot
+
+
+def _stop_process_tree(proc):
+    if os.name == "nt":
+        try:
+            subprocess.run(["taskkill", "/T", "/F", "/PID", str(proc.pid)],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=10)
+        except (OSError, subprocess.TimeoutExpired):
+            pass
+    else:
+        try:
+            os.killpg(proc.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+    try:
+        proc.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        proc.wait()
+
+
+def run_proc_watch(argv, cwd, stdin, timeout_s, stall_s, watch_dir, env=None):
+    """Run an executor while monitoring output and project-file progress."""
+    start = time.monotonic()
+    previous_files = _watch_snapshot(watch_dir)
+    kwargs = {}
+    if os.name != "nt":
+        kwargs["start_new_session"] = True
+    proc = subprocess.Popen(argv, cwd=cwd, stdin=subprocess.PIPE if stdin is not None else subprocess.DEVNULL,
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=clean_env(env), **kwargs)
+    chunks = queue_module.Queue()
+
+    def read_output():
+        try:
+            while True:
+                data = os.read(proc.stdout.fileno(), 4096)
+                if not data:
+                    break
+                chunks.put(data)
+        except OSError:
+            pass
+        finally:
+            chunks.put(None)
+
+    reader = threading.Thread(target=read_output, daemon=True)
+    reader.start()
+    if stdin is not None:
+        def write_input():
+            try:
+                proc.stdin.write(stdin.encode("utf-8") if isinstance(stdin, str) else stdin)
+                proc.stdin.flush()
+            except (BrokenPipeError, OSError):
+                pass
+            finally:
+                try:
+                    proc.stdin.close()
+                except OSError:
+                    pass
+        threading.Thread(target=write_input, daemon=True).start()
+
+    decoder = codecs.getincrementaldecoder("utf-8")("replace")
+    output = []
+    eof = False
+    last_progress = start
+    next_scan = start
+
+    def consume(item):
+        nonlocal eof, last_progress
+        if item is None:
+            eof = True
+            tail = decoder.decode(b"", final=True)
+            if tail:
+                output.append(tail)
+                last_progress = time.monotonic()
+            return
+        text = decoder.decode(item)
+        if text:
+            output.append(text)
+            last_progress = time.monotonic()
+
+    def drain_after_stop():
+        deadline = time.monotonic() + 1.0
+        while not eof and time.monotonic() < deadline:
+            try:
+                consume(chunks.get(timeout=min(0.1, deadline - time.monotonic())))
+            except queue_module.Empty:
+                if not reader.is_alive():
+                    break
+
+    while True:
+        current = time.monotonic()
+        timeout_left = timeout_s - (current - start)
+        stall_left = stall_s - (current - last_progress)
+        if timeout_left <= 0:
+            _stop_process_tree(proc)
+            drain_after_stop()
+            return "".join(output) + f"\n[delegate] TIMEOUT {timeout_s} s", -1, round(time.monotonic() - start)
+        if stall_left <= 0:
+            _stop_process_tree(proc)
+            drain_after_stop()
+            return "".join(output) + f"\n[delegate] STALL {stall_s:g} s", -2, round(time.monotonic() - start)
+
+        try:
+            item = chunks.get(timeout=min(1.0, timeout_left, stall_left))
+            consume(item)
+        except queue_module.Empty:
+            pass
+        current = time.monotonic()
+        if current >= next_scan:
+            current_files = _watch_snapshot(watch_dir)
+            if any(current_files.get(path, 0) > mtime for path, mtime in previous_files.items()) or \
+                    any(path not in previous_files for path in current_files):
+                last_progress = current
+            previous_files = current_files
+            next_scan = current + 1.0
+        if proc.poll() is not None and eof:
+            return "".join(output), proc.returncode, round(time.monotonic() - start)
 
 
 def git_changed_rel(path, base=None):
@@ -783,7 +982,7 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8")            # pipe tren Windows mac dinh cp1252 -> loi khi in tieng Viet
     ap = argparse.ArgumentParser()
     ap.add_argument("spec", nargs="?")
-    ap.add_argument("--executor", help="auto|codex|opencode|kilo|agy-sonnet|copilot|agy")
+    ap.add_argument("--executor", help="auto|codex|opencode|kilo|agy-sonnet|copilot|goose|agy")
     ap.add_argument("--simulate-limit", default="", help="danh sach executor gia lap het han muc (thu nghiem)")
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--stats", action="store_true", help="in thanh tich tung executor (JSON)")
@@ -817,6 +1016,7 @@ def main():
         ids = dict.fromkeys(ORDER + [n for n in ORG["agents"] if n in ADAPTERS])
         st = {n: dict(installed=installed(n), limited=is_limited(n, lim), **lim.get(n, {})) for n in ids}
         st["runs_without_result"] = run_states()
+        st["recent_7d"] = recent_counts()
         print(json.dumps(st, ensure_ascii=False))
         return
     resume_from, resume_ctx = None, ""
@@ -844,10 +1044,17 @@ def main():
     simulated = {x for x in a.simulate_limit.split(",") if x}
     meta["executor"] = choice
     try:
-        queue = pick_queue(meta, cwd_rel, ORG)
+        queue = pick_queue(meta, cwd_rel, ORG, recent_counts())
+        fallback_meta = dict(meta, executor="auto")
+        try:
+            fallback_queue = pick_queue(fallback_meta, cwd_rel, ORG, recent_counts())
+        except ValueError:
+            fallback_queue = []
     except ValueError as e:
         print(f"LOI: {e}", file=sys.stderr)
         sys.exit(1)
+    def execute_executor(argv, work, stdin, timeout_s, stall_s, watch_dir, env=None):
+        return run_proc_watch(argv, work, stdin, timeout_s, stall_s, watch_dir, env=clean_env(env))
     if str(meta.get("uu_tien") or "") == "thanh-tich":
         queue = rank_by_stats(queue, load_stats())      # mac dinh giu chuoi trong so nhan su
 
@@ -858,7 +1065,8 @@ def main():
               open(os.path.join(run_dir, "state.json"), "w", encoding="utf-8"), ensure_ascii=False)
     try:
         run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir,
-                 resumed_from=resume_from, resume_ctx=resume_ctx, allow_ws=allow_ws)
+                 resumed_from=resume_from, resume_ctx=resume_ctx, allow_ws=allow_ws,
+                 fallback_queue=fallback_queue, executor_runner=execute_executor)
     finally:
         try:
             os.remove(lock)
@@ -867,10 +1075,10 @@ def main():
 
 
 def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resumed_from=None, resume_ctx="",
-             allow_ws=None):
+             allow_ws=None, fallback_queue=None, executor_runner=None):
     allow_ws = allow_ws if allow_ws is not None else \
         [(cwd_rel + "/" + p).replace("\\", "/") if cwd_rel else p.replace("\\", "/") for p in allow]
-    use_wt = bool(meta.get("worktree"))
+    use_wt = needs_worktree(meta, queue, fallback_queue)
     wt_ws = make_worktree(run_dir) if use_wt else None      # worktree rieng: executor/gate chay trong ban sao
     work = os.path.join(wt_ws, cwd_rel) if use_wt else cwd
     root = wt_ws if use_wt else WS
@@ -879,8 +1087,8 @@ def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resu
         # (ESCALATE 2 lan 2026-10-27). Git bo qua (.gitignore), xoa khi xong.
         tmpdir = os.path.join(work, ".delegate-tmp")
         os.makedirs(tmpdir, exist_ok=True)
-        env = dict(os.environ, OPENCODE_CONFIG=os.path.join(HERE, "opencode.json"), KILO_CONFIG=os.path.join(HERE, "kilo.json"), TMP=tmpdir, TEMP=tmpdir, TMPDIR=tmpdir,
-                   PYTHONUTF8="1", PYTHONIOENCODING="utf-8")
+        env = clean_env(dict(os.environ, OPENCODE_CONFIG=os.path.join(HERE, "opencode.json"), KILO_CONFIG=os.path.join(HERE, "kilo.json"), TMP=tmpdir, TEMP=tmpdir, TMPDIR=tmpdir,
+                             PYTHONUTF8="1", PYTHONIOENCODING="utf-8"))
         before = {f: _sig_at(root, f) for f in git_changed_rel(work, root)}
         result = dict(task=meta["task"], cwd=cwd_rel, run_dir=run_dir, rounds=[], skipped=[], passed=False)
         started_at = time.time()
@@ -906,12 +1114,28 @@ def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resu
             rnd += 1
             open(os.path.join(run_dir, f"prompt-{rnd}.txt"), "w", encoding="utf-8").write(prompt)
             argv, stdin = command(name, prompt)
-            out, code, secs = run_proc(argv, work, stdin, int(meta["timeout_min"]) * 60, env)
+            runner = executor_runner or run_proc_watch
+            out, code, secs = runner(argv, work, stdin, int(meta["timeout_min"]) * 60,
+                                     STALL_MIN * 60, work, env=clean_env(env))
             open(os.path.join(run_dir, f"{name}-{rnd}.log"), "w", encoding="utf-8").write(out)
             lines = [x.strip() for x in ANSI_RE.sub("", out).splitlines() if x.strip()]
             last = next((x for x in reversed(lines) if re.match(r"`?(DONE|BLOCKED|ESCALATE)", x)),
                         (lines or [""])[-1])[:200]
             r = dict(round=rnd, executor=name, exit=code, seconds=secs, last_line=last)
+            if code == -2:
+                mark_limited(name, f"stall {STALL_MIN:g} phut", until=now() + dt.timedelta(minutes=30))
+                r["stalled"] = True
+                result["rounds"].append(r)
+                _event_emit("delegate", "round", f"round {rnd} STALL", agent=name, ref=run_dir,
+                            data={"round": rnd, "verdict": "STALL"})
+                rnd -= 1
+                if name in ORG["order"]:
+                    index = ORG["order"].index(name)
+                    queue = [candidate for candidate in ORG["order"][index + 1:]
+                             if candidate in (fallback_queue or [])]
+                else:
+                    queue = []
+                continue
             if re.match(r"`?ESCALATE", last):
                 # Bao len tren: executor thieu quyen/ngoai viec -> dung han, KHONG giao lai, Claude quyet (org/policy.yaml)
                 result["rounds"].append(r)
@@ -925,7 +1149,7 @@ def run_task(a, meta, body, cwd, cwd_rel, allow, queue, simulated, run_dir, resu
                 result["rounds"].append(r)
                 rnd -= 1                                    # vong nay khong tinh, chuyen executor ke tiep
                 continue
-            gout, gcode, gsecs = run_proc(meta["gate"], work, None, 20 * 60, shell=True)
+            gout, gcode, gsecs = run_proc(meta["gate"], work, None, 20 * 60, env=clean_env(env), shell=True)
             open(os.path.join(run_dir, f"gate-{rnd}.log"), "w", encoding="utf-8").write(gout)
             r.update(gate_exit=gcode, gate_seconds=gsecs, gate_tail=tail(gout, 5))
             result["rounds"].append(r)

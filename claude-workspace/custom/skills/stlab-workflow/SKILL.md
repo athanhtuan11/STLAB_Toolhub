@@ -26,6 +26,8 @@ Sổ nhân sự `org/agents.yaml` là nguồn duy nhất về agent; file này c
 Ngoại lệ: việc ≲ 30 dòng (nhỏ hơn viết spec) Claude tự sửa.
 
 ## 2. Giao code
+0. **Chọn tầng** (Tuan 2026-11-03): firmware/phần cứng/API lạ hoặc free đã FAIL 1 vòng → agent `coder` (Sonnet, cùng
+   spec + gate, gọi bằng Agent tool); còn lại → `delegate.py` (free). Gate tĩnh phải chặn mã giả (khối rỗng, chỉ comment).
 1. **Viết gate trước**: test trong `.../tests/test_<viec>.py` (DB/thư mục tạm qua biến môi trường, không đụng dữ liệu
    thật). Chạy thử → phải ĐỎ đúng chỗ.
 2. Chép `tools/delegate/templates/spec.md` → `spec-<viec>.md` cạnh code. `allow` hẹp nhất có thể; ghi rõ file nào đang

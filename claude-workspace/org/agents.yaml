@@ -59,6 +59,22 @@ agents:
     trang_thai: chinh-thuc
     tu_ngay: 2026-10-26
 
+  - id: coder
+    chuc_danh: Lập trình viên (tầng giữa)
+    tang: 1
+    bao_cao_cho: claude-main
+    loai: claude-subagent
+    model: sonnet
+    chi_phi: claude-quota
+    ky_nang: [code, firmware, sua-loi]
+    tool: [Read, Write, Edit, Glob, Grep, Bash, PowerShell]
+    mang: none
+    muc_du_lieu: internal
+    nguoi_duyet: claude-main
+    gate: bat-buoc
+    khi_het_han_muc: claude-main
+    trang_thai: thu-viec
+    tu_ngay: 2026-11-03
   - id: product-designer
     chuc_danh: Thiết kế dáng sản phẩm
     tang: 1
@@ -196,10 +212,30 @@ agents:
     muc_du_lieu: internal
     nguoi_duyet: claude-main
     gate: bat-buoc
-    khi_het_han_muc: agy
+    khi_het_han_muc: goose
     cooldown_h: 24
     trang_thai: chinh-thuc
     tu_ngay: 2026-10-28
+
+  # Goose 1.57.0 (aaif-goose/goose, Apache-2.0) + Gemini API free (key AI Studio, han muc rieng voi agy; so cu the: TODO).
+  # gemini-2.5-flash da ngung cho nguoi moi, gemini-3.8-flash hay 503 -> ghim gemini-3.5-flash (selftest tay PASS 2026-11-04).
+  # Goose KHONG gioi han thu muc -> delegate.py bat buoc chay trong git worktree (NEED_WORKTREE).
+  - id: goose
+    chuc_danh: Nhân viên lập trình
+    tang: 2
+    bao_cao_cho: claude-main
+    loai: cli-executor
+    model: gemini-3.5-flash
+    chi_phi: free
+    ky_nang: [code, doc-ma]
+    mang: none
+    muc_du_lieu: internal
+    nguoi_duyet: claude-main
+    gate: bat-buoc
+    khi_het_han_muc: agy
+    cooldown_h: 24
+    trang_thai: thu-viec
+    tu_ngay: 2026-11-04
 
   - id: agy
     chuc_danh: Nhân viên lập trình (dự phòng)

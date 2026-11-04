@@ -231,7 +231,7 @@ def check(org_dir):
         status = a.get("trang_thai")
         if status in ("thu-viec", "chinh-thuc") and ident not in dele.ADAPTERS:
             add("E-DELEGATE", ident, "executor khong co trong ADAPTERS")
-        if status != "nghi":
+        if status == "chinh-thuc":   # COOLDOWN_H chi gom chuoi ORDER; thu-viec chi goi dich danh
             want_cd = cooldown.get(ident)
             if a.get("cooldown_h") != want_cd:
                 add("E-DELEGATE", ident, f"cooldown_h {a.get('cooldown_h')!r} != COOLDOWN_H {want_cd!r}")

@@ -30,7 +30,16 @@ Mặc định `executor: auto` đi theo chuỗi `khi_het_han_muc` trong `org/age
 2. **OpenCode Zen free** (model `opencode/deepseek-v4.1-flash-free`).
 3. **agy** (dự phòng, Gemini 3.8 Flash High).
 
+Goose hiện ở trạng thái **thử việc**, không tham gia chuỗi `auto`.
+Muốn dùng Goose, ghi đích danh `executor: goose` trong spec.
+Mọi lượt chạy có Goose trong hàng đợi đều tự động chạy bằng git worktree.
+Model Goose được đọc từ `org/agents.yaml`, không khai báo trong mã.
+
 Gặp lỗi 429 hoặc hết hạn mức thì đánh dấu executor đó và chuyển sang executor kế tiếp, vòng đó không tính. Trạng thái lưu ở `%LOCALAPPDATA%\stlab-usage\executors.json`.
+
+## Theo dõi treo và xoay vòng
+
+Executor bị xem là treo nếu không có output hoặc thay đổi file trong 6 phút (đổi bằng biến môi trường `DELEGATE_STALL_MIN`). Delegate dừng cả cây tiến trình, giới hạn executor đó 30 phút rồi thử executor tiếp theo. Với `auto` và `ky_nang`, executor được ưu tiên theo số vòng đã chạy trong 7 ngày gần nhất; nếu bằng nhau thì giữ thứ tự trong sổ nhân sự.
 
 ```bash
 cd D:/04_Stlab/04_STLAB_Toolhub/claude-workspace

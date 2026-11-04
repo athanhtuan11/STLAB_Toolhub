@@ -37,9 +37,19 @@ Chi tiết, cài đặt, gỡ bỏ, bảng mô tả công việc, cơ chế dele
 - **Phân quyền 3 tầng (Tuan 2026-10-27):** tổng giám đốc (Claude) quyết định, viết spec + gate, giao cấp dưới; Haiku (`check-runner`, `doc-writer`, `git-scribe`) quản lý; executor free qua `tools/delegate/delegate.py` làm việc.
 - Phiên chính **không** tự đọc tài liệu/BOM/log/file mẫu, không tự viết tài liệu, không tự commit: đọc/tóm tắt → `ask-gemini`; tra web → `ask-gpt`; viết tài liệu → `doc-writer`; kiểm → `check-runner`; commit → `git-scribe`. Chỉ tự làm CAD (dựng hình, khe, động học), an toàn, quyết định; đọc tối đa vài dòng khi viết code CAD.
 - Giao code: spec từ `tools/delegate/templates/spec.md`, viết gate **trước**, chạy nền `delegate.py`, chỉ đọc dòng JSON cuối. Phiên chính tự viết code chỉ khi việc ≲ 30 dòng hoặc là hình học/khe/an toàn.
+- **Tầng giữa `coder` (Sonnet 5.5, Tuan duyệt 2026-11-03):** giao `coder` (cùng spec + gate) khi (a) việc firmware / mã gắn phần
+  cứng / API ít phổ biến, hoặc (b) executor free FAIL 1 vòng (hoặc treo/nộp mã giả) – **không** thử tiếp vòng free. Việc UI,
+  script Blender theo spec, báo cáo, công cụ có gate rõ → vẫn executor free. Opus không tự viết code dài. Gate phải bắt mã giả
+  (khối rỗng/chỉ comment, gọi hàm thật), build phải chạy thật (không tin file .bin cũ).
 - Hết 429/hạn mức: `delegate.py` tự chuyển executor (Codex → OpenCode → Kilo → agy-sonnet → Copilot → agy). Hết hạn mức free thì làm tiếp bằng Haiku/phiên chính, **không** đổi sang dịch vụ trả phí.
 - Gemini (`ask-gemini`, chỉ đọc): chỉ thấy bản chép trong `D:\04_Stlab\agy-scratch\<ten-viec>\` (ngoài repo), `cwd` = thư mục đó, xong xóa; **không** dùng tham số `files`. Đọc mã/repo giao Gemini; `ask-gpt` chỉ tra web hoặc nhận đoạn mã dán vào prompt.
 - **Gemini hết hạn mức → đổi model agy khác, không bỏ agy** (Tuan 2026-11-01): `agy -p "..." --model <m> --sandbox` (cwd = agy-scratch), `<m>` = `claude-sonnet-4-6` → `claude-opus-4-6-thinking` → `gpt-oss-120b-medium` (hạn mức riêng từng nhóm; xem `agy models`). Hết cả 4 mới tự làm.
+- **Tiết kiệm token phiên chính (Tuan duyệt 2026-11-03, báo cáo `docs/reports/claude-token-saving-2026-11.md`):**
+  (a) việc "chạy + đọc log" – nạp firmware + đọc serial, cắt lớp/printability, chạy script đo hình học, build dài → giao
+  `check-runner`, chỉ nhận tóm tắt ≤ 15 dòng (Claude vẫn tự quyết số khe/hình học từ tóm tắt);
+  (b) lệnh tự chạy có thể > 40 dòng → luôn lọc `grep`/`tail`/`Select-String`, không in cả efuse/log/slice;
+  (c) ảnh: `product-designer` tự duyệt các vòng trong, Claude chỉ xem contact sheet cuối (thu nhỏ ~1200 px);
+  (d) đổi việc lớn → khuyên Tuan mở phiên mới (memory + CLAUDE.md đủ để tiếp).
 - `/codex:rescue` (Codex được ghi file) chỉ khi Tuan đồng ý. Không bật stop review gate của `/codex:setup`.
 - **Sổ nhân sự `org/agents.yaml` + `org/policy.yaml` là nguồn duy nhất** về agent (vai trò, model, chi phí, quyền, mức dữ liệu, người duyệt). Thêm/đổi agent: chỉ phiên chính sửa sổ (Tuan duyệt) → `python tools/org/check_org.py` phải PASS. Agent mới vào `thu-viec`, qua gate mới lên `chinh-thuc`. Executor **không** được sửa `org/`.
 - **Báo lên trên (Tuan 2026-10-27):** không có quyền / không phải việc mình → dừng, báo `bao_cao_cho` (nhân viên → quản lý/giám đốc → Tuan), không tự làm thay, không nhờ agent khác. Báo cáo ghi `BÁO LÊN TRÊN:` ở dòng đầu. Phiên chính gặp việc vượt quyền → hỏi Tuan.
@@ -52,6 +62,9 @@ Sổ nhân sự (sinh tự động – sửa `org/agents.yaml` rồi chạy `pyt
 | 0 – Giám đốc | Tổng giám đốc | `claude-main` | opus | claude-quota | quyet-dinh, spec, gate, cad-hinh-hoc, an-toan, duyet | tuan | chinh-thuc |
 | 1 – Quản lý | Quản lý kiểm tra | `check-runner` | haiku | claude-quota | test, kiem-in, doc-log | claude-main | chinh-thuc |
 | 1 – Quản lý | Quản lý tài liệu | `doc-writer` | haiku | claude-quota | tai-lieu | claude-main | chinh-thuc |
+| 1 – Quản lý | Lập trình viên (tầng giữa) | `coder` | sonnet | claude-quota | code, firmware, sua-loi | claude-main | thu-viec |
+| 1 – Quản lý | Thiết kế dáng sản phẩm | `product-designer` | sonnet | claude-quota | thiet-ke-dang, cmf, render, duyet-anh | claude-main | thu-viec |
+| 1 – Quản lý | Nghiên cứu giáo dục (mầm non – đại học) | `edu-researcher` | haiku | claude-quota | nghien-cuu, giao-duc, chuong-trinh, cuoc-thi | claude-main | thu-viec |
 | 1 – Quản lý | Quản lý git | `git-scribe` | haiku | claude-quota | commit, push | claude-main | chinh-thuc |
 | 2 – Nhân viên | Nhân viên lập trình (chính) | `codex` | codex-chatgpt-free | free | code, cad-script, doc-ma, bao-cao | claude-main | chinh-thuc |
 | 2 – Nhân viên | Nhân viên lập trình | `opencode` | opencode/deepseek-v4.1-flash-free | free | code, cad-script | claude-main | chinh-thuc |
