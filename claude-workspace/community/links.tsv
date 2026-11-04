@@ -19,6 +19,7 @@
 ~/.claude/agents/check-runner.md	custom/agents/check-runner.md
 ~/.claude/agents/doc-writer.md	custom/agents/doc-writer.md
 ~/.claude/agents/git-scribe.md	custom/agents/git-scribe.md
+~/.claude/agents/coder.md	custom/agents/coder.md
 # --- stlab ---
 stlab/.claude/skills/docx	community/anthropics-skills/skills/docx
 stlab/.claude/skills/pptx	community/anthropics-skills/skills/pptx

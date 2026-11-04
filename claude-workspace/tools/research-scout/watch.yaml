@@ -47,6 +47,39 @@ topics:
     ten: STEAM Education
     keywords: [steam education, stem education, classroom, educational robot, kids coding, kindergarten, curriculum, robocup junior, edtech]
     weight: 1.0
+  # Them 2026-11-04 (Tuan "mo rong topic"): theo du an dang lam + 3 mang robotics de xuat
+  - id: esp32-camera
+    ten: ESP32 Camera
+    keywords: [esp32-cam, esp32 cam, esp32-s3-cam, ov2640, ov3660, ov5640]
+    weight: 1.0
+  - id: blender-3d
+    ten: Blender
+    keywords: [blender, bpy]
+    weight: 1.0
+  - id: quadruped
+    ten: Quadruped
+    keywords: [quadruped, robot dog, legged robot]
+    weight: 1.0
+  - id: lerobot
+    ten: LeRobot
+    keywords: [lerobot, so-100, so-101, so100, so101]
+    weight: 1.0
+  - id: voice-assistant
+    ten: Voice Assistant
+    keywords: [voice assistant, wake word, speech recognition, text-to-speech]
+    weight: 1.0
+  - id: micropython
+    ten: MicroPython
+    keywords: [micropython, circuitpython]
+    weight: 1.0
+  - id: home-assistant
+    ten: Home Assistant
+    keywords: [home assistant, esphome]
+    weight: 1.0
+  - id: rc-car
+    ten: RC Car
+    keywords: [rc car, 3d printed car, robot car]
+    weight: 1.0
 github_queries:   # topic = chu de gan khi mo ta repo khong chua tu khoa (Claude chot 2026-11-01)
   - {q: esp32 robot, topic: esp32, min_stars: 50, pushed_days: 90}
   - {q: line follower robot, topic: line-robot, min_stars: 20, pushed_days: 180}
@@ -55,7 +88,20 @@ github_queries:   # topic = chu de gan khi mo ta repo khong chua tu khoa (Claude
   - {q: stm32 robot, topic: stm32, min_stars: 30, pushed_days: 90}
   - {q: freecad python, topic: freecad, min_stars: 50, pushed_days: 90}
   - {q: bambu lab, topic: 3d-print-bambu, min_stars: 50, pushed_days: 90}
-repos:
+  - {q: esp32 camera, topic: esp32-camera, min_stars: 50, pushed_days: 90}
+  - {q: quadruped robot, topic: quadruped, min_stars: 50, pushed_days: 90}
+  - {q: lerobot, topic: lerobot, min_stars: 30, pushed_days: 90}
+  - {q: micropython robot, topic: micropython, min_stars: 30, pushed_days: 180}
+repos:   # them 2026-11-04: kiem GitHub API, tat ca push <= 5 ngay
+  - {repo: espressif/esp32-camera, topic: esp32-camera}
+  - {repo: huggingface/lerobot, topic: lerobot}
+  - {repo: esphome/esphome, topic: home-assistant}
+  - {repo: micropython/micropython, topic: micropython}
+  - {repo: blender/blender, topic: blender-3d}
+  - {repo: aaif-goose/goose, topic: ai-agent-free}
+  - {repo: anomalyco/opencode, topic: ai-agent-free}
+  - {repo: Kilo-Org/kilocode, topic: ai-agent-free}
+  - {repo: github/copilot-cli, topic: ai-agent-free}
   - {repo: espressif/esp-idf, topic: esp32}
   - {repo: espressif/arduino-esp32, topic: esp32}
   - {repo: raspberrypi/pico-sdk, topic: raspberry-pi}
@@ -85,6 +131,12 @@ hn:
     min_points: 20
   - query: freecad
     min_points: 20
+  - query: esp32 camera
+    min_points: 20
+  - query: blender
+    min_points: 50
+  - query: home assistant
+    min_points: 30
 digest:
   top_n: 10
   days: 7

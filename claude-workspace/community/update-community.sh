@@ -94,7 +94,9 @@ check_one() {
   [ "$(git -C "$d" rev-parse HEAD)" = "$sha" ] || echo "> CANH BAO: HEAD khac diem ghim (chay status)"
   [ -z "$(git -C "$d" status --porcelain)" ] || echo "> CANH BAO: working tree bi sua (khong duoc sua trong repo cong dong)"
   git -C "$d" fetch --quiet --tags --force origin
-  read -r CAND_REF CAND_SHA < <(candidate "$d" "$t")
+  read -r CAND_REF CAND_SHA < <(candidate "$d" "$t") || true
+  # vd. repo kieu tag nhung khong co tag on dinh -> bao loi repo nay, khong dung ca lenh check
+  [ -n "$CAND_SHA" ] || { echo "## $n: LOI khong lay duoc ban moi nhat (type=$t) - kiem tay"; echo; return 0; }
   SENS=""
   if [ "$CAND_SHA" = "$sha" ]; then
     echo "## $n: khong doi ($ref ${sha:0:12})"; echo; return 0
@@ -111,7 +113,8 @@ check_one() {
     git -C "$d" diff "$sha" "$CAND_SHA" -- CHANGELOG.md | grep -E '^\+[^+]' | head -40 || true; echo '```'
   fi
   echo "### Phan dang lien ket vao du an"; echo '```'
-  grep -v '^#' "$LINKS" | cut -f2 | grep "^community/$n/" | sort -u | while read -r sub; do
+  # repo khong lien ket gi -> grep tra 1; khong de pipefail + set -e dung ca lenh check
+  { grep -v '^#' "$LINKS" | cut -f2 | grep "^community/$n/" || true; } | sort -u | while read -r sub; do
     sub="${sub#community/$n/}"
     st=$(git -C "$d" diff --shortstat "$sha" "$CAND_SHA" -- "$sub")
     echo "$sub:${st:- khong doi}"
@@ -161,7 +164,7 @@ cmd_check() {
     [ -z "$only" ] || [ "$only" = "$n" ] || continue
     # Khong pipe check_one: no phai chay trong shell hien tai de giu CAND_SHA/SENS cho buoc --auto.
     CAND_SHA="" SENS=""
-    check_one "$r" >"$part"
+    check_one "$r" >"$part" || echo "## $n: LOI khi kiem (vd. fetch that bai) - chay lai: check $n" >>"$part"
     tee -a "$out" <"$part"
     if [ $auto = 1 ] && [ -n "$CAND_SHA" ] && [ "$(fld "$r" 7)" = yes ] && [ "$(fld "$r" 8)" = on ] && [ "$CAND_SHA" != "$(fld "$r" 5)" ]; then
       if [ -n "$SENS" ]; then

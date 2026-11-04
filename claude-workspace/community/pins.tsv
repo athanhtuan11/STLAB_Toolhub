@@ -2,7 +2,7 @@
 anthropics-skills	https://github.com/anthropics/skills.git	sha	-	dbd4588f9e1033efb41dad4bef2f7947c8993d44	-	yes	off	Apache-2.0 + source-available (docx/pdf/pptx/xlsx)
 shanraisshan-claude-code-best-practice	https://github.com/shanraisshan/claude-code-best-practice.git	sha	-	9f9f5d9faec17b8646cceeb35ad9e4e0f5b85c56	-	no	off	MIT
 mattpocock-skills	https://github.com/mattpocock/skills.git	tag	v1.3.1	24fe0ef7737efae15c87225755e9f6f5965e4888	-	no	off	MIT
-voltagent-subagents	https://github.com/VoltAgent/awesome-claude-code-subagents.git	sha	-	408d3c9eee2d0c75c12a3abb5de29e53c2ca6b9e	-	no	off	MIT
+voltagent-subagents	https://github.com/VoltAgent/awesome-claude-code-subagents.git	sha	-	ed74d115b7fb7026a22a4f816a8e3250f425e3b4	408d3c9eee2d0c75c12a3abb5de29e53c2ca6b9e	no	off	MIT
 homeassistant-ai-skills	https://github.com/homeassistant-ai/skills.git	sha	-	68f2690ff868cde35f4e755cde82a69666f89b06	-	no	off	MIT
 homeassistant-ai-ha-mcp	https://github.com/homeassistant-ai/ha-mcp.git	tag	v8.7.0	a96752286be1a6511f32a62e90213641c8d18068	-	no	off	MIT
 neka-nat-freecad-mcp	https://github.com/neka-nat/freecad-mcp.git	tag	v0.1.27	78bf0230a03324b56c9a0b7f55150fb5be2a0d42	-	no	off	MIT
@@ -11,14 +11,14 @@ yujxzjcn-teaching-skills	https://github.com/YujxZJCN/teaching-skills.git	sha	-	f
 garethmanning-education-agent-skills	https://github.com/GarethManning/education-agent-skills.git	sha	-	6bbbce418f82e11044009c9f3b7373a354de5bd0	-	no	off	CC-BY-SA-4.0
 drfenixion-freecad-robotcad	https://github.com/drfenixion/freecad.robotcad.git	tag	v12.10.3	80c483bcccca03763e7b0e37367ca7846b2bc24a	-	no	off	LGPL-2.1
 looooo-freecad-gears	https://github.com/looooo/freecad.gears.git	sha	-	83ec154b1925347622b61812f75d2ed51e956b9f	-	no	off	GPL-3.0
-shaise-freecad-sheetmetal	https://github.com/shaise/FreeCAD_SheetMetal.git	sha	-	cbf6595b68ad015266923749c160c3555a72e1fd	-	no	off	LGPL-2.1
+shaise-freecad-sheetmetal	https://github.com/shaise/FreeCAD_SheetMetal.git	sha	-	d6a60a9911e612cf7ecb593b869f658baca22cdd	cbf6595b68ad015266923749c160c3555a72e1fd	no	off	LGPL-2.1
 github-awesome-copilot	https://github.com/github/awesome-copilot.git	sha	-	613efc8c21d9b3ce642dff361d17006cd9967e28	-	no	off	MIT (chi skills/freecad-scripts)
 freecad-library	https://github.com/FreeCAD/FreeCAD-library.git	sha	-	f5ca01cdcaa2f69b9295a6382719c2d90628780c	-	no	off	CC-BY-3.0 (ghi cong tac gia)
 midasmatterhorn-artcraft-skills	https://github.com/midasmatterhorn/artcraft-skills.git	sha	-	aa35c244d1151f6c0b9b79aedeba1d9c93342afa	-	no	off	MIT (filmcraft/, lightcraft/)
 abpy-fujifilm-camera-profiles	https://github.com/abpy/FujifilmCameraProfiles.git	sha	-	b5a1f16abfb2759b337c83d69d9dc49470e7e518	-	no	off	none (khong co file LICENSE)
 cedeber-hald-clut	https://github.com/cedeber/hald-clut.git	sha	-	3b3180f82d4dcea1e6e8c5648473539a910d7f49	-	no	off	GPL-3.0 (repo); LUT goc RawTherapee film sim
-peva3-lightroom-presets	https://github.com/peva3/Lightroom-Presets.git	sha	-	f22f4d8057aaaada6df3f0ed7fbe6b952a30db77	-	no	off	MIT
-arduino-docs-content	https://github.com/arduino/docs-content.git	sha	-	b12ffb3a317c900b1c9d1b00ec1e5f94a978891f	-	no	off	CC-BY-SA-4.0 (chi STEP board, sparse)
+peva3-lightroom-presets	https://github.com/peva3/Lightroom-Presets.git	sha	-	0cdb71c60603867a046bc92c63617feec7894dd1	f22f4d8057aaaada6df3f0ed7fbe6b952a30db77	no	off	MIT
+arduino-docs-content	https://github.com/arduino/docs-content.git	sha	-	a9e9f7b3a1529ff8c94e0ecc075f491a937c404e	b12ffb3a317c900b1c9d1b00ec1e5f94a978891f	no	off	CC-BY-SA-4.0 (chi STEP board, sparse)
 espressif-kicad-libraries	https://github.com/espressif/kicad-libraries.git	tag	3.2.1	1dfc3110895c9cd62daf332f49c49ee0ee200831	-	no	off	CC-BY-SA-4.0 + mien tru thiet ke (nhu KiCad)
 shaise-freecad-fasteners	https://github.com/shaise/FreeCAD_FastenersWB.git	tag	V0.5.67-beta	fddd07af422b7d3a69098b32333711c5eeae184c	-	no	off	GPL-2.0-or-later
 remotion-dev-skills	https://github.com/remotion-dev/skills.git	sha	-	6c67adcd9cdbe6eb84d76342da89b225f9161cb2	-	no	off	none trong repo (Remotion License cua monorepo: free ca nhan/<=3 NV)
@@ -27,18 +27,18 @@ antonbabenko-deliberation	https://github.com/antonbabenko/deliberation.git	tag	v
 cyberbrick-official-controller-core	https://github.com/CyberBrick-Official/CyberBrick_Controller_Core.git	sha	-	9712a8439f339a09e454baf543b8e97a5b1f03a7	-	no	off	CyberBrick Codebase License (chi dung qua san pham/dich vu MakerWorld-Bambu; giu thong bao)
 earthtojake-text-to-cad	https://github.com/earthtojake/text-to-cad.git	tag	v0.7.26	2f793659fb7bab537e2f00836e06448fc4087cb2	-	no	off	MIT
 nextlevelbuilder-ui-ux-pro-max-skill	https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git	sha	-	28b3b8dee8c976df4fa3e94aed4e092ad43fcb03	-	no	off	MIT
-voltagent-awesome-design-md	https://github.com/VoltAgent/awesome-design-md.git	sha	-	3b605329240ce735b510037cca322f1831fdd7f8	-	no	off	MIT
+voltagent-awesome-design-md	https://github.com/VoltAgent/awesome-design-md.git	sha	-	fcc70284932276d085f01ef9f83edde90b1258cb	3b605329240ce735b510037cca322f1831fdd7f8	no	off	MIT
 nexu-io-open-design	https://github.com/nexu-io/open-design.git	sha	-	325494e5a1e5858f7aa63bd71d7f326bdf911e7f	-	no	off	Apache-2.0
 leonxlnx-taste-skill	https://github.com/Leonxlnx/taste-skill.git	sha	-	12af471f627f866411b4bd785b19646d3672784c	-	no	off	MIT
 pbakaus-impeccable	https://github.com/pbakaus/impeccable.git	sha	-	0dd67516c6387706e7b7e7f47f1c715efe6947c6	-	no	off	Apache-2.0
 davidhdev-react-bits	https://github.com/DavidHDev/react-bits.git	sha	-	e12c22192ac7b4b452c5e2feb9b586d74765d696	-	no	off	MIT+Commons-Clause
-emilkowalski-skills	https://github.com/emilkowalski/skills.git	sha	-	2d228630ba1446365f614a108cb8252f1feda202	-	no	off	MIT
+emilkowalski-skills	https://github.com/emilkowalski/skills.git	sha	-	f1090bec277140d02ed202440185ad9d02ac1490	2d228630ba1446365f614a108cb8252f1feda202	no	off	MIT
 nutlope-hallmark	https://github.com/Nutlope/hallmark.git	sha	-	7ec868225c6caa040558c321ee0fefa0e73f83a8	-	no	off	MIT
 google-labs-code-design-md	https://github.com/google-labs-code/design.md.git	sha	-	6e5da5382f41edbba9d73b2c62f33f32e9971f15	-	no	off	Apache-2.0
 greensock-gsap-skills	https://github.com/greensock/gsap-skills.git	sha	-	aed9cfd3277740755f6bfc1155c7aa645403b760	-	no	off	MIT
 oso95-scroll-world	https://github.com/oso95/scroll-world.git	sha	-	71cc36d3bb150248ae36a2c552f9cbf88802a79c	-	no	off	MIT
 davidhdev-canvas-ui	https://github.com/DavidHDev/canvas-ui.git	sha	-	a04a99b235299ee79a123a16ccb2e6cf9da74b6b	-	no	off	MIT+Commons-Clause
-anthropics-knowledge-work-plugins	https://github.com/anthropics/knowledge-work-plugins.git	sha	-	c75fda00ff0e41c8ee331ae312c8a07f1967653b	-	no	off	Apache-2.0
+anthropics-knowledge-work-plugins	https://github.com/anthropics/knowledge-work-plugins.git	sha	-	2574e29377c7173d0cecffef29a6ecbd7f8ccb5d	c75fda00ff0e41c8ee331ae312c8a07f1967653b	no	off	Apache-2.0
 multica-ai-andrej-karpathy-skills	https://github.com/multica-ai/andrej-karpathy-skills.git	sha	-	2c606141936f1eeef17fa3043a72095b4765b9c2	-	no	off	khong-license(chi-doc)
 comfy-org-comfyui	https://github.com/Comfy-Org/ComfyUI.git	sha	-	426f5eea52a7ece1dd599fff4cb6cd1f352ddd24	-	no	off	GPL-3.0
 akitaonrails-ai-memory	https://github.com/akitaonrails/ai-memory.git	sha	-	0e5488073d7073caa3181bbaf184102b215dcf66	-	no	off	MIT
@@ -47,8 +47,8 @@ mikedh-trimesh	https://github.com/mikedh/trimesh.git	sha	-	6c158cce226500fc64b12
 cadquery-cadquery	https://github.com/CadQuery/cadquery.git	sha	-	8178185a24a035c9af7f4679033be14267f6a6ef	-	no	off	Apache-2.0
 gumyr-build123d	https://github.com/gumyr/build123d.git	sha	-	c49a0493ad0003ae2bf940be1d59b6d1f41d0788	-	no	off	Apache-2.0
 pan-chera-multi-agent-cad	https://github.com/Pan-Chera/Multi-Agent-CAD.git	sha	-	7e4cf4b71d96188cfbaa9076ed8b8554e484763b	-	no	off	MIT
-orcaslicer-orcaslicer	https://github.com/OrcaSlicer/OrcaSlicer.git	sha	-	e28af4e5f2112fecc96e43db99967dd2fa4bd350	-	no	off	AGPL-3.0
-anthropics-claude-plugins-official	https://github.com/anthropics/claude-plugins-official.git	sha	-	41f619d61b999adec1a1c8deb97d1a5b6ac35bb6	-	no	off	Apache-2.0
+orcaslicer-orcaslicer	https://github.com/OrcaSlicer/OrcaSlicer.git	sha	-	a30aa7ba8dd3b3c6ec6e553af7a5afb3d1b89bf5	e28af4e5f2112fecc96e43db99967dd2fa4bd350	no	off	AGPL-3.0
+anthropics-claude-plugins-official	https://github.com/anthropics/claude-plugins-official.git	sha	-	a2e251d9b97b909bf728b3e84fc8d17e6aba0063	41f619d61b999adec1a1c8deb97d1a5b6ac35bb6	no	off	Apache-2.0
 matt1398-claude-devtools	https://github.com/matt1398/claude-devtools.git	sha	-	1486f2042c87bb547a4e34808ab54ab34a33f132	-	no	off	MIT
 hoangsonww-claude-code-agent-monitor	https://github.com/hoangsonww/Claude-Code-Agent-Monitor.git	sha	-	3cb22ae4a4e2ca31145351e1d73e05d0ff41f2dc	-	no	off	MIT
 kibitzsh-kibitz	https://github.com/kibitzsh/kibitz.git	sha	-	8414d9c28e01e0535dffcf7cd733e785899681c8	-	no	off	MIT
