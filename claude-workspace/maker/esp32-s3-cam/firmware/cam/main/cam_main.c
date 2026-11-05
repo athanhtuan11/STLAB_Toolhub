@@ -1,4 +1,4 @@
-// Firmware chinh v0.2.0: camera giam sat ESP32-S3-CAM N16R8 + OV3660.
+// Firmware chinh v0.3.0 (them OTA, the TF, phat hien chuyen dong): camera giam sat ESP32-S3-CAM N16R8 + OV3660.
 // - Chi MOT task camera goi esp_camera_fb_get, copy JPEG sang "khung moi nhat" (PSRAM, dem tham chieu).
 // - Server cong 80: /, /capture, /status, /control. Server cong 81: /stream (MJPEG, moi nguoi xem 1 task rieng).
 // - Khong ai giu camera_fb_t ngoai task camera, va task camera tra ngay sau khi copy.
@@ -9,10 +9,16 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <inttypes.h>
+#include <time.h>
+#include <errno.h>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"
+#include "freertos/queue.h"
 
 #include "esp_log.h"
 #include "esp_system.h"
@@ -28,10 +34,18 @@
 #include "esp_http_server.h"
 #include "driver/temperature_sensor.h"
 #include "esp_camera.h"
+#include "img_converters.h"
+#include "jpeg_decoder.h"
+#include "esp_ota_ops.h"
+#include "esp_vfs_fat.h"
+#include "sdmmc_cmd.h"
+#include "driver/sdmmc_host.h"
+#include "driver/gpio.h"
+#include "esp_netif_sntp.h"
 
 #include "wifi_nha.h"
 
-#define CAM_VERSION "0.2.0"
+#define CAM_VERSION "0.3.0"
 
 // Nguong nhiet: TODO chua co nguon datasheet (xem README), dat theo yeu cau spec.
 #define TEMP_HOT_C 70.0f
@@ -47,7 +61,22 @@
 #define NULL_RESET_US 3000000
 #define BOUNDARY "stlabboundary"
 
+#define MOTION_FPS 2
+#define MOTION_PERIOD_MS 500
+#define MOTION_COOLDOWN_US (10 * 1000000LL)
+#define MOT_PIX_MAX (320 * 240)
+#define N_EVENTS 20
+#define OTA_MAX_BYTES (4 * 1024 * 1024)
+#define SD_MOUNT "/sdcard"
+#define SD_DIR "stlab-cam"
+#define SD_RETRY_US (30 * 1000000LL)
+#define SD_MIN_FREE_MB 200
+#define SD_MIN_FREE_PCT 10
+
 static const char *TAG = "[CAM]";
+static const char *TAG_OTA = "[OTA]";
+static const char *TAG_SD = "[SD]";
+static const char *TAG_MOT = "[MOTION]";
 
 extern const uint8_t index_html_start[] asm("_binary_index_html_start");
 extern const uint8_t index_html_end[] asm("_binary_index_html_end");
@@ -67,12 +96,15 @@ typedef struct {
     int aec;
     int ae_level;
     int rotate;  // 0/90/180/270: chi luu, trang web tu xoay hien thi
+    int motion;      // 0/1 phat hien chuyen dong
+    int motion_thr;  // 5..80 nguong lech do sang 1 diem anh
+    int motion_pct;  // 1..50 % diem anh doi
 } cam_cfg_t;
 
 static cam_cfg_t g_cfg = {
     .framesize = FRAMESIZE_SVGA, .quality = 12, .vflip = 1, .hmirror = 1,
     .brightness = 0, .contrast = 0, .saturation = 0, .fps = 10, .aec = 1, .ae_level = 0,
-    .rotate = 0,
+    .rotate = 0, .motion = 0, .motion_thr = 25, .motion_pct = 3,
 };
 
 typedef struct {
@@ -114,7 +146,9 @@ static bool cfg_valid(const cam_cfg_t *c)
            c->brightness >= -2 && c->brightness <= 2 && c->contrast >= -2 && c->contrast <= 2 &&
            c->saturation >= -2 && c->saturation <= 2 && c->fps >= 1 && c->fps <= 25 &&
            (c->aec == 0 || c->aec == 1) && c->ae_level >= -2 && c->ae_level <= 2 &&
-           (c->rotate == 0 || c->rotate == 90 || c->rotate == 180 || c->rotate == 270);
+           (c->rotate == 0 || c->rotate == 90 || c->rotate == 180 || c->rotate == 270) &&
+           (c->motion == 0 || c->motion == 1) && c->motion_thr >= 5 && c->motion_thr <= 80 &&
+           c->motion_pct >= 1 && c->motion_pct <= 50;
 }
 
 static void cfg_load(void)
@@ -261,6 +295,404 @@ static void cam_wake(void)
     }
 }
 
+
+// ---------------------------------------------------------------------------
+// Gio (SNTP) + trang thai OTA / the TF / chuyen dong
+// ---------------------------------------------------------------------------
+static volatile bool s_ota_busy;
+static volatile bool s_sd_ok;
+static volatile uint32_t s_sd_free_mb;
+static volatile uint32_t s_motion_count;
+static volatile int64_t s_motion_last_us = -1;
+
+static bool time_ok(void)
+{
+    return time(NULL) > 1700000000;
+}
+
+static void on_got_ip(void *arg, esp_event_base_t base, int32_t id, void *data)
+{
+    (void)arg;
+    (void)base;
+    (void)id;
+    (void)data;
+    static bool started = false;
+    if (!started) {
+        esp_sntp_config_t sc = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
+        esp_err_t se = esp_netif_sntp_init(&sc);
+        if (se == ESP_OK) {
+            started = true;
+        }
+        ESP_LOGI(TAG, "SNTP pool.ntp.org: %s", esp_err_to_name(se));
+    }
+}
+
+// ---------------------------------------------------------------------------
+// The TF (SDMMC 1-bit). Tuan chua co the: moi thu phai chay khi khong the.
+// ---------------------------------------------------------------------------
+typedef struct {
+    int idx;         // slot khung dang giu tham chieu
+    char path[56];   // duong dan tuong doi trong /sdcard, vd stlab-cam/20261105/140322.jpg
+} sd_job_t;
+
+static QueueHandle_t s_sd_q;
+static sdmmc_card_t *s_card;
+static int64_t s_sd_next_try_us;
+
+static bool sd_mount(void)
+{
+    sdmmc_host_t host = SDMMC_HOST_DEFAULT();
+    host.flags = SDMMC_HOST_FLAG_1BIT;
+    host.max_freq_khz = SDMMC_FREQ_DEFAULT;
+    sdmmc_slot_config_t slot = SDMMC_SLOT_CONFIG_DEFAULT();
+    slot.width = 1;
+    slot.clk = GPIO_NUM_39;
+    slot.cmd = GPIO_NUM_38;
+    slot.d0 = GPIO_NUM_40;
+    slot.flags |= SDMMC_SLOT_FLAG_INTERNAL_PULLUP;
+    esp_vfs_fat_mount_config_t mc = {
+        .format_if_mount_failed = false,  // KHONG BAO GIO format the cua nguoi dung
+        .max_files = 4,
+        .allocation_unit_size = 16 * 1024,
+    };
+    s_card = NULL;
+    return esp_vfs_fat_sdmmc_mount(SD_MOUNT, &host, &slot, &mc, &s_card) == ESP_OK;
+}
+
+static void sd_drop(const char *why)
+{
+    ESP_LOGW(TAG_SD, "Bo the (%s) - thu lai moi 30 s", why);
+    esp_vfs_fat_sdcard_unmount(SD_MOUNT, s_card);
+    s_card = NULL;
+    s_sd_ok = false;
+    s_sd_free_mb = 0;
+    s_sd_next_try_us = esp_timer_get_time() + SD_RETRY_US;
+}
+
+static bool sd_info(uint64_t *total, uint64_t *freeb)
+{
+    return esp_vfs_fat_info(SD_MOUNT, total, freeb) == ESP_OK && *total > 0;
+}
+
+// Xoa thu muc ngay cu nhat trong stlab-cam ("boot" coi la cu nhat).
+static bool sd_prune_oldest(void)
+{
+    DIR *d = opendir(SD_MOUNT "/" SD_DIR);
+    if (d == NULL) {
+        return false;
+    }
+    char best[32] = "";
+    struct dirent *e;
+    while ((e = readdir(d)) != NULL) {
+        if (e->d_type != DT_DIR || e->d_name[0] == '.' || strlen(e->d_name) >= sizeof(best)) {
+            continue;
+        }
+        if (best[0] == '\0' || strcmp(e->d_name, "boot") == 0 ||
+            (strcmp(best, "boot") != 0 && strcmp(e->d_name, best) < 0)) {
+            strcpy(best, e->d_name);
+        }
+    }
+    closedir(d);
+    if (best[0] == '\0') {
+        return false;
+    }
+    char dir[96];
+    snprintf(dir, sizeof(dir), SD_MOUNT "/" SD_DIR "/%s", best);
+    d = opendir(dir);
+    if (d != NULL) {
+        char fp[400];
+        while ((e = readdir(d)) != NULL) {
+            if (e->d_name[0] != '.') {
+                snprintf(fp, sizeof(fp), "%s/%s", dir, e->d_name);
+                unlink(fp);
+            }
+        }
+        closedir(d);
+    }
+    ESP_LOGI(TAG_SD, "Day the - xoa thu muc cu %s", best);
+    return rmdir(dir) == 0;
+}
+
+// Cap nhat dung luong trong; xoa ngay cu khi sap day. false = khong con cho ghi.
+static bool sd_ensure_space(void)
+{
+    uint64_t total = 0, freeb = 0;
+    for (int i = 0; i < 10; i++) {
+        if (!sd_info(&total, &freeb)) {
+            return false;
+        }
+        s_sd_free_mb = (uint32_t)(freeb / (1024 * 1024));
+        bool low = freeb * 100 < total * SD_MIN_FREE_PCT || (freeb / (1024 * 1024)) < SD_MIN_FREE_MB;
+        if (!low) {
+            return true;
+        }
+        if (!sd_prune_oldest()) {
+            break;
+        }
+    }
+    return sd_info(&total, &freeb) && (freeb / (1024 * 1024)) >= 5;
+}
+
+static bool sd_write_job(const sd_job_t *j)
+{
+    if (!sd_ensure_space()) {
+        return true;  // day va khong xoa duoc: bo qua, khong coi la loi the
+    }
+    char full[96];
+    snprintf(full, sizeof(full), SD_MOUNT "/%s", j->path);
+    char dir[96];
+    snprintf(dir, sizeof(dir), "%s", full);
+    char *slash = strrchr(dir, '/');
+    if (slash == NULL) {
+        return false;
+    }
+    *slash = '\0';
+    mkdir(SD_MOUNT "/" SD_DIR, 0775);
+    mkdir(dir, 0775);
+    FILE *f = fopen(full, "wb");
+    if (f == NULL) {
+        return false;
+    }
+    size_t w = fwrite(s_slots[j->idx].buf, 1, s_slots[j->idx].len, f);
+    int c = fclose(f);
+    return w == s_slots[j->idx].len && c == 0;
+}
+
+static void sd_task(void *arg)
+{
+    (void)arg;
+    bool warned = false;
+    int64_t last_free_us = 0;
+    for (;;) {
+        sd_job_t j;
+        if (xQueueReceive(s_sd_q, &j, pdMS_TO_TICKS(1000)) == pdTRUE) {
+            if (s_sd_ok && !sd_write_job(&j)) {
+                sd_drop("loi ghi");
+            }
+            store_release(j.idx);
+        }
+        int64_t now = esp_timer_get_time();
+        if (!s_sd_ok) {
+            if (now >= s_sd_next_try_us) {
+                if (sd_mount()) {
+                    s_sd_ok = true;
+                    warned = false;
+                    sd_ensure_space();
+                    ESP_LOGI(TAG_SD, "Da gan the TF, con %u MB", (unsigned)s_sd_free_mb);
+                } else {
+                    if (!warned) {
+                        ESP_LOGW(TAG_SD, "Khong co the - thu lai moi 30 s");
+                        warned = true;
+                    }
+                    s_sd_next_try_us = now + SD_RETRY_US;
+                }
+            }
+        } else if (now - last_free_us > 10000000LL) {
+            last_free_us = now;
+            uint64_t total = 0, freeb = 0;
+            if (sd_info(&total, &freeb)) {
+                s_sd_free_mb = (uint32_t)(freeb / (1024 * 1024));
+            } else {
+                sd_drop("mat the");
+            }
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Chuyen dong: doc khung da copy (khong goi esp_camera_fb_get)
+// ---------------------------------------------------------------------------
+typedef struct {
+    int64_t boot_s;
+    time_t wall;  // 0 neu chua co gio
+    float pct;
+    char file[56];  // rong neu khong luu the
+} event_t;
+
+static event_t s_events[N_EVENTS];
+static int s_ev_n;      // so su kien dang luu (<= N_EVENTS)
+static int s_ev_head;   // vi tri ghi tiep theo
+static SemaphoreHandle_t s_ev_mtx;
+static uint8_t *s_ev_jpg;
+static size_t s_ev_cap, s_ev_len;
+
+static void event_record(int idx, float pct)
+{
+    int64_t boot_s = (esp_timer_get_time() - s_boot_us) / 1000000;
+    time_t now = time(NULL);
+    bool tok = time_ok();
+    event_t ev;
+    memset(&ev, 0, sizeof(ev));
+    ev.boot_s = boot_s;
+    ev.wall = tok ? now : 0;
+    ev.pct = pct;
+
+    char path[56] = "";
+    if (tok) {
+        struct tm tmv;
+        localtime_r(&now, &tmv);
+        strftime(path, sizeof(path), SD_DIR "/%Y%m%d/%H%M%S.jpg", &tmv);
+    } else {
+        snprintf(path, sizeof(path), SD_DIR "/boot/%" PRId64 ".jpg", boot_s);
+    }
+
+    // ban sao JPEG cua su kien (PSRAM, thay ban cu)
+    xSemaphoreTake(s_ev_mtx, portMAX_DELAY);
+    if (s_ev_cap < s_slots[idx].len) {
+        size_t ncap = s_slots[idx].len + s_slots[idx].len / 8 + 1024;
+        uint8_t *nb = heap_caps_malloc(ncap, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+        if (nb != NULL) {
+            heap_caps_free(s_ev_jpg);
+            s_ev_jpg = nb;
+            s_ev_cap = ncap;
+        }
+    }
+    if (s_ev_cap >= s_slots[idx].len) {
+        memcpy(s_ev_jpg, s_slots[idx].buf, s_slots[idx].len);
+        s_ev_len = s_slots[idx].len;
+    }
+    xSemaphoreGive(s_ev_mtx);
+
+    // gui task ghi the (giu them 1 tham chieu khung, task the se nha)
+    bool queued = false;
+    if (s_sd_ok) {
+        sd_job_t j;
+        j.idx = idx;
+        snprintf(j.path, sizeof(j.path), "%s", path);
+        xSemaphoreTake(s_store_mtx, portMAX_DELAY);
+        s_slots[idx].refs++;
+        xSemaphoreGive(s_store_mtx);
+        if (xQueueSend(s_sd_q, &j, 0) == pdTRUE) {
+            queued = true;
+        } else {
+            store_release(idx);
+        }
+    }
+    if (queued) {
+        snprintf(ev.file, sizeof(ev.file), "%s", path);
+    }
+
+    xSemaphoreTake(s_ev_mtx, portMAX_DELAY);
+    s_events[s_ev_head] = ev;
+    s_ev_head = (s_ev_head + 1) % N_EVENTS;
+    if (s_ev_n < N_EVENTS) {
+        s_ev_n++;
+    }
+    xSemaphoreGive(s_ev_mtx);
+    s_motion_last_us = esp_timer_get_time();
+    s_motion_count++;
+}
+
+static inline int gray565(uint16_t v)
+{
+    return (((v >> 11) & 31) * 8 * 77 + ((v >> 5) & 63) * 4 * 150 + (v & 31) * 8 * 29) >> 8;
+}
+
+static void motion_task(void *arg)
+{
+    (void)arg;
+    uint16_t *rgb = heap_caps_malloc(MOT_PIX_MAX * 2, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    uint16_t *bg = heap_caps_malloc(MOT_PIX_MAX * 2, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    if (rgb == NULL || bg == NULL) {
+        ESP_LOGE(TAG_MOT, "Het PSRAM - tat phat hien chuyen dong");
+        vTaskDelete(NULL);
+        return;
+    }
+    uint32_t last_seq = 0;
+    int hits = 0, warm = 0, bw = 0, bh = 0;
+    int64_t cool_until = 0;
+    bool was_on = false;
+
+    for (;;) {
+        vTaskDelay(pdMS_TO_TICKS(MOTION_PERIOD_MS));
+        if (!g_cfg.motion || s_ota_busy) {
+            was_on = false;
+            continue;
+        }
+        if (!was_on) {
+            was_on = true;
+            bw = 0;
+            bh = 0;
+            hits = 0;
+            warm = 0;
+        }
+        int idx = -1;
+        if (!store_acquire(last_seq, 0, &idx)) {
+            continue;
+        }
+        last_seq = s_slots[idx].seq;
+        const uint8_t *jb = s_slots[idx].buf;
+        size_t jl = s_slots[idx].len;
+
+        esp_jpeg_image_cfg_t ic = {
+            .indata = (uint8_t *)jb,
+            .indata_size = jl,
+            .out_format = JPEG_IMAGE_FORMAT_RGB565,
+            .out_scale = JPEG_IMAGE_SCALE_1_8,
+        };
+        esp_jpeg_image_output_t io;
+        memset(&io, 0, sizeof(io));
+        int w = 0, h = 0;
+        if (esp_jpeg_get_image_info(&ic, &io) == ESP_OK) {
+            w = io.width / 8;  // get_image_info tra kich thuoc goc; giai ma 1/8 cho (rong/8) x (cao/8)
+            h = io.height / 8;
+        }
+        bool ok = w > 0 && h > 0 && (w * h) <= MOT_PIX_MAX && jpg2rgb565(jb, jl, (uint8_t *)rgb, JPG_SCALE_8X);
+        if (!ok) {
+            static int fails;
+            if (fails++ % 20 == 0) {
+                ESP_LOGW(TAG_MOT, "Khong giai ma duoc khung (%dx%d, %u byte)", w, h, (unsigned)jl);
+            }
+            store_release(idx);
+            continue;
+        }
+        int n = w * h;
+        if (w != bw || h != bh) {  // moi bat hoac doi do phan giai: lap nen moi
+            for (int i = 0; i < n; i++) {
+                bg[i] = (uint16_t)(gray565(rgb[i]) << 4);
+            }
+            bw = w;
+            bh = h;
+            hits = 0;
+            warm = 2;
+            store_release(idx);
+            continue;
+        }
+        int thr = g_cfg.motion_thr;
+        int cnt = 0;
+        for (int i = 0; i < n; i++) {
+            int g = gray565(rgb[i]);
+            int d = g - (bg[i] >> 4);
+            if (d < 0) {
+                d = -d;
+            }
+            if (d > thr) {
+                cnt++;
+            }
+            bg[i] = (uint16_t)((int)bg[i] + (((g << 4) - (int)bg[i]) >> 4));  // nen troi cham
+        }
+        float pct = 100.0f * (float)cnt / (float)n;
+        int64_t now = esp_timer_get_time();
+        if (warm > 0) {
+            warm--;
+            hits = 0;
+        } else if (now < cool_until) {
+            hits = 0;
+        } else if (pct > (float)g_cfg.motion_pct) {
+            hits++;
+            if (hits >= 2) {
+                hits = 0;
+                cool_until = now + MOTION_COOLDOWN_US;
+                ESP_LOGI(TAG_MOT, "%.1f%%", (double)pct);
+                event_record(idx, pct);
+            }
+        } else {
+            hits = 0;
+        }
+        store_release(idx);
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Camera
 // ---------------------------------------------------------------------------
@@ -342,6 +774,11 @@ static int effective_fps(void)
     if (s_nong && f > HOT_FPS) {
         f = HOT_FPS;
     }
+    if (s_viewers <= 0 && s_cap_waiters <= 0) {
+        f = MOTION_FPS;  // chi chay vi phat hien chuyen dong
+    } else if (g_cfg.motion && f < MOTION_FPS) {
+        f = MOTION_FPS;
+    }
     return f;
 }
 
@@ -370,7 +807,7 @@ static void cam_task(void *arg)
     int64_t null_since = 0;
 
     for (;;) {
-        if (s_viewers <= 0 && s_cap_waiters <= 0) {
+        if (s_viewers <= 0 && s_cap_waiters <= 0 && !g_cfg.motion) {
             was_idle = true;
             null_since = 0;
             ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(200));
@@ -429,9 +866,15 @@ static void monitor_task(void *arg)
     uint32_t last = s_frames_pub;
     int64_t last_us = esp_timer_get_time();
     int tick = 0;
+    bool marked = false;
 
     for (;;) {
         vTaskDelay(pdMS_TO_TICKS(2000));
+        if (!marked && s_cam_ok && (esp_timer_get_time() - s_boot_us) > 30 * 1000000LL) {
+            marked = true;  // chay on 30 s va camera OK: bo rollback
+            esp_err_t e = esp_ota_mark_app_valid_cancel_rollback();
+            ESP_LOGI(TAG_OTA, "Danh dau ban hop le (%s)", esp_err_to_name(e));
+        }
         float t = -999.0f;
         if (s_tsens != NULL && temperature_sensor_get_celsius(s_tsens, &t) != ESP_OK) {
             t = -999.0f;
@@ -474,19 +917,26 @@ static esp_err_t status_get(httpd_req_t *req)
 {
     char nha[320];
     wifi_nha_status_json(nha, sizeof(nha));
-    static char buf[1536];  // chi 1 handler cong 80 chay 1 luc (server don luong)
+    const esp_partition_t *running = esp_ota_get_running_partition();
+    static char buf[2048];  // chi 1 handler cong 80 chay 1 luc (server don luong)
     int n = snprintf(buf, sizeof(buf),
         "{\"version\":\"" CAM_VERSION "\",\"uptime_s\":%" PRId64 ",\"nhiet_do_chip\":%.1f,\"nong\":%s,"
         "\"fps_cai\":%d,\"fps_thuc\":%.1f,\"so_nguoi_xem\":%d,\"framesize\":\"%s\",\"quality\":%d,"
         "\"vflip\":%d,\"hmirror\":%d,\"brightness\":%d,\"contrast\":%d,\"saturation\":%d,"
         "\"aec\":%d,\"ae_level\":%d,\"rotate\":%d,\"heap_free\":%u,\"psram_free\":%u,\"frame_loi\":%u,"
-        "\"cam_reinit\":%u,\"cam_ok\":%s,%s,\"ap_ssid\":\"%s\"}",
+        "\"cam_reinit\":%u,\"cam_ok\":%s,%s,\"ap_ssid\":\"%s\","
+        "\"ota_partition\":\"%s\",\"sd_ok\":%s,\"sd_free_mb\":%u,\"time_ok\":%s,\"motion\":%d,"
+        "\"motion_thr\":%d,\"motion_pct\":%d,\"motion_count\":%u,\"motion_last_s\":%d}",
         (esp_timer_get_time() - s_boot_us) / 1000000, (double)s_temp, s_nong ? "true" : "false",
         g_cfg.fps, (double)s_fps_thuc, (int)s_viewers, fs_name(g_cfg.framesize), g_cfg.quality,
         g_cfg.vflip, g_cfg.hmirror, g_cfg.brightness, g_cfg.contrast, g_cfg.saturation,
         g_cfg.aec, g_cfg.ae_level, g_cfg.rotate, (unsigned)esp_get_free_heap_size(),
         (unsigned)heap_caps_get_free_size(MALLOC_CAP_SPIRAM), (unsigned)s_frame_loi,
-        (unsigned)s_cam_reinit, s_cam_ok ? "true" : "false", nha, s_ap_ssid);
+        (unsigned)s_cam_reinit, s_cam_ok ? "true" : "false", nha, s_ap_ssid,
+        running != NULL ? running->label : "?", s_sd_ok ? "true" : "false", (unsigned)(s_sd_ok ? s_sd_free_mb : 0),
+        time_ok() ? "true" : "false", g_cfg.motion, g_cfg.motion_thr, g_cfg.motion_pct,
+        (unsigned)s_motion_count,
+        s_motion_last_us < 0 ? -1 : (int)((esp_timer_get_time() - s_motion_last_us) / 1000000));
     if (n < 0 || n >= (int)sizeof(buf)) {
         return httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "loi tao JSON");
     }
@@ -572,6 +1022,12 @@ static esp_err_t control_get(httpd_req_t *req)
         n.ae_level = val;
     } else if (strcmp(var, "rotate") == 0) {
         n.rotate = val;
+    } else if (strcmp(var, "motion") == 0) {
+        n.motion = val;
+    } else if (strcmp(var, "motion_thr") == 0) {
+        n.motion_thr = val;
+    } else if (strcmp(var, "motion_pct") == 0) {
+        n.motion_pct = val;
     } else {
         return httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "var khong hop le");
     }
@@ -612,9 +1068,235 @@ static esp_err_t control_get(httpd_req_t *req)
     }
     xSemaphoreGive(s_cam_mtx);
     cfg_save();
+    if (strcmp(var, "motion") == 0) {
+        cam_wake();
+    }
 
     httpd_resp_set_type(req, "application/json");
     return httpd_resp_sendstr(req, "{\"ok\":1}");
+}
+
+
+static esp_err_t event_jpg_get(httpd_req_t *req)
+{
+    xSemaphoreTake(s_ev_mtx, portMAX_DELAY);
+    if (s_ev_len == 0) {
+        xSemaphoreGive(s_ev_mtx);
+        return httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "chua co su kien");
+    }
+    httpd_resp_set_type(req, "image/jpeg");
+    httpd_resp_set_hdr(req, "Cache-Control", "no-store");
+    esp_err_t r = httpd_resp_send(req, (const char *)s_ev_jpg, s_ev_len);
+    xSemaphoreGive(s_ev_mtx);
+    return r;
+}
+
+static esp_err_t events_get(httpd_req_t *req)
+{
+    static char buf[3072];  // server cong 80 don luong
+    size_t o = 0;
+    o += (size_t)snprintf(buf + o, sizeof(buf) - o, "[");
+    xSemaphoreTake(s_ev_mtx, portMAX_DELAY);
+    for (int k = 0; k < s_ev_n && o + 200 < sizeof(buf); k++) {
+        int i = (s_ev_head - s_ev_n + k + 2 * N_EVENTS) % N_EVENTS;
+        const event_t *e = &s_events[i];
+        char t[32];
+        if (e->wall != 0) {
+            struct tm tmv;
+            localtime_r(&e->wall, &tmv);
+            strftime(t, sizeof(t), "%Y-%m-%d %H:%M:%S", &tmv);
+        } else {
+            snprintf(t, sizeof(t), "boot+%" PRId64 "s", e->boot_s);
+        }
+        o += (size_t)snprintf(buf + o, sizeof(buf) - o, "%s{\"t\":\"%s\",\"pct\":%.1f,\"file\":",
+                              k ? "," : "", t, (double)e->pct);
+        if (e->file[0] != '\0') {
+            o += (size_t)snprintf(buf + o, sizeof(buf) - o, "\"%s\"}", e->file);
+        } else {
+            o += (size_t)snprintf(buf + o, sizeof(buf) - o, "null}");
+        }
+    }
+    xSemaphoreGive(s_ev_mtx);
+    o += (size_t)snprintf(buf + o, sizeof(buf) - o, "]");
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_set_hdr(req, "Cache-Control", "no-store");
+    return httpd_resp_send(req, buf, o);
+}
+
+static bool sd_path_ok(const char *f)
+{
+    size_t n = strlen(f);
+    if (n == 0 || n > 60 || f[0] == '/' || strstr(f, "..") != NULL) {
+        return false;
+    }
+    for (size_t i = 0; i < n; i++) {
+        char c = f[i];
+        bool good = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') ||
+                    c == '.' || c == '/' || c == '-' || c == '_';
+        if (!good) {
+            return false;
+        }
+    }
+    return true;
+}
+
+static esp_err_t sd_get(httpd_req_t *req)
+{
+    char query[96];
+    char f[72];
+    if (httpd_req_get_url_query_str(req, query, sizeof(query)) != ESP_OK ||
+        httpd_query_key_value(query, "f", f, sizeof(f)) != ESP_OK || !sd_path_ok(f)) {
+        return httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "duong dan khong hop le");
+    }
+    if (!s_sd_ok) {
+        httpd_resp_set_status(req, "503 Service Unavailable");
+        httpd_resp_set_type(req, "text/plain");
+        return httpd_resp_sendstr(req, "Chua co the TF");
+    }
+    char full[112];
+    if (strncmp(f, SD_DIR "/", strlen(SD_DIR) + 1) == 0) {
+        snprintf(full, sizeof(full), SD_MOUNT "/%s", f);
+    } else {
+        snprintf(full, sizeof(full), SD_MOUNT "/" SD_DIR "/%s", f);
+    }
+    FILE *fp = fopen(full, "rb");
+    if (fp == NULL) {
+        return httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "khong co file");
+    }
+    char *chunk = malloc(4096);
+    if (chunk == NULL) {
+        fclose(fp);
+        return httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "het bo nho");
+    }
+    httpd_resp_set_type(req, "image/jpeg");
+    esp_err_t r = ESP_OK;
+    size_t got;
+    while (r == ESP_OK && (got = fread(chunk, 1, 4096, fp)) > 0) {
+        r = httpd_resp_send_chunk(req, chunk, got);
+    }
+    fclose(fp);
+    free(chunk);
+    if (r == ESP_OK) {
+        r = httpd_resp_send_chunk(req, NULL, 0);
+    }
+    return r;
+}
+
+// ---------------------------------------------------------------------------
+// OTA: POST /ota, body = .bin tho, header X-OTA-Key
+// ---------------------------------------------------------------------------
+static void ota_drain(httpd_req_t *req)
+{
+    char tmp[256];
+    size_t left = req->content_len < 16384 ? req->content_len : 16384;
+    while (left > 0) {
+        int r = httpd_req_recv(req, tmp, left < sizeof(tmp) ? left : sizeof(tmp));
+        if (r <= 0) {
+            break;
+        }
+        left -= (size_t)r;
+    }
+}
+
+static esp_err_t ota_post(httpd_req_t *req)
+{
+    char given[72] = "";
+    size_t hl = httpd_req_get_hdr_value_len(req, "X-OTA-Key");
+    bool auth = false;
+    if (hl > 0 && hl < sizeof(given)) {
+        if (httpd_req_get_hdr_value_str(req, "X-OTA-Key", given, sizeof(given)) == ESP_OK) {
+            auth = ota_key_check(given);
+        }
+    }
+    memset(given, 0, sizeof(given));
+    if (!auth) {
+        ota_drain(req);
+        ESP_LOGW(TAG_OTA, "Tu choi: thieu/sai khoa hoac chua cai khoa");
+        httpd_resp_set_status(req, "403 Forbidden");
+        httpd_resp_set_type(req, "text/plain");
+        return httpd_resp_sendstr(req, "Khoa OTA sai/thieu");
+    }
+    if (s_ota_busy) {
+        httpd_resp_set_status(req, "409 Conflict");
+        httpd_resp_set_type(req, "text/plain");
+        return httpd_resp_sendstr(req, "Dang OTA");
+    }
+    size_t total = req->content_len;
+    if (total == 0 || total > OTA_MAX_BYTES) {
+        ota_drain(req);
+        return httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "kich thuoc khong hop le (toi da 4 MB)");
+    }
+    const esp_partition_t *part = esp_ota_get_next_update_partition(NULL);
+    if (part == NULL) {
+        return httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "khong co phan vung OTA");
+    }
+    s_ota_busy = true;
+    ESP_LOGI(TAG_OTA, "Bat dau %u byte -> %s", (unsigned)total, part->label);
+    esp_ota_handle_t oh = 0;
+    esp_err_t e = esp_ota_begin(part, total, &oh);
+    if (e != ESP_OK) {
+        s_ota_busy = false;
+        ESP_LOGE(TAG_OTA, "esp_ota_begin loi %s", esp_err_to_name(e));
+        return httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "khong bat dau duoc OTA");
+    }
+    char *buf = malloc(4096);
+    if (buf == NULL) {
+        esp_ota_abort(oh);
+        s_ota_busy = false;
+        return httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "het bo nho");
+    }
+    size_t got = 0;
+    int timeouts = 0;
+    int bad = 0;  // 0 ok, 400 anh hong, 500 loi khac
+    while (got < total) {
+        size_t want = total - got < 4096 ? total - got : 4096;
+        int r = httpd_req_recv(req, buf, want);
+        if (r == HTTPD_SOCK_ERR_TIMEOUT) {
+            if (++timeouts > 4) {
+                bad = 500;
+                break;
+            }
+            continue;
+        }
+        if (r <= 0) {
+            bad = 500;
+            break;
+        }
+        timeouts = 0;
+        e = esp_ota_write(oh, buf, (size_t)r);
+        if (e != ESP_OK) {
+            bad = (e == ESP_ERR_OTA_VALIDATE_FAILED) ? 400 : 500;
+            break;
+        }
+        got += (size_t)r;
+    }
+    free(buf);
+    if (bad == 0) {
+        e = esp_ota_end(oh);
+        if (e != ESP_OK) {
+            bad = (e == ESP_ERR_OTA_VALIDATE_FAILED) ? 400 : 500;
+        }
+    } else {
+        esp_ota_abort(oh);
+    }
+    if (bad == 0) {
+        e = esp_ota_set_boot_partition(part);
+        if (e != ESP_OK) {
+            bad = 500;
+        }
+    }
+    if (bad != 0) {
+        s_ota_busy = false;
+        ESP_LOGE(TAG_OTA, "That bai (%s) sau %u byte - giu ban cu", esp_err_to_name(e), (unsigned)got);
+        return httpd_resp_send_err(req, bad == 400 ? HTTPD_400_BAD_REQUEST : HTTPD_500_INTERNAL_SERVER_ERROR,
+                                   bad == 400 ? "anh firmware hong" : "loi ghi OTA");
+    }
+    ESP_LOGI(TAG_OTA, "Xong %u byte - khoi dong lai", (unsigned)got);
+    httpd_resp_set_type(req, "text/plain");
+    esp_err_t r = httpd_resp_sendstr(req, "OK, khoi dong lai");
+    vTaskDelay(pdMS_TO_TICKS(500));
+    esp_restart();
+    return r;
 }
 
 // ---------------------------------------------------------------------------
@@ -691,7 +1373,7 @@ static esp_err_t stream_get(httpd_req_t *req)
 static httpd_handle_t start_server(httpd_config_t cfg, const httpd_uri_t *uris, size_t n_uris)
 {
     cfg.max_open_sockets = 4;
-    cfg.max_uri_handlers = 8;
+    cfg.max_uri_handlers = 12;
     cfg.stack_size = 6144;
     cfg.lru_purge_enable = true;
     cfg.recv_wait_timeout = 5;
@@ -714,6 +1396,10 @@ static void start_servers(void)
         {.uri = "/status", .method = HTTP_GET, .handler = status_get, .user_ctx = NULL},
         {.uri = "/capture", .method = HTTP_GET, .handler = capture_get, .user_ctx = NULL},
         {.uri = "/control", .method = HTTP_GET, .handler = control_get, .user_ctx = NULL},
+        {.uri = "/ota", .method = HTTP_POST, .handler = ota_post, .user_ctx = NULL},
+        {.uri = "/event.jpg", .method = HTTP_GET, .handler = event_jpg_get, .user_ctx = NULL},
+        {.uri = "/events", .method = HTTP_GET, .handler = events_get, .user_ctx = NULL},
+        {.uri = "/sd", .method = HTTP_GET, .handler = sd_get, .user_ctx = NULL},
     };
     static const httpd_uri_t stream_uris[] = {
         {.uri = "/stream", .method = HTTP_GET, .handler = stream_get, .user_ctx = NULL},
@@ -724,7 +1410,7 @@ static void start_servers(void)
     httpd_config_t c81 = HTTPD_DEFAULT_CONFIG();
     c81.server_port = 81;
     c81.ctrl_port = 32769;  // phai khac cong 80 (mac dinh 32768 trung)
-    if (start_server(c80, main_uris, 4) == NULL) {
+    if (start_server(c80, main_uris, sizeof(main_uris) / sizeof(main_uris[0])) == NULL) {
         ESP_LOGE(TAG, "Khong mo duoc server cong 80");
     }
     if (start_server(c81, stream_uris, 1) == NULL) {
@@ -745,6 +1431,7 @@ static void wifi_start(void)
 
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
+    ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, on_got_ip, NULL));
     esp_netif_create_default_wifi_ap();
 
     wifi_init_config_t init_cfg = WIFI_INIT_CONFIG_DEFAULT();
@@ -773,6 +1460,10 @@ void app_main(void)
     s_boot_us = esp_timer_get_time();
     s_cam_mtx = xSemaphoreCreateMutex();
     s_store_mtx = xSemaphoreCreateMutex();
+    s_ev_mtx = xSemaphoreCreateMutex();
+    s_sd_q = xQueueCreate(4, sizeof(sd_job_t));
+    setenv("TZ", "ICT-7", 1);
+    tzset();
 
     esp_err_t err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -803,5 +1494,7 @@ void app_main(void)
 
     xTaskCreate(cam_task, "cam", 4096, NULL, 6, &s_cam_task);
     xTaskCreate(monitor_task, "monitor", 3072, NULL, 3, NULL);
+    xTaskCreate(sd_task, "sd", 6144, NULL, 3, NULL);
+    xTaskCreate(motion_task, "motion", 8192, NULL, 3, NULL);
     ESP_LOGI(TAG, "STLab Cam " CAM_VERSION " chay");
 }

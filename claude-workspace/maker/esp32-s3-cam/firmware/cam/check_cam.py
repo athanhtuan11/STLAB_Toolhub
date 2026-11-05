@@ -45,7 +45,7 @@ for pat, msg in [
     (r"esp_camera_deinit", "watchdog init lai camera"),
     (r"503", "nguoi xem thu 3 -> 503"),
     (r"HTTPD_400|400", "/control sai -> 400"),
-    (r'"0\.[12]\.0"', 'version "0.1.0"/"0.2.0"'),
+    (r'"0\.[123]\.0"', 'version 0.1-0.3'),
     (r"\[CAM\]", "log [CAM]"),
     (r"WIFI_MODE_APSTA", "giu Wi-Fi APSTA"),
 ]:

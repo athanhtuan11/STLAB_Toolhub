@@ -3,7 +3,9 @@
 //   WIFI <ssid>TAB<mat khau>   luu + ket noi
 //   WIFI?                      xem trang thai
 //   WIFI_CLEAR                 xoa cau hinh, ngat STA
-// Mat khau khong bao gio duoc in ra log.
+//   OTAKEY <khoa>              luu khoa OTA (16-64 ky tu in duoc) vao NVS namespace "ota", tra "OTAKEY OK"
+//   OTAKEY?                    tra "OTAKEY SET" hoac "OTAKEY NONE"
+// Mat khau va khoa OTA khong bao gio duoc in ra log/UART.
 
 #include <stdio.h>
 #include <string.h>
@@ -323,6 +325,84 @@ static void print_status(void)
 }
 
 // ---------------------------------------------------------------------------
+// Khoa OTA (NVS namespace "ota", khoa "key"). Khong bao gio in ra.
+// ---------------------------------------------------------------------------
+#define OTA_KEY_MIN 16
+#define OTA_KEY_MAX 64
+
+static bool ota_key_load(char *out, size_t n)
+{
+    nvs_handle_t h;
+    out[0] = '\0';
+    if (nvs_open("ota", NVS_READONLY, &h) != ESP_OK) {
+        return false;
+    }
+    memset(out, 0, n);
+    size_t len = n;
+    esp_err_t err = nvs_get_str(h, "key", out, &len);
+    nvs_close(h);
+    if (err != ESP_OK) {
+        out[0] = '\0';
+        return false;
+    }
+    return out[0] != '\0';
+}
+
+bool ota_key_is_set(void)
+{
+    char k[OTA_KEY_MAX + 1];
+    bool r = ota_key_load(k, sizeof(k));
+    memset(k, 0, sizeof(k));
+    return r;
+}
+
+// So sanh thoi gian hang so (chay het do dai toi da).
+bool ota_key_check(const char *given)
+{
+    char k[OTA_KEY_MAX + 1] = {0};
+    if (given == NULL || !ota_key_load(k, sizeof(k))) {
+        memset(k, 0, sizeof(k));
+        return false;
+    }
+    unsigned diff = (unsigned)(strlen(k) != strlen(given));
+    for (size_t i = 0; i < OTA_KEY_MAX; i++) {
+        unsigned a = (unsigned char)k[i];
+        unsigned b = (i < strlen(given) && i <= OTA_KEY_MAX) ? (unsigned char)given[i] : 0;
+        diff |= a ^ b;
+    }
+    memset(k, 0, sizeof(k));
+    return diff == 0;
+}
+
+static void uart_reply(const char *s)
+{
+    uart_write_bytes(UART_PORT, s, strlen(s));
+}
+
+static void handle_ota_set(const char *k)
+{
+    size_t n = strlen(k);
+    bool ok = n >= OTA_KEY_MIN && n <= OTA_KEY_MAX;
+    for (size_t i = 0; ok && i < n; i++) {
+        ok = (unsigned char)k[i] > 0x20 && (unsigned char)k[i] < 0x7F;
+    }
+    if (!ok) {
+        uart_reply("OTAKEY ERR\r\n");
+        return;
+    }
+    nvs_handle_t h;
+    esp_err_t err = nvs_open("ota", NVS_READWRITE, &h);
+    if (err == ESP_OK) {
+        err = nvs_set_str(h, "key", k);
+        if (err == ESP_OK) {
+            err = nvs_commit(h);
+        }
+        nvs_close(h);
+    }
+    uart_reply(err == ESP_OK ? "OTAKEY OK\r\n" : "OTAKEY ERR\r\n");
+}
+
+// ---------------------------------------------------------------------------
 // Lenh UART0
 // ---------------------------------------------------------------------------
 static void handle_set(char *args)
@@ -363,6 +443,10 @@ static void handle_line(char *line)
         }
     } else if (strncmp(line, "WIFI ", 5) == 0) {
         handle_set(line + 5);
+    } else if (strcmp(line, "OTAKEY?") == 0) {
+        uart_reply(ota_key_is_set() ? "OTAKEY SET\r\n" : "OTAKEY NONE\r\n");
+    } else if (strncmp(line, "OTAKEY ", 7) == 0) {
+        handle_ota_set(line + 7);
     }
 }
 
@@ -391,6 +475,8 @@ static void uart_cmd_task(void *arg)
         if (overflow) {
             if (strncmp(line, "WIFI", 4) == 0) {
                 ESP_LOGE(TAG, "[DO] Loi: SSID/mat khau qua dai");
+            } else if (strncmp(line, "OTAKEY", 6) == 0) {
+                uart_reply("OTAKEY ERR\r\n");
             }
         } else {
             handle_line(line);

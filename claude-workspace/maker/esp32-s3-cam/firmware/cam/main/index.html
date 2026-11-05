@@ -124,7 +124,7 @@ footer{margin-top:18px;color:var(--muted);font-size:13px;display:flex;gap:16px;f
       </div>
       <div class="toast" id="toast"></div>
       <div class="preview" id="preview"><img id="previmg" alt="Ảnh vừa chụp"></div>
-      <footer><span class="hide-m">Luồng trực tiếp: cổng 81 /stream · ảnh tĩnh: /capture · tối đa 2 người xem cùng lúc</span></footer>
+      <footer><span class="hide-m">Luồng trực tiếp: cổng 81 /stream · ảnh tĩnh: /capture · tối đa 2 người xem cùng lúc</span><span id="ver">—</span></footer>
     </main>
 
     <aside class="side">
@@ -146,6 +146,19 @@ footer{margin-top:18px;color:var(--muted);font-size:13px;display:flex;gap:16px;f
         <div class="row"><span>Độ phân giải</span><strong id="fsrow">—</strong></div>
         <div class="row"><span>Người xem</span><strong id="viewers">—</strong></div>
       </section>
+      <section class="card">
+        <h2>Chuyển động</h2>
+        <label class="sw" id="sw-mo" tabindex="0" role="switch" aria-checked="false"><s></s>Phát hiện chuyển động</label>
+        <div class="sliders" style="grid-template-columns:1fr">
+          <label class="sl"><span>Độ nhạy (ngưỡng sáng) <b id="v-thr">25</b></span><input type="range" id="in-thr" min="5" max="80" step="1" value="25"></label>
+          <label class="sl"><span>Vùng đổi (%) <b id="v-pct">3</b></span><input type="range" id="in-pct" min="1" max="50" step="1" value="3"></label>
+        </div>
+        <div class="row" style="margin-top:12px"><span>Số lần phát hiện</span><strong id="mo-count">—</strong></div>
+        <div class="row"><span>Lần cuối</span><strong id="mo-last">—</strong></div>
+        <div class="preview show" id="ev-box" style="display:none"><img id="ev-img" alt="Ảnh chuyển động gần nhất"></div>
+        <ul id="ev-list" style="list-style:none;margin:10px 0 0;padding:0;font-size:13px;max-height:180px;overflow:auto"></ul>
+        <div class="row" style="margin-top:10px"><span>Thẻ TF</span><strong id="sd-txt">—</strong></div>
+      </section>
     </aside>
   </div>
 </div>
@@ -156,6 +169,7 @@ footer{margin-top:18px;color:var(--muted);font-size:13px;display:flex;gap:16px;f
   var DIMS={QVGA:[320,240],VGA:[640,480],SVGA:[800,600],XGA:[1024,768],HD:[1280,720],UXGA:[1600,1200],QXGA:[2048,1536]};
   var ROTS=[0,90,180,270];
   var $=function(i){return document.getElementById(i)};
+  var lastMo=null;
   var st=null, lastOk=false, retryTimer=null, streamFail=false, lastBlob=null, busy={};
 
   function toast(m){var t=$('toast');t.textContent=m;t.className='toast show';clearTimeout(toast.h);toast.h=setTimeout(function(){t.className='toast'},5000)}
@@ -303,8 +317,43 @@ footer{margin-top:18px;color:var(--muted);font-size:13px;display:flex;gap:16px;f
     [['in-br','v-br',s.brightness],['in-ct','v-ct',s.contrast],['in-fps','v-fps',s.fps_cai]].forEach(function(a){
       if(document.activeElement!==$(a[0])){$(a[0]).value=a[2];$(a[1]).textContent=a[2]}
     });
+    // chuyển động + thẻ TF + phiên bản
+    var mon=s.motion===1;
+    $('sw-mo').className='sw'+(mon?' on':'');$('sw-mo').setAttribute('aria-checked',mon);
+    [['in-thr','v-thr',s.motion_thr],['in-pct','v-pct',s.motion_pct]].forEach(function(a){
+      if(document.activeElement!==$(a[0])){$(a[0]).value=a[2];$(a[1]).textContent=a[2]}
+    });
+    $('mo-count').textContent=s.motion_count;
+    $('mo-last').textContent=s.motion_last_s<0?'chưa có':(s.motion_last_s+' giây trước');
+    $('sd-txt').textContent=s.sd_ok?('Thẻ TF: còn '+s.sd_free_mb+' MB'):'Chưa cắm thẻ TF';
+    $('ver').textContent='Phiên bản '+s.version+' · phân vùng '+s.ota_partition;
+    if(s.motion_count!==lastMo){lastMo=s.motion_count;loadEvents()}
     layout();
   }
+  function loadEvents(){
+    if(!lastMo){return}
+    var im=$('ev-img');im.src='/event.jpg?t='+Date.now();$('ev-box').style.display='block';
+    fetch('/events',{cache:'no-store'}).then(function(r){return r.json()}).then(function(l){
+      var ul=$('ev-list');ul.innerHTML='';
+      l.slice().reverse().forEach(function(e){
+        var li=document.createElement('li');li.style.padding='3px 0';
+        li.appendChild(document.createTextNode(e.t+' · '+fmt1(e.pct)+'%'));
+        if(e.file){var a=document.createElement('a');a.href='/sd?f='+e.file;a.target='_blank';a.textContent=' · xem ảnh';li.appendChild(a)}
+        ul.appendChild(li);
+      });
+    }).catch(function(){});
+  }
+  $('sw-mo').onclick=function(){
+    var on=!(st&&st.motion===1);
+    $('sw-mo').className='sw'+(on?' on':'');$('sw-mo').setAttribute('aria-checked',on);
+    ctl('motion',on?1:0);
+  };
+  $('sw-mo').onkeydown=function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();$('sw-mo').onclick()}};
+  [['in-thr','v-thr','motion_thr'],['in-pct','v-pct','motion_pct']].forEach(function(a){
+    var el=$(a[0]);
+    el.oninput=function(){$(a[1]).textContent=el.value};
+    el.onchange=function(){ctl(a[2],el.value)};
+  });
   function poll(){
     fetch('/status',{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()}).then(function(s){
       var back=!lastOk;lastOk=true;render(s);

@@ -32,3 +32,6 @@ CONFIG_SCCB_HARDWARE_I2C_DRIVER_LEGACY=y
 
 # 2 HTTP server (cong 80 + 81), moi server toi da 4 ket noi + 2 xem stream: can nhieu socket
 CONFIG_LWIP_MAX_SOCKETS=16
+
+# OTA: bootloader tu quay ve ban cu neu ban moi khong tu danh dau hop le
+CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y
