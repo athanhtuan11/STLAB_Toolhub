@@ -10,6 +10,9 @@
 #include "display/display.h"
 
 #include <algorithm>
+#include <vector>
+#include <mutex>
+#include <esp_codec_dev.h>
 #include <esp_log.h>
 #include <driver/i2c_master.h>
 
@@ -37,6 +40,43 @@ public:
             ESP_ERROR_CHECK_WITHOUT_ABORT(ctrl_if_->write_reg(ctrl_if_, 0x0A, 1, &sel, 1));
         }
     }
+
+    // Driver mo duong ra 1 kenh (mono) -> chi loa trai co tieng (Tuan nghe thu 2026-11-05; thu MONO mix 0x1D khong an).
+    // Mo truoc duong ra 2 kenh (base thay output_device_opened_ = true se bo qua lenh mo mono) va nhan doi moi mau L = R.
+    virtual void EnableOutput(bool enable) override {
+        if (enable) {
+            std::lock_guard<std::mutex> lock(data_if_mutex_);
+            if (!output_device_opened_) {
+                esp_codec_dev_sample_info_t fs = {
+                    .bits_per_sample = 16,
+                    .channel = 2,
+                    .channel_mask = 0,
+                    .sample_rate = (uint32_t)output_sample_rate_,
+                    .mclk_multiple = 0,
+                };
+                ESP_ERROR_CHECK(esp_codec_dev_open(output_dev_, &fs));
+                output_device_opened_ = true;
+            }
+        }
+        Es8388AudioCodec::EnableOutput(enable);
+    }
+
+    virtual int Write(const int16_t* data, int samples) override {
+        if (output_enabled_ && output_dev_ && data != nullptr && samples > 0) {
+            stereo_.resize((size_t)samples * 2);
+            for (int i = 0; i < samples; i++) {
+                stereo_[2 * i] = data[i];
+                stereo_[2 * i + 1] = data[i];
+            }
+            ESP_ERROR_CHECK_WITHOUT_ABORT(esp_codec_dev_write(output_dev_, stereo_.data(), stereo_.size() * sizeof(int16_t)));
+        }
+        return samples;
+    }
+
+private:
+    std::vector<int16_t> stereo_;
+
+public:
 
     virtual void SetOutputVolume(int volume) override {
         volume = std::max(0, std::min(volume, STLAB_MAX_VOLUME));
