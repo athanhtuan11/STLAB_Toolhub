@@ -7,6 +7,7 @@ import struct
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -45,19 +46,18 @@ def stl_bbox(p):
 
 
 class TBuild(unittest.TestCase):
+    # 2026-11-05 (spec-speed.md): build tai cho co cache, gate doc build-report.json - khong build lai lan 2
     @classmethod
     def setUpClass(cls):
-        cls.tmp = Path(tempfile.mkdtemp(prefix="camd-sc-"))
-        env = dict(os.environ, CAMD_OUT=str(cls.tmp))
-        r = subprocess.run([sys.executable, str(BUILD)], capture_output=True, text=True, timeout=900, env=env)
+        t0 = time.time()
+        r = subprocess.run([sys.executable, str(BUILD)], capture_output=True, text=True, timeout=900, cwd=HERE)
+        cls.t1 = time.time() - t0
         cls.log = r.stdout[-3000:] + r.stderr[-3000:]
-        assert r.returncode == 0, "build loi:\n" + cls.log
-        cls.sc = cls.tmp / "cam_d.sc"
-        assert cls.sc.exists(), "khong ra cam_d.sc\n" + cls.log
-        e = subprocess.run([str(CLI), "eval", "--in", str(cls.sc)], capture_output=True, text=True, timeout=600)
-        t = e.stdout
-        cls.ev = json.loads(t[t.index("{"):])
-        cls.bodies = {b["name"]: b for b in cls.ev.get("bodies", [])}
+        assert r.returncode == 0, "build loi: " + cls.log
+        cls.tmp = HERE
+        cls.rep = json.loads((HERE / "build-report.json").read_text(encoding="utf-8"))
+        cls.bodies = cls.rep["bodies"]
+        cls.sc = HERE / "cam_d.sc"
 
     def test_01_du_body(self):
         for n in PRINT + REF:
@@ -80,7 +80,7 @@ class TBuild(unittest.TestCase):
         for n in PRINT:
             b = self.bodies[n]
             self.assertTrue(b.get("closed"), "%s khong kin" % n)
-            self.assertEqual(b.get("kernel", {}).get("shells"), 1, "%s co %s shell" % (n, b.get("kernel", {}).get("shells")))
+            self.assertEqual(b.get("shells"), 1, "%s co %s shell" % (n, b.get("shells")))
 
     def test_05_stl_huong_in(self):
         d = self.tmp / "stl"
@@ -106,6 +106,31 @@ class TBuild(unittest.TestCase):
         self.assertGreaterEqual((P["mat_truoc"]["lo_ong_kinh_d"] - P["mach"]["ong_kinh_d"]) / 2, 0.3 - 1e-9)
         cam = self.bodies["Ref_Cam"]["bbox"]; bez = self.bodies["Bezel"]["bbox"]
         self.assertLess(cam["min"][1], bez["min"][1] - 5, "ong kinh phai nho ra truoc mat vo")
+
+    def test_08_cache(self):
+        # chay lai khong doi gi: khong dung lai chi tiet nao, < 10 s
+        t0 = time.time()
+        r = subprocess.run([sys.executable, str(BUILD)], capture_output=True, text=True, timeout=300, cwd=HERE)
+        dt = time.time() - t0
+        self.assertEqual(r.returncode, 0, r.stdout[-1500:] + r.stderr[-1500:])
+        rep = json.loads((HERE / "build-report.json").read_text(encoding="utf-8"))
+        self.assertEqual(rep["built"], [], "lan 2 van dung lai: %s" % rep["built"])
+        for n in PRINT:
+            self.assertIn(n, rep["cached"], "%s khong lay tu cache" % n)
+        self.assertLess(dt, 10.0, "build lan 2 mat %.1f s" % dt)
+        self.assertIn("built=0", r.stdout)
+
+    def test_09_lap_rap_sc(self):
+        # cam_d.sc cho Tuan mo: du body, cung vi tri voi bao cao tung chi tiet, moi hon cac chi tiet
+        self.assertTrue(self.sc.exists(), "thieu cam_d.sc")
+        e = subprocess.run([str(CLI), "eval", "--in", str(self.sc)], capture_output=True, text=True, timeout=300)
+        t = e.stdout
+        ev = {b["name"]: b for b in json.loads(t[t.index("{"):]).get("bodies", [])}
+        for n in PRINT + REF:
+            self.assertIn(n, ev, "cam_d.sc thieu %s" % n)
+            for i in range(3):
+                self.assertAlmostEqual(ev[n]["bbox"]["min"][i], self.bodies[n]["bbox"]["min"][i], delta=BB_TOL,
+                                       msg="%s trong cam_d.sc lech vi tri" % n)
 
     def test_06_doc_params(self):
         src = BUILD.read_text(encoding="utf-8")

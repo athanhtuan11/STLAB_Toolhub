@@ -41,6 +41,9 @@ Dự án Tuan bắt đầu 2026-11-03. Mạch **ESP32-S3-CAM N16R8** (16 MB flas
   `CONFIG_SCCB_HARDWARE_I2C_DRIVER_LEGACY=y` (IDF 5.5 cấm trộn 2 driver → abort khởi động).
 
 ## Trạng thái
+- 2026-11-05: **Build nhanh** (spec-speed.md): mỗi chi tiết 1 script SolidCraft, cache theo sha256 lệnh, chạy song song, ghép
+  `cam_d.sc` bằng insert_design. Build sạch 40 s (trước ~3 ph), không đổi 0,1 s, đổi 1 thông số bezel ~20 s; gate 9/9 dùng
+  build-report.json (2 s). Lỗ ống kính chốt 15,0 mm.
 - 2026-11-05: **Ống kính đo thật:** khay thẻ nhớ → đỉnh đế ống kính 8,5 mm; ống kính xoay chỉnh nét Ø14, khay thẻ → đầu ống kính
   20–22 mm. Tuan chọn **ống kính nhô ra ngoài vỏ** (~10 mm, chỉnh nét từ ngoài): mạch lùi 2,5 mm, đế ống kính cách mặt trong bezel
   0,5 mm, ống kính chui lỗ 14,6 (0,3/bên). Gate 7/7 PASS (thêm test ống kính chui lỗ). Tâm ống kính cách mép trên 9,4 = tâm khay thẻ TF (camera dán lên khay thẻ – Tuan xác nhận).

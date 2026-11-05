@@ -1,5 +1,5 @@
 """Dung vo camera mau D bang SolidCraft (port tu ../freecad/scripts/build_cam_d.py - ban FreeCAD la chuan).
-Doc params.json -> sinh cam_d.json -> solidcraft-cli run -> cam_d.sc -> xuat 7 STL huong in vao <out>/stl/.
+Doc params.json -> moi chi tiet 1 script (build/<label>.*, cache sha256, song song) -> STL huong in <out>/stl/ + cam_d.sc lap rap + build-report.json.
 Thu muc ra: bien moi truong CAMD_OUT (mac dinh: thu muc nay). Truc: X phai, Y ra sau, Z len."""
 import json, math, os, subprocess, sys
 
@@ -14,7 +14,10 @@ zd = D['de_cao'] - D['lom_sau'] + D['dia_day']; zp = zd + N['cao_tam_tren_dia']
 y0 = -(T['d'] + M['t']) / 2 + M['t']; yp = y0 + .5 + S['khay_the_toi_de_ong_kinh']  # de ong kinh cach mat trong bezel 0,5; ong kinh xoay chui qua lo
 zl = zp + S['pcb_h'] / 2 - S['ong_kinh_cach_canh_tren']
 
-cmd = []
+parts = {}; cmd = []
+def part(label):
+    global cmd
+    cmd = parts[label] = []
 def A(c, **p): cmd.append({"command": c, "params": p})
 def XZ(y): return {"origin": [0, y, 0], "x_dir": [1, 0, 0], "y_dir": [0, 0, 1]}   # phap tuyen -Y
 Y = [0, 1, 0]
@@ -58,7 +61,7 @@ def text_cut(tgt, plane, txt, at, h, depth):
     A("sketch.finish"); A("solid.extrude", distance=depth, operation="cut", targets=[tgt])
 
 # ---------------- Body: vo rong, ho mat truoc ----------------
-B = "Body"
+B = "Body"; part(B)
 rr_y(B, "new", y0, y0 + T['d'], T['w'] / 2, T['h'] / 2, T['r_goc'], 0, zp)
 rr_y(B, "cut", y0 - .1, y0 + T['d'] - T['thanh'], T['w'] / 2 - T['thanh'], T['h'] / 2 - T['thanh'], T['r_goc'] - T['thanh'], 0, zp)
 ov = .5; k = S['khe_moi_ben']; wi = T['w'] / 2 - T['thanh']; hi = T['h'] / 2 - T['thanh']; yr = y0 + T['d'] - T['thanh']
@@ -90,7 +93,7 @@ for x in (-10, -6, -2, 2, 6, 10):
 for f, a in holes: f(*a)
 
 # ---------------- Bezel ----------------
-B = "Bezel"; yf = y0 - M['t']
+B = "Bezel"; part(B); yf = y0 - M['t']
 rr_y(B, "new", yf, y0, T['w'] / 2, T['h'] / 2, T['r_goc'], 0, zp)
 cyl(B, "cut", M['lo_ong_kinh_d'], 'y', (yf - .1, y0 + .1), (0, zl))
 cyl(B, "cut", M['vong_trang_tri_d'], 'y', (yf - .1, yf + M['vong_trang_tri_sau']), (0, zl))
@@ -111,7 +114,7 @@ for sx in (-1, 1):
         cyl(B, "join", 2.5, 'y', (y0 - 1, yp - S['khe_moi_ben']), (sx * (S['pcb_w'] / 2 - 1.5), zp + sz * (S['pcb_h'] / 2 - 1.5)))
 
 # ---------------- U_frame ----------------
-B = "U_frame"
+B = "U_frame"; part(B)
 cyl(B, "new", D['dia_d'], 'z', (zd - D['dia_day'], zd), (0, 0))
 xi = T['w'] / 2 + N['khe_tay_than']
 for sx in (-1, 1):
@@ -127,7 +130,7 @@ for sx in (-1, 1):
     cyl(B, "cut", N['loc_dau_vit_d'], 'x', (xe - sx * N['loc_dau_vit_sau'], xe + sx * .1), (0, zp))
 
 # ---------------- Base (tien xoay, bo R2 bang cung that) ----------------
-B = "Base"
+B = "Base"; part(B)
 Rb = D['de_d'] / 2; hb = D['de_cao']; rf = 2.0
 A("sketch.create", plane="XZ")   # sketch x = +X, sketch y = -Z
 A("sketch.line", points=[[0, 0], [Rb, 0], [Rb, -(hb - rf)]])
@@ -147,16 +150,17 @@ for sx in (-1, 1):
     cyl(B, "cut", D['lo_khoa_d'], 'z', (-.1, D['de_cao'] + .1), (x, 0))
 
 # ---------------- Pin_cap ----------------
-B = "Pin_cap"
+B = "Pin_cap"; part(B)
 cyl(B, "new", D['nap_chot_d'], 'z', (ptop, ptop + D['nap_chot_day']), (0, 0))
 cyl(B, "cut", M['vit_m25_xuyen'], 'z', (ptop - .1, ptop + D['nap_chot_day'] + .1), (0, 0))
 
 # ---------------- Ref (hop tham chieu) ----------------
+part("Ref")
 box("Ref_Stack", "new", (-S['pcb_w'] / 2, S['pcb_w'] / 2), (yp, yp + S['stack_t']), (zp - S['pcb_h'] / 2, zp + S['pcb_h'] / 2))
 cyl("Ref_Cam", "new", S['ong_kinh_d'], 'y', (yp - S['ong_kinh_tong_dai_max'], yp), (0, zl))  # ong kinh dai toi da tu khay the
 
 # ---------------- Coupon + Coupon_ring (ring dat tai y=40 de khong chong Coupon) ----------------
-B = "Coupon"
+B = "Coupon"; part(B)
 box(B, "new", (-35, 35), (-17, 25), (0, 4)); xs = (-23, 0, 23)  # 2026-11-05 noi Y cho ong kinh 14-15 mm
 for x, d in zip(xs, C['m3_xuyen']): cyl(B, "cut", d, 'z', (-.1, 4.1), (x, -8))
 for x, d in zip(xs, C['dai_oc_s']):
@@ -171,11 +175,23 @@ box(B, "cut", (35.7, 35.7 + fw), (-fh / 2, fh / 2), (-.1, 5.1))
 for lst, yy in ((C['m3_xuyen'], -14.5), (C['lo_ong_kinh'], 21.5)):
     for x, d in zip(xs, lst):
         text_cut(B, {"origin": [0, 0, 3.6], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]}, '%g' % d, [x, yy - 1.5], 3, .6)
-R = "Coupon_ring"
+R = "Coupon_ring"; part(R)
 cyl(R, "new", 15, 'z', (0, 4), (0, 40))
 cyl(R, "cut", D['lo_dia_d'], 'z', (-.1, 4.1), (0, 40))
 
-# ---------------- Chay ----------------
+# ---------------- Chay (spec-speed.md: moi chi tiet 1 script, cache theo sha256, chay song song) ----------------
+import hashlib, shutil, time
+import numpy as np
+from concurrent.futures import ThreadPoolExecutor
+T0 = time.time()
+BUILD = os.path.join(OUT, 'build'); STLD = os.path.join(OUT, 'stl')
+os.makedirs(BUILD, exist_ok=True); os.makedirs(STLD, exist_ok=True)
+NO_CACHE = os.environ.get('CAMD_NO_CACHE') == '1'
+# nhan -> (ten stl, truc xoay in, goc); Ref khong xuat STL
+ORIENT = {'Body': ('body', -90), 'Bezel': ('bezel', 90), 'U_frame': ('u_frame', 0), 'Base': ('base', 0), 'Pin_cap': ('pin_cap', 0),
+          'Coupon': ('coupon', 0), 'Coupon_ring': ('coupon_ring', 0), 'Ref': (None, 0)}
+ORDER = ['Body', 'Bezel', 'U_frame', 'Base', 'Pin_cap', 'Ref', 'Coupon', 'Coupon_ring']
+
 def sh(args, what):
     r = subprocess.run(args, capture_output=True, text=True, encoding='utf-8', errors='replace')
     if r.returncode != 0:
@@ -183,28 +199,59 @@ def sh(args, what):
         sys.exit(1)
     return r.stdout
 
-os.makedirs(OUT, exist_ok=True); stldir = os.path.join(OUT, 'stl'); os.makedirs(stldir, exist_ok=True)
-jpath = os.path.join(OUT, 'cam_d.json'); scpath = os.path.join(OUT, 'cam_d.sc')
-json.dump({"commands": cmd}, open(jpath, 'w', encoding='utf-8'), indent=1)
-sh([CLI, 'run', jpath, '--save', scpath, '--quiet'], 'build cam_d.sc')
+CLIV = sh([CLI, '--version'], 'version').strip()
+def P_(label, ext): return os.path.join(BUILD, label + ext)
 
-# Xuat STL theo huong in: xoay quanh goc truoc, do bbox roi tinh tien zmin = 0.
-EXP = [('body', 'Body', [1, 0, 0], -90), ('bezel', 'Bezel', [1, 0, 0], 90), ('u_frame', 'U_frame', None, 0), ('base', 'Base', None, 0),
-       ('pin_cap', 'Pin_cap', None, 0), ('coupon', 'Coupon', None, 0), ('coupon_ring', 'Coupon_ring', None, 0)]
-def rot_cmds():
-    return [{"command": "solid.move", "params": {"bodies": [lb], "axis": ax, "angle": ang}} for _, lb, ax, ang in EXP if ax]
-def ev(script):
-    jp = os.path.join(OUT, '_rot.json'); json.dump({"commands": script}, open(jp, 'w'))
-    t = sh([CLI, 'eval', jp, '--in', scpath], 'eval huong in')
-    return {b['name']: b for b in json.loads(t[t.index('{'):])['bodies']}
-bb = ev(rot_cmds())
-out = rot_cmds()
-for fn, lb, ax, ang in EXP:
-    zmin = bb[lb]['bbox']['min'][2]
-    if abs(zmin) > 1e-9: out.append({"command": "solid.move", "params": {"bodies": [lb], "translate": [0, 0, -zmin]}})
-for fn, lb, ax, ang in EXP:
-    out.append({"command": "file.export_stl", "params": {"path": os.path.join(stldir, fn + '.stl').replace('\\', '/'), "bodies": [lb], "quality": "fine"}})
-xp = os.path.join(OUT, '_export.json'); json.dump({"commands": out}, open(xp, 'w'))
-sh([CLI, 'run', xp, '--in', scpath, '--quiet'], 'xuat STL')   # khong --save: cam_d.sc giu nguyen
-for f in ('_rot.json', '_export.json'): os.remove(os.path.join(OUT, f))
-print('CAMD OK')
+def key_of(label):
+    blob = json.dumps({"cli": CLIV, "orient": ORIENT[label], "commands": parts[label]}, sort_keys=True)
+    return hashlib.sha256(blob.encode('utf-8')).hexdigest()
+
+def rotate_stl(src, dst, angle):
+    """Xoay STL nhi phan quanh truc X (goc do), tinh tien zmin = 0."""
+    b = open(src, 'rb').read(); n = int(np.frombuffer(b, '<u4', 1, 80)[0])
+    rec = np.frombuffer(b, np.dtype([('n', '<f4', 3), ('v', '<f4', (3, 3)), ('a', '<u2')]), n, 84)
+    a = math.radians(angle); c, s_ = round(math.cos(a), 12), round(math.sin(a), 12)
+    R = np.array([[1, 0, 0], [0, c, -s_], [0, s_, c]], dtype=np.float64)
+    v = rec['v'].astype(np.float64) @ R.T; nn = rec['n'].astype(np.float64) @ R.T
+    v[..., 2] -= v[..., 2].min()
+    out = rec.copy(); out['v'] = v.astype('<f4'); out['n'] = nn.astype('<f4')
+    open(dst, 'wb').write(b[:80] + b[80:84] + out.tobytes())
+
+def build_one(label):
+    raw = P_(label, '.raw.stl'); stl, ang = ORIENT[label]
+    cmds = list(parts[label])
+    if stl:
+        cmds.append({"command": "file.export_stl", "params": {"path": raw.replace(os.sep, '/'), "bodies": [label], "quality": "fine"}})
+    cmds.append({"command": "inspect.measure", "params": {}})
+    jp = P_(label, '.json'); json.dump({"commands": cmds}, open(jp, 'w'))
+    sh([CLI, 'run', jp, '--save', P_(label, '.sc'), '--results', '--json-out', P_(label, '.result.json'), '--quiet'], 'build ' + label)
+    if stl:
+        rotate_stl(raw, os.path.join(STLD, stl + '.stl'), ang); os.remove(raw)
+    open(P_(label, '.key'), 'w').write(key_of(label))
+
+def cached(label):
+    if NO_CACHE: return False
+    stl = ORIENT[label][0]
+    need = [P_(label, '.sc'), P_(label, '.result.json'), P_(label, '.key')] + ([os.path.join(STLD, stl + '.stl')] if stl else [])
+    return all(os.path.exists(f) for f in need) and open(P_(label, '.key')).read() == key_of(label)
+
+todo = [l for l in ORDER if not cached(l)]; done = [l for l in ORDER if l not in todo]
+workers = max(2, (os.cpu_count() or 4) // 2)
+with ThreadPoolExecutor(workers) as ex: list(ex.map(build_one, todo))   # loi -> sh() thoat
+
+# Lap rap cam_d.sc: ghep cac .sc chi tiet (khong chay lai boolean); chi dung lai khi co chi tiet doi hoac chua co
+scpath = os.path.join(OUT, 'cam_d.sc'); akey = os.path.join(BUILD, 'assembly.key')
+akv = hashlib.sha256(''.join(key_of(l) for l in ORDER).encode()).hexdigest()
+if todo or NO_CACHE or not os.path.exists(scpath) or not os.path.exists(akey) or open(akey).read() != akv:
+    asm = [{"command": "component.insert_design", "params": {"path": P_(l, '.sc').replace(os.sep, '/'), "name": l}} for l in ORDER]
+    jp = os.path.join(BUILD, 'assembly.json'); json.dump({"commands": asm}, open(jp, 'w'))
+    sh([CLI, 'run', jp, '--save', scpath, '--quiet'], 'lap rap cam_d.sc')
+    open(akey, 'w').write(akv)
+
+bodies = {}
+for l in ORDER:
+    for b in json.load(open(P_(l, '.result.json'), encoding='utf-8'))[-1]['bodies']:
+        bodies[b['name']] = {"volume_mm3": b.get('volume_mm3'), "bbox": b['bbox'], "closed": b.get('closed'), "shells": b.get('kernel', {}).get('shells')}
+sec = round(time.time() - T0, 1)
+json.dump({"bodies": bodies, "built": todo, "cached": done, "seconds": sec}, open(os.path.join(OUT, 'build-report.json'), 'w', encoding='utf-8'), indent=1)
+print('CAMD OK built=%d cached=%d %.1f s' % (len(todo), len(done), sec))

@@ -1,0 +1,6 @@
+build/
+stl/
+plates/
+cam_d.json
+cam_d.sc
+build-report.json
