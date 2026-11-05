@@ -41,6 +41,11 @@ Dự án Tuan bắt đầu 2026-11-03. Mạch **ESP32-S3-CAM N16R8** (16 MB flas
   `CONFIG_SCCB_HARDWARE_I2C_DRIVER_LEGACY=y` (IDF 5.5 cấm trộn 2 driver → abort khởi động).
 
 ## Trạng thái
+- 2026-11-05: **Lỗ ống kính sửa 8,3 → 14,6 mm** (Tuan: ống kính OV3660 ~14 mm; 8,3 là vỏ ESP32-CAM OV2640 – sai). Coupon thử
+  14,2/14,6/15,0. **Bảng khe lắp (nhựa PETG co ngót – luôn có khe):** mạch 27 × 40 → hốc 27,6 × 40,6 (0,3/bên); khối cao 18
+  → gờ sau +0,3; ống kính 14 → 14,6 (0,3/bên); M3 xuyên 3,4; đai ốc M3 s 5,5 → 5,8; M2.5 tự ren 2,2 / xuyên 2,8; chốt xoay
+  Ø8 / lỗ 8,4 (0,2/bên theo tipflow – thử Coupon, lỏng chặt chọn lại); tay U – thân 0,6; nắp chốt khe dọc 0,2.
+  **TODO đo:** ống kính cao bao nhiêu mm trên mặt mạch (quyết định khoảng mạch – bezel, hiện ước 6).
 - 2026-11-05: **CAD chuyển hẳn sang SolidCraft 0.30.1** (Tuan quyết). Nguồn: `solidcraft/params.json` + `build_cam_d.py`
   (sinh `cam_d.json` → `cam_d.sc` mở bằng SolidCraft, xuất `stl/` hướng in, ~3 ph) + gate `python tests/test_build.py` 6/6 PASS
   (thể tích ±1 %, bao ±0,05 mm so bản FreeCAD). Cắt lớp: `tools/robotics-cad/scripts/slice.py solidcraft/print/print.yaml`.

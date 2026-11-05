@@ -18,11 +18,11 @@ REF = ["Ref_Stack", "Ref_Cam"]
 # Label: (the tich mm3, (dx, dy, dz) bao trong he toa do lap rap) - tu FreeCAD
 FC = {
     "Body": (36348.9, (56.0, 37.0, 64.0)),
-    "Bezel": (10191.8, (56.0, 9.2, 64.0)),
+    "Bezel": (9916.5, (56.0, 9.2, 64.0)),     # 2026-11-05 lo ong kinh 8,3 -> 14,6 (Tuan: ong kinh OV3660 ~14 mm)
     "U_frame": (45917.4, (76.0, 76.0, 76.0)),
     "Base": (39134.5, (86.0, 86.0, 10.0)),
     "Pin_cap": (295.6, (14.0, 14.0, 2.0)),
-    "Coupon": (9554.2, (99.5, 43.0, 10.0)),
+    "Coupon": (10474.5, (99.5, 46.5, 10.0)),  # 2026-11-05 noi Y cho hang lo ong kinh 14,2/14,6/15,0
     "Coupon_ring": (485.2, (15.0, 15.0, 4.0)),
 }
 VOL_TOL = 0.01   # 1 %: chu khac + lo con ne loi nhan (top_radius - 0,3)

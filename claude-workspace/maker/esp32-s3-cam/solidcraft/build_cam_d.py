@@ -157,18 +157,18 @@ box("Ref_Cam", "new", (-4.25, 4.25), (y0 + .5, y0 + 4.7), (zl - 4.25, zl + 4.25)
 
 # ---------------- Coupon + Coupon_ring (ring dat tai y=40 de khong chong Coupon) ----------------
 B = "Coupon"
-box(B, "new", (-35, 35), (-17, 17), (0, 4)); xs = (-23, 0, 23)
+box(B, "new", (-35, 35), (-17, 25), (0, 4)); xs = (-23, 0, 23)  # 2026-11-05 noi Y cho ong kinh 14-15 mm
 for x, d in zip(xs, C['m3_xuyen']): cyl(B, "cut", d, 'z', (-.1, 4.1), (x, -8))
 for x, d in zip(xs, C['dai_oc_s']):
     hexcut(B, d, 'z', (1.4, 4.1), (x, -8))
     cyl(B, "cut", 3.4, 'z', (-.1, 4.1), (x, -8))
-for x, d in zip(xs, C['lo_ong_kinh']): cyl(B, "cut", d, 'z', (-.1, 4.1), (x, 8))
+for x, d in zip(xs, C['lo_ong_kinh']): cyl(B, "cut", d, 'z', (-.1, 4.1), (x, 12))
 for x, d in zip((-10, 10), C['den_da_mong']): cyl(B, "cut", 3.4, 'z', (d, 4.1), (x, 0))
 cyl(B, "join", 8, 'z', (3.9, 10), (30, 0))
 fw = S['pcb_w'] + 2 * S['khe_moi_ben']; fh = S['pcb_h'] + 2 * S['khe_moi_ben']
 box(B, "join", (34.5, 34.5 + fw + 2.4), (-fh / 2 - 1.2, fh / 2 + 1.2), (0, 5))
 box(B, "cut", (35.7, 35.7 + fw), (-fh / 2, fh / 2), (-.1, 5.1))
-for lst, yy in ((C['m3_xuyen'], -14.5), (C['lo_ong_kinh'], 14.5)):
+for lst, yy in ((C['m3_xuyen'], -14.5), (C['lo_ong_kinh'], 21.5)):
     for x, d in zip(xs, lst):
         text_cut(B, {"origin": [0, 0, 3.6], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]}, '%g' % d, [x, yy - 1.5], 3, .6)
 R = "Coupon_ring"

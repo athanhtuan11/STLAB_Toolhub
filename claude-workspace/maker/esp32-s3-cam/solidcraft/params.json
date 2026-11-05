@@ -14,7 +14,8 @@
     "cam_cao_tren_pcb": 6.0,
     "ong_kinh_cach_canh_tren": 9.4,
     "_nguon": "27 x 40,5 ESP32-CAM datasheet (trich SunFounder/cnx); stack_t 22 = uoc 4,5 + de nap ~10 + header/linh kien; cam_cao 6 = dau camera 4,2 + khe TF ~1,8 (uoc); ong kinh 9,4 tu vo cong dong ESP32_CAM_CASE",
-    "_do_that": "2026-11-05 Tuan do mach that: 27 x 40 x 18 mm (18 = ca de nap CH340, chua tinh camera). Ong kinh 8,3 / cach canh 9,4 + cam <= 7,7 tu ESP32_CAM_CASE.step."
+    "_do_that": "2026-11-05 Tuan do mach that: 27 x 40 x 18 mm (18 = ca de nap CH340, chua tinh camera). Ong kinh 8,3 / cach canh 9,4 + cam <= 7,7 tu ESP32_CAM_CASE.step.",
+    "_ong_kinh": "2026-11-05 Tuan: ong kinh OV3660 ~14 mm (so 8,3 cu la vo ESP32-CAM OV2640 ong kinh nho - SAI). Lo = 14 + khe 0,3/ben = 14,6; Coupon thu 14,2/14,6/15,0. Chieu cao ong kinh tren mach: TODO do."
   },
   "than": {
     "w": 56.0,
@@ -25,7 +26,7 @@
   },
   "mat_truoc": {
     "t": 3.0,
-    "lo_ong_kinh_d": 8.3,
+    "lo_ong_kinh_d": 14.6,
     "vong_trang_tri_d": 26.0,
     "vong_trang_tri_sau": 0.6,
     "den_d": 3.4,
@@ -103,9 +104,9 @@
       6.0
     ],
     "lo_ong_kinh": [
-      8.3,
-      8.6,
-      9.0
+      14.2,
+      14.6,
+      15.0
     ],
     "den_da_mong": [
       0.4,
