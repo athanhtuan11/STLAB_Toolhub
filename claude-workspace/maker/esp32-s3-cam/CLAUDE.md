@@ -41,6 +41,10 @@ Dự án Tuan bắt đầu 2026-11-03. Mạch **ESP32-S3-CAM N16R8** (16 MB flas
   `CONFIG_SCCB_HARDWARE_I2C_DRIVER_LEGACY=y` (IDF 5.5 cấm trộn 2 driver → abort khởi động).
 
 ## Trạng thái
+- 2026-11-05: **Tuan đo mạch thật 27 × 40 × 18 mm** (18 = cả đế nạp CH340, chưa tính camera) → params `pcb_h` 40,0, `stack_t` 18,0;
+  ống kính Ø8,3 / cách cạnh 9,4 / cam ≤ 7,7 mm vẫn lấy từ ESP32_CAM_CASE.step. Build lại, gate 11/11 PASS, Coupon cắt lớp PASS
+  (22 ph, 7,7 g; khung thử 27,6 × 40,6). Vỏ: bezel bị Bambu báo floating cantilever (TODO sửa), body cần tô support 4 vùng
+  12 × 6 mm ở z 8,5. Chờ Tuan chọn cỡ Coupon → sửa params + bezel → in vỏ.
 - 2026-11-03: **CAD mẫu D** `freecad/` (params.json + scripts/build_cam_d.py + gate tests/test_build.py 11/11 PASS):
   Body, Bezel, U_frame (liền đĩa xoay), Base, Pin_cap + Coupon/Coupon_ring; STL hướng in ở `freecad/scripts/stl/`.
   Số mạch lấy cộng đồng (chưa đo) → **in Coupon trước** (M3 3,3/3,4/3,5; đai ốc 5,6/5,8/6,0; ống kính 8,3/8,6/9,0; da đèn
