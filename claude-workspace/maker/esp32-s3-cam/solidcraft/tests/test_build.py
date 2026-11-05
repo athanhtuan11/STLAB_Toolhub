@@ -17,8 +17,8 @@ PRINT = ["Body", "Bezel", "U_frame", "Base", "Pin_cap", "Coupon", "Coupon_ring"]
 REF = ["Ref_Stack", "Ref_Cam"]
 # Label: (the tich mm3, (dx, dy, dz) bao trong he toa do lap rap) - tu FreeCAD
 FC = {
-    "Body": (36348.9, (56.0, 37.0, 64.0)),
-    "Bezel": (9916.5, (56.0, 9.2, 64.0)),     # 2026-11-05 lo ong kinh 8,3 -> 14,6 (Tuan: ong kinh OV3660 ~14 mm)
+    "Body": (35726.3, (56.0, 37.0, 64.0)),     # 2026-11-05 lui mach 2,5 mm (de ong kinh 8,5 tu khay the)
+    "Bezel": (9965.6, (56.0, 11.7, 64.0)),    # 2026-11-05 lo ong kinh 14,6 + chan ty mach dai them 2,5
     "U_frame": (45917.4, (76.0, 76.0, 76.0)),
     "Base": (39134.5, (86.0, 86.0, 10.0)),
     "Pin_cap": (295.6, (14.0, 14.0, 2.0)),
@@ -93,12 +93,19 @@ class TBuild(unittest.TestCase):
         lo, hi, _ = stl_bbox(d / "body.stl")
         self.assertAlmostEqual(hi[2] - lo[2], 37.0, delta=0.1, msg="body.stl phai in nam mat sau xuong (cao 37)")
         lo, hi, _ = stl_bbox(d / "bezel.stl")
-        self.assertAlmostEqual(hi[2] - lo[2], 9.2, delta=0.1, msg="bezel.stl phai in mat truoc xuong")
+        self.assertAlmostEqual(hi[2] - lo[2], 11.7, delta=0.1, msg="bezel.stl phai in mat truoc xuong")
         for n, dz in (("u_frame", 76.0), ("base", 10.0), ("pin_cap", 2.0), ("coupon", 10.0), ("coupon_ring", 4.0)):
             lo, hi, _ = stl_bbox(d / (n + ".stl"))
             self.assertAlmostEqual(hi[2] - lo[2], dz, delta=0.1, msg="%s.stl sai huong in" % n)
         for n in REF:
             self.assertFalse((d / (n.lower() + ".stl")).exists(), "khong xuat STL cho %s" % n)
+
+    def test_07_ong_kinh_chui_lo(self):
+        # 2026-11-05: ong kinh xoay D14 chui qua lo bezel, khe >= 0,3/ben, nho ra truoc mat vo
+        P = json.loads((HERE / "params.json").read_text(encoding="utf-8"))
+        self.assertGreaterEqual((P["mat_truoc"]["lo_ong_kinh_d"] - P["mach"]["ong_kinh_d"]) / 2, 0.3 - 1e-9)
+        cam = self.bodies["Ref_Cam"]["bbox"]; bez = self.bodies["Bezel"]["bbox"]
+        self.assertLess(cam["min"][1], bez["min"][1] - 5, "ong kinh phai nho ra truoc mat vo")
 
     def test_06_doc_params(self):
         src = BUILD.read_text(encoding="utf-8")

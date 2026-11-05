@@ -41,6 +41,9 @@ Dự án Tuan bắt đầu 2026-11-03. Mạch **ESP32-S3-CAM N16R8** (16 MB flas
   `CONFIG_SCCB_HARDWARE_I2C_DRIVER_LEGACY=y` (IDF 5.5 cấm trộn 2 driver → abort khởi động).
 
 ## Trạng thái
+- 2026-11-05: **Ống kính đo thật:** khay thẻ nhớ → đỉnh đế ống kính 8,5 mm; ống kính xoay chỉnh nét Ø14, khay thẻ → đầu ống kính
+  20–22 mm. Tuan chọn **ống kính nhô ra ngoài vỏ** (~10 mm, chỉnh nét từ ngoài): mạch lùi 2,5 mm, đế ống kính cách mặt trong bezel
+  0,5 mm, ống kính chui lỗ 14,6 (0,3/bên). Gate 7/7 PASS (thêm test ống kính chui lỗ). Tâm ống kính cách mép trên 9,4: chưa đo (TODO).
 - 2026-11-05: **Lỗ ống kính sửa 8,3 → 14,6 mm** (Tuan: ống kính OV3660 ~14 mm; 8,3 là vỏ ESP32-CAM OV2640 – sai). Coupon thử
   14,2/14,6/15,0. **Bảng khe lắp (nhựa PETG co ngót – luôn có khe):** mạch 27 × 40 → hốc 27,6 × 40,6 (0,3/bên); khối cao 18
   → gờ sau +0,3; ống kính 14 → 14,6 (0,3/bên); M3 xuyên 3,4; đai ốc M3 s 5,5 → 5,8; M2.5 tự ren 2,2 / xuyên 2,8; chốt xoay

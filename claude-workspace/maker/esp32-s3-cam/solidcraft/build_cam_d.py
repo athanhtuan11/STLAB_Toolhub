@@ -11,7 +11,7 @@ T, M, S, N, U, D = [P[k] for k in ('than', 'mat_truoc', 'mach', 'truc_nghieng', 
 K = P['khe_nhiet']; USB = P['usb']; C = P['coupon']
 
 zd = D['de_cao'] - D['lom_sau'] + D['dia_day']; zp = zd + N['cao_tam_tren_dia']
-y0 = -(T['d'] + M['t']) / 2 + M['t']; yp = y0 + .5 + S['cam_cao_tren_pcb']
+y0 = -(T['d'] + M['t']) / 2 + M['t']; yp = y0 + .5 + S['khay_the_toi_de_ong_kinh']  # de ong kinh cach mat trong bezel 0,5; ong kinh xoay chui qua lo
 zl = zp + S['pcb_h'] / 2 - S['ong_kinh_cach_canh_tren']
 
 cmd = []
@@ -153,7 +153,7 @@ cyl(B, "cut", M['vit_m25_xuyen'], 'z', (ptop - .1, ptop + D['nap_chot_day'] + .1
 
 # ---------------- Ref (hop tham chieu) ----------------
 box("Ref_Stack", "new", (-S['pcb_w'] / 2, S['pcb_w'] / 2), (yp, yp + S['stack_t']), (zp - S['pcb_h'] / 2, zp + S['pcb_h'] / 2))
-box("Ref_Cam", "new", (-4.25, 4.25), (y0 + .5, y0 + 4.7), (zl - 4.25, zl + 4.25))
+cyl("Ref_Cam", "new", S['ong_kinh_d'], 'y', (yp - S['ong_kinh_tong_dai_max'], yp), (0, zl))  # ong kinh dai toi da tu khay the
 
 # ---------------- Coupon + Coupon_ring (ring dat tai y=40 de khong chong Coupon) ----------------
 B = "Coupon"
