@@ -10,9 +10,9 @@ Chi tiết mới được kéo ra theo hướng lắp.
 ## Trước khi bắt đầu
 
 **In 3D**
-- In trước Coupon (`solidcraft/plates/P1_Coupon/P1_Coupon.3mf`) để chọn cỡ lỗ M3, ổ đai ốc, lỗ ống kính, da đèn, chốt xoay.
+- In trước Coupon (`solidcraft/plates/p1-fit-test/p1-fit-test.3mf`) để chọn cỡ lỗ M3, ổ đai ốc, lỗ ống kính, da đèn, chốt xoay.
   Báo cỡ cho Claude sửa thông số rồi mới in vỏ.
-- Vỏ in **PETG**, **1 bàn in** `solidcraft/plates/P2_Vo/P2_Vo.3mf` (đã xếp sẵn, đúng hướng in, **không cần support**;
+- Vỏ in **PETG**, **1 bàn in** `solidcraft/plates/p2-enclosure/p2-enclosure.3mf` (đã xếp sẵn, đúng hướng in, **không cần support**;
   khoảng 3 giờ 36 phút, 98 g). Mở bằng Bambu Studio rồi in, không phải xếp lại.
 - Trên bàn có 5 chi tiết: thân `body` (nằm mặt sau xuống), mặt trước `bezel` (úp mặt trước xuống), khung U `u_frame`
   (đĩa xoay liền 2 tay), đế `base`, nắp chốt `pin_cap`.

@@ -6,10 +6,10 @@ stl: stl
 plates_dir: plates
 common: {sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
 plates:
-  P1_Coupon:
+  p1-fit-test:
     process: 0.20mm Standard @BBL A1
     stl: ["coupon.stl", "coupon_ring.stl"]
-  P2_Vo:
+  p2-enclosure:
     process: 0.20mm Standard @BBL A1
     overrides: {wall_loops: "3", sparse_infill_density: "20%"}
     stl: ["body.stl", "bezel.stl", "base.stl", "u_frame.stl", "pin_cap.stl"]

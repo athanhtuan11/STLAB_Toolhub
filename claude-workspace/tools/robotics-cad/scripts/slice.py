@@ -168,7 +168,7 @@ def doc_ket_qua(thu_muc, ten):
                     elif w.get("msg") not in BO_QUA:
                         canh_bao.append(f"{w.get('msg')} (muc {w.get('level')})")
             if "Metadata/plate_1.png" in z.namelist():
-                r["anh"] = str(thu_muc / "plate_1.png")
+                r["anh"] = str(thu_muc / "preview.png")
                 Path(r["anh"]).write_bytes(z.read("Metadata/plate_1.png"))
     r["loi"], r["canh_bao"] = loi, sorted(set(canh_bao))
     r["trang_thai"] = "FAIL" if loi else ("WARN" if canh_bao else "PASS")

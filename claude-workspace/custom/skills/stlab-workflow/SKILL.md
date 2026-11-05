@@ -55,7 +55,7 @@ Ngoại lệ: việc ≲ 30 dòng (nhỏ hơn viết spec) Claude tự sửa.
    hướng in, `.3mf` in được (PASS), ảnh xem trước, nguồn (params/script/FCStd). Không để song song `-fix`, `-old`.
    File đã commit thì `git mv`. Báo Tuan tên file đúng duy nhất.
 5. **File in gửi Tuan = file bàn in `.3mf`** (Tuan 2026-11-05: không đưa STL rời, tốn thời gian mở + in): mỗi bàn 1 `plates/<ban>/<ban>.3mf`
-   xếp sẵn mọi chi tiết, PASS; slicer báo floating cantilever / cần support → sửa model cho tự đứng trước khi đưa.
+   xếp sẵn mọi chi tiết, PASS; tên bàn `p<số>-<việc>` kebab-case tiếng Anh (vd. `p1-fit-test`, `p2-enclosure`), ảnh `preview.png`; slicer báo floating cantilever / cần support → sửa model cho tự đứng trước khi đưa.
    Chi tiết (mẫu tự dựng đã đặt đúng hướng in): cắt lớp với `--orient 0` (KHÔNG để Bambu tự xoay –
    2026-11-03 bị lật 180° nằm dưới bàn → "loading model fail"), rồi kiểm `transform` trong `3D/3dmodel.model` không
    xoay + `bambu-studio.exe --info <file>` exit 0 trước khi đưa đường dẫn.
