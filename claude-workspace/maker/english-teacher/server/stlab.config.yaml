@@ -1,0 +1,53 @@
+# Cau hinh STLab cho may chu xiaozhi (khong khoa). run.ps1 sinh runtime/data/.config.yaml tu file nay:
+#   <IP> -> IP LAN, <PROMPT> -> noi dung prompt-teacher.md. api_key GeminiLLM duoc dien trong bo nho boi run.py tu bien GOOGLE_API_KEY.
+server:
+  ip: 0.0.0.0
+  port: 8000
+  http_port: 8003
+  websocket: ws://<IP>:8000/xiaozhi/v1/
+  vision_explain: http://<IP>:8003/mcp/vision/explain
+
+# Khong luu giong be: xoa file am thanh ngay sau khi dung
+delete_audio: true
+# Khong luu lich su: bo nho tat (nomem), khong dung mem0/powermem
+selected_module:
+  VAD: SileroVAD
+  # FunASR (SenseVoiceSmall chay tren may). Be noi tieng Anh -> language: en.
+  # TODO: SenseVoice KHONG ho tro tieng Viet; neu can nhan tieng Viet cua be thi doi ASR khac.
+  ASR: FunASR
+  LLM: GeminiLLM
+  VLLM: ChatGLMVLLM
+  TTS: EdgeTTS
+  Memory: nomem
+  Intent: nointent
+
+ASR:
+  FunASR:
+    type: fun_local
+    model_dir: models/SenseVoiceSmall
+    output_dir: tmp/
+    language: en
+
+LLM:
+  GeminiLLM:
+    type: gemini
+    api_key: set-by-run.py-from-env
+    # gemini-3.1-flash-lite: ban on dinh, mien phi, ~1,1 s/cau (3.5-flash-lite 1,5 s; 3.5-flash 3,4 s; 2.5-* khong con cho tai khoan moi)
+    model_name: "gemini-3.1-flash-lite"
+    http_proxy: ""
+    https_proxy: ""
+
+TTS:
+  EdgeTTS:
+    type: edge
+    # en-US-AnaNeural: giong tre em (nu), ro, hop be 2-5 tuoi. rate -15% de noi cham.
+    voice: en-US-AnaNeural
+    rate: "-15"
+    output_dir: tmp/
+
+# Tuoi 2-5, nho gon: bo tin nhan chao mac dinh tieng Trung
+enable_greeting: true
+enable_wakeup_words_response_cache: false
+
+prompt: |
+  <PROMPT>
