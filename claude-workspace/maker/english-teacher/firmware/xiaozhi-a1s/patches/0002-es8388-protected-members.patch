@@ -1,0 +1,13 @@
+diff --git a/main/audio/codecs/es8388_audio_codec.h b/main/audio/codecs/es8388_audio_codec.h
+index f8c1c8c..cde6978 100644
+--- a/main/audio/codecs/es8388_audio_codec.h
++++ b/main/audio/codecs/es8388_audio_codec.h
+@@ -10,7 +10,7 @@
+ 
+ 
+ class Es8388AudioCodec : public AudioCodec {
+-private:
++protected:
+     const audio_codec_data_if_t* data_if_ = nullptr;
+     const audio_codec_ctrl_if_t* ctrl_if_ = nullptr;
+     const audio_codec_if_t* codec_if_ = nullptr;

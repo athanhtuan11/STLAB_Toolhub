@@ -1,0 +1,175 @@
+#include "wifi_board.h"
+#include "codecs/es8388_audio_codec.h"
+#include "application.h"
+#include "button.h"
+#include "config.h"
+#include "settings.h"
+#include "led/led.h"
+#include <driver/gpio.h>
+#include <esp_timer.h>
+#include "display/display.h"
+
+#include <algorithm>
+#include <esp_log.h>
+#include <driver/i2c_master.h>
+
+#define TAG "StlabA1S"
+
+// Codec ES8388 co tran am luong: moi duong dat am luong (nut, MCP, may chu) deu di qua day.
+class StlabEs8388Codec : public Es8388AudioCodec {
+public:
+    using Es8388AudioCodec::Es8388AudioCodec;
+
+    virtual void Start() override {
+        Es8388AudioCodec::Start();
+        // Lan dau (chua luu) dung mac dinh 40; sau do kep theo tran.
+        Settings settings("audio", false);
+        int saved = settings.GetInt("output_volume", -1);
+        output_volume_ = std::min(saved < 0 ? AUDIO_DEFAULT_OUTPUT_VOLUME : output_volume_, STLAB_MAX_VOLUME);
+    }
+
+    // Mic cua A1S noi vao LIN2/RIN2 (do thuc te). Driver esp_codec_dev co dinh LIN1/RIN1 luc es8388_open
+    // (es8388.c: ADCCONTROL2 = ADC_INPUT_LINPUT1_RINPUT1), nen chon lai LIN2/RIN2 sau khi mo duong vao.
+    virtual void EnableInput(bool enable) override {
+        Es8388AudioCodec::EnableInput(enable);
+        if (enable) {
+            uint8_t sel = 0x50;  // ADCCONTROL2 (0x0A): LINSEL=01 (LIN2), RINSEL=01 (RIN2)
+            ESP_ERROR_CHECK_WITHOUT_ABORT(ctrl_if_->write_reg(ctrl_if_, 0x0A, 1, &sel, 1));
+        }
+    }
+
+    virtual void SetOutputVolume(int volume) override {
+        volume = std::max(0, std::min(volume, STLAB_MAX_VOLUME));
+        Es8388AudioCodec::SetOutputVolume(volume);
+    }
+};
+
+// LED trang thai GPIO22 (muc thap = sang). Khong dung led/gpio_led.cc vi ban ghim loai no khoi ESP32 (thieu ledc_fade_stop).
+class StlabStatusLed : public Led {
+public:
+    explicit StlabStatusLed(gpio_num_t gpio) : gpio_(gpio) {
+        gpio_config_t io = {};
+        io.pin_bit_mask = 1ULL << gpio_;
+        io.mode = GPIO_MODE_OUTPUT;
+        ESP_ERROR_CHECK(gpio_config(&io));
+        Set(false);
+        esp_timer_create_args_t args = {};
+        args.callback = [](void* arg) { static_cast<StlabStatusLed*>(arg)->Toggle(); };
+        args.arg = this;
+        args.name = "stlab_led";
+        ESP_ERROR_CHECK(esp_timer_create(&args, &timer_));
+    }
+
+    void OnStateChanged() override {
+        esp_timer_stop(timer_);
+        switch (Application::GetInstance().GetDeviceState()) {
+            case kDeviceStateStarting:
+                esp_timer_start_periodic(timer_, 100 * 1000);
+                break;
+            case kDeviceStateWifiConfiguring:
+                esp_timer_start_periodic(timer_, 500 * 1000);
+                break;
+            case kDeviceStateListening:
+            case kDeviceStateSpeaking:
+            case kDeviceStateConnecting:
+            case kDeviceStateUpgrading:
+                Set(true);
+                break;
+            default:
+                Set(false);
+                break;
+        }
+    }
+
+private:
+    gpio_num_t gpio_;
+    esp_timer_handle_t timer_ = nullptr;
+    bool on_ = false;
+
+    void Set(bool on) {
+        on_ = on;
+        gpio_set_level(gpio_, on ? 0 : 1);  // A1S: LED sang khi muc thap (TODO kiem tren mach)
+    }
+    void Toggle() { Set(!on_); }
+};
+
+class StlabA1sBoard : public WifiBoard {
+private:
+    i2c_master_bus_handle_t i2c_bus_ = nullptr;
+    Button talk_button_;
+    Button volume_up_button_;
+    Button volume_down_button_;
+    StlabStatusLed* led_ = nullptr;
+
+    void InitializeI2c() {
+        i2c_master_bus_config_t bus_config = {
+            .i2c_port = I2C_NUM_0,
+            .sda_io_num = AUDIO_CODEC_I2C_SDA_PIN,
+            .scl_io_num = AUDIO_CODEC_I2C_SCL_PIN,
+            .clk_source = I2C_CLK_SRC_DEFAULT,
+            .glitch_ignore_cnt = 7,
+            .intr_priority = 0,
+            .trans_queue_depth = 0,
+            .flags = {
+                .enable_internal_pullup = 1,
+            },
+        };
+        ESP_ERROR_CHECK(i2c_new_master_bus(&bus_config, &i2c_bus_));
+    }
+
+    void ChangeVolume(int delta) {
+        auto codec = GetAudioCodec();
+        int volume = std::max(0, std::min(codec->output_volume() + delta, STLAB_MAX_VOLUME));
+        codec->SetOutputVolume(volume);
+        ESP_LOGI(TAG, "Volume %d (max %d)", volume, STLAB_MAX_VOLUME);
+    }
+
+    void InitializeButtons() {
+        // KEY4: giu de noi, tha ra la gui; luc dang khoi dong bam de vao cau hinh Wi-Fi
+        talk_button_.OnPressDown([this]() {
+            auto& app = Application::GetInstance();
+            if (app.GetDeviceState() == kDeviceStateStarting) {
+                EnterWifiConfigMode();
+                return;
+            }
+            app.StartListening();
+        });
+        talk_button_.OnPressUp([this]() {
+            Application::GetInstance().StopListening();
+        });
+
+        // KEY5 / KEY6: am luong +/- 10, giu KEY5 de vao cau hinh Wi-Fi
+        volume_up_button_.OnClick([this]() { ChangeVolume(STLAB_VOLUME_STEP); });
+        volume_up_button_.OnLongPress([this]() { EnterWifiConfigMode(); });
+        volume_down_button_.OnClick([this]() { ChangeVolume(-STLAB_VOLUME_STEP); });
+    }
+
+public:
+    StlabA1sBoard()
+        : WifiBoard(),
+          talk_button_(TALK_BUTTON_GPIO),
+          volume_up_button_(VOLUME_UP_BUTTON_GPIO),
+          volume_down_button_(VOLUME_DOWN_BUTTON_GPIO) {
+        InitializeI2c();
+        InitializeButtons();
+    }
+
+    virtual Led* GetLed() override {
+        if (led_ == nullptr) {
+            led_ = new StlabStatusLed(BUILTIN_LED_GPIO);
+        }
+        return led_;
+    }
+
+    virtual AudioCodec* GetAudioCodec() override {
+        static StlabEs8388Codec audio_codec(
+            i2c_bus_, I2C_NUM_0,
+            AUDIO_INPUT_SAMPLE_RATE, AUDIO_OUTPUT_SAMPLE_RATE,
+            AUDIO_I2S_GPIO_MCLK, AUDIO_I2S_GPIO_BCLK, AUDIO_I2S_GPIO_WS,
+            AUDIO_I2S_GPIO_DOUT, AUDIO_I2S_GPIO_DIN,
+            AUDIO_CODEC_PA_PIN, AUDIO_CODEC_ES8388_ADDR);
+        return &audio_codec;
+    }
+};
+
+DECLARE_BOARD(StlabA1sBoard);

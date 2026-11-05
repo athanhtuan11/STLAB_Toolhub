@@ -1,0 +1,34 @@
+diff --git a/main/CMakeLists.txt b/main/CMakeLists.txt
+index 633ef85..469047a 100644
+--- a/main/CMakeLists.txt
++++ b/main/CMakeLists.txt
+@@ -1065,7 +1065,6 @@ file(GLOB COMMON_SOUNDS ${CMAKE_CURRENT_SOURCE_DIR}/assets/common/*.ogg)
+ # If target chip is ESP32, exclude specific files to avoid build errors
+ if(CONFIG_IDF_TARGET_ESP32)
+     list(REMOVE_ITEM SOURCES "audio/codecs/box_audio_codec.cc"
+-                             "audio/codecs/es8388_audio_codec.cc"
+                              "audio/codecs/es8389_audio_codec.cc"
+                              "led/gpio_led.cc"
+                              "display/lvgl_display/jpg/image_to_jpeg.cpp"
+diff --git a/main/audio/codecs/es8388_audio_codec.cc b/main/audio/codecs/es8388_audio_codec.cc
+index c1db3c9..d3b633a 100644
+--- a/main/audio/codecs/es8388_audio_codec.cc
++++ b/main/audio/codecs/es8388_audio_codec.cc
+@@ -100,7 +100,6 @@ void Es8388AudioCodec::CreateDuplexChannels(gpio_num_t mclk, gpio_num_t bclk, gp
+         .clk_cfg = {
+             .sample_rate_hz = (uint32_t)output_sample_rate_,
+             .clk_src = I2S_CLK_SRC_DEFAULT,
+-            .ext_clk_freq_hz = 0,
+             .mclk_multiple = I2S_MCLK_MULTIPLE_256
+         },
+         .slot_cfg = {
+@@ -111,9 +110,6 @@ void Es8388AudioCodec::CreateDuplexChannels(gpio_num_t mclk, gpio_num_t bclk, gp
+             .ws_width = I2S_DATA_BIT_WIDTH_16BIT,
+             .ws_pol = false,
+             .bit_shift = true,
+-            .left_align = true,
+-            .big_endian = false,
+-            .bit_order_lsb = false
+         },
+         .gpio_cfg = {
+             .mclk = mclk,

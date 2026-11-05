@@ -1,0 +1,15 @@
+{
+    "type": "stlab-a1s",
+    "target": "esp32",
+    "builds": [
+        {
+            "name": "stlab-a1s",
+            "sdkconfig_append": [
+                "CONFIG_BOARD_TYPE_STLAB_A1S=y",
+                "CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y",
+                "CONFIG_PARTITION_TABLE_CUSTOM_FILENAME=\"partitions/v2/4m.csv\"",
+                "CONFIG_WAKE_WORD_DISABLED=y"
+            ]
+        }
+    ]
+}

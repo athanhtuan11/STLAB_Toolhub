@@ -1,0 +1,4 @@
+﻿[KQ-MIC] in=1 rms=2.4 peak=11 peak_hz=7977 snr_1k_db=-3.0
+
+[KQ-MIC] in=2 rms=2108.4 peak=31951 peak_hz=1000 snr_1k_db=23.7
+

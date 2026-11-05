@@ -1,0 +1,8 @@
+# Them vao cuoi sdkconfig.defaults cua build-src (sync.ps1 thay token OTA_URL ben duoi bang may chu trong lab)
+CONFIG_BOARD_TYPE_STLAB_A1S=y
+CONFIG_OTA_URL="@OTA_URL@"
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions/v2/4m.csv"
+# be 2-5 tuoi dung nut "noi" la chinh -> khong wake word
+CONFIG_WAKE_WORD_DISABLED=y
