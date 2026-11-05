@@ -21,9 +21,29 @@ $cfg = Get-Content (Join-Path $H "stlab.config.yaml") -Raw -Encoding utf8
 $cfg = $cfg.Replace("<IP>", $ip).Replace("  <PROMPT>", $promptYaml)
 New-Item -ItemType Directory -Force (Join-Path $RT "data") | Out-Null
 [IO.File]::WriteAllText((Join-Path $RT "data\.config.yaml"), $cfg, (New-Object Text.UTF8Encoding $false))
+Copy-Item (Join-Path $H "stlab-base-prompt.txt") (Join-Path $RT "stlab-base-prompt.txt") -Force
 
 Write-Host "May chu xiaozhi: ws://${ip}:8000/xiaozhi/v1/  OTA: http://${ip}:8003/xiaozhi/ota/"
 $env:PYTHONIOENCODING = "utf-8"; $env:PYTHONUTF8 = "1"
 $ffdir = Split-Path (Get-Command ffmpeg -ErrorAction Stop).Source
 $ErrorActionPreference = "Continue"
-& $py (Join-Path $H "run.py") 2>&1 | ForEach-Object { "$_" } | Tee-Object -FilePath (Join-Path $RT "server.log")
+# Whisper tai may (127.0.0.1:8010) bat truoc, cho san sang roi moi bat server; tat server thi tat ca Whisper
+$wpy = Join-Path $H "whisper-local\.venv\Scripts\python.exe"
+if (-not (Test-Path $wpy)) { throw "Chua cai Whisper: chay .\setup.ps1 truoc" }
+if (-not $env:STLAB_WHISPER_MODEL) { $env:STLAB_WHISPER_MODEL = "small" }
+$wlog = Join-Path $RT "whisper.log"
+$wp = Start-Process -FilePath $wpy -ArgumentList (Join-Path $H "whisper-local\server.py") -WorkingDirectory $H -WindowStyle Hidden -PassThru `
+  -RedirectStandardOutput $wlog -RedirectStandardError (Join-Path $RT "whisper.err.log")
+try {
+  $ready = $false
+  for ($i = 0; $i -lt 120; $i++) {
+    try { if ((Invoke-WebRequest "http://127.0.0.1:8010/health" -UseBasicParsing -TimeoutSec 2).StatusCode -eq 200) { $ready = $true; break } } catch {}
+    if ($wp.HasExited) { throw "Whisper tat bat ngo, xem $wlog" }
+    Start-Sleep -Seconds 1
+  }
+  if (-not $ready) { throw "Whisper khong san sang sau 120 s" }
+  Write-Host "Whisper san sang (model $env:STLAB_WHISPER_MODEL) tai 127.0.0.1:8010"
+  & $py (Join-Path $H "run.py") 2>&1 | ForEach-Object { "$_" } | Tee-Object -FilePath (Join-Path $RT "server.log")
+} finally {
+  if ($wp -and -not $wp.HasExited) { Stop-Process -Id $wp.Id -Force -ErrorAction SilentlyContinue }
+}

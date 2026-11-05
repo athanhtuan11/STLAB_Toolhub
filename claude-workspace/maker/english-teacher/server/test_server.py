@@ -45,9 +45,10 @@ ok(r.returncode == 0 and r.stdout.strip() == "", "community/xinnan-tech-xiaozhi-
 
 cfg = H / "stlab.config.yaml"
 t = cfg.read_text(encoding="utf-8") if cfg.exists() else ""
-ok("GeminiLLM" in t and "EdgeTTS" in t and "FunASR" in t, "stlab.config.yaml chon FunASR + GeminiLLM + EdgeTTS")
+ok("GeminiLLM" in t and "EdgeTTS" in t, "stlab.config.yaml chon GeminiLLM + EdgeTTS")
 ok(re.search(r"delete_audio:\s*true", t) is not None, "delete_audio: true (khong luu giong be)")
-ok(re.search(r"voice:\s*en-US-\w+Neural", t) is not None, "giong TTS tieng Anh en-US-*Neural")
+ok(re.search(r"base_url:\s*http://127\.0\.0\.1:\d+/v1/audio/transcriptions", t) is not None, "ASR tieng Viet + Anh: Whisper chay tai may (127.0.0.1), khong gui giong ra ngoai")
+ok(re.search(r"voice:\s*\S*Multilingual\S*Neural", t) is not None, "giong TTS da ngon ngu (doc ca Viet + Anh)")
 ok("2" in t and re.search(r"(2|3|4|5)\s*(-|–|den|to)\s*5|2-5|2–5", t) is not None, "prompt co do tuoi 2-5")
 
 # vong kin: TTS -> wav -> ASR -> LLM (script cua executor, phai in dung cac dong nay)
@@ -57,6 +58,8 @@ out = r.stdout + r.stderr
 print(out[-1500:])
 m = re.search(r"\[TTS\] ok (\d+) bytes", out); ok(m is not None and int(m.group(1)) > 5000, "selftest: TTS tao am thanh")
 m = re.search(r"\[ASR\] text=(.*)", out); ok(m is not None and re.search(r"apple", m.group(1), re.I), "selftest: ASR nghe ra 'apple'")
+m = re.search(r"\[ASR-VI\] text=(.*)", out); ok(m is not None and re.search(r"m[eè]o", m.group(1), re.I), "selftest: ASR nghe tieng Viet 'con meo' ")
+m = re.search(r"\[LLM-VI\] text=(.*)", out); ok(m is not None and re.search(r"[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]", m.group(1), re.I) is not None, "selftest: be noi tieng Viet -> co giao tra loi co tieng Viet")
 m = re.search(r"\[LLM\] text=(.*)", out); ok(m is not None and 0 < len(m.group(1).split()) <= 25, "selftest: LLM tra loi ngan (<= 25 tu)")
 ok(key not in out if key else True, "selftest khong in khoa")
 print("\n%s test_server (%d loi)" % ("FAIL" if fails else "PASS", len(fails)))

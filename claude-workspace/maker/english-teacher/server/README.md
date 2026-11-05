@@ -24,7 +24,7 @@ runtime\.venv\Scripts\python.exe selftest.py   # chỉ thử TTS -> ASR -> LLM, 
 - `run.ps1` sinh `runtime\data\.config.yaml` từ `stlab.config.yaml`; `run.py` điền khóa Gemini trong bộ nhớ từ biến môi trường (không ghi file, không in).
 
 ## Quyền riêng tư
-- Giọng bé được xử lý TRÊN MÁY (VAD Silero + ASR SenseVoiceSmall). `delete_audio: true`: xóa file âm thanh ngay sau khi dùng; bộ nhớ hội thoại tắt (`nomem`).
+- Giọng bé được xử lý TRÊN MÁY (VAD Silero + Whisper `small` chạy tại máy, chỉ nghe 127.0.0.1:8010). `delete_audio: true`: xóa file âm thanh ngay sau khi dùng; bộ nhớ hội thoại tắt (`nomem`).
 - Chỉ CHỮ (lời bé đã nhận dạng + prompt) gửi tới Google Gemini. Chữ câu trả lời gửi tới dịch vụ Microsoft Edge TTS để tạo giọng.
 - Prompt cấm hỏi/ghi tên thật, địa chỉ, trường, số điện thoại. Log (`runtime\server.log`) có thể chứa chữ hội thoại: xóa định kỳ nếu cần.
 
@@ -35,6 +35,18 @@ New-NetFirewallRule -DisplayName "STLab xiaozhi 8000/8003" -Direction Inbound -P
 Mạng nhà phải được đặt là "Private". Gỡ: `Remove-NetFirewallRule -DisplayName "STLab xiaozhi 8000/8003"`.
 
 ## Ghi chú / TODO
-- ASR SenseVoiceSmall đặt `language: en` (bé nói tiếng Anh). TODO: SenseVoice không hỗ trợ tiếng Việt; nếu cần nghe tiếng Việt của bé, đổi ASR khác.
+- ASR cũ SenseVoiceSmall (`FunASR`) còn trong cấu hình làm dự phòng nhưng KHÔNG nghe được tiếng Việt.
 - `Intent: nointent` (không gọi LLM thứ hai) nên các lệnh nhạc/âm lượng bằng giọng không hoạt động.
 - Bài hát/nhạc, kịch bản bài học nhiều bước: chưa làm (xem spec chính).
+
+## Song ngữ Việt – Anh (2026-11-05)
+- Bé nói tiếng Việt -> cô trả lời 1 câu Việt ngắn + dạy 1 từ Anh ("Con mèo là cat. Con nói: cat!"). Bé nói tiếng Anh -> cô trả lời tiếng Anh. Câu <= 8 từ, <= 3 câu/lượt.
+- ASR: `whisper-local/` = faster-whisper `small` (CPU int8, 8 luồng) tại `127.0.0.1:8010`, API giống OpenAI `/v1/audio/transcriptions`; tự dò vi/en (khác thì dùng en), gợi từ vựng bằng `initial_prompt`; file tạm xóa ngay.
+  `run.ps1` bật Whisper trước (chờ `/health`), rồi bật server; tắt `run.ps1` (Ctrl+C) thì tắt cả Whisper. Đổi model: `$env:STLAB_WHISPER_MODEL = "medium"` (setup.ps1 sẽ tải).
+- TTS: `en-US-AvaMultilingualNeural`, rate -12 %. Nghe thử giọng trong `out-voice/` (vi-ava, vi-emma, en-ava, en-emma .mp3; không commit); đổi sang Emma ở `voice:` trong `stlab.config.yaml`.
+- Gemini bị chậm bất thường (chunk đầu có lúc 5-35 s): `run.py` gửi thêm yêu cầu song song sau mỗi 1,2 s chưa có chữ (tối đa 4), lấy luồng ra chữ trước.
+- Quyền riêng tư: giọng bé chỉ qua Whisper trên máy; chỉ CHỮ gửi Gemini; chữ trả lời gửi Microsoft Edge TTS.
+
+### Số đo (máy lab, 16 luồng CPU)
+- Whisper `small`: câu 2-3 s ~1,3-3 s (đo lúc server chạy); nghe đúng "Con mèo màu vàng.", "Apple. Red apple.", câu Việt dài có "cat". `medium`: 8-10 s cho cùng câu, đúng như small -> chọn `small`.
+- test_e2e (thả nút -> tiếng đầu tiên, giả lập bo): thường 3,8-4,2 s; lúc Gemini chậm 7-11 s (4/5 lần < 8 s). Chạy: `$env:PATH="$PWDuntime;$env:PATH"; runtime\.venv\Scripts\python.exe test_e2e.py` (cần opus.dll trong PATH).

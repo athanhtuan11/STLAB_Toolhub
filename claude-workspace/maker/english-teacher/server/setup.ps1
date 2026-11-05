@@ -54,4 +54,11 @@ if (-not (Test-Path (Join-Path $RT "opus.dll"))) {
   $o = Get-ChildItem "C:\Program Files\FreeCAD*in\opus.dll", "C:\Program Files\VCMI\opus.dll" -ErrorAction SilentlyContinue | Select-Object -First 1
   if ($o) { Copy-Item $o.FullName (Join-Path $RT "opus.dll"); Log "opus.dll tu $($o.FullName)" } else { Log "CANH BAO: khong thay opus.dll, tu dat opus.dll vao runtime\" }
 }
+# 6. Whisper tai may (venv rieng, faster-whisper CPU int8) + tai model
+$WL = Join-Path $H "whisper-local"
+$wpy = Join-Path $WL ".venv\Scripts\python.exe"
+if (-not (Test-Path $wpy)) { Run $uv @("venv", (Join-Path $WL ".venv"), "--python", "3.10") }
+Run $uv @("pip", "install", "--python", $wpy, "faster-whisper", "fastapi", "uvicorn", "python-multipart")
+$wm = if ($env:STLAB_WHISPER_MODEL) { $env:STLAB_WHISPER_MODEL } else { "small" }
+Run $wpy @("-c", "from faster_whisper import WhisperModel; WhisperModel('$wm', device='cpu', compute_type='int8'); print('model $wm san sang')")
 Log "XONG setup"

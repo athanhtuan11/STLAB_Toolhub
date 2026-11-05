@@ -1,3 +1,5 @@
 runtime/
 __pycache__/
 *.pyc
+whisper-local/.venv/
+out-voice/

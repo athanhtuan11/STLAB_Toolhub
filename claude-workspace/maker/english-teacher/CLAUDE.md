@@ -47,6 +47,10 @@ Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\
   (log `[NUT]` nhấn/nhả đủ 2 lượt, probe-log-nut.txt). Chuỗi thanh ghi ES8388 của firmware dò viết theo trí nhớ ESP-ADF – xiaozhi dùng driver riêng.
 
 ## Trạng thái
+- 2026-11-05 đêm (Tuan ngủ, Claude tự làm): bo A1S chạy xiaozhi + Wi-Fi tự nạp (`firmware/xiaozhi-a1s/wifi-nvs.py`), phát 2 kênh L=R (chờ Tuan nghe lại);
+  máy chủ **song ngữ Việt–Anh**: Whisper small tại máy 127.0.0.1:8010, Gemini 3.1 flash-lite (gửi song song khi chậm), Edge `en-US-AvaMultilingualNeural` −12 %;
+  test_server 17/17 + test_e2e (giả lập bo) PASS – trễ thả nút → tiếng đầu ~3,8–7,4 s, có lần 11 s do Gemini. CAD Cú Bông v1 2 loa (gate PASS), 3 bài học `lessons/`.
+  **Sáng mai:** bật máy chủ `serverun.ps1` → giữ KEY4 nói thử tiếng Việt + tiếng Anh, nghe 2 loa; nghe `server/out-voice/*.mp3` chọn giọng; duyệt `cad/out/owl-preview.png`; cắt lớp + print.yaml cùng Tuan.
 - 2026-11-05: **Tuan chọn dáng A – Cú Bông** (design/contact-sheet.png, design-spec.md): không màn hình, mắt = LED RGB đổi màu
   (nghe xanh dương / nói vàng / khen hồng / ngủ tím mờ), nút "nói" Ø50 trên đỉnh, **2 loa trái + phải ở 2 sườn** (Tuan đổi 2026-11-05; trước: 1 loa ở bụng), 3 màu (mơ/kem/bơ – tách part, hạn chế AMS).
   Cần: LED RGB (vd. WS2812) + chân trống trên Audio Kit (TODO); Tuan đo bo Audio Kit + độ sâu loa Ø52 trước khi CAD; pin hay USB: chưa chốt.

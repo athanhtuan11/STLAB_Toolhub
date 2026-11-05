@@ -12,9 +12,8 @@ delete_audio: true
 # Khong luu lich su: bo nho tat (nomem), khong dung mem0/powermem
 selected_module:
   VAD: SileroVAD
-  # FunASR (SenseVoiceSmall chay tren may). Be noi tieng Anh -> language: en.
-  # TODO: SenseVoice KHONG ho tro tieng Viet; neu can nhan tieng Viet cua be thi doi ASR khac.
-  ASR: FunASR
+  # Whisper chay TAI MAY (whisper-local, 127.0.0.1:8010) nghe ca tieng Viet + tieng Anh; giong be khong ra khoi may.
+  ASR: LocalWhisperASR
   LLM: GeminiLLM
   VLLM: ChatGLMVLLM
   TTS: EdgeTTS
@@ -22,6 +21,13 @@ selected_module:
   Intent: nointent
 
 ASR:
+  LocalWhisperASR:
+    type: openai
+    base_url: http://127.0.0.1:8010/v1/audio/transcriptions
+    api_key: local
+    model_name: whisper
+    output_dir: tmp/
+  # Du phong (khong nghe duoc tieng Viet): doi selected_module.ASR thanh FunASR
   FunASR:
     type: fun_local
     model_dir: models/SenseVoiceSmall
@@ -40,14 +46,19 @@ LLM:
 TTS:
   EdgeTTS:
     type: edge
-    # en-US-AnaNeural: giong tre em (nu), ro, hop be 2-5 tuoi. rate -15% de noi cham.
-    voice: en-US-AnaNeural
-    rate: "-15"
+    # Giong da ngon ngu doc duoc ca tieng Viet va tieng Anh. rate -12% de noi cham cho be.
+    voice: en-US-AvaMultilingualNeural
+    rate: "-12"
     output_dir: tmp/
+    # {{language}} trong khung prompt lay tu day; khong dat -> mac dinh "中文" -> Gemini tra loi tieng Trung (loi 2026-11-05)
+    language: Vietnamese and simple English
 
 # Tuoi 2-5, nho gon: bo tin nhan chao mac dinh tieng Trung
 enable_greeting: true
 enable_wakeup_words_response_cache: false
+
+# Khung prompt rieng STLab (tieng Anh, khong tra vi tri IP/thoi tiet, khong noi dung chinh tri) thay agent-base-prompt.txt cua server
+prompt_template: stlab-base-prompt.txt
 
 prompt: |
   <PROMPT>
