@@ -1,4 +1,4 @@
-// Firmware chinh v0.3.0 (them OTA, the TF, phat hien chuyen dong): camera giam sat ESP32-S3-CAM N16R8 + OV3660.
+// Firmware chinh v0.3.1 (them OTA, the TF, phat hien chuyen dong): camera giam sat ESP32-S3-CAM N16R8 + OV3660.
 // - Chi MOT task camera goi esp_camera_fb_get, copy JPEG sang "khung moi nhat" (PSRAM, dem tham chieu).
 // - Server cong 80: /, /capture, /status, /control. Server cong 81: /stream (MJPEG, moi nguoi xem 1 task rieng).
 // - Khong ai giu camera_fb_t ngoai task camera, va task camera tra ngay sau khi copy.
@@ -42,10 +42,16 @@
 #include "driver/sdmmc_host.h"
 #include "driver/gpio.h"
 #include "esp_netif_sntp.h"
+#include "esp_pm.h"
 
 #include "wifi_nha.h"
 
-#define CAM_VERSION "0.3.0"
+#define CAM_VERSION "0.3.1"
+
+// Giam nhiet (0.3.1): camera ngu that, tat AP khi da vao Wi-Fi nha, modem sleep khi khong ai xem
+#define CAM_IDLE_SLEEP_S 15
+#define AP_OFF_DELAY_S 60
+#define AP_BACK_DELAY_S 60
 
 // Nguong nhiet: TODO chua co nguon datasheet (xem README), dat theo yeu cau spec.
 #define TEMP_HOT_C 70.0f
@@ -55,7 +61,7 @@
 #define MAX_VIEWERS 2
 #define N_SLOTS 5
 #define JPEG_BUF_BYTES (768 * 1024)
-#define CAPTURE_WAIT_MS 3000
+#define CAPTURE_WAIT_MS 5000
 #define CAPTURE_MAX_AGE_US 300000
 #define STREAM_STALL_MS 5000
 #define NULL_RESET_US 3000000
@@ -192,6 +198,9 @@ static volatile int s_viewers;
 static volatile int s_cap_waiters;
 static volatile int s_skip_frames;
 static volatile bool s_cam_ok;
+static volatile bool s_cam_sleep;  // camera da esp_camera_deinit (khong XCLK, khong DMA)
+static volatile bool s_ap_on = true;
+static volatile bool s_ps_none = true;  // true = khong tiet kiem dien (hoac dang APSTA)
 static volatile bool s_nong;
 static volatile uint32_t s_frame_loi;
 static volatile uint32_t s_cam_reinit;
@@ -798,6 +807,29 @@ static void camera_reinit(void)
     s_cam_reinit++;
 }
 
+// Camera ngu (log "[CAM] Camera ngu"): dung XCLK + DMA that su. Goi khi giu s_cam_mtx.
+static void camera_sleep_locked(void)
+{
+    esp_camera_deinit();
+    s_cam_sleep = true;
+    ESP_LOGI(TAG, "Camera ngu (khong ai dung %d s)", CAM_IDLE_SLEEP_S);
+}
+
+// Danh thuc camera: init lai theo cau hinh da luu. Goi khi giu s_cam_mtx.
+static void camera_wake_locked(void)
+{
+    esp_err_t e = camera_init_hw();
+    if (e == ESP_OK) {
+        sensor_apply();  // ap framesize/cai dat da doi luc ngu, bo 3 khung dau
+        s_cam_ok = true;
+        ESP_LOGI(TAG, "Camera thuc");
+    } else {
+        s_cam_ok = false;  // watchdog NULL > 3 s se init lai
+        ESP_LOGE(TAG, "Camera thuc that bai: 0x%x", (unsigned)e);
+    }
+    s_cam_sleep = false;
+}
+
 // Task DUY NHAT lay khung tu camera.
 static void cam_task(void *arg)
 {
@@ -805,13 +837,30 @@ static void cam_task(void *arg)
     bool was_idle = true;
     int64_t next_us = 0;
     int64_t null_since = 0;
+    int64_t idle_since = esp_timer_get_time();
 
     for (;;) {
         if (s_viewers <= 0 && s_cap_waiters <= 0 && !g_cfg.motion) {
             was_idle = true;
             null_since = 0;
+            if (!s_cam_sleep && s_cam_ok && !s_ota_busy &&
+                esp_timer_get_time() - idle_since >= (int64_t)CAM_IDLE_SLEEP_S * 1000000LL) {
+                xSemaphoreTake(s_cam_mtx, portMAX_DELAY);
+                if (s_viewers <= 0 && s_cap_waiters <= 0 && !g_cfg.motion) {
+                    camera_sleep_locked();
+                }
+                xSemaphoreGive(s_cam_mtx);
+            }
             ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(200));
             continue;
+        }
+        idle_since = esp_timer_get_time();
+        if (s_cam_sleep) {
+            xSemaphoreTake(s_cam_mtx, portMAX_DELAY);
+            camera_wake_locked();
+            xSemaphoreGive(s_cam_mtx);
+            was_idle = true;
+            null_since = 0;
         }
         int64_t now = esp_timer_get_time();
         if (!was_idle && now < next_us && s_skip_frames <= 0) {
@@ -827,7 +876,7 @@ static void cam_task(void *arg)
         int64_t start = esp_timer_get_time();
 
         xSemaphoreTake(s_cam_mtx, portMAX_DELAY);
-        camera_fb_t *fb = s_cam_ok ? esp_camera_fb_get() : NULL;
+        camera_fb_t *fb = (s_cam_ok && !s_cam_sleep) ? esp_camera_fb_get() : NULL;
         if (fb != NULL) {
             null_since = 0;
             if (s_skip_frames > 0) {
@@ -854,6 +903,79 @@ static void cam_task(void *arg)
             vTaskDelay(pdMS_TO_TICKS(100));
         }
         next_us = start + 1000000 / effective_fps();
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Mang: tat AP khi da vao Wi-Fi nha, modem sleep khi khong ai xem
+// ---------------------------------------------------------------------------
+static void net_task(void *arg)
+{
+    (void)arg;
+    int64_t conn_since = 0;  // 0 = dang khong co IP
+    int64_t disc_since = 0;  // 0 = dang co IP (chi dung khi AP tat)
+    int ps_cur = -1;         // -1 chua dat, 0 = NONE, 1 = MIN_MODEM
+
+    for (;;) {
+        vTaskDelay(pdMS_TO_TICKS(500));
+        int64_t now = esp_timer_get_time();
+        bool connected = wifi_nha_sta_connected();
+        bool configured = wifi_nha_configured();
+
+        if (s_ap_on) {
+            if (connected) {
+                if (conn_since == 0) {
+                    conn_since = now;
+                }
+                if (now - conn_since >= (int64_t)AP_OFF_DELAY_S * 1000000LL) {
+                    esp_err_t e = esp_wifi_set_mode(WIFI_MODE_STA);
+                    if (e == ESP_OK) {
+                        s_ap_on = false;
+                        ps_cur = -1;
+                        disc_since = 0;
+                        ESP_LOGI(TAG, "Da vao Wi-Fi nha %d s - tat AP", AP_OFF_DELAY_S);
+                    } else {
+                        ESP_LOGW(TAG, "Tat AP loi: %s", esp_err_to_name(e));
+                        conn_since = now;
+                    }
+                }
+            } else {
+                conn_since = 0;
+            }
+        } else {
+            if (connected && configured) {
+                disc_since = 0;
+            } else {
+                if (disc_since == 0) {
+                    disc_since = now;
+                }
+                if (!configured || now - disc_since >= (int64_t)AP_BACK_DELAY_S * 1000000LL) {
+                    esp_err_t e = esp_wifi_set_mode(WIFI_MODE_APSTA);
+                    if (e == ESP_OK) {
+                        s_ap_on = true;
+                        s_ps_none = true;
+                        conn_since = 0;
+                        ESP_LOGI(TAG, "Mat Wi-Fi nha - bat lai AP");
+                    } else {
+                        ESP_LOGW(TAG, "Bat lai AP loi: %s", esp_err_to_name(e));
+                        disc_since = now;
+                    }
+                }
+            }
+        }
+
+        if (!s_ap_on) {  // modem sleep chi dung duoc o che do STA
+            int want = (s_viewers > 0) ? 0 : 1;
+            if (want != ps_cur) {
+                esp_err_t e = (want == 0) ? esp_wifi_set_ps(WIFI_PS_NONE) : esp_wifi_set_ps(WIFI_PS_MIN_MODEM);
+                if (e == ESP_OK) {
+                    ps_cur = want;
+                    s_ps_none = (want == 0);
+                } else {
+                    ESP_LOGW(TAG, "esp_wifi_set_ps loi: %s", esp_err_to_name(e));
+                }
+            }
+        }
     }
 }
 
@@ -926,7 +1048,8 @@ static esp_err_t status_get(httpd_req_t *req)
         "\"aec\":%d,\"ae_level\":%d,\"rotate\":%d,\"heap_free\":%u,\"psram_free\":%u,\"frame_loi\":%u,"
         "\"cam_reinit\":%u,\"cam_ok\":%s,%s,\"ap_ssid\":\"%s\","
         "\"ota_partition\":\"%s\",\"sd_ok\":%s,\"sd_free_mb\":%u,\"time_ok\":%s,\"motion\":%d,"
-        "\"motion_thr\":%d,\"motion_pct\":%d,\"motion_count\":%u,\"motion_last_s\":%d}",
+        "\"motion_thr\":%d,\"motion_pct\":%d,\"motion_count\":%u,\"motion_last_s\":%d,"
+        "\"cam_sleep\":%s,\"ap_on\":%s,\"wifi_ps\":\"%s\"}",
         (esp_timer_get_time() - s_boot_us) / 1000000, (double)s_temp, s_nong ? "true" : "false",
         g_cfg.fps, (double)s_fps_thuc, (int)s_viewers, fs_name(g_cfg.framesize), g_cfg.quality,
         g_cfg.vflip, g_cfg.hmirror, g_cfg.brightness, g_cfg.contrast, g_cfg.saturation,
@@ -936,7 +1059,8 @@ static esp_err_t status_get(httpd_req_t *req)
         running != NULL ? running->label : "?", s_sd_ok ? "true" : "false", (unsigned)(s_sd_ok ? s_sd_free_mb : 0),
         time_ok() ? "true" : "false", g_cfg.motion, g_cfg.motion_thr, g_cfg.motion_pct,
         (unsigned)s_motion_count,
-        s_motion_last_us < 0 ? -1 : (int)((esp_timer_get_time() - s_motion_last_us) / 1000000));
+        s_motion_last_us < 0 ? -1 : (int)((esp_timer_get_time() - s_motion_last_us) / 1000000),
+        s_cam_sleep ? "true" : "false", s_ap_on ? "true" : "false", s_ps_none ? "none" : "min_modem");
     if (n < 0 || n >= (int)sizeof(buf)) {
         return httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "loi tao JSON");
     }
@@ -1040,7 +1164,7 @@ static esp_err_t control_get(httpd_req_t *req)
         return httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "camera ban");
     }
     g_cfg = n;
-    if (s_cam_ok) {
+    if (s_cam_ok && !s_cam_sleep) {  // dang ngu: chi luu cau hinh, ap khi thuc
         if (is_fs) {
             sensor_apply();
         } else {
@@ -1479,6 +1603,17 @@ void app_main(void)
         ESP_LOGW(TAG, "Khong doc duoc nhiet do chip");
     }
 
+    // DFS 80-240 MHz, khong light sleep
+    esp_pm_config_t pmc = {
+        .max_freq_mhz = 240,
+        .min_freq_mhz = 80,
+        .light_sleep_enable = false,
+    };
+    esp_err_t pe = esp_pm_configure(&pmc);
+    if (pe != ESP_OK) {
+        ESP_LOGW(TAG, "esp_pm_configure loi: %s", esp_err_to_name(pe));
+    }
+
     // Khoi dong camera TRUOC Wi-Fi (giong probe, tranh GDMA treo khi STA len)
     err = camera_init_hw();
     if (err == ESP_OK) {
@@ -1494,6 +1629,7 @@ void app_main(void)
 
     xTaskCreate(cam_task, "cam", 4096, NULL, 6, &s_cam_task);
     xTaskCreate(monitor_task, "monitor", 3072, NULL, 3, NULL);
+    xTaskCreate(net_task, "net", 3072, NULL, 3, NULL);
     xTaskCreate(sd_task, "sd", 6144, NULL, 3, NULL);
     xTaskCreate(motion_task, "motion", 8192, NULL, 3, NULL);
     ESP_LOGI(TAG, "STLab Cam " CAM_VERSION " chay");

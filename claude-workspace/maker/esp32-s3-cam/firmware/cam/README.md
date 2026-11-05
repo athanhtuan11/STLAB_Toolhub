@@ -1,4 +1,4 @@
-# STLab Cam – firmware chính v0.3.0
+# STLab Cam – firmware chính v0.3.1
 
 Camera giám sát ESP32-S3-CAM N16R8 + OV3660. Ưu tiên: chạy ổn định, xem video và chụp cùng lúc, không kẹt khi đóng tab, không quá nóng.
 
@@ -53,6 +53,22 @@ Sai tên/giá trị → HTTP 400. Lưu NVS namespace `cam_cfg`, nạp lại khi 
 
 ## Nhiệt độ
 Chip > 70 °C → tự hạ còn 5 fps (`[CAM] Nong <t> C - ha fps`, `nong: true`); < 62 °C → trả lại. TODO: ngưỡng 70/62 °C là `#define TEMP_HOT_C` / `TEMP_OK_C` theo yêu cầu spec, chưa có nguồn datasheet; cần xác nhận.
+
+### Giảm nhiệt (v0.3.1)
+Đo trong vỏ 0.3.0: chip 68,8–70,8 °C kể cả lúc không ai xem. Ba cơ chế mới:
+1. **Camera ngủ thật:** không người xem, không `/capture` chờ, `motion=0` liên tục `CAM_IDLE_SLEEP_S` (15 s) → `esp_camera_deinit()` (tắt XCLK + DMA), log `[CAM] Camera ngu`, `/status` `cam_sleep: true`. Có người xem / `/capture` / bật motion → init lại + bỏ 3 khung đầu (log `[CAM] Camera thuc`, ~0,5 s). Đổi cài đặt lúc ngủ chỉ lưu NVS, áp khi thức. Watchdog NULL > 3 s không tính lúc ngủ. Vẫn chỉ task camera gọi `esp_camera_fb_get`.
+2. **Wi-Fi:** STA có IP liên tục `AP_OFF_DELAY_S` (60 s) → `WIFI_MODE_STA` (tắt AP, `ap_on: false`); STA mất liên tục `AP_BACK_DELAY_S` (60 s) hoặc chưa cài Wi-Fi nhà → `WIFI_MODE_APSTA` (AP như cũ). Ở chế độ STA: không người xem → `WIFI_PS_MIN_MODEM`, có người xem → `WIFI_PS_NONE` (`wifi_ps`: `min_modem` / `none`). Ở APSTA không dùng modem sleep. **Hệ quả:** sau 60 s vào Wi-Fi nhà, mạng `STLAB-CAM-xxxx` biến mất; muốn dùng lại AP thì cần mất Wi-Fi nhà > 60 s hoặc xóa Wi-Fi nhà.
+3. **Điện năng:** `CONFIG_PM_ENABLE=y`, `esp_pm_configure` max 240 MHz / min 80 MHz, `light_sleep_enable = false` (không light sleep).
+Trang `/` hiện "Camera đang nghỉ – mở xem để bật" khi `cam_sleep`; sửa tràn ngang điện thoại 360–430 px.
+
+Kết quả đo 2026-11-05 (trong vỏ, 15 phút mỗi bản, không người xem, motion tắt; `thermal_log.py`, file `thermal-0.3.0.csv` / `thermal-0.3.1.csv`):
+
+| Bản | Đầu | Cuối | Max | Người xem |
+|---|---|---|---|---|
+| 0.3.0 | 69,8 °C | 69,8 °C | 69,8 °C | 0 |
+| 0.3.1 | 53,8 °C (sau OTA + 2 phút, đã bắt đầu nguội) | 49,8 °C | 54,8 °C | 0 |
+
+Giảm khoảng 15–20 °C khi nghỉ. Chưa đo lúc đang stream (camera + Wi-Fi không tiết kiệm điện thì nhiệt vẫn như 0.3.0).
 
 ## Lỗi đã sửa
 1. Probe phục vụ 1 kết nối/lúc: nay stream ở cổng 81 với task riêng, cổng 80 độc lập.

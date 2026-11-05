@@ -293,6 +293,22 @@ static void json_escape(char *dst, size_t n, const char *src)
     dst[o] = '\0';
 }
 
+bool wifi_nha_sta_connected(void)
+{
+    lock();
+    bool c = s_connected;
+    unlock();
+    return c;
+}
+
+bool wifi_nha_configured(void)
+{
+    lock();
+    bool e = s_enabled;
+    unlock();
+    return e;
+}
+
 void wifi_nha_status_json(char *buf, size_t n)
 {
     char ssid[SSID_MAX + 1];

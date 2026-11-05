@@ -17,7 +17,11 @@
 }
 }
 *{box-sizing:border-box}
-html,body{margin:0}
+html,body{margin:0;overflow-x:hidden}
+img{max-width:100%}
+.video img{max-width:none}
+main,.side,.card,.wrap,.tools>*,.sl,.row{min-width:0}
+select{max-width:100%}
 body{background:var(--bg);color:var(--text);font:400 15px/1.45 system-ui,"Segoe UI",Roboto,sans-serif}
 .wrap{max-width:1240px;margin:0 auto;padding:16px 24px 24px}
 header{display:flex;align-items:center;gap:14px;padding:6px 0 16px}
@@ -79,12 +83,12 @@ footer{margin-top:18px;color:var(--muted);font-size:13px;display:flex;gap:16px;f
 .signal u.off{background:var(--off);opacity:.5}
 @media (max-width:900px){
   .wrap{padding:12px 14px 20px}
-  .grid{grid-template-columns:1fr}
+  .grid{grid-template-columns:minmax(0,1fr)}
   .title,.hide-m{display:none}
   .tools .btn.primary{flex:1 1 100%}
   .tools .btn,.tools .sw,.tools select{flex:1 1 calc(50% - 5px);justify-content:center}
   .tools select{width:100%}
-  .sliders{grid-template-columns:1fr}
+  .sliders{grid-template-columns:minmax(0,1fr)}
   .big{font-size:26px}
 }
 </style>
@@ -255,6 +259,7 @@ footer{margin-top:18px;color:var(--muted);font-size:13px;display:flex;gap:16px;f
     $('rottxt').textContent='Xoay 90°'+(rot?' ('+rot+'°)':'');
   }
   window.addEventListener('resize',layout);
+  var sleepMsg=false;
   function vmsg(t,btn){
     $('vmsgt').textContent=t||'';$('btn-retry').style.display=btn?'':'none';
     $('vmsg').className='vmsg'+(t?' show':'');
@@ -304,7 +309,12 @@ footer{margin-top:18px;color:var(--muted);font-size:13px;display:flex;gap:16px;f
     $('fsrow').textContent=res;
     $('viewers').textContent=s.so_nguoi_xem+' / 2';
     $('badge2').textContent=(d[0]?d[0]+' × '+d[1]+' · ':'')+fmt1(s.fps_thuc)+' fps';
+    if(s.cam_sleep){
+      sleepMsg=true;vmsg('Camera đang nghỉ – mở xem để bật',true);
+      $('badge2').textContent=(d[0]?d[0]+' × '+d[1]+' · ':'')+'đang nghỉ';
+    }else if(sleepMsg){sleepMsg=false;if(!streamFail)vmsg('')}
     if(!s.cam_ok)setPill('err','Camera lỗi');
+    else if(s.cam_sleep)setPill('warn','Camera đang nghỉ');
     else if(note)setPill(cls,txt+' · '+fmt1(t)+' °C');
     else setPill('ok','Đang trực tiếp');
     // đồng bộ điều khiển (không đè khi đang kéo)

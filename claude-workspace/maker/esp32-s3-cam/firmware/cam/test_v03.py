@@ -33,7 +33,7 @@ def status():
 
 
 s = status()
-ok(s.get("version") == "0.3.0", "version 0.3.0 (dang %s)" % s.get("version"))
+ok(str(s.get("version","")).startswith("0.3."), "version 0.3.x (dang %s)" % s.get("version"))
 for k in ["motion", "motion_count", "motion_last_s", "sd_ok", "sd_free_mb", "ota_partition", "time_ok"]:
     ok(k in s, "/status co " + k)
 ok(s.get("time_ok") is True, "da dong bo gio SNTP")
@@ -98,7 +98,7 @@ if a.ota:
                 break
         except Exception:
             pass
-    ok(s2.get("version") == "0.3.0", "mach len lai sau OTA")
+    ok(s2.get("version") == s.get("version"), "mach len lai sau OTA")
     ok(s2.get("ota_partition") not in (None, part0), "doi phan vung %s -> %s" % (part0, s2.get("ota_partition")))
     c, b = req("/capture")
     ok(c == 200 and b[:2] == b"\xff\xd8", "camera chay sau OTA")

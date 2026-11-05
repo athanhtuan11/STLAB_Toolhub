@@ -17,3 +17,8 @@ void wifi_nha_status_json(char *buf, size_t n);
 bool ota_key_is_set(void);
 // So sanh thoi gian hang so; false neu chua cai khoa hoac sai.
 bool ota_key_check(const char *given);
+
+// Da co IP tu Wi-Fi nha chua.
+bool wifi_nha_sta_connected(void);
+// Da cai Wi-Fi nha (muon ket noi) chua.
+bool wifi_nha_configured(void);
