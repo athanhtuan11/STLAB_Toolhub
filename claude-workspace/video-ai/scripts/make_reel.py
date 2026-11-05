@@ -8,6 +8,7 @@ spec.yaml (vd. maker/pushrod-arm/marketing/reel-13-steps.yaml):
       - {type: title, image: <png>, seconds: 2.5, text: "...", sub: "..."}
       - {type: step,  image: <png>, seconds: 1.6, n: 1, total: 13, text: "De"}
       - {type: end,   image: <png>, seconds: 3.5, text: "Open Lab tham quan", sub: "..."}
+      - {type: photo, image: <png>, seconds: 4, text: "...", sub: "...", zoom: [1.0, 1.1], focus: [[0.5,0.5],[0.5,0.4]]}  # anh that/render phu kin, Ken Burns
     voice: "Mai Anh"                          # tuy chon: giong VieNeu (scripts/tts_vi.py); canh co `say:` duoc doc
     # canh: say: "cau doc"  -> canh keo dai cho du cau (LEAD + cau + TAIL), them giong + <ten>.srt (phu de tu kich ban)
 Ra: <out>/<ten>.mp4 (1080x1920, H.264 yuv420p, AAC 48 kHz im lang - Facebook can track am thanh; KHONG nhac:
@@ -15,6 +16,7 @@ Tuan chon nhac trong app vi tai khoan ca nhan) + <out>/<ten>-contact.png (1 khun
 Mau/chu: studio/design/tokens.json + font Be Vietnam Pro (studio/design/fonts, OFL).
 """
 
+import functools
 import json
 import os
 import shutil
@@ -85,8 +87,53 @@ def paste_card(img, path, py, ch, zoom):
     img.paste(cover(path, cw, ch, zoom), (MARGIN, py), mask)
 
 
+@functools.lru_cache(maxsize=8)
+def load(path):
+    return Image.open(path).convert("RGB")
+
+
+def ease(t):
+    return t * t * (3 - 2 * t)
+
+
+def photo(scene, t):
+    """Canh anh that/render phu kin 9:16, zoom + truot cham (Ken Burns), chu tren dai toi phia duoi (2026-11-05).
+    zoom: [dau, cuoi] (>= 1.0); focus: [[x, y] dau, [x, y] cuoi] trong 0..1 cua anh (mac dinh giua)."""
+    pic = load(scene["image"])
+    z0, z1 = scene.get("zoom", [1.0, 1.08])
+    (fx0, fy0), (fx1, fy1) = scene.get("focus", [[0.5, 0.5], [0.5, 0.5]])
+    e = ease(t)
+    z, fx, fy = z0 + (z1 - z0) * e, fx0 + (fx1 - fx0) * e, fy0 + (fy1 - fy0) * e
+    s = max(W / pic.width, H / pic.height) * z
+    cw, ch = W / s, H / s  # vung cat trong toa do anh goc
+    left = min(max(fx * pic.width - cw / 2, 0), pic.width - cw)
+    top = min(max(fy * pic.height - ch / 2, 0), pic.height - ch)
+    img = pic.resize((W, H), Image.LANCZOS, box=(left, top, left + cw, top + ch))
+    if scene.get("text") or scene.get("sub"):
+        g0 = SAFE_BOTTOM - 300  # dai toi dan tu trong suot -> ~65 % den, chi sau chu (khong de len chan san pham)
+        shade = Image.new("L", (1, H), 0)
+        for y in range(g0, H):
+            shade.putpixel((0, y), min(170, int(170 * (y - g0) / 260)))
+        img = Image.composite(Image.new("RGB", (W, H), (12, 14, 16)), img, shade.resize((W, H)))
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle((MARGIN, TOP - 56, MARGIN + 16, TOP - 20), radius=5, fill=C["highlight"])
+    d.text((MARGIN + 30, TOP - 60), "STLAB", font=font("Bold", 36), fill=(255, 255, 255))
+    card_w = W - 2 * MARGIN
+    if scene.get("text"):
+        fnt = font("Bold", 68)
+        lines = wrap(d, scene["text"], fnt, card_w)
+        sub_h = 70 if scene.get("sub") else 0
+        y = SAFE_BOTTOM - sub_h - len(lines) * int(68 * 1.12)
+        y = text_block(d, (MARGIN, y), scene["text"], fnt, (255, 255, 255), card_w, 1.12)
+        if scene.get("sub"):
+            text_block(d, (MARGIN, y + 10), scene["sub"], font("SemiBold", 46), C["highlight"], card_w)
+    return img
+
+
 def frame(scene, t):
     """t: 0..1 trong canh."""
+    if scene["type"] == "photo":
+        return photo(scene, t)
     img = Image.new("RGB", (W, H), C["bg"])
     d = ImageDraw.Draw(img)
     brand(d, TOP - 60)

@@ -1,0 +1,27 @@
+# Reel 30 s gioi thieu esp32-s3-cam - phu huynh + hoc sinh. Anh: stills/ (render Blender chan thuc + hau ky, dung CAD).
+# Dung: cd video-ai && uv run python scripts/make_reel.py ../maker/esp32-s3-cam/marketing/reel-intro-30s.yaml
+# So lieu chi lay tinh nang da chay that: ESP32-S3 + OV3660 3 MP, xem qua Wi-Fi, phat hien chuyen dong (fw 0.3.x), xoay + nghieng.
+# Khong nhac (Tuan chon nhac trong app). Mau vo: TAM theo concept - TODO doi khi Tuan bao mau nhua that.
+name: esp32-s3-cam-intro-30s
+voice: "Mai Anh"
+out: video-ai/projects/esp32-s3-cam-intro-30s/out
+fps: 30
+scenes:
+  - {type: photo, image: stills/k01-macro-lens.png, seconds: 2, zoom: [1.12, 1.0], focus: [[0.45, 0.4], [0.45, 0.4]],
+     text: "Tự làm camera an ninh", say: "Camera an ninh, tự tay làm tại STLab."}
+  - {type: photo, image: stills/k02-desk-hero.png, seconds: 2, zoom: [1.0, 1.1], focus: [[0.5, 0.45], [0.55, 0.4]],
+     text: "ESP32-S3 + camera 3 MP", say: "Bo mạch ESP32 và camera ba megapixel."}
+  - {type: photo, image: stills/k03a-exploded.png, seconds: 2, zoom: [1.04, 1.1], focus: [[0.5, 0.4], [0.5, 0.38]],
+     text: "Tự thiết kế vỏ – in 3D", say: "Vỏ thiết kế trên máy tính, in 3D,"}
+  - {type: photo, image: stills/k03b-assembled.png, seconds: 2, zoom: [1.1, 1.04], focus: [[0.5, 0.38], [0.5, 0.4]],
+     text: "Tự lắp ráp", say: "rồi tự lắp ráp."}
+  - {type: photo, image: stills/k05-tilt-pan.png, seconds: 2, zoom: [1.0, 1.08], focus: [[0.5, 0.45], [0.48, 0.42]],
+     text: "Xoay – nghiêng mọi hướng", say: "Xoay, nghiêng nhìn mọi góc."}
+  - {type: photo, image: stills/k04-shelf-room.png, seconds: 2, zoom: [1.0, 1.1], focus: [[0.5, 0.5], [0.45, 0.5]],
+     text: "Xem trực tiếp qua Wi-Fi", sub: "Báo ngay khi có chuyển động",
+     say: "Xem trực tiếp qua Wi-Fi, có người là báo ngay."}
+  - {type: photo, image: stills/k06-low-hero.png, seconds: 2, zoom: [1.0, 1.12], focus: [[0.5, 0.45], [0.5, 0.42]],
+     text: "Học lập trình và in 3D", say: "Học lập trình và in 3D."}
+  - {type: end, image: stills/k06-low-hero.png, seconds: 3.5,
+     lead: "Con muốn tự tay làm một chiếc?", text: "Open Lab tham quan", sub: "STLab, Đức Trọng, Lâm Đồng. Nhắn tin để hẹn lịch.",
+     say: "Con muốn tự làm một chiếc? Hẹn lịch Open Lab tham quan STLab nhé!"}
