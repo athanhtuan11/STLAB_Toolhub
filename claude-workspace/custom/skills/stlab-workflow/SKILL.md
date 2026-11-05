@@ -48,9 +48,12 @@ Ngoại lệ: việc ≲ 30 dòng (nhỏ hơn viết spec) Claude tự sửa.
    `.gitignore`; ảnh duyệt chỉ để trên máy.
 2. Cập nhật memory: quyết định mới của Tuan → sửa file memory sẵn có (không tạo trùng) + dòng MEMORY.md.
 3. **Quy trình lặp lại ≥ 2 lần mà chưa có skill → tạo skill** (bước 4).
-4. **Xóa bản lỗi / bản đã bị thay** (Tuan 2026-11-03: "xóa những bản lỗi đi tránh nhầm lẫn"): STL, `.gcode.3mf`, ảnh
-   preview, script/spec/gate của phương án đã bỏ → xóa (file đã commit thì `git rm`). Trong `out/` chỉ để bản đang
-   dùng, đặt tên rõ; không để song song `-fix`, `-old`, bản cũ. Báo Tuan tên file đúng duy nhất.
+4. **Dọn bản dư thừa vào `backup/`** (Tuan 2026-11-03 "tránh nhầm lẫn"; 2026-11-05 đổi: **chuyển vào backup, không
+   xóa**): mỗi lần tạo file mới, bản cũ/bản lỗi/bản FAIL, `.FCBak` FreeCAD tự sinh, log + `.gcode` + `result.json` +
+   `_profile/` của slicer, ảnh preview cũ, script/spec của phương án bỏ → `mv` vào `<thu-muc-du-an>/.../backup/<YYYYMMDD>-<ly-do>/`
+   (dùng `backup/` sẵn có cạnh file, vd. `freecad/scripts/backup/`). Thư mục Tuan mở chỉ còn file dùng được: STL đúng
+   hướng in, `.3mf` in được (PASS), ảnh xem trước, nguồn (params/script/FCStd). Không để song song `-fix`, `-old`.
+   File đã commit thì `git mv`. Báo Tuan tên file đúng duy nhất.
 5. **File in gửi Tuan** (mẫu tự dựng đã đặt đúng hướng in): cắt lớp với `--orient 0` (KHÔNG để Bambu tự xoay –
    2026-11-03 bị lật 180° nằm dưới bàn → "loading model fail"), rồi kiểm `transform` trong `3D/3dmodel.model` không
    xoay + `bambu-studio.exe --info <file>` exit 0 trước khi đưa đường dẫn.
