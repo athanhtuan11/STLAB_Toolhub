@@ -44,7 +44,8 @@
     "vit_m25_tu_ren": 2.2,
     "vit_cach_canh": 5.0,
     "tru_vit_d": 6.0,
-    "tru_vit_sau": 8.0
+    "tru_vit_sau": 8.0,
+    "vong_trang_tri_rong": 1.0
   },
   "khe_nhiet": {
     "so_khe": 6,

@@ -74,13 +74,15 @@ for sx in (-1, 1):
         box(B, "join", (x, sx * (wi + ov)), (y0, y0 + M['tru_vit_sau']), (z, zp + sz * (hi + ov)))
         cyl(B, "join", M['tru_vit_d'] - .1, 'y', (y0, y0 + M['tru_vit_sau']), (x, z))   # d - 0,1 mm: khong tiep tuyen voi thanh trong
         hole(cyl, B, "cut", M['vit_m25_tu_ren'], 'y', (y0 - .1, y0 + M['tru_vit_sau']), (x, z))
+    # 2026-11-05: ray keo toi thanh sau (truoc dung o yp+stack_t, dau ray lo lung 8 mm khi in nam mat sau -> phai support)
     for za, zb in ((zp + 6, zp + 18), (zp - 18, zp - 6)):
-        box(B, "join", (sx * (wi + ov), sx * (S['pcb_w'] / 2 + k)), (yp, yp + S['stack_t']), (za, zb))
+        box(B, "join", (sx * (wi + ov), sx * (S['pcb_w'] / 2 + k)), (yp, yr + ov), (za, zb))
     box(B, "join", (sx * (S['pcb_w'] / 2 - 5.5), sx * (S['pcb_w'] / 2 - 2.5)), (yp + S['stack_t'] + k, yr + ov), (zp - S['pcb_h'] / 2, zp + S['pcb_h'] / 2))
     for sz in (-1, 1):
         zin = zp + sz * (S['pcb_h'] / 2 + k); zw = zp + sz * (hi + ov)
         xc = sx * (S['pcb_w'] / 2 - 2.5); yc = yp + S['stack_t'] - 2
-        box(B, "join", (xc - 1.5, xc + 1.5), (yc - 1.5, yc + 1.5), (zin, zw))
+        # 2026-11-05: chan goc keo toi thanh sau (truoc treo lo lung o z 10,5 khi in nam mat sau)
+        box(B, "join", (xc - 1.5, xc + 1.5), (yc - 1.5, yr + ov), (zin, zw))
     xi_ = sx * (wi + ov); xo = sx * (wi - N['tru_than_dai'])
     cyl(B, "join", N['tru_than_d'], 'x', (xi_, xo), (0, zp))
     hole(hexcut, B, N['dai_oc_s'], 'x', (xo - sx * .01, xo + sx * N['dai_oc_sau']), (0, zp))
@@ -95,8 +97,11 @@ for f, a in holes: f(*a)
 # ---------------- Bezel ----------------
 B = "Bezel"; part(B); yf = y0 - M['t']
 rr_y(B, "new", yf, y0, T['w'] / 2, T['h'] / 2, T['r_goc'], 0, zp)
-cyl(B, "cut", M['lo_ong_kinh_d'], 'y', (yf - .1, y0 + .1), (0, zl))
+# 2026-11-05: vong trang tri = RANH tron rong vong_trang_tri_rong (lom ca dia sat lo ong kinh -> phan tren chia ra
+# lo lung 5,5 mm khi in up, Bambu bao floating cantilever). Ranh hep: tran ranh duoc do 2 mep, in khong support.
 cyl(B, "cut", M['vong_trang_tri_d'], 'y', (yf - .1, yf + M['vong_trang_tri_sau']), (0, zl))
+cyl(B, "join", M['vong_trang_tri_d'] - 2 * M['vong_trang_tri_rong'], 'y', (yf, yf + M['vong_trang_tri_sau'] + .05), (0, zl))
+cyl(B, "cut", M['lo_ong_kinh_d'], 'y', (yf - .1, y0 + .1), (0, zl))
 zled = zl - M['den_duoi_ong_kinh']
 for sx in (-1, 1): cyl(B, "cut", M['den_d'], 'y', (yf + M['den_da_mong'], y0 + .1), (sx * M['den_cach_nhau'] / 2, zled))
 rs = M['vit_m25_xuyen'] / 2

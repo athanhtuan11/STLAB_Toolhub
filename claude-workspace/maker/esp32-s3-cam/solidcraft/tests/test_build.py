@@ -18,8 +18,8 @@ PRINT = ["Body", "Bezel", "U_frame", "Base", "Pin_cap", "Coupon", "Coupon_ring"]
 REF = ["Ref_Stack", "Ref_Cam"]
 # Label: (the tich mm3, (dx, dy, dz) bao trong he toa do lap rap) - tu FreeCAD
 FC = {
-    "Body": (35726.3, (56.0, 37.0, 64.0)),     # 2026-11-05 lui mach 2,5 mm (de ong kinh 8,5 tu khay the)
-    "Bezel": (9943.3, (56.0, 11.7, 64.0)),    # 2026-11-05 lo ong kinh 15,0 (Tuan chot) + chan ty mach dai them 2,5
+    "Body": (41400.5, (56.0, 37.0, 64.0)),     # 2026-11-05 ray + chan goc keo toi thanh sau (in khong support)
+    "Bezel": (10108.7, (56.0, 11.7, 64.0)),   # 2026-11-05 vong trang tri thanh ranh rong 1 (het floating cantilever)
     "U_frame": (45917.4, (76.0, 76.0, 76.0)),
     "Base": (39134.5, (86.0, 86.0, 10.0)),
     "Pin_cap": (295.6, (14.0, 14.0, 2.0)),
