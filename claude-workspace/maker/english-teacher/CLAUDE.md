@@ -48,6 +48,6 @@ Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\
 
 ## Trạng thái
 - 2026-11-05: **Tuan chọn dáng A – Cú Bông** (design/contact-sheet.png, design-spec.md): không màn hình, mắt = LED RGB đổi màu
-  (nghe xanh dương / nói vàng / khen hồng / ngủ tím mờ), nút "nói" Ø50 trên đỉnh, loa ở bụng, 3 màu (mơ/kem/bơ – tách part, hạn chế AMS).
+  (nghe xanh dương / nói vàng / khen hồng / ngủ tím mờ), nút "nói" Ø50 trên đỉnh, **2 loa trái + phải ở 2 sườn** (Tuan đổi 2026-11-05; trước: 1 loa ở bụng), 3 màu (mơ/kem/bơ – tách part, hạn chế AMS).
   Cần: LED RGB (vd. WS2812) + chân trống trên Audio Kit (TODO); Tuan đo bo Audio Kit + độ sâu loa Ø52 trước khi CAD; pin hay USB: chưa chốt.
 - 2026-11-05: tạo dự án, đọc chip qua esptool. Đang: firmware dò + bước 0 dáng sản phẩm.

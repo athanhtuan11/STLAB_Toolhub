@@ -1,0 +1,74 @@
+{
+ "wall": 2.4,
+ "speaker_pocket_d": 52.6,
+ "grille_hole_d": 2.8,
+ "mic_hole_d": 2.0,
+ "m3_clear_d": 3.4,
+ "m3_nut_s": 5.8,
+ "button_cap_d": 50.0,
+ "button_hole_d": 50.8,
+ "diffuser_t": 0.8,
+ "vent_w": 2.0,
+ "speakers": [
+  {
+   "center": [
+    -52.8,
+    0.0,
+    46.0
+   ],
+   "axis": "x"
+  },
+  {
+   "center": [
+    52.8,
+    0.0,
+    46.0
+   ],
+   "axis": "x"
+  }
+ ],
+ "pcb_center": [
+  0.0,
+  8.0,
+  60.0
+ ],
+ "pcb_box": [
+  25.0,
+  82.0,
+  73.0
+ ],
+ "split_plane_y": 0.37,
+ "grille_holes_per_speaker": 85,
+ "speaker_dims": [
+  52.0,
+  26.0
+ ],
+ "pcb_dims_xyz": [
+  25.0,
+  82.0,
+  73.0
+ ],
+ "belly": {
+  "z": 48.0,
+  "front_y": -58.5,
+  "rf": 34.2
+ },
+ "eye": {
+  "x": 36.5,
+  "z": 108.0
+ },
+ "beak_z": 102.0,
+ "screws": {
+  "x": 24.0,
+  "y": 14.0,
+  "m3_nut_depth": 2.8
+ },
+ "pins": {
+  "d": 2.0,
+  "half_depth": 8.0
+ },
+ "floor_cut": 4.0,
+ "cone_clearance": 0.3,
+ "fit": 0.3,
+ "slide": 0.2
+}
