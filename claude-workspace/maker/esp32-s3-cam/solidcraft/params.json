@@ -14,7 +14,7 @@
     "ong_kinh_cach_canh_tren": 9.4,
     "_nguon": "27 x 40,5 ESP32-CAM datasheet (trich SunFounder/cnx); stack_t 22 = uoc 4,5 + de nap ~10 + header/linh kien; cam_cao 6 = dau camera 4,2 + khe TF ~1,8 (uoc); ong kinh 9,4 tu vo cong dong ESP32_CAM_CASE",
     "_do_that": "2026-11-05 Tuan do mach that: 27 x 40 x 18 mm (18 = ca de nap CH340, chua tinh camera). Ong kinh 8,3 / cach canh 9,4 + cam <= 7,7 tu ESP32_CAM_CASE.step.",
-    "_ong_kinh": "2026-11-05 Tuan do: tu khay the nho (mat truoc khoi mach) toi dinh de ong kinh 8,5; ong kinh xoay chinh net D 14, tu khay the toi dau ong kinh 20-22. Tuan chon ong kinh NHO RA ngoai vo: de ong kinh cach mat trong bezel 0,5, ong kinh chui lo 14,6 (14 + 0,3/ben, xoay duoc), nho ~10 truoc mat vo. Khe chot xoay 0,2/ben theo tipflow (Tuan dong y). Tam ong kinh cach mep tren 9,4: camera dan len khay the TF (research-notes muc 5, Tuan xac nhan 2026-11-05), khop vo ESP32_CAM_CASE (camera cung nam tren khay TF).",
+    "_ong_kinh": "2026-11-05 Tuan do: tu khay the nho (mat truoc khoi mach) toi dinh de ong kinh 8,5; ong kinh xoay chinh net D 14, tu khay the toi dau ong kinh 20-22. Tuan chon ong kinh NHO RA ngoai vo: de ong kinh cach mat trong bezel 0,5, ong kinh chui lo 15,0 (Tuan chot 2026-11-05: D lon nhat 14 + 0,5/ben, du cho camera dan lech), nho ~10 truoc mat vo. Khe chot xoay 0,2/ben theo tipflow (Tuan dong y). Tam ong kinh cach mep tren 9,4: camera dan len khay the TF (research-notes muc 5, Tuan xac nhan 2026-11-05), khop vo ESP32_CAM_CASE (camera cung nam tren khay TF).",
     "ong_kinh_d": 14.0,
     "khay_the_toi_de_ong_kinh": 8.5,
     "ong_kinh_tong_dai_max": 22.0
@@ -28,7 +28,7 @@
   },
   "mat_truoc": {
     "t": 3.0,
-    "lo_ong_kinh_d": 14.6,
+    "lo_ong_kinh_d": 15.0,
     "vong_trang_tri_d": 26.0,
     "vong_trang_tri_sau": 0.6,
     "den_d": 3.4,

@@ -18,7 +18,7 @@ REF = ["Ref_Stack", "Ref_Cam"]
 # Label: (the tich mm3, (dx, dy, dz) bao trong he toa do lap rap) - tu FreeCAD
 FC = {
     "Body": (35726.3, (56.0, 37.0, 64.0)),     # 2026-11-05 lui mach 2,5 mm (de ong kinh 8,5 tu khay the)
-    "Bezel": (9965.6, (56.0, 11.7, 64.0)),    # 2026-11-05 lo ong kinh 14,6 + chan ty mach dai them 2,5
+    "Bezel": (9943.3, (56.0, 11.7, 64.0)),    # 2026-11-05 lo ong kinh 15,0 (Tuan chot) + chan ty mach dai them 2,5
     "U_frame": (45917.4, (76.0, 76.0, 76.0)),
     "Base": (39134.5, (86.0, 86.0, 10.0)),
     "Pin_cap": (295.6, (14.0, 14.0, 2.0)),
