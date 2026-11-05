@@ -59,7 +59,9 @@ Ngoại lệ: việc ≲ 30 dòng (nhỏ hơn viết spec) Claude tự sửa.
    Chi tiết (mẫu tự dựng đã đặt đúng hướng in): cắt lớp với `--orient 0` (KHÔNG để Bambu tự xoay –
    2026-11-03 bị lật 180° nằm dưới bàn → "loading model fail"), rồi kiểm `transform` trong `3D/3dmodel.model` không
    xoay + `bambu-studio.exe --info <file>` exit 0 trước khi đưa đường dẫn.
-6. Báo Tuan: làm gì, kiểm gì (PASS/FAIL thật), còn gì chưa kiểm, commit hash.
+6. **Hướng dẫn lắp luôn kèm PDF** (Tuan 2026-11-05): sửa `ASSEMBLY.md` xong → `python tools/robotics-cad/scripts/assembly-pdf.py
+   maker/<du-an>/ASSEMBLY.md` → đưa link `ASSEMBLY.pdf`. Ảnh lắp ráp dự án SolidCraft: `solidcraft/render_assembly.py`.
+7. Báo Tuan: làm gì, kiểm gì (PASS/FAIL thật), còn gì chưa kiểm, commit hash.
 
 ## 4. Lưu quy trình thành skill
 - Skill tự viết ở `custom/skills/<ten-kebab>/SKILL.md` (front matter `name`, `description` ghi rõ KHI NÀO dùng).

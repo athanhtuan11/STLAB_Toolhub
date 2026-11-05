@@ -10,6 +10,7 @@ Cach lam: Markdown (tap con dung trong ASSEMBLY.md) -> HTML co CSS in A4 -> Micr
 
 import html
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -151,14 +152,15 @@ def main():
     src = Path(sys.argv[1]).resolve()
     goc = src.parent
     tieu_de, buoc, than = md_html(src.read_text(encoding="utf-8"), goc)
-    cuoi = (sorted(goc.glob("freecad/images/assembly/cover.png"))  # anh bia rieng (2026-10-25)
-            or sorted(goc.glob("freecad/images/assembly/step-*-a.png")))
+    cuoi = (sorted(goc.glob("*/images/assembly/cover.png"))  # anh bia rieng (2026-10-25); */ = freecad|solidcraft (2026-11-05)
+            or sorted(goc.glob("*/images/assembly/step-*-a.png"))
+            or sorted(goc.glob("*/images/assembly/step-*.png")))
     bia_anh = f'<img src="{cuoi[-1].as_uri()}">' if cuoi else ""
     muc_luc = "".join(f"<div>{html.escape(b)}</div>" for b in buoc)
     bia = (f'<section class="cover"><h1>{html.escape(tieu_de)}</h1>'
            f'<div class="meta">STLab · {goc.name} · tạo {time.strftime("%Y-%m-%d")} từ ASSEMBLY.md</div>'
            f'{bia_anh}<div class="toc">{muc_luc}</div>'
-           '<div class="footer-note">Ảnh render từ model FreeCAD; mục đánh dấu TODO cần bổ sung khi lắp thật.</div>'
+           '<div class="footer-note">Ảnh render từ model CAD; mục đánh dấu TODO cần bổ sung khi lắp thật.</div>'
            '</section>')
     doc = (f'<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>{html.escape(tieu_de)}</title>'
            f"<style>{CSS}</style></head><body>{bia}{than}</body></html>")
@@ -169,9 +171,21 @@ def main():
     with tempfile.TemporaryDirectory() as td:
         h = Path(td) / "assembly.html"
         h.write_text(doc, encoding="utf-8")
+        # 2026-11-05: Edge headless khong ghi duoc thang ra o D: (im lang, khong loi) -> in vao thu muc tam roi chep
+        tmp_pdf = Path(td) / "assembly.pdf"
         subprocess.run([str(edge), "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
-                        f"--user-data-dir={Path(td) / 'edge'}", f"--print-to-pdf={out}", h.as_uri()],
+                        f"--user-data-dir={Path(td) / 'edge'}", f"--print-to-pdf={tmp_pdf}", h.as_uri()],
                        check=True, capture_output=True, timeout=180)
+        # Edge co the tra ve truoc khi ghi xong PDF (thay 2026-11-05) -> cho file xuat hien + kich thuoc dung yen
+        han = time.time() + 90; truoc = -1
+        while time.time() < han:
+            if tmp_pdf.exists() and tmp_pdf.stat().st_size == truoc and truoc > 0:
+                break
+            truoc = tmp_pdf.stat().st_size if tmp_pdf.exists() else -1
+            time.sleep(1)
+        if not tmp_pdf.exists():
+            raise SystemExit("Edge khong tao duoc PDF")
+        shutil.copyfile(tmp_pdf, out)
     print(f"PDF: {out} ({out.stat().st_size // 1024} KB, {len(buoc)} muc)")
 
 
