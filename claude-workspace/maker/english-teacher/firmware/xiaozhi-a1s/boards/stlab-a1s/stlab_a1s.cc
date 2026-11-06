@@ -165,17 +165,16 @@ private:
     }
 
     void InitializeButtons() {
-        // KEY4: giu de noi, tha ra la gui; luc dang khoi dong bam de vao cau hinh Wi-Fi
-        talk_button_.OnPressDown([this]() {
+        // KEY4 (2026-11-06, Tuan bo giu-nha): cham 1 lan = mo phien noi chuyen tu dong (AutoStop: may chu VAD tu chot cau,
+        // co noi xong tu nghe tiep); cham khi co dang noi = ngat loi co; cham khi dang nghe = ket thuc phien.
+        // Luc dang khoi dong cham de vao cau hinh Wi-Fi.
+        talk_button_.OnClick([this]() {
             auto& app = Application::GetInstance();
             if (app.GetDeviceState() == kDeviceStateStarting) {
                 EnterWifiConfigMode();
                 return;
             }
-            app.StartListening();
-        });
-        talk_button_.OnPressUp([this]() {
-            Application::GetInstance().StopListening();
+            app.ToggleChatState();
         });
 
         // KEY5 / KEY6: am luong +/- 10, giu KEY5 de vao cau hinh Wi-Fi

@@ -62,3 +62,28 @@ prompt_template: stlab-base-prompt.txt
 
 prompt: |
   <PROMPT>
+
+# --- Phien noi chuyen tu dong (2026-11-06, KEY4 cham 1 lan; may chu VAD tu chot cau) ---
+# Be 2-5 tuoi hay ngap ngung: 600 ms im moi chot cau (goc 200 ms cat cau). Thay cham -> giam; bi cat cau -> tang.
+VAD:
+  SileroVAD:
+    min_silence_duration_ms: 600
+# Im 30 s thi co chao tam biet va ket thuc phien (bo ve nghi, do ton Gemini)
+close_connection_no_voice_time: 30
+end_prompt:
+  enable: true
+  prompt: |
+    Hãy chào tạm biệt bé bằng đúng 1 câu thật ngắn, vui vẻ, gồm tiếng Việt và tiếng Anh, ví dụ: "Tạm biệt con nhé, bye bye!"
+# So khop CHINH XAC sau khi bo dau cau + khoang trang, phan biet hoa thuong (intentHandler.check_direct_exit)
+exit_commands:
+  - "Tạmbiệtcô"
+  - "tạmbiệtcô"
+  - "Tạmbiệt"
+  - "tạmbiệt"
+  - "Thôinghỉ"
+  - "thôinghỉ"
+  - "Byebye"
+  - "byebye"
+  - "ByeBye"
+  - "Goodbye"
+  - "goodbye"

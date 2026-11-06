@@ -47,6 +47,12 @@ Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\
   (log `[NUT]` nhấn/nhả đủ 2 lượt, probe-log-nut.txt). Chuỗi thanh ghi ES8388 của firmware dò viết theo trí nhớ ESP-ADF – xiaozhi dùng driver riêng.
 
 ## Trạng thái
+- 2026-11-06:
+  - Sửa lỗi KEY4 không phản hồi: firmware cứng IP 192.168.1.47, máy lab đổi DHCP sang 192.168.1.65 → `firmware/xiaozhi-a1s/wifi-nvs.py` nạp thêm khóa NVS `ota_url`; đổi IP chỉ cần `python wifi-nvs.py --port COM5 [--server IP]`, không build lại. Nên đặt IP cố định (DHCP reservation) cho máy lab trên router.
+  - Chế độ nói chuyện rảnh tay (Tuan chọn, giọng bé chỉ ở máy lab, KHÔNG Gemini Live): chạm KEY4 1 lần = mở phiên; bé nói, máy chủ tự chốt câu (VAD im 600 ms), cô nói xong tự nghe tiếp; chạm KEY4 khi cô đang nói = ngắt lời; chạm khi đang nghe = kết thúc; im 30 s → cô chào tạm biệt và nghỉ; nói "tạm biệt cô"/"bye bye"/"goodbye"/"thôi nghỉ" = kết thúc. A1S (ESP32) không có khử vọng AEC nên không ngắt lời cô bằng giọng được – cần bản ESP32-S3.
+  - Nguyên nhân chậm đã đo: Whisper ~2 s; Gemini thường 0,6–1 s nhưng ngẫu nhiên treo 21,8 s hoặc > 60 s. Sửa: `server/run.py` gọi Gemini REST SSE trực tiếp, gửi thêm 1 yêu cầu nếu sau 1,5 s chưa có chữ (tối đa 2), gặp 429 (hết hạn mức/phút) thì không gửi thêm, quá 12 s trả câu "Cô chưa nghe rõ, con nói lại nhé!". Gate `server/test_llm_latency.py` (12 lượt cách 4 s): 12/12, p50 0,94 s, max 2,35 s. Log mỗi lượt: dòng `[STLAB-T] llm_ttft=…`.
+  - Firmware mới (KEY4 chạm) đã build + nạp COM5, khởi động sạch, OTA tới 192.168.1.65 OK. CHƯA thử giọng thật với chế độ mới – Tuan thử lần sau (cần khởi động lại máy chủ để nạp `run.py` + cấu hình mới).
+  - Máy chủ tự bật khi đăng nhập Windows: Tuan chạy 1 lần `server\install-autostart.ps1` (gỡ: `-Remove`) – Claude không được quyền tự đăng ký.
 - 2026-11-05 đêm (Tuan ngủ, Claude tự làm): bo A1S chạy xiaozhi + Wi-Fi tự nạp (`firmware/xiaozhi-a1s/wifi-nvs.py`), phát 2 kênh L=R (chờ Tuan nghe lại);
   máy chủ **song ngữ Việt–Anh**: Whisper small tại máy 127.0.0.1:8010, Gemini 3.1 flash-lite (gửi song song khi chậm), Edge `en-US-AvaMultilingualNeural` −12 %;
   test_server 17/17 + test_e2e (giả lập bo) PASS – trễ thả nút → tiếng đầu ~3,8–7,4 s, có lần 11 s do Gemini. CAD Cú Bông v1 2 loa (gate PASS), 3 bài học `lessons/`.

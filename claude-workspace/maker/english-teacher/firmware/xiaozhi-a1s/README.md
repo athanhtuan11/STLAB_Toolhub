@@ -43,7 +43,7 @@ lớp `StlabEs8388Codec::EnableInput(true)` gọi base rồi ghi thanh ghi 0x0A 
 (peak 31951) nên không tăng thêm. `STLAB_MIC_INPUT_LINE2 1` trong config.h chỉ là ghi chú.
 
 ## Nút
-- KEY4: giữ để nói, thả ra là gửi. Lúc vừa khởi động (chưa có Wi-Fi): bấm để vào chế độ cấu hình Wi-Fi.
+- KEY4: chạm (ToggleChatState, chế độ AutoStop), không còn giữ-nhả. Lúc vừa khởi động (chưa có Wi-Fi): bấm để vào chế độ cấu hình Wi-Fi.
 - KEY5 / KEY6: âm lượng +10 / −10. Giữ KEY5 lâu: vào cấu hình Wi-Fi.
 - Không có wake word (bé 2–5 tuổi dùng nút).
 
@@ -59,3 +59,7 @@ $env:STLAB_XIAOZHI_SERVER = '192.168.1.50'
 powershell -NoProfile -ExecutionPolicy Bypass -File sync.ps1; powershell -NoProfile -ExecutionPolicy Bypass -File build.ps1
 ```
 Phân vùng `partitions/v2/4m.csv` (factory 0x2F0000 + assets 1 MB, không OTA firmware).
+
+## Ghi chú (2026-11-06)
+- Đổi IP máy chủ không cần build lại: `python wifi-nvs.py --port COM5 --server IP` (ghi khóa NVS `ota_url`). Firmware cũ cứng IP 192.168.1.47 nên KEY4 không phản hồi khi máy lab đổi sang 192.168.1.65.
+- `build.ps1` chạy KHÔNG kèm `2>&1`: PowerShell coi dòng "Activating ESP-IDF" ở stderr là lỗi và dừng.

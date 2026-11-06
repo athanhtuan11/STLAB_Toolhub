@@ -44,9 +44,18 @@ Mạng nhà phải được đặt là "Private". Gỡ: `Remove-NetFirewallRule 
 - ASR: `whisper-local/` = faster-whisper `small` (CPU int8, 8 luồng) tại `127.0.0.1:8010`, API giống OpenAI `/v1/audio/transcriptions`; tự dò vi/en (khác thì dùng en), gợi từ vựng bằng `initial_prompt`; file tạm xóa ngay.
   `run.ps1` bật Whisper trước (chờ `/health`), rồi bật server; tắt `run.ps1` (Ctrl+C) thì tắt cả Whisper. Đổi model: `$env:STLAB_WHISPER_MODEL = "medium"` (setup.ps1 sẽ tải).
 - TTS: `en-US-AvaMultilingualNeural`, rate -12 %. Nghe thử giọng trong `out-voice/` (vi-ava, vi-emma, en-ava, en-emma .mp3; không commit); đổi sang Emma ở `voice:` trong `stlab.config.yaml`.
-- Gemini bị chậm bất thường (chunk đầu có lúc 5-35 s): `run.py` gửi thêm yêu cầu song song sau mỗi 1,2 s chưa có chữ (tối đa 4), lấy luồng ra chữ trước.
+- Gemini bị chậm bất thường (chunk đầu có lúc 5-35 s): `run.py` gọi Gemini REST SSE trực tiếp, gửi thêm 1 yêu cầu nếu sau 1,5 s chưa có chữ (tối đa 2), dừng khi gặp 429.
 - Quyền riêng tư: giọng bé chỉ qua Whisper trên máy; chỉ CHỮ gửi Gemini; chữ trả lời gửi Microsoft Edge TTS.
 
 ### Số đo (máy lab, 16 luồng CPU)
 - Whisper `small`: câu 2-3 s ~1,3-3 s (đo lúc server chạy); nghe đúng "Con mèo màu vàng.", "Apple. Red apple.", câu Việt dài có "cat". `medium`: 8-10 s cho cùng câu, đúng như small -> chọn `small`.
 - test_e2e (thả nút -> tiếng đầu tiên, giả lập bo): thường 3,8-4,2 s; lúc Gemini chậm 7-11 s (4/5 lần < 8 s). Chạy: `$env:PATH="$PWDuntime;$env:PATH"; runtime\.venv\Scripts\python.exe test_e2e.py` (cần opus.dll trong PATH).
+
+## Phiên nói chuyện tự động (2026-11-06)
+- Khóa mới trong `stlab.config.yaml`:
+  - `min_silence_duration_ms: 600` (VAD chốt câu sau 600 ms im lặng): chậm thì giảm, bị cắt câu thì tăng.
+  - `close_connection_no_voice_time: 30` (30 s im lặng thì cô chào tạm biệt và nghỉ).
+  - `end_prompt`: câu chào tạm biệt Việt–Anh (bản gốc là prompt tiếng Trung).
+  - `exit_commands`: viết LIỀN không khoảng trắng, phân biệt hoa thường. Máy chủ so khớp chính xác sau khi bỏ dấu câu và khoảng trắng.
+- Gate độ trễ LLM: `runtime\.venv\Scripts\python.exe -X utf8 test_llm_latency.py`
+- Tự bật khi đăng nhập Windows: `install-autostart.ps1` (gỡ: `-Remove`).
