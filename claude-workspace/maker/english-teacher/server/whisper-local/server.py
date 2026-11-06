@@ -1,6 +1,9 @@
 """Whisper tai may (faster-whisper CPU int8), API tuong thich OpenAI: POST /v1/audio/transcriptions.
 Chi nghe 127.0.0.1:8010. Khong luu am thanh: file tam bi xoa ngay sau khi nhan dang."""
-import os, tempfile, time
+import os, sys, tempfile, time
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import no_ecoqos  # noqa: E402  Windows 11 day tien trinh an sang che do tiet kiem -> Whisper cham 2,5 lan
+print('EcoQoS off:', no_ecoqos.disable(), flush=True)
 from fastapi import FastAPI, File, Form, UploadFile
 from faster_whisper import WhisperModel
 

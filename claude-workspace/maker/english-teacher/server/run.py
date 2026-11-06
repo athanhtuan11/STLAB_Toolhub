@@ -226,6 +226,8 @@ def patch_loader(key: str):
 
 
 def main():
+    import no_ecoqos  # tien trinh an bi Windows 11 ha toc (EcoQoS) -> tat cho chinh minh
+    no_ecoqos.disable()
     key = get_key()
     os.chdir(RT)
     os.environ["PATH"] = str(RT) + os.pathsep + os.environ.get("PATH", "")  # opus.dll
