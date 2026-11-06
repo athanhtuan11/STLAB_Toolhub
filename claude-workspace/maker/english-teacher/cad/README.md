@@ -17,7 +17,7 @@ Hệ lắp ráp: mm, +Z lên, mặt trước −Y; mặt ráp hai nửa là mặ
 ## Giữ loa (2026-11-06) – không vít, ngàm xoay
 - **Lý do đổi:** bản đầu 4 vấu nằm sau đáy loa 2,7–4,3 mm (không chạm loa → rè). Bản vít M2.5 bỏ vì Tuan: chỗ quá nhỏ, không có cầu bắt vít.
 - **Giữ loa bằng mép trước** (mép dày 5 mm, thân sau mép < Ø39 – Tuan đo):
-  - Ron EVA dày 2 mm (vòng ngoài Ø52, lỗ trong cắt theo mép trong của mép loa – không đè lên màng loa; TODO đo) giữa mặt sau tấm lưới và mặt loa; khi khóa còn **1,2 mm**.
+  - Ron EVA dày 2 mm (vòng ngoài Ø52, lỗ trong **Ø47** – mép trong của mép loa Ø46 (Tuan đo), chừa 0,5 mm/bên để không chạm viền màng loa; vành ron rộng 2,5) giữa mặt sau tấm lưới và mặt loa; khi khóa còn **1,2 mm**.
   - Vòng ép **ngàm xoay** `speaker-ring.stl`: môi lỗ Ø42 đè lên mép loa 5 mm/bên; ống tay ôm ngoài ống ôm vành loa (khe 0,25), mặt trong có **3 rãnh chữ L**.
   - Ống ôm vành loa có **3 chốt** (rộng 4, nhô 1,1, dày 1,5). Xoay khóa **30°**; ron đẩy vòng ép lùi, mặt chốt tì vào vách rãnh → không tự xoay ra.
 - **Chống tụt vành loa vào trong:** dán mặt côn vành loa vào lỗ côn vỏ bằng **epoxy** (hoặc CA) – Tuan chốt dán keo.
