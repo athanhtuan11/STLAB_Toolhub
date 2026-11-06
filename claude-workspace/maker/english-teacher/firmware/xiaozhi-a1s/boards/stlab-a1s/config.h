@@ -32,7 +32,7 @@
 #define VOLUME_DOWN_BUTTON_GPIO GPIO_NUM_5    // KEY6
 
 // 2026-11-06 Tuan: giu KEY4 5 s = ngu; 60 s khong giao tiep = tu ngu (khong tat Wi-Fi, cham la noi ngay)
-#define STLAB_TALK_LONG_MS      5000
+#define STLAB_TALK_LONG_MS      3000   // 2026-11-06 Tuan: giu 5 s lau qua -> 3 s
 #define STLAB_IDLE_SLEEP_S      60
 
 #define BUILTIN_LED_GPIO        GPIO_NUM_22   // LED trang thai (muc thap = sang)

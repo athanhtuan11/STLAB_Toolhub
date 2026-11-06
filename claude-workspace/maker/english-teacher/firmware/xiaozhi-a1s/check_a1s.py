@@ -56,9 +56,10 @@ need(re.search(r"\)\s*\{\s*\}", cc) is None, "co khoi lenh rong")
 # 2026-11-06 Tuan: cham KEY4 = noi chuyen ngay; giu KEY4 5 s = ngu; lau khong noi chuyen = tu ngu
 need("talk_button_.OnPressDown" not in cc and "talk_button_.OnPressUp" not in cc, "KEY4 khong con giu-nha (OnPressDown/OnPressUp)")
 need("talk_button_.OnClick" in cc and "talk_button_.OnLongPress" in cc, "KEY4 co OnClick + OnLongPress")
-need(re.search(r"talk_button_\s*\(\s*TALK_BUTTON_GPIO\s*,\s*false\s*,\s*(5000|STLAB_TALK_LONG_MS)", cc) is not None
-     and ("STLAB_TALK_LONG_MS" not in cc or re.search(r"#define\s+STLAB_TALK_LONG_MS\s+5000", cfg) is not None),
-     "KEY4 giu 5000 ms (Button long_press_time)")
+m = re.search(r"#define\s+STLAB_TALK_LONG_MS\s+(\d+)", cfg)
+need(re.search(r"talk_button_\s*\(\s*TALK_BUTTON_GPIO\s*,\s*false\s*,\s*STLAB_TALK_LONG_MS", cc) is not None
+     and m is not None and 2000 <= int(m.group(1)) <= 3500,
+     "KEY4 giu 2-3,5 s de ngu (Tuan 2026-11-06: 5 s lau qua) - Button long_press_time = STLAB_TALK_LONG_MS")
 need("PowerSaveTimer" in cc and re.search(r"OnEnterSleepMode|OnShutdownRequest", cc) is not None, "tu ngu bang PowerSaveTimer")
 m = re.search(r"#define\s+STLAB_IDLE_SLEEP_S\s+(\d+)", cfg)
 need(m is not None and 30 <= int(m.group(1)) <= 300, "STLAB_IDLE_SLEEP_S 30..300 s trong config.h")

@@ -146,6 +146,7 @@ private:
     StlabStatusLed* led_ = nullptr;
     PowerSaveTimer* power_save_timer_ = nullptr;
     volatile bool sleeping_ = false;
+    volatile bool bye_pending_ = false;   // da xin ket thuc, dang cho co chao tam biet
 
     // Tat den + ampli loa (dung chung cho ngu tu dong va ngu do giu KEY4)
     void SleepOutputs() {
@@ -175,21 +176,48 @@ private:
     }
 
     // Giu KEY4: ket thuc phien neu dang noi/nghe, phat am bao, tat den + ampli.
+    // Cho cau noi chao tam biet roi dong phien; qua han thi tu dong (khong bao gio ket phien).
+    static void ByeTask(void* arg) {
+        auto* self = static_cast<StlabA1sBoard*>(arg);
+        auto& app = Application::GetInstance();
+        for (int i = 0; i < 60; i++) {                    // toi da 6 s cho cau tam biet bat dau
+            vTaskDelay(pdMS_TO_TICKS(100));
+            auto st = app.GetDeviceState();
+            if (st == kDeviceStateIdle) { self->bye_pending_ = false; vTaskDelete(nullptr); return; }
+            if (st == kDeviceStateSpeaking) break;
+        }
+        for (int i = 0; i < 100 && app.GetDeviceState() == kDeviceStateSpeaking; i++) {   // co dang chao: cho toi 10 s
+            vTaskDelay(pdMS_TO_TICKS(100));
+        }
+        for (int i = 0; i < 20 && app.GetDeviceState() != kDeviceStateIdle; i++) {         // cau noi dong trong 2 s
+            vTaskDelay(pdMS_TO_TICKS(100));
+        }
+        if (app.GetDeviceState() == kDeviceStateListening) {
+            ESP_LOGW(TAG, "Cau noi khong dong phien sau tam biet -> tu dong");
+            app.ToggleChatState();
+        }
+        self->bye_pending_ = false;
+        vTaskDelete(nullptr);
+    }
+
     static void SleepTask(void* arg) {
         auto* self = static_cast<StlabA1sBoard*>(arg);
         auto& app = Application::GetInstance();
-        for (int i = 0; i < 4; i++) {
+        // nhanh (Tuan: giu nut lau moi tat): ngat/dong ngay, kiem lai moi 150 ms, toi da ~1,5 s
+        self->bye_pending_ = true;   // de ByeTask/OnClick khong chen vao
+        for (int i = 0; i < 10; i++) {
             auto st = app.GetDeviceState();
             if (st != kDeviceStateListening && st != kDeviceStateSpeaking && st != kDeviceStateConnecting) {
                 break;
             }
-            app.ToggleChatState();  // Speaking: ngat loi; Listening: dong kenh am thanh
-            vTaskDelay(pdMS_TO_TICKS(700));
+            if (st != kDeviceStateConnecting) {
+                app.ToggleChatState();  // Speaking: ngat loi -> Listening; Listening: dong kenh am thanh
+            }
+            vTaskDelay(pdMS_TO_TICKS(150));
         }
-        if (app.GetDeviceState() == kDeviceStateIdle) {
-            app.PlaySound(Lang::Sounds::OGG_POPUP);
-            vTaskDelay(pdMS_TO_TICKS(800));
-        }
+        self->bye_pending_ = false;
+        app.PlaySound(Lang::Sounds::OGG_POPUP);
+        vTaskDelay(pdMS_TO_TICKS(600));
         self->sleeping_ = true;
         self->SleepOutputs();
         ESP_LOGI(TAG, "Ngu theo nut giu KEY4");
@@ -234,11 +262,21 @@ private:
                 EnterWifiConfigMode();
                 return;
             }
+            // 2026-11-06 Tuan: tat thi co phai chao. Dang NGHE ma cham = xin ket thuc: gui "abort" (luc co khong noi, cau noi
+            // hieu la "be muon dung") -> co noi 1 cau tam biet -> cau noi dong phien. Du phong: 6 s chua dong thi tu dong.
+            // Dang NOI ma cham = ngat loi co (giu nhu cu). Dang nghi = mo phien.
+            if (app.GetDeviceState() == kDeviceStateListening && !bye_pending_) {
+                bye_pending_ = true;
+                app.AbortSpeaking(kAbortReasonNone);
+                xTaskCreate(ByeTask, "stlab_bye", 3072, this, 3, nullptr);
+                return;
+            }
             app.ToggleChatState();
         });
 
         // Giu KEY4 5 s = ngu (nut nay cham nhanh van la OnClick)
         talk_button_.OnLongPress([this]() {
+            ESP_LOGI(TAG, "KEY4 giu %d ms -> ngu", STLAB_TALK_LONG_MS);
             xTaskCreate(SleepTask, "stlab_sleep", 4096, this, 3, nullptr);
         });
 
