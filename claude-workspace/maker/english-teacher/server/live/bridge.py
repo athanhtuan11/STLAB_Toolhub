@@ -117,7 +117,14 @@ CURRICULUM_PROMPT = (
 LANG_LOCK = (
     "The child is a 2-5 year old Vietnamese child. They speak ONLY Vietnamese or a few English words, often mispronounced. "
     "If the speech sounds like any other language (Spanish, Japanese, Hindi...), it is unclear toddler speech - never answer "
-    "in that language. Always reply ONLY in Vietnamese and simple English.\n\n")
+    "in that language. Always reply ONLY in Vietnamese and simple English.\n"
+    # 2026-11-06 Tuan: noi "da" co khong hieu; giong vung mien + giong con nit kho nghe
+    "Vietnamese children answer with short polite words. Treat these as YES / 'I am here' / 'I am listening': "
+    "dạ, dạ con, vâng, ừ, ờ, ừm, có, có ạ, có nè, nè, đây, ơi, dạ có, ok. Treat these as NO: không, hông, hổng, "
+    "không ạ, hông có, chưa. Accents from the North, Central and South of Vietnam (e.g. 'dzạ', 'hông', 'zậy', 'hổng "
+    "biết') and toddler pronunciation are normal Vietnamese - understand them kindly. Short sounds like 'dạ', 'ạ', "
+    "'ơi' are answers, not noise: respond to them (e.g. continue the lesson). If you truly cannot tell what was said, "
+    "guess the most likely simple meaning from the lesson context first; ask again only if it matters.\n\n")
 LIMIT_PROMPT = (
     "\n\nRepeat limits: ask the child to repeat the SAME word at most 2 times in total; after that say a warm "
     "'Con giỏi lắm!' and move to a different word. Say 'nói lại nhé' at most once per turn. "
@@ -137,11 +144,42 @@ VOLUME_TOOLS = [
 MCP_TIMEOUT_S = 4.0
 
 
+# 2026-11-06 Tuan: co khong hieu "da", giong vung mien/con nit. Gemini Live transcription co language_codes + custom_vocabulary
+# (ai.google.dev/gemini-api/docs/live-api/live-transcribe, toi da 1000 muc). Chi chac giup CHU NHAN DANG (bien danh, mark_word),
+# khong chac giup phan hieu am thanh cua model -> do tren thiet bi that. Tat bang STLAB_ASR_HINTS=0.
+ANSWER_WORDS = ["dạ", "dạ con", "vâng", "ừ", "ờ", "có", "có ạ", "có nè", "không", "hông", "hổng", "không ạ", "chưa",
+                "ơi", "cô ơi", "con biết", "con không biết", "hổng biết", "nữa", "lại", "to lên", "nói lớn lên", "nhỏ lại"]
+
+
+def asr_vocab():
+    v = list(ANSWER_WORDS) + ["bạn " + n for n in ALLOWED_NICKNAMES]
+    try:
+        for lid in CUR.lesson_ids():
+            v += CUR.vocabulary(lid)
+    except Exception:
+        pass
+    seen, out = set(), []
+    for w in v:
+        if w and w not in seen:
+            seen.add(w); out.append(w)
+    return out[:1000]
+
+
+def in_transcription():
+    if os.environ.get("STLAB_ASR_HINTS", "1") == "0":
+        return types.AudioTranscriptionConfig()
+    try:
+        return types.AudioTranscriptionConfig(language_codes=["vi-VN", "en-US"], custom_vocabulary=asr_vocab())
+    except Exception as e:
+        log(f"ASR hints khong dung duoc: {e}")
+        return types.AudioTranscriptionConfig()
+
+
 def live_config():
     kw = dict(
         response_modalities=["AUDIO"],
         system_instruction=PROMPT,
-        input_audio_transcription=types.AudioTranscriptionConfig(),
+        input_audio_transcription=in_transcription(),
         output_audio_transcription=types.AudioTranscriptionConfig(),
         tools=[types.Tool(function_declarations=live_tools() + VOLUME_TOOLS)],
         realtime_input_config=types.RealtimeInputConfig(
