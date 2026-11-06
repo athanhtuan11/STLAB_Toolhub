@@ -12,10 +12,21 @@ ACTIVITIES = ("repeat-after-me", "quiz", "touch-game", "rhyme-chant", "tiny-stor
 
 
 DEFAULT_AGE = 2   # chua dat -> doi tuong tre nhat (be 2 tuoi)
+# 2026-11-06 Tuan: "phat am sai thi phai sua cho be" -> sua NHE kieu recast (khen co gang, noi lai mau dung cham, nhan am kho,
+# moi thu lai), khong noi "sai", toi da 2 lan/tu roi khen va chuyen.
+# Tuan chot (2026-11-06): "phat am sai thi sua lai cho be va VAN KHEN roi TIEP TUC; be con nho, tiep xuc dan se quen".
+# -> recast: khen + noi lai mau dung 1 lan (cham, ro) + hoc tiep. KHONG bat be noi lai.
+PRONUNCIATION = ("Pronunciation: listen to HOW the child says the English word. If it is off (wrong or missing sound, "
+                 "e.g. 'ed' for 'red', 'ello' for 'hello'), praise the try AND say the correct word once, slowly and clearly, "
+                 "with the hard sound a little stretched, as a natural echo (e.g. 'Giỏi quá! Hello! Hhh-ello!'), then simply "
+                 "continue the lesson. Do NOT ask the child to repeat it, do NOT say 'wrong' / 'sai' - exposure over drilling, "
+                 "the child will get used to it. Call mark_word correct=true only when it was close to right; otherwise "
+                 "correct=false (the word will come back in later sessions).")
 TODDLER_MODE = ("Toddler mode: speak very slowly, 3-5 words per sentence; teach only 3-4 words this session; "
-                "you model the word many times, the child repeating is a bonus; accept ANY attempt that sounds roughly "
-                "similar as correct (call mark_word correct=true) and praise the effort; never ask to repeat more than "
-                "once; use songs, sounds, and 'show me' actions; lots of Vietnamese support.")
+                "you model the word many times, the child repeating is a bonus; praise every try; " + PRONUNCIATION +
+                " Use songs, sounds, and 'show me' actions; lots of Vietnamese support.")
+OLDER_MODE = ("Age 4-5: " + PRONUNCIATION + " If the child wants, you may add one simple mouth tip in Vietnamese "
+              "(e.g. 'uốn lưỡi', 'chu môi', 'cắn nhẹ môi dưới' for f/v) - still no forced repeating.")
 
 
 def normalize(nick):
@@ -177,8 +188,7 @@ class Curriculum:
                 # da hoc het bai cuoi -> che do on tu do (khong con tu moi)
                 learned = [w for i in self.order for w in self.lessons[i]["vocab"]]
                 instr += "\n" + self.review_plan(learned)
-                if toddler:
-                    instr += "\n" + TODDLER_MODE
+                instr += "\n" + (TODDLER_MODE if toddler else OLDER_MODE)
                 self._save(d)
                 return {"allowed": True, "learner": nick, "lesson_id": lid, "instructions": instr, "review": [],
                         "mode": "review"}
@@ -188,8 +198,7 @@ class Curriculum:
             L["last_activities"] = (last + [act])[-3:]
             self._save(d)
             instr += "\n" + plan
-            if toddler:
-                instr += "\n" + TODDLER_MODE
+            instr += "\n" + (TODDLER_MODE if toddler else OLDER_MODE)
             return {"allowed": True, "learner": nick, "lesson_id": lid, "instructions": instr, "review": review}
 
     def _start_roadmap(self, d, L, nick, now, age):
@@ -220,8 +229,7 @@ class Curriculum:
         L["last_activities"] = (last + [act])[-3:]
         self._save(d)
         instr += "\n" + plan
-        if age <= 3:
-            instr += "\n" + TODDLER_MODE
+        instr += "\n" + (TODDLER_MODE if age <= 3 else OLDER_MODE)
         return {"allowed": True, "learner": nick, "lesson_id": lid, "instructions": instr, "review": review,
                 "week": week, "new": w["new"], "daily": w["daily"], "song": w["song"]}
 
