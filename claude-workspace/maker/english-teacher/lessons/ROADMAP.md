@@ -1,9 +1,21 @@
 # Lộ trình học Cú Bông (cô Lily) – bé 2–5 tuổi
 
-Trạng thái: **bản nháp 2026-11-06, chờ Tuan duyệt.** Soạn bởi edu-researcher.
-Đi cùng: `README.md` (nguồn và nguyên tắc), `01–08` (nội dung từng bài), `docs/research-notes/education/cu-bong-chu-de-tieng-anh-2-5-tuoi.md`.
+Trạng thái: **bản nháp 2026-11-06, chờ Tuan duyệt.** Soạn bởi edu-researcher. Bài 09–12 đã soạn cùng ngày (chờ duyệt).
+Đi cùng: `README.md` (nguồn và nguyên tắc), `01–12` (nội dung từng bài), `docs/research-notes/education/cu-bong-chu-de-tieng-anh-2-5-tuoi.md`.
 
 Lưu ý quan trọng: code hiện tại (`server/live/curriculum.py`) chạy bài theo **thứ tự tên file** và chuyển bài khi bé đã nhắc đủ từ. Chưa đọc lịch tuần. Mục 8 là đặc tả cho lập trình viên, **chưa có hiệu lực** cho đến khi curriculum.py được sửa.
+
+## Quy ước "tuần có học" (mới 2026-11-06, chờ Tuan duyệt)
+
+- **Tuần lịch** = 7 ngày từ thứ Hai đến Chủ nhật, giờ Việt Nam.
+- **Buổi** = một phiên bé có ít nhất 1 lượt nói (giữ nút và nói). Phiên bé im hết không tính. TODO Tuan xác nhận.
+- **Tuần có học** = tuần lịch có **từ 2 buổi trở lên**.
+- Mỗi bé có một **hàng hiện tại** (số 1–35, bắt đầu từ 1). Cả tuần lịch dùng chung hàng đó.
+- **Chốt tuần:** khi có phiên đầu tiên của một tuần lịch mới, hệ thống xét tuần trước. Nếu tuần trước có ≥ 2 buổi thì hàng tăng thêm 1; nếu < 2 buổi thì hàng giữ nguyên. Tối đa tăng 1 hàng mỗi tuần, dù bé học 3 hay 5 buổi.
+- **Nghỉ:** bé nghỉ bao nhiêu tuần thì quay lại đúng hàng đó. Không lùi, không nhảy.
+- **Hàng 35 xong** thì quay lại hàng 1 (chu kỳ mới).
+- Đánh đổi: chốt theo tuần chậm hơn một chút so với chuyển ngay ở buổi thứ 2, nhưng bé không học nửa tuần trên hai hàng khác nhau. Nếu Tuan muốn chuyển ngay ở buổi thứ 2, đổi một dòng trong mục 8.
+- "Tuần" trong các mục 4–7 bên dưới là **tuần có học**, không phải tuần lịch. Khung 35 tuần khớp với 35 tuần/năm của Thông tư 50/2020 (mục VII khoản 1), nhưng năm học thật kéo dài hơn khi bé nghỉ.
 
 ## 1. Triết lý
 
@@ -31,12 +43,14 @@ Giới hạn: các nghiên cứu trên chỉ cho thấy tương tác có đáp �
 | Từ mới | 1 từ/tuần (bảng 2–3 tuổi) | 1 từ/tuần (bảng 2–3 tuổi) | 2 từ/tuần (bảng 4–5 tuổi) |
 | Phiên | 3–4 phút, 1 phiên/ngày | ~5 phút, 1 phiên/ngày | ~5 phút, 1–2 phiên/ngày |
 | Ngày học | 5 ngày/tuần, nghỉ 2 ngày | 5 ngày/tuần | 5 ngày/tuần |
-| Tổng từ mới trong năm (ước) | ~34 (bảng 2–3 tuổi, 18 hàng) | ~34 | 47 (24 hàng) + bài đề xuất mục 9 |
+| Tổng từ mới trong năm (ước) | ~34 (bảng 2–3 tuổi, 18 hàng) | ~34 | 63 (32 hàng, gồm bài 09–12) |
 
 Ghi chú:
 - Phiên ngắn hơn cho bé 2 tuổi là **thiết kế**, không có nguồn. Tổng thời gian vẫn dưới mốc WHO/AAP trong README (≤ 1 giờ/ngày).
 - Ước năm: Thông tư ghi khoảng 35 từ cho 3–4 tuổi, khoảng 70 cho 4–5 tuổi (bản tổng hợp luatvietnam, chưa đối chiếu công báo). Bảng 4–5 tuổi hiện chỉ có 47 từ, **thấp hơn ~70**. Mục 9 đề xuất thêm bài để đạt ~65. TODO Tuan quyết.
 - Bảng 2–3 tuổi dùng 18 hàng đầu (34 từ), gần nhịp ~35 từ của Thông tư cho 3–4 tuổi.
+- Sau khi thêm bài 09–12: bảng 4–5 tuổi có 63 từ (47 + 16), còn thấp hơn ~70 khoảng 7 từ. TODO Tuan quyết.
+- Bảng 2–3 tuổi **chưa** thêm 09–12: bảng đã đủ 35 hàng và mới tới "ball" (bài 08). Thêm vào sẽ phải kéo dài chu kỳ hoặc bỏ bớt từ. TODO Tuan quyết (xem mục 9).
 
 ## 3. Quy tắc chung (mọi tuổi, mọi tuần)
 
@@ -73,6 +87,8 @@ Tuần 13–24 (tóm tắt, chi tiết trong bảng máy đọc):
 - Tuần 18–20: ball, doll; car, teddy bear; block, kite (bài 08).
 - Tuần 21–23: mom, dad; baby, sister; brother, grandma (bài 06). Đưa xuống gần cuối vì chủ đề gia đình nhạy cảm. Chỉ dùng vai trò chung, không hỏi gia đình bé.
 - Tuần 24: sad, hungry (bài 04). Để cuối vì "hungry" kích hoạt câu "Con nói với ba mẹ nhé!" trong bài 04. Mốc 3 (bé 4–5).
+- Tuần 25–32 (bé 4–5, bài 09–12): 09 clap, sit, stand, stop (tuần 25–26); 10 circle, square, star, heart (tuần 27–28); 11 sun, rain, cloud, wind (tuần 29–30); 12 horse, lion, elephant, monkey (tuần 31–32).
+- Tuần 33–35: ôn (bé 4–5).
 
 **Thứ tự** khác với tên file: bài 04 (chào hỏi) đứng đầu vì đây là câu đầu tiên bé nói với cô và khớp 3–4 tuổi. Các bài không đổi tên file (README mục 12 đã ghi TODO).
 
@@ -92,21 +108,23 @@ Nếu bé chưa đạt mốc: giữ nguyên bài, kéo dài ôn, không lùi bà
 
 - **Tuần có từ mới (bé 4–5):** ôn từ hàng tuần N-1 và N-3. Ví dụ tuần 5 ôn "yellow, green" và "happy, tired".
 - **Bé 2–3 tuổi:** ôn theo hàng (tuần thứ hai của một hàng cũng ôn từ đầu hàng đó). Số từ ôn có thể lên 5, nên cô chỉ nói 3, ưu tiên từ mới nhất.
-- **Tuần sau hàng cuối (bé 4–5, tuần 25–35):** chỉ ôn, không có từ mới. Mỗi tuần ôn 4 từ từ 2 hàng cách nhau 12 hàng. Vè dùng vè của bài đang ôn.
+- **Tuần 25–32 (bé 4–5):** có từ mới của bài 09–12 (2 từ/tuần). Ôn từ hàng N-1 và N-3 như trên.
+- **Tuần 33–35 (bé 4–5):** chỉ ôn, không có từ mới. Mỗi tuần ôn 4 từ từ 2 hàng cách nhau 12 hàng. Vè dùng vè của bài đang ôn.
+- Tổng cộng tuần 33–35 chỉ ôn được 12 từ. Các từ còn lại ôn tiếp ở chu kỳ hai (TODO thiết kế).
 
 ## 7. Khung 35 tuần
 
 - Tuần 1–12: mục 4.
-- Tuần 13–24: hàng từ mới theo mục 4 (bé 4–5 hết hàng vào tuần 24).
-- Tuần 25–35: ôn xoay vòng, không từ mới (bé 4–5). Bé 2–3 tuổi vẫn còn hàng mới đến tuần 35.
+- Tuần 13–24: hàng từ mới theo mục 4 (bé 4–5 hết bài 01–08 vào tuần 24).
+- Tuần 25–32: từ mới bài 09–12 (bé 4–5). Tuần 33–35: ôn xoay vòng, không từ mới. Bé 2–3 tuổi vẫn còn hàng mới đến tuần 35.
 - Sau tuần 35: quay lại tuần 1 của chu kỳ mới. Bé 4–5 đã biết các từ; chu kỳ hai nên tập trung nói cụm và câu. TODO thiết kế.
 
-Câu xuyên suốt và vè: mỗi tuần có vè (dùng vè của bài tương ứng, đã có trong 01–08). Không cần bài mới cho lộ trình này.
+Câu xuyên suốt và vè: mỗi tuần có vè (dùng vè của bài tương ứng, đã có trong 01–12). Không cần bài mới cho lộ trình này.
 
 ## 8. Cho máy chủ (đọc được bằng mã)
 
 **Hai mục bảng:**
-- `## Lịch tuần (máy đọc)`: nhịp bé 4–5 tuổi (1 hàng/tuần).
+- `## Lịch tuần (máy đọc)`: nhịp bé 4–5 tuổi (1 hàng/tuần học).
 - `## Lịch tuần 2–3 tuổi (máy đọc)`: nhịp bé 2–3 tuổi (mỗi từ kéo dài 1 tuần; mỗi tuần 1 từ mới, tuần 16 không có từ mới).
 
 **Dạng mỗi dòng** (khoảng trắng quanh `|`, danh sách ngăn bằng `, `, `-` nghĩa là rỗng):
@@ -115,42 +133,50 @@ Câu xuyên suốt và vè: mỗi tuần có vè (dùng vè của bài tương �
 Week N: <lesson-id> | new: <từ, ...> | review: <từ, ...> | daily: <cụm, ...> | song: <lesson-id>
 ```
 
-- `lesson-id` là tên file không có `.md`, ví dụ `04-greetings-feelings`. Tuần chỉ ôn có `lesson-id` = `review`, `song` = bài của từ ôn đầu tiên.
+- `lesson-id` là tên file không có `.md`, ví dụ `04-greetings-feelings`. **Mọi `lesson-id` phải có file thật** trong thư mục này. Tuần chỉ ôn không có tên bài riêng: `lesson-id` và `song` = bài của từ ôn đầu tiên trong `review`.
 - Regex gợi ý: `^Week (\d+): (\S+) \| new: (.*?) \| review: (.*?) \| daily: (.*?) \| song: (\S+)$`
 - `new` và `review` là từ vựng. `daily` không phải từ vựng.
 - Từ trong `new` phải có trong `Vocabulary` của `lesson-id`. Từ trong `review` có thể thuộc bài khác (tuần ôn mục 6 trộn bài).
+- `Week N` là **số hàng** (tuần có học thứ N), không phải số tuần lịch.
 
-**Tính tuần hiện tại:**
-- `week = floor((ngày hôm nay - start_date) / 7) + 1`. `start_date` là ngày phiên đầu tiên của bé (lưu theo biệt danh, không lưu tên). TODO thêm trường vào `learners.json`.
-- Sau tuần 35: `week = ((week - 1) % 35) + 1`.
-- Đổi tuổi (`--set-age`): giữ số tuần, đổi sang bảng tương ứng.
-- Phương án khác để Tuan chọn: đếm tuần có ít nhất 1 phiên thay vì tuần lịch. Ưu điểm: bé nghỉ lâu không bị nhảy bài. Nhược điểm: lộ trình trễ so với lịch.
+**Tính hàng hiện tại (quy ước tuần có học):**
+- Lưu theo biệt danh (không lưu tên) trong `learners.json`: `row` (hàng hiện tại, bắt đầu 1), `week_start` (thứ Hai đầu tuần lịch đang tính), `sessions_in_week` (số buổi trong tuần đó). TODO thêm 3 trường vào `learners.json`.
+- Khi có phiên mới: nếu ngày hôm nay thuộc tuần lịch khác `week_start`, xét tuần cũ trước. Nếu `sessions_in_week` ≥ 2 thì `row` += 1 (sau 35 → 1). Sau đó đặt `week_start` = thứ Hai của tuần hiện tại và `sessions_in_week` = 0. Rồi mới dạy phiên này theo `row`.
+- Mỗi phiên có tiếng nói của bé thì `sessions_in_week` += 1. Phiên bé im hết không cộng.
+- Chốt chỉ xảy ra khi có phiên mới. Bé nghỉ thì không cần chốt, hàng giữ nguyên.
+- Ví dụ: tuần A bé học thứ Hai và thứ Tư (2 buổi) → phiên đầu tuần B dùng hàng + 1. Tuần A chỉ học thứ Hai (1 buổi) → phiên đầu tuần B dùng lại hàng cũ.
+- Đổi tuổi (`--set-age`): giữ `row`, đổi sang bảng tương ứng.
+- Phương án khác để Tuan chọn: (a) chuyển hàng ngay ở buổi thứ 2 trong tuần (nhanh hơn, nhưng bé có thể học buổi 1 và buổi 2 trên hai hàng khác nhau); (b) đếm buổi thay vì tuần (mỗi 2 buổi lên 1 hàng; bé nghỉ dài không bị nhảy bài nhưng không tính theo tuần).
 
 **Việc cho lập trình viên (không làm trong bản này):**
-1. `curriculum.py` đang chọn bài theo thứ tự tên file (`sorted(glob)`) và chuyển bài theo `passed`. Cần đọc bảng tuần và lưu `week` theo biệt danh.
+1. `curriculum.py` đang chọn bài theo thứ tự tên file (`sorted(glob)`) và chuyển bài theo `passed`. Cần đọc bảng tuần, lưu `row`, `week_start`, `sessions_in_week` theo biệt danh, và chốt tuần theo mục 8.
 2. `mark()` chỉ tìm từ trong bài hiện tại. Tuần ôn trộn bài nên cần tìm trong mọi bài.
 3. Giữ file này và README.md không chứa tiêu đề phần hướng dẫn AI (dấu thăng hai, rồi "Chỉ dẫn cho AI"). Hàm nạp bài đang bỏ qua file không có tiêu đề này, nên chỉ cần tránh thêm đúng tiêu đề đó vào ROADMAP.md.
 4. Trước commit: chạy gate `server/test_curriculum.py` (phiên chính làm).
 
-## 9. Bài cần soạn tiếp
+## 9. Bài đã soạn và việc cần Tuan quyết
 
-Đề xuất, chờ Tuan duyệt. Từ chưa đối chiếu nguồn (theo nguyên tắc README: TODO trước khi đưa vào thiết bị).
+**Đã soạn 2026-11-06 (chờ Tuan duyệt):** bài 09–12 theo định dạng bài 01–08. Từ chưa đối chiếu Cambridge Pre A1 Starters (PDF word list lớn hơn 10 MB, không mở được lúc soạn: TODO). Đối chiếu trước khi đưa vào thiết bị (theo nguyên tắc README: TODO trước khi đưa vào thiết bị).
 
-1. **09-hanh-dong** (đề xuất): clap, sit, stand, stop. Để bé 2–3 tuổi làm theo hành động một bước. Tránh "jump", "run", "climb" (README mục An toàn).
-2. **10-hinh-khoi** (đề xuất): circle, square, star, heart.
-3. **11-thoi-tiet** (đề xuất): sun, rain, cloud, wind.
-4. **12-dong-vat-2** (đề xuất): horse, lion, elephant, monkey.
+1. **09-actions**: clap, sit, stand, stop. Làm theo hành động tại chỗ. Vào lịch 4–5 tuổi, tuần 25–26. Tránh "jump", "run", "climb" (README mục An toàn). "clap", "sit", "stand" đã dùng làm lệnh TPR ở bài 03, 05, 06, 08, nhưng không có trong bảng từ của các bài đó.
+2. **10-shapes**: circle, square, star, heart. Vào lịch 4–5 tuổi, tuần 27–28.
+3. **11-weather**: sun, rain, cloud, wind. Vào lịch 4–5 tuổi, tuần 29–30. "sun" đã là ví dụ câu mẫu bài 01 (không có trong bảng từ bài 01). Nếu muốn tránh hẳn, đổi thành "rainbow".
+4. **12-animals-2**: horse, lion, elephant, monkey. Vào lịch 4–5 tuổi, tuần 31–32. Tiếng kêu (neigh, roar, trumpet, ooh) là quy ước phổ biến, chưa có nguồn.
 
-Nếu cả 4 bài được duyệt (mỗi bài 4 từ, 2 hàng): thêm 8 hàng vào bảng 4–5 tuổi (tuần 25–32), tổng ~63 từ. Tuần 33–35 chuyển sang ôn. Số từ cuối cùng TODO khi duyệt.
+**Cần Tuan quyết:**
+- Bảng 2–3 tuổi có thêm 09–12 hay không (xem mục 2). Bản này **không** thêm.
+- Chốt tuần kiểu nào: cuối tuần (mục 8, bản này) hay chuyển ngay ở buổi thứ 2.
+- Xác nhận định nghĩa "buổi" (có ít nhất 1 lượt nói của bé).
+- Bảng 4–5 tuổi giờ 63 từ, còn thấp hơn ~70 của Thông tư khoảng 7 từ. Có thêm bài không, và bài nào.
 
 Việc khác:
-- Đối chiếu từ bài 01–08 với Cambridge Pre A1 Starters và bộ đã duyệt (TODO trong README).
+- Đối chiếu từ bài 01–12 với Cambridge Pre A1 Starters và bộ đã duyệt (TODO trong README).
 - Thử thật với bé 2 tuổi: đánh giá sau tuần 4 (có làm theo hành động không; bé có thích không). Điều chỉnh độ dài phiên và số từ theo đó. Ghi quan sát vào file, không ghi tên bé.
 - Vị trí câu xuyên suốt trong thiết bị: không thuộc file bài. TODO Tuan và lập trình viên chọn cách đưa vào prompt.
 
 ## Lịch tuần (máy đọc)
 
-Nhịp bé 4–5 tuổi. Mỗi dòng là một tuần (xem mục 8 để đọc).
+Nhịp bé 4–5 tuổi. Mỗi dòng là một hàng (tuần có học thứ N). Xem mục 8 để đọc.
 
 ```text
 Week 1: 04-greetings-feelings | new: hello, goodbye | review: - | daily: hello, thank you, good job, bye bye, let's sing | song: 04-greetings-feelings
@@ -177,22 +203,22 @@ Week 21: 06-family | new: mom, dad | review: block, kite, ball, doll | daily: he
 Week 22: 06-family | new: baby, sister | review: mom, dad, car, teddy bear | daily: hello, thank you, good job, bye bye, let's sing | song: 06-family
 Week 23: 06-family | new: brother, grandma | review: baby, sister, block, kite | daily: hello, thank you, good job, bye bye, let's sing | song: 06-family
 Week 24: 04-greetings-feelings | new: sad, hungry | review: brother, grandma, mom, dad | daily: hello, thank you, good job, bye bye, let's sing | song: 04-greetings-feelings
-Week 25: review | new: - | review: hello, goodbye, nose, mouth | daily: hello, thank you, good job, bye bye, let's sing | song: 04-greetings-feelings
-Week 26: review | new: - | review: happy, tired, hands, feet | daily: hello, thank you, good job, bye bye, let's sing | song: 04-greetings-feelings
-Week 27: review | new: - | review: red, blue, apple, banana | daily: hello, thank you, good job, bye bye, let's sing | song: 01-colors
-Week 28: review | new: - | review: yellow, green, grape, mango | daily: hello, thank you, good job, bye bye, let's sing | song: 01-colors
-Week 29: review | new: - | review: pink, orange, watermelon, strawberry | daily: hello, thank you, good job, bye bye, let's sing | song: 01-colors
-Week 30: review | new: - | review: one, two, ball, doll | daily: hello, thank you, good job, bye bye, let's sing | song: 03-numbers-1-5
-Week 31: review | new: - | review: three, four, car, teddy bear | daily: hello, thank you, good job, bye bye, let's sing | song: 03-numbers-1-5
-Week 32: review | new: - | review: five, block, kite | daily: hello, thank you, good job, bye bye, let's sing | song: 03-numbers-1-5
-Week 33: review | new: - | review: cat, dog, mom, dad | daily: hello, thank you, good job, bye bye, let's sing | song: 02-animals
-Week 34: review | new: - | review: duck, cow, baby, sister | daily: hello, thank you, good job, bye bye, let's sing | song: 02-animals
-Week 35: review | new: - | review: pig, bird, brother, grandma | daily: hello, thank you, good job, bye bye, let's sing | song: 02-animals
+Week 25: 09-actions | new: clap, sit | review: sad, hungry, baby, sister | daily: hello, thank you, good job, bye bye, let's sing | song: 09-actions
+Week 26: 09-actions | new: stand, stop | review: clap, sit, brother, grandma | daily: hello, thank you, good job, bye bye, let's sing | song: 09-actions
+Week 27: 10-shapes | new: circle, square | review: stand, stop, sad, hungry | daily: hello, thank you, good job, bye bye, let's sing | song: 10-shapes
+Week 28: 10-shapes | new: star, heart | review: circle, square, clap, sit | daily: hello, thank you, good job, bye bye, let's sing | song: 10-shapes
+Week 29: 11-weather | new: sun, rain | review: star, heart, stand, stop | daily: hello, thank you, good job, bye bye, let's sing | song: 11-weather
+Week 30: 11-weather | new: cloud, wind | review: sun, rain, circle, square | daily: hello, thank you, good job, bye bye, let's sing | song: 11-weather
+Week 31: 12-animals-2 | new: horse, lion | review: cloud, wind, star, heart | daily: hello, thank you, good job, bye bye, let's sing | song: 12-animals-2
+Week 32: 12-animals-2 | new: elephant, monkey | review: horse, lion, sun, rain | daily: hello, thank you, good job, bye bye, let's sing | song: 12-animals-2
+Week 33: 04-greetings-feelings | new: - | review: hello, goodbye, nose, mouth | daily: hello, thank you, good job, bye bye, let's sing | song: 04-greetings-feelings
+Week 34: 04-greetings-feelings | new: - | review: happy, tired, hands, feet | daily: hello, thank you, good job, bye bye, let's sing | song: 04-greetings-feelings
+Week 35: 01-colors | new: - | review: red, blue, apple, banana | daily: hello, thank you, good job, bye bye, let's sing | song: 01-colors
 ```
 
 ## Lịch tuần 2–3 tuổi (máy đọc)
 
-Nhịp bé 2–3 tuổi: mỗi từ kéo dài 1 tuần, mỗi tuần 1 từ mới (tuần 16 không có từ mới, vì hàng "five" chỉ có 1 từ).
+Nhịp bé 2–3 tuổi: mỗi từ kéo dài 1 tuần, mỗi tuần 1 từ mới (tuần 16 không có từ mới, vì hàng "five" chỉ có 1 từ). Đơn vị "Week N" là hàng (tuần có học thứ N).
 
 ```text
 Week 1: 04-greetings-feelings | new: hello | review: - | daily: hello, thank you, good job, bye bye, let's sing | song: 04-greetings-feelings
