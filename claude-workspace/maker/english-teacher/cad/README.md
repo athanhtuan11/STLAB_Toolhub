@@ -18,12 +18,12 @@ Hệ lắp ráp: mm, +Z lên, mặt trước −Y; mặt ráp hai nửa là mặ
 - **Lý do đổi:** bản cũ 4 vấu nằm sau đáy loa 2,7–4,3 mm (không chạm loa → rè); chỉ bám được nếu đáy loa to Ø52; vành loa không bị chặn tụt vào trong.
 - **Mới:** giữ loa bằng **mép trước** (mép loa dày 5 mm).
   - Ron EVA dày 2 mm (vòng ngoài Ø52, trong ~Ø46 – tự cắt) giữa mặt sau tấm lưới và mặt loa, ép còn 1,5 mm.
-  - Vòng ép `speaker-ring.stl` (in rời; dày 2,4, lỗ giữa Ø47,5, 3 tai) ép mặt sau mép loa.
+  - Vòng ép `speaker-ring.stl` (in rời; dày 2,4, lỗ giữa Ø42 (đè lên mép loa 5 mm/bên), 3 tai) ép mặt sau mép loa.
   - 3 vít M2.5 × 8 tự ren qua lỗ Ø2,8 của vòng ép vào 3 vấu trên ống ôm vành loa (lỗ mồi Ø2,3 sâu 6; lỗ theo fit-library đo mẫu cộng đồng). Mỗi loa 3 vít → tổng 6 vít M2.5 × 8.
 - **Chống tụt vào trong:** vành loa chưa có khóa cơ khí → khi lắp, dán mặt côn vành loa vào lỗ côn vỏ bằng epoxy hoặc keo CA. Loa vẫn tháo được từ bên trong nhờ vòng ép.
 - **Vành loa:** mép mặt lưới đổi từ bo R8 sang vát 50° + bo nhỏ (in úp mặt lưới không cần support). Mặt loa lùi 1,3 mm so với bản cũ.
-- **In:** `print/print.yaml` bàn `A_speakers` (2 vành loa + 2 vòng ép, Bambu PETG Basic, 0,20 mm, 3 tường, 20 %), cắt lớp PASS, không support, 166 phút, 51,8 g. File: `print/plates/A_speakers/A_speakers.3mf`. STL sinh từ `cad/out`, chép thành `-l`/`-r` trong `print/stl`.
-- **Gate `gate_owl` PASS:** kiểm thêm `speaker-bezel`, `speaker-ring` (kín, 1 khối), loa mô hình mép Ø52 × 5 + thân Ø47 không chạm, số khe kẹp.
+- **In:** `print/print.yaml` bàn `A_speakers` (2 vành loa + 2 vòng ép, Bambu PETG Basic, 0,20 mm, 3 tường, 20 %), cắt lớp PASS, không support, 169 phút, 53,4 g. File: `print/plates/A_speakers/A_speakers.3mf`. STL sinh từ `cad/out`, chép thành `-l`/`-r` trong `print/stl`.
+- **Gate `gate_owl` PASS:** kiểm thêm `speaker-bezel`, `speaker-ring` (kín, 1 khối), loa mô hình mép Ø52 × 5 + thân Ø39 không chạm, số khe kẹp.
 
 ## Lắp loa
 > [!IMPORTANT]
@@ -67,6 +67,6 @@ Hệ lắp ráp: mm, +Z lên, mặt trước −Y; mặt ráp hai nửa là mặ
 
 ## Chưa chắc / TODO
 - Độ dày, cao linh kiện bo Audio Kit; vị trí USB: không có nguồn → khe cáp rộng; bo giữ bằng ray + chân chặn phía trước, **sau bo chưa có chốt giữ** (gate cấm vật chạm khối 82 × 73 × 25) → dùng xốp/keo nóng.
-- Chiều cao công tắc tactile (giả định 4,3): TODO đo. **Thân loa ngay sau mép phải nhỏ hơn Ø47** để lọt lỗ vòng ép: TODO đo loa thật.
+- Chiều cao công tắc tactile (giả định 4,3): TODO đo. Thân loa sau mép < Ø39 (Tuan đo 2026-11-06), lọt lỗ vòng ép Ø42.
 - fit-library chưa có mục M3 / ống non: **chưa in thử** mọi khe (0,3 hốc linh kiện, 0,3 yên côn, 0,4 nút).
 - Đáy phẳng vát 0,8 mm chưa làm. Khắc ▲ và logo STLAB chưa làm.

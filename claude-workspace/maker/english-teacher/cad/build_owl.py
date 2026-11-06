@@ -15,8 +15,8 @@ SPEAKER_D, SPEAKER_L = 52.0, 26.0
 # 2026-11-06 giu loa bang MEP truoc (Tuan do mep day 5): ron EVA 2 ep con 1,5 giua mat tam luoi va mat loa,
 # vong ep in roi ep mat sau mep, 3 vit M2.5 tu ren vao 3 vau tren ong om (fit-library: tu ren 2,2-2,4, lo qua 2,8)
 FLANGE_T, GASKET_T = 5.0, 1.5
-BODY_D_MAX = 47.0          # TODO do: than loa ngay sau mep phai < 47 de lot lo vong ep
-SRING_T, RING_ID = 2.4, 47.5   # vong ep loa (SRING_T: RING_T da dung cho vong mat)
+BODY_D_MAX = 39.0          # Tuan 2026-11-06: lo O39 giu duoc mep, than loa lot -> than < O39
+SRING_T, RING_ID = 2.4, 42.0   # vong ep loa (SRING_T: RING_T da dung cho vong mat)
 M25_TAP_D, M25_CLR_D = 2.3, 2.8
 LUG_R, LUG_W, LUG_DEPTH = 31.0, 6.0, 6.0   # tam lo vit, be rong vau, sau lo moi
 LUG_ANG = (90.0, 210.0, 330.0)
