@@ -175,6 +175,23 @@ if bay and bz_m and rg_m and p.get("speakers"):
         fails.append("ngam xoay khong lap duoc: khong co chieu xoay nao vua lot ranh doc vua xoay het goc khoa")
     else:
         print(f"ngam xoay: lap duoc (chieu {'+' if ok_dir > 0 else '-'}, xoay {tw:.0f} do)")
+# cong tac 6 x 6 (KEY4 song song) phai DUNG TREN GIA trong nua sau (2026-11-06: ban cu lo nut cat mat gia -> lo lung)
+sw_m, sb_m = load(OUT / "asm" / "switch-6x6-dummy.stl"), load(OUT / "asm" / "shell-back.stl")
+if sw_m and sb_m:
+    zmin = min(v.co.z for v in sw_m.verts)
+    xs_ = [v.co.x for v in sw_m.verts]; ys_ = [v.co.y for v in sw_m.verts]
+    sb_tree = BVHTree.FromBMesh(sb_m)
+    for px_ in (min(xs_) + 0.3, max(xs_) - 0.3):
+        for py_ in (min(ys_) + 0.3, max(ys_) - 0.3):
+            hit_ = sb_tree.ray_cast(Vector((px_, py_, zmin + 0.05)), Vector((0, 0, -1)), 0.3)
+            if hit_[0] is None:
+                fails.append(f"cong tac 6x6 khong co gia do tai ({px_:.1f}, {py_:.1f}) - lo lung")
+                break
+    bc_m = load(OUT / "asm" / "button-cap.stl")
+    if bc_m:
+        gap = min(v.co.z for v in bc_m.verts) - max(v.co.z for v in sw_m.verts)
+        if not 0.05 <= gap <= 1.0:
+            fails.append(f"khe chan nut - dinh cong tac {gap:.2f} mm (can 0,05-1,0)")
 for f in ("owl-preview.png", "owl-exploded.png"):
     if not (OUT / f).exists():
         fails.append(f"out/{f} khong co")

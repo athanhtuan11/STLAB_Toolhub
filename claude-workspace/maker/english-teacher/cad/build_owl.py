@@ -218,7 +218,9 @@ for sx in (-SCREW_X, SCREW_X):
         union(S, cyl('boss', (sx, sy, 5.0), (sx, sy, BOSS_TOP), 7.0, seg=48))
 
 # ============================================================ CAT LO
-diff(S, cyl('bhole', (0, 0, 120), (0, 0, 180), BUTTON_HOLE_D / 2, seg=96))
+# lo nut chi khoet qua vanh giu nut (tu SEAT_Z - 1 len). Ban cu khoet tu z 120 -> cat mat gia cong tac trong r 25,4
+# (cong tac lo lung) - Tuan hoi 'nut nhan o dau' 2026-11-06 moi thay.
+diff(S, cyl('bhole', (0, 0, SEAT_Z - 1.0), (0, 0, 180), BUTTON_HOLE_D / 2, seg=96))
 for dx in (-9, 0, 9):
     diff(S, cyl('mic', (dx, -85, 132), (dx, -20, 132), MIC_HOLE_D / 2, seg=16))
 for M in EYES:
@@ -442,17 +444,20 @@ for sp in SPEAKERS:
     c = Vector(sp["center"]); sg = 1 if c.x > 0 else -1; fx = c.x + sg * SPEAKER_L / 2
     so = cyl('spk', Vector((fx - sg * FLANGE_T, c.y, c.z)), Vector((fx, c.y, c.z)), SPEAKER_D / 2, seg=48)
     union(so, cyl('spkb', Vector((fx - sg * SPEAKER_L, c.y, c.z)), Vector((fx - sg * (FLANGE_T - 0.5), c.y, c.z)), BODY_D_MAX / 2 - 3, seg=48)); spk.append(so)
+# cong tac tactile 6 x 6 giu cho (KEY4 noi song song, Tuan 2026-11-06): de tren gia, chan nut ep o (0, 8); cao 4,3 (TODO do)
+SW_H = 4.3
+swo = box('sw', (-3.0, 5.0, SHELF_TOP), (3.0, 11.0, SHELF_TOP + 3.5)); union(swo, cyl('swst', (0, 8, SHELF_TOP + 3.0), (0, 8, SHELF_TOP + SW_H), 1.75, seg=24))
 pcbo = box('pcb', (-PCB_BOX[0] / 2, PCB_CENTER[1] - PCB_BOX[1] / 2, PCB_CENTER[2] - PCB_BOX[2] / 2), (PCB_BOX[0] / 2, PCB_CENTER[1] + PCB_BOX[1] / 2, PCB_CENTER[2] + PCB_BOX[2] / 2))
 ITEMS = [(A, 'front', 'shell', (0, -75, 0)), (B, 'back', 'shell', (0, 75, 0)), (PLATE, 'plate', 'cream', (0, 0, -45)), (BELLY, 'belly', 'cream', (0, -130, 0)),
          (BEAK, 'beak', 'butter', (0, -135, 30)), (CAP, 'cap', 'butter', (0, 0, 55)), (BEZELS[0], 'bz0', 'shell', (-105, 0, 0)), (BEZELS[1], 'bz1', 'shell', (105, 0, 0)), (SRINGS[0], 'sr0', 'cream', (-25, 0, 0)), (SRINGS[1], 'sr1', 'cream', (25, 0, 0)),
          (DIFFS[0], 'd0', 'white', (-30, -110, 25)), (DIFFS[1], 'd1', 'white', (30, -110, 25)), (RINGS[0], 'r0', 'cream', (-40, -100, 0)), (RINGS[1], 'r1', 'cream', (40, -100, 0)),
-         (spk[0], 's0', 'spk', (-55, 0, 0)), (spk[1], 's1', 'spk', (55, 0, 0)), (pcbo, 'pcb', 'pcb', (0, 0, 0))]
+         (spk[0], 's0', 'spk', (-55, 0, 0)), (spk[1], 's1', 'spk', (55, 0, 0)), (pcbo, 'pcb', 'pcb', (0, 0, 0)), (swo, 'sw', 'spk', (0, 0, 30))]
 for o, n, c, off in ITEMS:
     dump(o, n)
 # ban lap rap DO DUOC (Tuan 2026-11-06): moi chi tiet 1 STL o dung vi tri lap (mm) -> export_cad.py ra .blend + STEP
 ASM_NAMES = dict(front="shell-front", back="shell-back", plate="base-plate", belly="belly", beak="beak", cap="button-cap",
                  bz0="speaker-bezel-L", bz1="speaker-bezel-R", sr0="speaker-ring-L", sr1="speaker-ring-R", d0="eye-diffuser-L",
-                 d1="eye-diffuser-R", r0="eye-ring-L", r1="eye-ring-R", s0="speaker-dummy-L", s1="speaker-dummy-R", pcb="pcb-dummy")
+                 d1="eye-diffuser-R", r0="eye-ring-L", r1="eye-ring-R", s0="speaker-dummy-L", s1="speaker-dummy-R", pcb="pcb-dummy", sw="switch-6x6-dummy")
 (OUT / "asm").mkdir(exist_ok=True)
 import shutil
 for _, n, _, _ in ITEMS:
