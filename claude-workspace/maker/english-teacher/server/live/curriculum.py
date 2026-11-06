@@ -66,6 +66,48 @@ class Curriculum:
             mt = re.match(r"#[^\n]*?[–-]\s*(.+)", txt)
             self.lessons[f.stem] = {"instructions": instr, "vocab": vocab,
                                     "title": re.sub(r"\s*\(.*?\)", "", mt.group(1)).strip() if mt else f.stem}
+        self.rm_young, self.rm_old = self._parse_roadmap(Path(lessons_dir) / "ROADMAP.md")
+
+    WEEK_RE = re.compile(r"^Week (\d+): (\S+) \| new: (.*?) \| review: (.*?) \| daily: (.*?) \| song: (\S+)\s*$")
+
+    def _parse_roadmap(self, path):
+        """Doc 2 bang tuan tu ROADMAP.md: (2-3 tuoi, 4-5 tuoi). Khong co file -> ([], [])."""
+        try:
+            txt = path.read_text(encoding="utf-8")
+        except OSError:
+            return [], []
+        young, old = [], []
+        target = None
+        split = lambda v: [x.strip().lower() for x in v.split(",") if x.strip() and x.strip() != "-"]
+        for line in txt.splitlines():
+            if line.startswith("## "):
+                h = line.replace("–", "-")
+                if "Lịch tuần" in h:
+                    target = young if re.search(r"2\s*-\s*3", h) else old
+                else:
+                    target = None
+                continue
+            m = self.WEEK_RE.match(line)
+            if m and target is not None:
+                lid, song = m.group(2), m.group(6)
+                is_review = lid == "review"
+                if is_review or lid not in self.lessons:
+                    lid = song
+                if lid not in self.lessons:
+                    continue
+                target.append({"week": int(m.group(1)), "lesson_id": lid, "new": split(m.group(3)),
+                               "review": split(m.group(4)), "daily": split(m.group(5)), "song": song,
+                               "review_week": is_review})
+        return young, old
+
+    def roadmap(self, age_band):
+        return [dict(r) for r in (self.rm_young if int(age_band) <= 3 else self.rm_old)]
+
+    def roadmap_week(self, age_band, n):
+        rm = self.rm_young if int(age_band) <= 3 else self.rm_old
+        if not rm:
+            return None
+        return dict(rm[(max(int(n), 1) - 1) % len(rm)])
 
     def age_band(self, nickname):
         """Tuoi (2-5) do phu huynh dat; chua dat/khong biet danh -> DEFAULT_AGE."""
@@ -121,6 +163,9 @@ class Curriculum:
                 return {"allowed": False, "reason": REASON_LIMIT}
             L["sessions"].append(now.isoformat(timespec="minutes"))
             L["sessions"] = L["sessions"][-50:]
+            age = int(L.get("age_band", DEFAULT_AGE))
+            if self.roadmap(age):
+                return self._start_roadmap(d, L, nick, now, age)
             self._save(d)
             lid = L["lesson"]
             review = [w for w in L["failed"] if w in self.lessons[lid]["vocab"] and w not in L["passed"]]
@@ -147,6 +192,39 @@ class Curriculum:
                 instr += "\n" + TODDLER_MODE
             return {"allowed": True, "learner": nick, "lesson_id": lid, "instructions": instr, "review": review}
 
+    def _start_roadmap(self, d, L, nick, now, age):
+        """Tuan hoc = tuan CO HOC: tuan ISO truoc co >= 2 buoi thi week += 1, nghi thi giu cho cu."""
+        iso = "%d-W%02d" % now.isocalendar()[:2]
+        week = max(int(L.get("week", 1)), 1)
+        if L.get("wk_iso") != iso:
+            if L.get("wk_iso") and int(L.get("wk_n", 0)) >= 2:
+                week += 1
+            L["wk_iso"], L["wk_n"] = iso, 0
+        L["wk_n"] = int(L.get("wk_n", 0)) + 1
+        rm = self.roadmap(age)
+        week = ((week - 1) % len(rm)) + 1
+        L["week"] = week
+        w = rm[week - 1]
+        lid = w["lesson_id"]
+        L["lesson"] = lid
+        last = list(L.get("last_activities", []))
+        failed = [x for x in L.get("failed", []) if x not in L.get("passed", [])]
+        review = list(dict.fromkeys(failed + w["review"]))
+        goals = list(dict.fromkeys(w["new"] + [x for x in review if x not in w["new"]]))
+        instr = self.lessons[lid]["instructions"]
+        new_s = ", ".join(w["new"]) or "none (review week)"
+        instr += (f"\nWeek {week}. New words: {new_s}. Review: {', '.join(review) or 'none'}. "
+                  f"Daily English to use all session: {', '.join(w['daily'])} "
+                  "(exposure: say them naturally many times).")
+        plan, act = self.today_plan(lid, review, last, words=goals)
+        L["last_activities"] = (last + [act])[-3:]
+        self._save(d)
+        instr += "\n" + plan
+        if age <= 3:
+            instr += "\n" + TODDLER_MODE
+        return {"allowed": True, "learner": nick, "lesson_id": lid, "instructions": instr, "review": review,
+                "week": week, "new": w["new"], "daily": w["daily"], "song": w["song"]}
+
     def review_plan(self, learned):
         words = list(dict.fromkeys(learned))
         random.shuffle(words)
@@ -154,10 +232,10 @@ class Curriculum:
                 "(animals, colors, numbers, family, toys) and weave in these learned words at random: "
                 + ", ".join(words[:8]) + ". Invent fresh games, short stories or chants. Keep each turn short.")
 
-    def today_plan(self, lid, review=(), last=()):
+    def today_plan(self, lid, review=(), last=(), words=None):
         """Muc tieu buoi hoc: tu xao thu tu (tu on len dau), goi y 1 kieu hoat dong khac lan truoc;
         Gemini tu sang tao cach day, khong dung lai <last_activities>. Tra (van ban, nhan hoat dong)."""
-        vocab = list(self.lessons[lid]["vocab"])
+        vocab = list(words) if words else list(self.lessons[lid]["vocab"])
         rest = [w for w in vocab if w not in review]
         random.shuffle(rest)
         order = [w for w in vocab if w in review] + rest
@@ -176,13 +254,21 @@ class Curriculum:
         lid = random.choice(self.order)
         return lid, self.lessons[lid]["instructions"] + "\n" + self.today_plan(lid)[0] + "\n" + TODDLER_MODE
 
+    def _known_words(self):
+        k = set()
+        for v in self.lessons.values():
+            k.update(v["vocab"])
+        for r in self.rm_young + self.rm_old:
+            k.update(r["new"] + r["review"] + r["daily"])
+        return k
+
     def mark(self, nickname, word, correct):
         nick = normalize(nickname)
         w = str(word or "").strip().lower()
         with self.lock:
             d = self._load()
             L = d["learners"].get(nick)
-            if L is None or w not in self.lessons[L["lesson"]]["vocab"]:
+            if L is None or w not in self._known_words():
                 return {"ok": False}
             if correct:
                 if w not in L["passed"]:
@@ -201,6 +287,11 @@ class Curriculum:
             L = d["learners"].get(nick)
             if L is None:
                 return {"next_lesson": self.order[0]}
+            if self.roadmap(L.get("age_band", DEFAULT_AGE)):
+                w = self.roadmap_week(L.get("age_band", DEFAULT_AGE), L.get("week", 1))
+                L["lesson"] = w["lesson_id"]
+                self._save(d)
+                return {"next_lesson": L["lesson"], "week": L.get("week", 1)}
             vocab = self.lessons[L["lesson"]]["vocab"]
             if all(w in L["passed"] for w in vocab):
                 i = self.order.index(L["lesson"])

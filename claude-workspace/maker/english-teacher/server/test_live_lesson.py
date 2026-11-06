@@ -93,7 +93,12 @@ async def main():
     if DATA.name and DATA.exists():
         DATA.unlink()
     enc = opuslib_next.Encoder(SR, 1, opuslib_next.APPLICATION_VOIP); dec = opuslib_next.Decoder(24000, 1)
-    a = await pcm("Xin chào cô."); b = await pcm("Con là bạn Thỏ."); c = await pcm("Red.", "en-US-AnaNeural")
+    # 2026-11-06: bai do lo trinh tuan quyet dinh (ROADMAP.md) - lay bai/tu tuan 1 cua lich 2-3 tuoi
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "live"))
+    from curriculum import Curriculum
+    w1 = Curriculum(Path(tempfile.mkdtemp()) / "x.json", Path(__file__).resolve().parent.parent / "lessons").roadmap(2)[0]
+    word1 = w1["new"][0]
+    a = await pcm("Xin chào cô."); b = await pcm("Con là bạn Thỏ."); c = await pcm(word1.capitalize() + ".", "en-US-AnaNeural")
     hdr = {"device-id": "e2:00:00:00:00:04", "client-id": "lesson-gate", "protocol-version": "1"}
     async with websockets.connect(f"ws://{HOST}:{WS}/xiaozhi/v1/", additional_headers=hdr, max_size=None) as ws:
         await ws.send(json.dumps({"type": "hello", "version": 1, "transport": "websocket",
@@ -105,9 +110,10 @@ async def main():
         ok(learners() == {}, f"chua tao ho so truoc khi be noi biet danh ({list(learners())})")
         f2, a2, t2, _, _ = await turn(ws, enc, dec, b, "biet-danh")
         L = learners()
-        ok(list(L) == ["thỏ"] and L["thỏ"].get("lesson") == "01-colors", f"ho so 'tho' bai 01 ({ {k: v.get('lesson') for k, v in L.items()} })")
+        ok(list(L) == ["thỏ"] and L["thỏ"].get("lesson") == w1["lesson_id"], f"ho so 'tho' bai tuan 1 {w1['lesson_id']} ({ {k: v.get('lesson') for k, v in L.items()} })")
         ok(a2 > 1.0 and f2 is not None and f2 < 4.0, f"co tra loi sau biet danh (am thanh {a2:.1f} s, tre {f2})")
-        ok(re.search(r"\bred\b|m[àa]u", t2, re.I) is not None, "co bat dau bai mau sac")
+        ok(any(re.search(r"\b" + re.escape(w) + r"\b", t2, re.I) for w in list(w1["new"]) + list(w1.get("daily", []))),
+           f"co bat dau bai tuan 1 (co tu {w1['new']})")
         f3, a3, t3, fs3, early3 = await turn(ws, enc, dec, c, "red")
         # 2026-11-06: do tu LUC BAT DAU NOI (file giong co duoi im lang, Gemini chot cau truoc khi gui het -> tre tinh tu cuoi file ~0)
         ok(early3 == 0, f"khong co am thanh sot cua luot truoc truoc khi noi 'Red' ({early3} khung)")
