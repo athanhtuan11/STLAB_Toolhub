@@ -33,6 +33,7 @@ WS_PORT = int(os.environ.get("STLAB_LIVE_WS_PORT", "8000"))
 HTTP_PORT = int(os.environ.get("STLAB_LIVE_HTTP_PORT", "8003"))
 MODEL = os.environ.get("STLAB_LIVE_MODEL", "gemini-3.8-live")
 VOICE = os.environ.get("STLAB_LIVE_VOICE", "").strip()
+LANG_CODE = os.environ.get("STLAB_LIVE_LANG", "vi-VN").strip()   # khoa ngon ngu noi; rong = tat
 IN_RATE, OUT_RATE = 16000, 24000
 RATE_BYTES = IN_RATE * 2              # 1 s PCM 16 kHz s16le
 IN_FRAME, OUT_FRAME = 960, 1440      # 60 ms
@@ -113,7 +114,27 @@ CURRICULUM_PROMPT = (
     "Listen carefully. If you are not sure what the child said, or the answer does not fit, do NOT guess: "
     "kindly ask again in Vietnamese ('Con nói lại cho cô nghe nhé?'), at most twice, then gently give the answer and move on."
 )
-PROMPT = load_prompt() + CURRICULUM_PROMPT
+LANG_LOCK = (
+    "The child is a 2-5 year old Vietnamese child. They speak ONLY Vietnamese or a few English words, often mispronounced. "
+    "If the speech sounds like any other language (Spanish, Japanese, Hindi...), it is unclear toddler speech - never answer "
+    "in that language. Always reply ONLY in Vietnamese and simple English.\n\n")
+LIMIT_PROMPT = (
+    "\n\nRepeat limits: ask the child to repeat the SAME word at most 2 times in total; after that say a warm "
+    "'Con giỏi lắm!' and move to a different word. Say 'nói lại nhé' at most once per turn. "
+    "If the child or an adult says to speak louder/softer (to lên, nói lớn lên, nhỏ lại), call set_volume "
+    "(or volume_change with +20 / -20 if you do not know the level).")
+PROMPT = LANG_LOCK + load_prompt() + CURRICULUM_PROMPT + LIMIT_PROMPT
+VOLUME_TOOLS = [
+    {"name": "set_volume",
+     "description": "Set the speaker volume of the toy, 0-100 (e.g. 80 = loud, 40 = quiet).",
+     "parameters": {"type": "OBJECT", "properties": {"level": {"type": "INTEGER", "description": "0-100"}},
+                    "required": ["level"]}},
+    {"name": "volume_change",
+     "description": "Change the speaker volume by a delta, e.g. +20 louder, -20 softer.",
+     "parameters": {"type": "OBJECT", "properties": {"delta": {"type": "INTEGER", "description": "-50..50"}},
+                    "required": ["delta"]}},
+]
+MCP_TIMEOUT_S = 4.0
 
 
 def live_config():
@@ -122,15 +143,19 @@ def live_config():
         system_instruction=PROMPT,
         input_audio_transcription=types.AudioTranscriptionConfig(),
         output_audio_transcription=types.AudioTranscriptionConfig(),
-        tools=[types.Tool(function_declarations=live_tools())],
+        tools=[types.Tool(function_declarations=live_tools() + VOLUME_TOOLS)],
         realtime_input_config=types.RealtimeInputConfig(
             automatic_activity_detection=types.AutomaticActivityDetection(
                 end_of_speech_sensitivity=types.EndSensitivity.END_SENSITIVITY_HIGH,
                 silence_duration_ms=SILENCE_MS)),
     )
+    sp = {}
     if VOICE:
-        kw["speech_config"] = types.SpeechConfig(
-            voice_config=types.VoiceConfig(prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=VOICE)))
+        sp["voice_config"] = types.VoiceConfig(prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=VOICE))
+    if LANG_CODE:
+        sp["language_code"] = LANG_CODE
+    if sp:
+        kw["speech_config"] = types.SpeechConfig(**sp)
     return types.LiveConnectConfig(**kw)
 
 
@@ -346,6 +371,8 @@ class Session:
         self.heard_at = 0.0
         self.silent_n = 0                  # so lan nhac lien tiep ma be van im
         self.nudge_task = None
+        self.mcp_id = 100
+        self.mcp_wait = {}                 # id -> Future (phan hoi MCP cua thiet bi)
         self.ending = False                # be bam KEY4 xin ket thuc (abort luc co khong noi)
 
     async def handle_tool_call(self, tc):
@@ -360,6 +387,8 @@ class Session:
                     res = CUR.finish(self.nick) if self.nick else {"next_lesson": None}
                     self.finishing = True
                     log(f"[LIVE-TOOL] finish_lesson -> {res.get('next_lesson')}")
+                elif fc.name in ("set_volume", "volume_change"):
+                    res = await self.do_volume(fc.name, a)
                 else:
                     res = {"error": "unknown tool"}
             except Exception as e:
@@ -367,6 +396,41 @@ class Session:
             resps.append(types.FunctionResponse(id=fc.id, name=fc.name, response=res))
         if resps:
             await self.live.send_tool_response(function_responses=resps)
+
+    async def mcp_call(self, method, params=None):
+        """JSON-RPC toi thiet bi qua {"type":"mcp","payload":...}; doi phan hoi MCP_TIMEOUT_S giay."""
+        self.mcp_id += 1
+        mid = self.mcp_id
+        fut = asyncio.get_running_loop().create_future()
+        self.mcp_wait[mid] = fut
+        msg = {"jsonrpc": "2.0", "id": mid, "method": method}
+        if params is not None:
+            msg["params"] = params
+        try:
+            await self.send_json({"type": "mcp", "session_id": self.sid, "payload": msg})
+            return await asyncio.wait_for(fut, MCP_TIMEOUT_S)
+        finally:
+            self.mcp_wait.pop(mid, None)
+
+    async def do_volume(self, name, a):
+        try:
+            if name == "set_volume":
+                level = int(a.get("level"))
+            else:
+                st = await self.mcp_call("tools/call", {"name": "self.get_device_status", "arguments": {}})
+                txt = "".join(c.get("text", "") for c in (st.get("result") or {}).get("content", []))
+                cur = int(json.loads(txt)["audio_speaker"]["volume"])
+                level = cur + int(a.get("delta"))
+            level = max(0, min(100, level))
+            r = await self.mcp_call("tools/call", {"name": "self.audio_speaker.set_volume", "arguments": {"volume": level}})
+            if "error" in r:
+                log(f"[LIVE-TOOL] volume {level} loi thiet bi: {str(r['error'])[:80]}")
+                return {"ok": False, "error": "device refused"}
+            log(f"[LIVE-TOOL] volume {level}")
+            return {"ok": True, "volume": level}
+        except Exception as e:
+            log(f"[LIVE-TOOL] volume loi {type(e).__name__}: {str(e)[:80]}")
+            return {"ok": False, "error": type(e).__name__}
 
     async def send_json(self, obj):
         await self.ws.send(json.dumps(obj, ensure_ascii=False))
@@ -454,7 +518,8 @@ class Session:
         if n <= 2:
             await self.send_lesson("[silence] The child has not answered. Gently encourage in Vietnamese and make it easier: "
                                    "repeat the question more simply, or say the answer and ask the child to repeat it "
-                                   "(e.g. 'Con nói theo cô nhé: red!'). One or two short sentences.")
+                                   "(e.g. 'Con nói theo cô nhé: red!') ONLY if you have not asked for that word twice already. "
+                                   "One or two short sentences.")
         elif n == 3:
             await self.send_lesson("[silence] Still no answer. Move on to the next word kindly.")
         else:
@@ -698,6 +763,11 @@ class Session:
             t = j.get("type")
             if t == "listen" and j.get("state") == "start":
                 self.last_active = time.time()
+            elif t == "mcp":
+                pl = j.get("payload") or {}
+                fut = self.mcp_wait.get(pl.get("id")) if isinstance(pl, dict) else None
+                if fut is not None and not fut.done():
+                    fut.set_result(pl)
             elif t == "abort":
                 if j.get("reason") == "wake_word_detected":      # be cham KEY4 luc thiet bi nghe -> xin ket thuc
                     asyncio.create_task(self.end_request())
@@ -728,6 +798,7 @@ class Session:
                 break
         await self.send_json({"type": "hello", "transport": "websocket", "session_id": self.sid,
                               "audio_params": {"format": "opus", "sample_rate": OUT_RATE, "channels": 1, "frame_duration": 60}})
+        asyncio.create_task(self.mcp_init())
         tasks = [asyncio.create_task(c()) for c in (self.live_main, self.mic_rx, self.pacer, self.idle_watch)]
         try:
             done, _ = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
@@ -741,6 +812,14 @@ class Session:
             await asyncio.gather(*tasks, return_exceptions=True)
             if self.handle is not None:
                 await self.handle.close()
+
+    async def mcp_init(self):
+        try:
+            await self.mcp_call("initialize", {"protocolVersion": "2024-11-05", "capabilities": {},
+                                               "clientInfo": {"name": "stlab-live-bridge", "version": "1"}})
+            await self.mcp_call("tools/list", {})
+        except Exception as e:
+            dbg(f"mcp init {type(e).__name__}")   # thiet bi khong co MCP: bo qua
 
     async def live_main(self):
         self.handle = await self.pool.acquire()

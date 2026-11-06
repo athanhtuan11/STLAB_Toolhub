@@ -11,6 +11,13 @@ HEADING = "## Chỉ dẫn cho AI"
 ACTIVITIES = ("repeat-after-me", "quiz", "touch-game", "rhyme-chant", "tiny-story", "guessing-game")
 
 
+DEFAULT_AGE = 2   # chua dat -> doi tuong tre nhat (be 2 tuoi)
+TODDLER_MODE = ("Toddler mode: speak very slowly, 3-5 words per sentence; teach only 3-4 words this session; "
+                "you model the word many times, the child repeating is a bonus; accept ANY attempt that sounds roughly "
+                "similar as correct (call mark_word correct=true) and praise the effort; never ask to repeat more than "
+                "once; use songs, sounds, and 'show me' actions; lots of Vietnamese support.")
+
+
 def normalize(nick):
     s = re.sub(r"[^\w\s]", " ", str(nick or "").lower())
     words = [w for w in s.split() if w not in ("bạn", "ban")]
@@ -60,6 +67,25 @@ class Curriculum:
             self.lessons[f.stem] = {"instructions": instr, "vocab": vocab,
                                     "title": re.sub(r"\s*\(.*?\)", "", mt.group(1)).strip() if mt else f.stem}
 
+    def age_band(self, nickname):
+        """Tuoi (2-5) do phu huynh dat; chua dat/khong biet danh -> DEFAULT_AGE."""
+        try:
+            a = int(self._load()["learners"].get(normalize(nickname), {}).get("age_band", DEFAULT_AGE))
+        except (TypeError, ValueError):
+            a = DEFAULT_AGE
+        return a if 2 <= a <= 5 else DEFAULT_AGE
+
+    def set_age(self, nickname, age):
+        nick = normalize(nickname)
+        if nick not in ALLOWED_NICKNAMES or int(age) not in (2, 3, 4, 5):
+            return False
+        with self.lock:
+            d = self._load()
+            L = d["learners"].setdefault(nick, {"lesson": self.order[0], "passed": [], "failed": [], "sessions": []})
+            L["age_band"] = int(age)
+            self._save(d)
+        return True
+
     def lesson_ids(self):
         return list(self.order)
 
@@ -99,12 +125,15 @@ class Curriculum:
             lid = L["lesson"]
             review = [w for w in L["failed"] if w in self.lessons[lid]["vocab"] and w not in L["passed"]]
             instr = self.lessons[lid]["instructions"]
+            toddler = int(L.get("age_band", DEFAULT_AGE)) <= 3
             last = list(L.get("last_activities", []))
             vocab = self.lessons[lid]["vocab"]
             if vocab and all(w in L["passed"] for w in vocab) and lid == self.order[-1]:
                 # da hoc het bai cuoi -> che do on tu do (khong con tu moi)
                 learned = [w for i in self.order for w in self.lessons[i]["vocab"]]
                 instr += "\n" + self.review_plan(learned)
+                if toddler:
+                    instr += "\n" + TODDLER_MODE
                 self._save(d)
                 return {"allowed": True, "learner": nick, "lesson_id": lid, "instructions": instr, "review": [],
                         "mode": "review"}
@@ -114,6 +143,8 @@ class Curriculum:
             L["last_activities"] = (last + [act])[-3:]
             self._save(d)
             instr += "\n" + plan
+            if toddler:
+                instr += "\n" + TODDLER_MODE
             return {"allowed": True, "learner": nick, "lesson_id": lid, "instructions": instr, "review": review}
 
     def review_plan(self, learned):
@@ -143,7 +174,7 @@ class Curriculum:
     def anonymous_lesson(self):
         """Ket noi khong co biet danh: chon NGAU NHIEN 1 bai (khong ghi ho so). Tra (lesson_id, instructions)."""
         lid = random.choice(self.order)
-        return lid, self.lessons[lid]["instructions"] + "\n" + self.today_plan(lid)[0]
+        return lid, self.lessons[lid]["instructions"] + "\n" + self.today_plan(lid)[0] + "\n" + TODDLER_MODE
 
     def mark(self, nickname, word, correct):
         nick = normalize(nickname)
@@ -192,3 +223,30 @@ def live_tools():
          "description": "Call at the end of the session to save progress and pick the next lesson.",
          "parameters": {"type": "OBJECT", "properties": {}}},
     ]
+
+
+def _cli(argv):
+    import argparse
+    ap = argparse.ArgumentParser(description="Dat/xem do tuoi (2-5) theo biet danh, chi so tuoi, khong ngay sinh")
+    ap.add_argument("--set-age", nargs=2, metavar=("BIET_DANH", "TUOI"))
+    ap.add_argument("--show", action="store_true")
+    ap.add_argument("--path", default=os.environ.get("STLAB_LEARNERS_PATH") or str(Path(__file__).resolve().parent.parent / "data" / "learners.json"))
+    a = ap.parse_args(argv)
+    cur = Curriculum(a.path, Path(__file__).resolve().parent.parent.parent / "lessons")
+    if a.set_age:
+        try:
+            ok = cur.set_age(a.set_age[0], int(a.set_age[1]))
+        except ValueError:
+            ok = False
+        print(("da dat" if ok else "loi: biet danh phai thuoc " + ",".join(ALLOWED_NICKNAMES) + ", tuoi 2|3|4|5"))
+        return 0 if ok else 1
+    d = cur._load()
+    print(f"mac dinh (chua dat) = {DEFAULT_AGE}")
+    for n, L in d["learners"].items():
+        print(f"{n}: age_band={L.get('age_band', DEFAULT_AGE)}{'' if 'age_band' in L else ' (mac dinh)'} bai={L.get('lesson')}")
+    return 0
+
+
+if __name__ == "__main__":
+    import sys
+    sys.exit(_cli(sys.argv[1:]))

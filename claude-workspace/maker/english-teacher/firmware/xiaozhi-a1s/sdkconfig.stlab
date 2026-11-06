@@ -6,3 +6,6 @@ CONFIG_PARTITION_TABLE_CUSTOM=y
 CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions/v2/4m.csv"
 # be 2-5 tuoi dung nut "noi" la chinh -> khong wake word
 CONFIG_WAKE_WORD_DISABLED=y
+# Tieng thong bao tren bo bang tieng Viet (Tuan 2026-11-06: bam RST nghe tieng Trung)
+CONFIG_LANGUAGE_VI_VN=y
+# CONFIG_LANGUAGE_ZH_CN is not set
