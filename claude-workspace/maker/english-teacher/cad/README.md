@@ -70,3 +70,8 @@ Hệ lắp ráp: mm, +Z lên, mặt trước −Y; mặt ráp hai nửa là mặ
 - Chiều cao công tắc tactile (giả định 4,3): TODO đo. Thân loa sau mép < Ø39 (Tuan đo 2026-11-06), lọt lỗ vòng ép Ø42.
 - fit-library chưa có mục M3 / ống non: **chưa in thử** mọi khe (0,3 hốc linh kiện, 0,3 yên côn, 0,4 nút).
 - Đáy phẳng vát 0,8 mm chưa làm. Khắc ▲ và logo STLAB chưa làm.
+
+## File CAD để đo (SolidCraft, 2026-11-06)
+- `out/owl-assembly.sc`: mở bằng SolidCraft, 17 chi tiết, mỗi chi tiết một component **đúng vị trí lắp**, đơn vị mm (gồm loa và bo mạch giữ chỗ `*-dummy`, không in).
+- Sinh lại: chạy `build_owl.py` (Blender) rồi `python export_cad.py out`.
+- Chi tiết là thân lưới: đo bằng Measure, bắt đỉnh/cạnh. Vành loa và vòng ép có thể chuyển sang mặt phẳng/trụ thật bằng Convert Mesh để đo dễ hơn.

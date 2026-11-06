@@ -424,6 +424,14 @@ ITEMS = [(A, 'front', 'shell', (0, -75, 0)), (B, 'back', 'shell', (0, 75, 0)), (
          (spk[0], 's0', 'spk', (-55, 0, 0)), (spk[1], 's1', 'spk', (55, 0, 0)), (pcbo, 'pcb', 'pcb', (0, 0, 0))]
 for o, n, c, off in ITEMS:
     dump(o, n)
+# ban lap rap DO DUOC (Tuan 2026-11-06): moi chi tiet 1 STL o dung vi tri lap (mm) -> export_cad.py ra .blend + STEP
+ASM_NAMES = dict(front="shell-front", back="shell-back", plate="base-plate", belly="belly", beak="beak", cap="button-cap",
+                 bz0="speaker-bezel-L", bz1="speaker-bezel-R", sr0="speaker-ring-L", sr1="speaker-ring-R", d0="eye-diffuser-L",
+                 d1="eye-diffuser-R", r0="eye-ring-L", r1="eye-ring-R", s0="speaker-dummy-L", s1="speaker-dummy-R", pcb="pcb-dummy")
+(OUT / "asm").mkdir(exist_ok=True)
+import shutil
+for _, n, _, _ in ITEMS:
+    shutil.copyfile(TMP / (n + ".stl"), OUT / "asm" / (ASM_NAMES[n] + ".stl"))
 
 def fresh_scene(res):
     bpy.ops.wm.read_factory_settings(use_empty=True)
