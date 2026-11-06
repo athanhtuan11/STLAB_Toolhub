@@ -12,6 +12,14 @@ OUT.mkdir(parents=True, exist_ok=True)
 WALL = 2.4                 # thanh vo
 SPEAKER_POCKET_D = 52.6    # loa O52 + khe 0,3/ben
 SPEAKER_D, SPEAKER_L = 52.0, 26.0
+# 2026-11-06 giu loa bang MEP truoc (Tuan do mep day 5): ron EVA 2 ep con 1,5 giua mat tam luoi va mat loa,
+# vong ep in roi ep mat sau mep, 3 vit M2.5 tu ren vao 3 vau tren ong om (fit-library: tu ren 2,2-2,4, lo qua 2,8)
+FLANGE_T, GASKET_T = 5.0, 1.5
+BODY_D_MAX = 47.0          # TODO do: than loa ngay sau mep phai < 47 de lot lo vong ep
+SRING_T, RING_ID = 2.4, 47.5   # vong ep loa (SRING_T: RING_T da dung cho vong mat)
+M25_TAP_D, M25_CLR_D = 2.3, 2.8
+LUG_R, LUG_W, LUG_DEPTH = 31.0, 6.0, 6.0   # tam lo vit, be rong vau, sau lo moi
+LUG_ANG = (90.0, 210.0, 330.0)
 GRILLE_HOLE_D, GRILLE_PITCH, GRILLE_ZONE_D = 2.8, 5.6, 56.0
 MIC_HOLE_D = 2.0
 M3_CLEAR_D, M3_NUT_S, NUT_DEPTH = 3.4, 5.8, 2.8
@@ -34,7 +42,8 @@ BZL_RF, BZL_REAR = 36.0, 54.0
 BZL_A = 25.0                        # goc non vanh loa (do so voi truc)
 BZL_T = math.tan(math.radians(BZL_A))
 BZL_RHO = 8.0                       # bo mep mat vanh loa       # ban kinh mat phang, mat sau cua ong non (|x|)
-SPK_FACE = SPK_XF - 3.2             # mat loa (tam bung dai 3 + khe 0,2)
+SPK_FACE = SPK_XF - 3.0 - GASKET_T  # mat loa (tam luoi day 3 + ron ep 1,5)
+CUP_END = SPK_FACE - FLANGE_T       # mat sau mep loa = mat cuoi ong om = mat truoc vong ep
 SPEAKERS = [{"center": [s * (SPK_FACE - SPEAKER_L / 2), 0.0, SPK_Z], "axis": "x"} for s in (-1, 1)]
 PCB_CENTER = [0.0, 8.0, 60.0]
 EYE_X, EYE_Z, BEAK_Z = 36.5, 108.0, 102.0
@@ -264,13 +273,16 @@ for (px, pz) in ((0, BELLY_Z + 8), (-13, BELLY_Z - 5), (13, BELLY_Z - 5), (0, BE
 def make_bezel():
     h0 = SPK_XF; rho = BZL_RHO
     turn = 90.0 - BZL_A; tb = rho * math.tan(math.radians(turn / 2)); tib = 2.4 / math.cos(math.radians(BZL_A))
-    pr = [(0, h0), (BZL_RF - tb, h0)]
-    pr += arc(BZL_RF - tb, h0 - rho, rho, 90, BZL_A, 10)[1:]
+    # mep mat luoi: in up mat luoi xuong -> doan bo sat ban gan nam ngang bi treo (slice 2026-11-06: can support 801 mm2).
+    # Thay doan bo 90..40 do bang vat 50 do (>= 43 do in khong support), giu doan bo 40..25 do.
+    cx = BZL_RF - tb; A_S, CH = 40.0, 50.0
+    ax, az = cx + rho * math.cos(math.radians(A_S)), h0 - rho + rho * math.sin(math.radians(A_S))
+    pr = [(0, h0), (ax - (h0 - az) / math.tan(math.radians(CH)), h0), (ax, az)]
+    pr += arc(cx, h0 - rho, rho, A_S, BZL_A, 6)[1:]
     r_rear = BZL_RF + BZL_T * (SPK_XF - BZL_REAR)
     plate_back = h0 - 3.0
     pr += [(r_rear, BZL_REAR), (r_rear - tib, BZL_REAR), (BZL_RF - tib + BZL_T * 3.0, plate_back),
-           (SPEAKER_POCKET_D / 2 + 2.7, plate_back), (SPEAKER_POCKET_D / 2 + 2.7, SPK_FACE - SPEAKER_L - 1.3),
-           (SPEAKER_POCKET_D / 2, SPK_FACE - SPEAKER_L - 1.3), (SPEAKER_POCKET_D / 2, plate_back), (0, plate_back)]
+           (CUP_OR, plate_back), (CUP_OR, CUP_END), (SPEAKER_POCKET_D / 2, CUP_END), (SPEAKER_POCKET_D / 2, plate_back), (0, plate_back)]
     z = lathe('bezel', pr, seg=96)
     # luoi: luoi luc giac, lo Ø2,8 buoc 5,6 trong vung Ø56 (lo nam tron trong vung)
     bm = bmesh.new(); rmax = GRILLE_ZONE_D / 2 - GRILLE_HOLE_D / 2
@@ -283,20 +295,36 @@ def make_bezel():
                                       depth=5.0, matrix=Matrix.Translation((x, y, h0 - 1.2)))
                 cnt += 1
     gc = new_obj('grille', bm); diff(z, gc)
-    # 4 vau: tay long dai ra sau + moc ep vanh loa phia sau
-    ends = SPK_FACE - SPEAKER_L - 1.3
-    for k in range(4):
-        a = math.radians(45 + 90 * k)
-        R = Matrix.Rotation(a, 4, 'Z')
-        f = box('fing', (SPEAKER_POCKET_D / 2, -3.0, ends - 3.0), (SPEAKER_POCKET_D / 2 + 1.4, 3.0, ends + 0.3)); f.data.transform(R)
-        hk = box('hook', (SPEAKER_POCKET_D / 2 - 1.6, -3.0, ends - 3.0), (SPEAKER_POCKET_D / 2 + 1.4, 3.0, ends - 1.4)); hk.data.transform(R)
-        union(z, f); union(z, hk)
+    # 3 vau bat vit M2.5 cho vong ep: tu mat cuoi ong om toi tam luoi, lo moi tu ren sau LUG_DEPTH
+    for a in LUG_ANG:
+        R = Matrix.Rotation(math.radians(a), 4, 'Z')
+        lg = box('lug', (CUP_OR - 0.5, -LUG_W / 2, CUP_END), (LUG_R + LUG_W / 2 - 0.5, LUG_W / 2, plate_back + 0.5)); lg.data.transform(R)
+        union(z, lg)
+        hole = cyl('tap', (LUG_R, 0, CUP_END - 0.5), (LUG_R, 0, CUP_END + LUG_DEPTH), M25_TAP_D / 2, seg=24); hole.data.transform(R)
+        diff(z, hole)
     return z, cnt
+
+def make_clamp_ring():
+    """Vong ep mep loa (he cuc bo nhu vanh loa, z = |x|): mat truoc o CUP_END ep mat sau mep, 3 tai lo vit M2.5."""
+    r = lathe('sring', [(RING_ID / 2, CUP_END), (CUP_OR, CUP_END), (CUP_OR, CUP_END - SRING_T), (RING_ID / 2, CUP_END - SRING_T)], seg=96)
+    for a in LUG_ANG:
+        R = Matrix.Rotation(math.radians(a), 4, 'Z')
+        e = box('ear', (CUP_OR - 0.5, -LUG_W / 2, CUP_END - SRING_T), (LUG_R + LUG_W / 2 - 0.5, LUG_W / 2, CUP_END)); e.data.transform(R)
+        union(r, e)
+        h = cyl('clr', (LUG_R, 0, CUP_END - SRING_T - 0.5), (LUG_R, 0, CUP_END + 0.5), M25_CLR_D / 2, seg=24); h.data.transform(R)
+        diff(r, h)
+    return r
+CUP_OR = SPEAKER_POCKET_D / 2 + 2.7  # ban kinh ngoai ong om
 BEZEL_LOCAL, GRILLE_N = make_bezel()
+SRING_LOCAL = make_clamp_ring()
 def bezel_world(s):
     M = Matrix.Translation((0, 0, SPK_Z)) @ Matrix.Rotation(math.radians(90 * s), 4, 'Y')
     o = cp(BEZEL_LOCAL, 'bezel%d' % s); o.data.transform(M); return o
 BEZELS = [bezel_world(-1), bezel_world(1)]
+def sring_world(s):
+    M = Matrix.Translation((0, 0, SPK_Z)) @ Matrix.Rotation(math.radians(90 * s), 4, 'Y')
+    o = cp(SRING_LOCAL, 'sring%d' % s); o.data.transform(M); return o
+SRINGS = [sring_world(-1), sring_world(1)]
 
 # --- mo
 bp = [(0, -9.0), (12, -9.0), (12, -6.2), (9, -6.2), (9, 0.0)]
@@ -351,10 +379,11 @@ T_ring = EYES[1].inverted()
 export_obj(RINGS[1], T_ring, OUT / "eye-ring.stl")
 export_obj(PLATE, Mx(((1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1))), OUT / "base-plate.stl")
 export_obj(BEZEL_LOCAL, Mx(((1, 0, 0, 0), (0, -1, 0, 0), (0, 0, -1, SPK_XF), (0, 0, 0, 1))), OUT / "speaker-bezel.stl")
+export_obj(SRING_LOCAL, Mx(((1, 0, 0, 0), (0, -1, 0, 0), (0, 0, -1, CUP_END), (0, 0, 0, 1))), OUT / "speaker-ring.stl")
 
 # lap rap
 asm = bmesh.new()
-for o in [A, B, PLATE, BELLY, BEAK, CAP] + BEZELS + DIFFS + RINGS:
+for o in [A, B, PLATE, BELLY, BEAK, CAP] + BEZELS + SRINGS + DIFFS + RINGS:
     asm.from_mesh(o.data)
 am = bpy.data.meshes.new('asm'); asm.to_mesh(am); asm.free()
 ao = bpy.data.objects.new('asm', am); SC.collection.objects.link(ao)
@@ -369,7 +398,9 @@ params = dict(wall=WALL, speaker_pocket_d=SPEAKER_POCKET_D, grille_hole_d=GRILLE
               speakers=SPEAKERS, pcb_center=PCB_CENTER, pcb_box=list(PCB_BOX),
               split_plane_y=Y0, grille_holes_per_speaker=GRILLE_N, speaker_dims=[SPEAKER_D, SPEAKER_L], pcb_dims_xyz=list(PCB_BOX),
               belly=dict(z=BELLY_Z, front_y=BELLY_FRONT, rf=BELLY_RF), eye=dict(x=EYE_X, z=EYE_Z), beak_z=BEAK_Z,
-              screws=dict(x=SCREW_X, y=SCREW_Y, m3_nut_depth=NUT_DEPTH), pins=dict(d=PIN_D, half_depth=PIN_HALF), floor_cut=FLOOR_CUT, cone_clearance=CONE_CLR, fit=FIT, slide=SLIDE)
+              screws=dict(x=SCREW_X, y=SCREW_Y, m3_nut_depth=NUT_DEPTH),
+              speaker_clamp=dict(flange_t=FLANGE_T, gasket_t=GASKET_T, body_d_max=BODY_D_MAX, ring_t=SRING_T, ring_id=RING_ID,
+                                 m25_tap_d=M25_TAP_D, m25_clr_d=M25_CLR_D, lug_r=LUG_R, lug_depth=LUG_DEPTH, face_abs_x=SPK_FACE, cup_end_abs_x=CUP_END), pins=dict(d=PIN_D, half_depth=PIN_HALF), floor_cut=FLOOR_CUT, cone_clearance=CONE_CLR, fit=FIT, slide=SLIDE)
 (OUT / "owl-params.json").write_text(json.dumps(params, indent=1), encoding="utf-8")
 
 # ============================================================ ANH XEM TRUOC (Eevee, dung STL that)
@@ -383,10 +414,12 @@ def dump(o, name):
     bpy.ops.wm.stl_export(filepath=str(TMP / (name + ".stl")), export_selected_objects=True, global_scale=1.0, apply_modifiers=False)
 spk = []
 for sp in SPEAKERS:
-    c = Vector(sp["center"]); spk.append(cyl('spk', c - Vector((13, 0, 0)), c + Vector((13, 0, 0)), 26.0, seg=48))
+    c = Vector(sp["center"]); sg = 1 if c.x > 0 else -1; fx = c.x + sg * SPEAKER_L / 2
+    so = cyl('spk', Vector((fx - sg * FLANGE_T, c.y, c.z)), Vector((fx, c.y, c.z)), SPEAKER_D / 2, seg=48)
+    union(so, cyl('spkb', Vector((fx - sg * SPEAKER_L, c.y, c.z)), Vector((fx - sg * (FLANGE_T - 0.5), c.y, c.z)), BODY_D_MAX / 2 - 3, seg=48)); spk.append(so)
 pcbo = box('pcb', (-PCB_BOX[0] / 2, PCB_CENTER[1] - PCB_BOX[1] / 2, PCB_CENTER[2] - PCB_BOX[2] / 2), (PCB_BOX[0] / 2, PCB_CENTER[1] + PCB_BOX[1] / 2, PCB_CENTER[2] + PCB_BOX[2] / 2))
 ITEMS = [(A, 'front', 'shell', (0, -75, 0)), (B, 'back', 'shell', (0, 75, 0)), (PLATE, 'plate', 'cream', (0, 0, -45)), (BELLY, 'belly', 'cream', (0, -130, 0)),
-         (BEAK, 'beak', 'butter', (0, -135, 30)), (CAP, 'cap', 'butter', (0, 0, 55)), (BEZELS[0], 'bz0', 'shell', (-105, 0, 0)), (BEZELS[1], 'bz1', 'shell', (105, 0, 0)),
+         (BEAK, 'beak', 'butter', (0, -135, 30)), (CAP, 'cap', 'butter', (0, 0, 55)), (BEZELS[0], 'bz0', 'shell', (-105, 0, 0)), (BEZELS[1], 'bz1', 'shell', (105, 0, 0)), (SRINGS[0], 'sr0', 'cream', (-25, 0, 0)), (SRINGS[1], 'sr1', 'cream', (25, 0, 0)),
          (DIFFS[0], 'd0', 'white', (-30, -110, 25)), (DIFFS[1], 'd1', 'white', (30, -110, 25)), (RINGS[0], 'r0', 'cream', (-40, -100, 0)), (RINGS[1], 'r1', 'cream', (40, -100, 0)),
          (spk[0], 's0', 'spk', (-55, 0, 0)), (spk[1], 's1', 'spk', (55, 0, 0)), (pcbo, 'pcb', 'pcb', (0, 0, 0))]
 for o, n, c, off in ITEMS:
@@ -434,7 +467,7 @@ def merge(p1, p2, out):
     nim = bpy.data.images.new('m', width=big.shape[1], height=big.shape[0], alpha=True)
     nim.pixels.foreach_set(big.reshape(-1)); nim.filepath_raw = str(out); nim.file_format = 'PNG'; nim.save()
 
-ASM = ['front', 'back', 'plate', 'belly', 'beak', 'cap', 'bz0', 'bz1', 'd0', 'd1', 'r0', 'r1']
+ASM = ['front', 'back', 'plate', 'belly', 'beak', 'cap', 'bz0', 'bz1', 'sr0', 'sr1', 'd0', 'd1', 'r0', 'r1']
 sc = fresh_scene((800, 1200)); load_items(sc, ASM, False)
 cam_at(sc, (0, 0, 85), -32, 12, 560); render_png(sc, OUT / "_v1.png")
 bpy.data.objects.remove(sc.camera)

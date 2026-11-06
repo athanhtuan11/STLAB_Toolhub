@@ -1,0 +1,10 @@
+# english-teacher (Cu Bong) - ban in. STL sinh bang cad/build_owl.py (Blender), chep sang print/stl/ (2 bo loa trai/phai giong nhau).
+# Cat lop: python ../../tools/robotics-cad/scripts/slice.py print/print.yaml   (STL da dung huong in)
+machine: Bambu Lab A1 0.4 nozzle
+filament: Bambu PETG Basic @BBL A1
+stl: stl
+plates_dir: plates
+common: {sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
+plates:
+  # 2 vanh loa (mat luoi up xuong) + 2 vong ep mep loa (mat ep up xuong) - mau mo
+  A_speakers: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%"}, stl: ["speaker-bezel-*.stl", "speaker-ring-*.stl"]}

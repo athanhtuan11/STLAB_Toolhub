@@ -7,7 +7,7 @@ from mathutils.bvhtree import BVHTree
 
 OUT = Path(sys.argv[sys.argv.index("--") + 1]).resolve()
 fails = []
-PARTS = ["shell-front", "shell-back", "belly", "beak", "button-cap", "eye-diffuser"]
+PARTS = ["shell-front", "shell-back", "belly", "beak", "button-cap", "eye-diffuser", "speaker-bezel", "speaker-ring"]
 BED = 250.0
 
 
@@ -103,8 +103,17 @@ if bm:
         for i, s in enumerate(sps):
             if s.get("axis") not in ("x", "y"):
                 fails.append(f"loa {i}: axis phai la x hoac y")
-            elif tree.overlap(dummy("cyl", s["center"], (52.0, 26.0, s["axis"]))):
-                fails.append(f"loa {i} O52 x 26 cham vo tai {s['center']}")
+            else:
+                # loa that (2026-11-06): mep O52 x 5 phia truoc + than <= body_d_max phia sau; bot 0,1/dau de mat ep (vong ep, ron) khong tinh la cham
+                sc_ = p.get("speaker_clamp", {}); ft = sc_.get("flange_t", 5.0); bd = sc_.get("body_d_max", 47.0)
+                c = Vector(s["center"]); k = 0 if s["axis"] == "x" else 1; sg = 1 if c[k] > 0 else -1
+                face = c[k] + sg * 13.0
+                cf = c.copy(); cf[k] = face - sg * ft / 2
+                cb = c.copy(); cb[k] = face - sg * (ft + (26.0 - ft) / 2)
+                if tree.overlap(dummy("cyl", cf, (52.0, ft - 0.2, s["axis"]))):
+                    fails.append(f"loa {i}: mep O52 x {ft} cham vo/vanh loa")
+                if tree.overlap(dummy("cyl", cb, (bd, 26.0 - ft - 0.2, s["axis"]))):
+                    fails.append(f"loa {i}: than O{bd} cham vong ep/vo")
         import itertools
         for a_, b_ in itertools.combinations(sps, 2):
             if (Vector(a_["center"]) - Vector(b_["center"])).length < 53:
@@ -115,6 +124,19 @@ if bm:
             fails.append(f"pcb_box phai la 82 x 73 x 25 (theo truc bat ky), dang {dims}")
         elif tree.overlap(dummy("box", pcb, dims)):
             fails.append("khoi bo mach 82 x 73 x 25 cham vo tai pcb_center")
+# co cau kep loa (2026-11-06): so khe theo fit-library + so Tuan do
+sc_ = p.get("speaker_clamp")
+if not sc_:
+    fails.append("params can speaker_clamp")
+else:
+    if abs(sc_["flange_t"] - 5.0) > 0.01: fails.append("flange_t phai 5,0 (Tuan do)")
+    if not 1.0 <= sc_["gasket_t"] <= 1.8: fails.append("ron ep 1,0-1,8 (EVA 2 mm)")
+    if not 2.2 <= sc_["m25_tap_d"] <= 2.4: fails.append("lo tu ren M2.5 phai 2,2-2,4 (fit-library)")
+    if abs(sc_["m25_clr_d"] - 2.8) > 0.01: fails.append("lo qua M2.5 phai 2,8 (fit-library)")
+    if sc_["ring_id"] <= sc_["body_d_max"]: fails.append("lo vong ep phai lon hon than loa")
+    if sc_["ring_id"] >= 52.0 - 2 * 2.0: fails.append("vong ep phai de len mep loa >= 2 mm moi ben")
+    if sc_["lug_depth"] < 5.0: fails.append("lo moi M2.5 sau >= 5")
+    if abs(sc_["face_abs_x"] - sc_["flange_t"] - sc_["cup_end_abs_x"]) > 0.01: fails.append("mat truoc vong ep phai trung mat sau mep loa")
 for f in ("owl-preview.png", "owl-exploded.png"):
     if not (OUT / f).exists():
         fails.append(f"out/{f} khong co")
