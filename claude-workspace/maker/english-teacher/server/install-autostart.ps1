@@ -17,7 +17,7 @@ $action = New-ScheduledTaskAction -Execute "powershell.exe" `
 $trigger = New-ScheduledTaskTrigger -AtLogOn -User $user
 $trigger.Delay = "PT30S"
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries `
-  -ExecutionTimeLimit ([TimeSpan]::Zero) -MultipleInstances IgnoreNew
+  -ExecutionTimeLimit ([TimeSpan]::Zero) -MultipleInstances IgnoreNew -Priority 4
 $principal = New-ScheduledTaskPrincipal -UserId $user -LogonType Interactive -RunLevel Limited
 Register-ScheduledTask -TaskName $name -Action $action -Trigger $trigger -Settings $settings -Principal $principal -Force | Out-Null
 Write-Host "Da dang ky '$name': chay $run luc dang nhap (tre 30 s)"
