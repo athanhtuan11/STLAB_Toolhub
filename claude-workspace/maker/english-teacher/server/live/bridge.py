@@ -3,7 +3,8 @@ CHI NGUOI LON THU NOI BO (dieu khoan Gemini API cam dich vu cho tre < 18 tuoi).
 Bien: GOOGLE_API_KEY (bat buoc), STLAB_LIVE_WS_PORT (8000), STLAB_LIVE_HTTP_PORT (8003), STLAB_XIAOZHI_SERVER (IP LAN),
 STLAB_LIVE_MODEL (gemini-3.8-live), STLAB_LIVE_VOICE (tuy chon).
 """
-import asyncio, audioop, json, os, re, socket, sys, time, uuid
+import asyncio
+import unicodedata, audioop, json, os, re, socket, sys, time, uuid
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -39,6 +40,14 @@ PRE_BUFFER = 5                        # nhu sendAudioHandle cua xinnan
 IDLE_S = 60.0
 
 
+DEBUG = bool(os.environ.get("STLAB_LIVE_DEBUG"))
+
+
+def dbg(msg):
+    if DEBUG:
+        log("[dbg] " + msg)
+
+
 def log(msg):
     print(time.strftime("%H:%M:%S ") + msg, flush=True)
 
@@ -63,7 +72,18 @@ def load_prompt():
     return (parts[1] if len(parts) > 1 else txt).strip()
 
 
-PROMPT = load_prompt()
+from curriculum import Curriculum, ALLOWED_NICKNAMES, live_tools, find_nickname  # noqa: E402
+
+SILENCE_MS = int(os.environ.get("STLAB_LIVE_SILENCE_MS", "600"))
+
+CUR = Curriculum(os.environ.get("STLAB_LEARNERS_PATH") or (SERVER / "data" / "learners.json"), SERVER.parent / "lessons")
+CURRICULUM_PROMPT = (
+    "\n\nAt the start, ask in Vietnamese which animal friend is learning today (e.g. bạn thỏ, bạn mèo, bạn gấu). "
+    "Then wait. The system will send a [lesson] message with the lesson to follow. Until then, do not start a lesson "
+    "and do not call tools. After a [lesson] message: follow it; after the child repeats a vocabulary word call "
+    "mark_word; at the end call finish_lesson then say a short goodbye. Never ask for real names."
+)
+PROMPT = load_prompt() + CURRICULUM_PROMPT
 
 
 def live_config():
@@ -72,6 +92,11 @@ def live_config():
         system_instruction=PROMPT,
         input_audio_transcription=types.AudioTranscriptionConfig(),
         output_audio_transcription=types.AudioTranscriptionConfig(),
+        tools=[types.Tool(function_declarations=live_tools())],
+        realtime_input_config=types.RealtimeInputConfig(
+            automatic_activity_detection=types.AutomaticActivityDetection(
+                end_of_speech_sensitivity=types.EndSensitivity.END_SENSITIVITY_HIGH,
+                silence_duration_ms=SILENCE_MS)),
     )
     if VOICE:
         kw["speech_config"] = types.SpeechConfig(
@@ -238,18 +263,42 @@ class Session:
         self.first_ms = None
         self.live = None
         self.closed = False
+        self.nick = None                   # biet danh cua ket noi nay
+        self.in_buf = ""                   # loi be cua luot hien tai (tim biet danh)
+        self.pending_lesson = None         # tin [lesson] cho gui khi luot hien tai xong
+        self.gen_open = False              # Gemini dang sinh am thanh cua 1 luot (chua turn_complete)
+        self.dev_on = False                # thiet bi da nhan tts start (chua stop)
+
+    async def handle_tool_call(self, tc):
+        resps = []
+        for fc in tc.function_calls or []:
+            a = dict(fc.args or {})
+            try:
+                if fc.name == "mark_word":
+                    res = CUR.mark(self.nick, a.get("word", ""), bool(a.get("correct"))) if self.nick else {"ok": False}
+                    log(f"[LIVE-TOOL] mark_word {a.get('word', '')} {bool(a.get('correct'))}")
+                elif fc.name == "finish_lesson":
+                    res = CUR.finish(self.nick) if self.nick else {"next_lesson": None}
+                    log(f"[LIVE-TOOL] finish_lesson -> {res.get('next_lesson')}")
+                else:
+                    res = {"error": "unknown tool"}
+            except Exception as e:
+                res = {"error": type(e).__name__}
+            resps.append(types.FunctionResponse(id=fc.id, name=fc.name, response=res))
+        if resps:
+            await self.live.send_tool_response(function_responses=resps)
 
     async def send_json(self, obj):
         await self.ws.send(json.dumps(obj, ensure_ascii=False))
 
-    async def tts_start(self):
-        if not self.tts_on:
+    def tts_start(self):
+        """Phia Gemini: am thanh dau tien cua luot -> chen marker START vao hang doi (dung thu tu voi STOP)."""
+        if not self.gen_open:
+            self.gen_open = True
             self.tts_on = True
             if self.first_ms is None and self.t_user_end:
                 self.first_ms = int((time.time() - self.t_user_end) * 1000)
-            await self.send_json({"type": "tts", "state": "start", "session_id": self.sid})
-            if self.user_txt:
-                await self.send_json({"type": "stt", "text": self.user_txt, "session_id": self.sid})
+            self.out_q.put_nowait("START")
 
     def clear_out(self):
         self.pcm_buf = b""
@@ -264,13 +313,24 @@ class Session:
         n, t0 = 0, 0.0
         while True:
             item = await self.out_q.get()
-            if isinstance(item, str):  # "STOP"
+            if item == "START":
+                if not self.dev_on:
+                    self.dev_on = True
+                    dbg("tts start")
+                    await self.send_json({"type": "tts", "state": "start", "session_id": self.sid})
+                    if self.user_txt:
+                        await self.send_json({"type": "stt", "text": self.user_txt, "session_id": self.sid})
+                continue
+            if isinstance(item, str):  # "STOP": chi sau khi da xa het khung truoc no
                 await asyncio.sleep(PRE_BUFFER * FRAME_S if n else 0)
                 n = 0
-                if self.tts_on:
-                    self.tts_on = False
+                if self.dev_on:
+                    self.dev_on = False
+                    dbg("tts stop")
                     await self.send_json({"type": "tts", "state": "stop", "session_id": self.sid})
                     self.log_turn()
+                if not self.gen_open and self.out_q.empty():
+                    self.tts_on = False
                 continue
             if n == 0:
                 t0 = time.time()
@@ -278,7 +338,8 @@ class Session:
                 delay = t0 + (n - PRE_BUFFER) * FRAME_S - time.time()
                 if delay > 0:
                     await asyncio.sleep(delay)
-            await self.ws.send(item)
+            if self.dev_on:
+                await self.ws.send(item)
             n += 1
 
     def log_turn(self):
@@ -298,22 +359,76 @@ class Session:
             self.push_pcm(b"\x00" * (OUT_FRAME * 2 - len(self.pcm_buf)))
         self.pcm_buf = b""
         self.out_q.put_nowait("STOP")
+        self.gen_open = False
         self.aborted = False
+
+    async def lesson_timeout(self):
+        """Gemini khong ket thuc luot cua be nhanh -> sau 1,5 s van gui [lesson] (khong cho 15 s)."""
+        await asyncio.sleep(1.5)
+        if self.pending_lesson:
+            txt, self.pending_lesson = self.pending_lesson, None
+            self.aborted = False
+            await self.send_lesson(txt)
+
+    async def send_lesson(self, text):
+        try:
+            await self.live.send_client_content(
+                turns=types.Content(role="user", parts=[types.Part(text=text)]), turn_complete=True)
+        except Exception as e:
+            log(f"send_client_content loi ({type(e).__name__}), dung send_realtime_input")
+            await self.live.send_realtime_input(text=text)
+
+    def check_nick(self):
+        """Be nhan biet danh: cau noi tu goi Curriculum.start va nho Gemini bat dau bai."""
+        if self.nick or self.pending_lesson:
+            return
+        nick = find_nickname(self.in_buf)
+        if not nick:
+            return
+        res = CUR.start(nick)
+        if res.get("allowed"):
+            self.nick = res["learner"]
+            log(f"[LIVE-TOOL] nick {nick} -> {res.get('lesson_id')}")
+            self.pending_lesson = (f"[lesson] Learner: bạn {nick}. {res['instructions']} "
+                                   "Greet the learner by this animal name and start the lesson now.")
+        else:
+            log(f"[LIVE-TOOL] nick {nick} -> refused")
+            self.pending_lesson = (f"[lesson] Learner: bạn {nick}. Not allowed: {res.get('reason', '')} "
+                                   "Say this reason kindly in Vietnamese, then say a short goodbye. Do not start a lesson.")
+        self.mute_current_turn()
+        asyncio.create_task(self.lesson_timeout())
+
+    def mute_current_turn(self):
+        """Tra loi tu sinh cua Gemini cho cau biet danh bi bo (chi phat luot [lesson] sau do)."""
+        self.clear_out()
+        if self.gen_open or self.dev_on:
+            self.out_q.put_nowait("STOP")
+        self.gen_open = False
+        self.aborted = True
 
     async def gemini_rx(self):
         while not self.closed:
             async for msg in self.live.receive():
+                if getattr(msg, "tool_call", None):
+                    dbg("tool_call")
+                    self.last_active = time.time()
+                    await self.handle_tool_call(msg.tool_call)
+                    continue
                 sc = msg.server_content
                 if sc is None:
                     continue
                 self.last_active = time.time()
                 if sc.input_transcription and sc.input_transcription.text:
                     self.user_txt += sc.input_transcription.text
+                    self.in_buf += sc.input_transcription.text
+                    self.check_nick()
                 if sc.interrupted:
                     self.clear_out()
                     self.aborted = False
-                    if self.tts_on:
+                    self.in_buf = ""
+                    if self.gen_open or self.pcm_buf:
                         self.end_turn()
+                    self.gen_open = False
                     continue
                 if sc.output_transcription and sc.output_transcription.text and not self.aborted:
                     self.reply_txt += sc.output_transcription.text
@@ -323,14 +438,21 @@ class Session:
                 if sc.model_turn and not self.aborted:
                     for p in sc.model_turn.parts or []:
                         if p.inline_data and p.inline_data.data:
-                            await self.tts_start()
+                            self.tts_start()
                             self.push_pcm(p.inline_data.data)
                 if sc.turn_complete:
-                    if self.tts_on or self.pcm_buf:
+                    dbg(f"turn_complete gen_open={self.gen_open} dev_on={self.dev_on}")
+                    if self.gen_open or self.pcm_buf:
                         self.end_turn()
                     else:
                         self.aborted = False
-                        self.user_txt, self.reply_txt, self.t_user_end = "", "", None
+                        if not self.dev_on and self.out_q.empty():
+                            self.user_txt, self.reply_txt, self.t_user_end = "", "", None
+                    self.in_buf = ""
+                    if self.pending_lesson:
+                        txt, self.pending_lesson = self.pending_lesson, None
+                        self.aborted = False
+                        await self.send_lesson(txt)
 
     async def mic_rx(self):
         async for m in self.ws:
@@ -359,8 +481,9 @@ class Session:
                 self.last_active = time.time()
             elif t == "abort":
                 self.clear_out()
-                if self.tts_on:
+                if self.gen_open or self.dev_on:
                     self.aborted = True
+                    self.gen_open = False
                     self.out_q.put_nowait("STOP")
             # hello trung / mcp / listen stop: bo qua
 
