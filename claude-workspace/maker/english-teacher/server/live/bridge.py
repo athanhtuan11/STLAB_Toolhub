@@ -95,10 +95,136 @@ async def ota_handler(request):
     return web.json_response(body)
 
 
-class Session:
-    def __init__(self, ws, client):
-        self.ws = ws
+STANDBY_MAX_S = 480.0      # phien du phong khong dung qua 8 phut -> dong, mo lai
+HEDGE_AFTER_S = 2.0
+OPEN_TOTAL_S = 10.0
+MIC_BUF_MAX = 400          # khung 60 ms (~24 s) toi da dem truoc khi phien san sang
+
+
+class LiveHandle:
+    def __init__(self, cm, live):
+        self.cm, self.live, self.born = cm, live, time.time()
+
+    def alive(self):
+        ws = getattr(self.live, "_ws", None) or getattr(getattr(self.live, "_session", None), "_ws", None)
+        if ws is None:
+            return True
+        # websockets 14 (google-genai dung websockets.asyncio.client.ClientConnection): KHONG co .closed, dung .state
+        st = getattr(ws, "state", None)
+        if st is not None:
+            from websockets.protocol import State
+            return st is State.OPEN
+        closed = getattr(ws, "closed", None)  # API cu
+        return not closed if isinstance(closed, bool) else True
+
+    async def close(self):
+        try:
+            await asyncio.wait_for(self.cm.__aexit__(None, None, None), 3)
+        except BaseException:
+            pass
+
+
+async def open_live(client):
+    cm = client.aio.live.connect(model=MODEL, config=live_config())
+    live = await cm.__aenter__()
+    return LiveHandle(cm, live)
+
+
+async def close_late(task):
+    """Phien mo xong sau khi da co phien khac -> dong."""
+    try:
+        h = await task
+        await h.close()
+    except BaseException:
+        pass
+
+
+class LivePool:
+    def __init__(self, client):
         self.client = client
+        self.standby = None
+        self.taken = asyncio.Event()
+
+    async def maintain(self):
+        while True:
+            if self.standby is None:
+                t0 = time.time()
+                try:
+                    h = await asyncio.wait_for(open_live(self.client), OPEN_TOTAL_S)
+                except asyncio.CancelledError:
+                    raise
+                except BaseException as e:
+                    log(f"phien du phong loi: {type(e).__name__}: {str(e)[:120]}")
+                    await asyncio.sleep(3)
+                    continue
+                self.standby = h
+                self.taken.clear()
+                log(f"phien du phong san sang ({int((time.time() - t0) * 1000)} ms)")
+            try:
+                await asyncio.wait_for(self.taken.wait(), timeout=5)
+            except asyncio.TimeoutError:
+                h = self.standby
+                if h is not None and (time.time() - h.born >= STANDBY_MAX_S or not h.alive()):
+                    log("phien du phong het han/dong, mo lai")
+                    self.standby = None
+                    await h.close()
+                continue
+            self.taken.clear()
+            self.standby = None
+
+    async def acquire(self):
+        """Tra handle. Uu tien phien du phong; neu khong thi mo moi co hedge."""
+        h = self.standby
+        if h is not None:
+            self.standby = None
+            self.taken.set()
+            if h.alive():
+                log("dung phien du phong")
+                return h
+            asyncio.create_task(h.close())
+        t0 = time.time()
+        tasks = [asyncio.create_task(open_live(self.client))]
+        hedge = 0
+        try:
+            done, _ = await asyncio.wait(tasks, timeout=HEDGE_AFTER_S)
+            if not done:
+                hedge = 1
+                tasks.append(asyncio.create_task(open_live(self.client)))
+            allt = list(tasks)
+            while True:
+                left = OPEN_TOTAL_S - (time.time() - t0)
+                if left <= 0:
+                    raise asyncio.TimeoutError("mo phien Live > 10 s")
+                done, _ = await asyncio.wait(tasks, timeout=left, return_when=asyncio.FIRST_COMPLETED)
+                if not done:
+                    raise asyncio.TimeoutError("mo phien Live > 10 s")
+                ok = None
+                for d in done:
+                    if not d.cancelled() and d.exception() is None:
+                        ok = d
+                        break
+                if ok is not None:
+                    for t in allt:
+                        if t is not ok:
+                            asyncio.create_task(close_late(t))
+                    log(f"mo phien moi ({int((time.time() - t0) * 1000)} ms, hedge={hedge})")
+                    return ok.result()
+                tasks = [t for t in tasks if t not in done]
+                if not tasks:
+                    raise RuntimeError("mo phien Live loi: " + str(next(iter(done)).exception())[:150])
+        except BaseException:
+            for t in tasks:
+                if not t.done():
+                    t.cancel()
+            raise
+
+
+class Session:
+    def __init__(self, ws, pool):
+        self.ws = ws
+        self.pool = pool
+        self.handle = None
+        self.mic_buf = []
         self.dec = opuslib_next.Decoder(IN_RATE, 1)
         self.enc = opuslib_next.Encoder(OUT_RATE, 1, opuslib_next.APPLICATION_AUDIO)
         self.sid = uuid.uuid4().hex
@@ -209,7 +335,7 @@ class Session:
     async def mic_rx(self):
         async for m in self.ws:
             if isinstance(m, bytes):
-                if self.tts_on or self.live is None:
+                if self.tts_on:
                     continue
                 try:
                     pcm = self.dec.decode(m, IN_FRAME)
@@ -217,6 +343,11 @@ class Session:
                     continue
                 if audioop.rms(pcm, 2) > 400:  # tieng noi gan nhat -> moc do do tre
                     self.t_user_end = time.time()
+                if self.live is None:              # phien chua san sang -> dem
+                    self.mic_buf.append(pcm)
+                    if len(self.mic_buf) > MIC_BUF_MAX:
+                        self.mic_buf.pop(0)
+                    continue
                 await self.live.send_realtime_input(audio=types.Blob(data=pcm, mime_type=f"audio/pcm;rate={IN_RATE}"))
                 continue
             try:
@@ -248,26 +379,35 @@ class Session:
                 break
         await self.send_json({"type": "hello", "transport": "websocket", "session_id": self.sid,
                               "audio_params": {"format": "opus", "sample_rate": OUT_RATE, "channels": 1, "frame_duration": 60}})
-        async with self.client.aio.live.connect(model=MODEL, config=live_config()) as live:
-            self.live = live
-            log(f"phien Live mo ({MODEL})")
-            tasks = [asyncio.create_task(c()) for c in (self.gemini_rx, self.mic_rx, self.pacer, self.idle_watch)]
-            try:
-                done, _ = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
-                for d in done:
-                    if not d.cancelled() and d.exception():
-                        log(f"loi phien: {type(d.exception()).__name__}: {str(d.exception())[:200]}")
-            finally:
-                self.closed = True
-                for t in tasks:
-                    t.cancel()
-                await asyncio.gather(*tasks, return_exceptions=True)
+        tasks = [asyncio.create_task(c()) for c in (self.live_main, self.mic_rx, self.pacer, self.idle_watch)]
+        try:
+            done, _ = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+            for d in done:
+                if not d.cancelled() and d.exception():
+                    log(f"loi phien: {type(d.exception()).__name__}: {str(d.exception())[:200]}")
+        finally:
+            self.closed = True
+            for t in tasks:
+                t.cancel()
+            await asyncio.gather(*tasks, return_exceptions=True)
+            if self.handle is not None:
+                await self.handle.close()
+
+    async def live_main(self):
+        self.handle = await self.pool.acquire()
+        live = self.handle.live
+        log(f"phien Live mo ({MODEL})")
+        while self.mic_buf:                        # gui phan micro da dem, giu thu tu
+            pcm = self.mic_buf.pop(0)
+            await live.send_realtime_input(audio=types.Blob(data=pcm, mime_type=f"audio/pcm;rate={IN_RATE}"))
+        self.live = live                           # khong await giua kiem tra rong va gan
+        await self.gemini_rx()
 
 
-async def ws_handler(ws, client):
+async def ws_handler(ws, pool):
     log("thiet bi ket noi")
     try:
-        await Session(ws, client).run()
+        await Session(ws, pool).run()
     except Exception as e:
         log(f"ket noi dong: {type(e).__name__}: {str(e)[:200]}")
     finally:
@@ -289,12 +429,14 @@ async def main():
     except Exception as e:
         log(f"no_ecoqos: {e}")
     client = genai.Client(api_key=key)
+    pool = LivePool(client)
+    asyncio.create_task(pool.maintain())
     app = web.Application()
     app.router.add_route("*", "/xiaozhi/ota/", ota_handler)
     runner = web.AppRunner(app, access_log=None)
     await runner.setup()
     await web.TCPSite(runner, "0.0.0.0", HTTP_PORT).start()
-    async with websockets.serve(lambda ws: ws_handler(ws, client), "0.0.0.0", WS_PORT, max_size=None,
+    async with websockets.serve(lambda ws: ws_handler(ws, pool), "0.0.0.0", WS_PORT, max_size=None,
                                 ping_interval=None):
         log(f"Cau noi san sang: ws://{lan_ip()}:{WS_PORT}/xiaozhi/v1/  OTA: http://{lan_ip()}:{HTTP_PORT}/xiaozhi/ota/")
         await asyncio.Future()

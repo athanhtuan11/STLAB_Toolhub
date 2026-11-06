@@ -97,7 +97,18 @@ async def main():
     hdr = {"device-id": "e2:00:00:00:00:02", "client-id": "stlab-live-gate", "protocol-version": "1", "authorization": "Bearer gate"}
     vi = await speech_pcm("Cô ơi, con mèo tiếng Anh là gì?", "vi-VN-HoaiMyNeural")
     en = await speech_pcm("What color is an apple?", "en-US-AnaNeural")
+    rounds = int(os.environ.get("STLAB_LIVE_ROUNDS", "5"))  # 2026-11-06: lan bam KEY4 nao cung phai nhanh (mo phien Live tung treo 14 s)
+    for rnd in range(rounds):
+        print(f"--- vong {rnd + 1}/{rounds} (ket noi moi)")
+        await one_round(ws_url, hdr, enc, dec, vi, en)
+        await asyncio.sleep(3)
+    print("\n%s test_live (%d loi)" % ("FAIL" if fails else "PASS", len(fails)))
+    sys.exit(1 if fails else 0)
+
+
+async def one_round(ws_url, hdr, enc, dec, vi, en):
     async with websockets.connect(ws_url, additional_headers=hdr, max_size=None) as ws:
+        t_hello = time.time()
         await ws.send(json.dumps({"type": "hello", "version": 1, "transport": "websocket", "features": {"mcp": True},
                                   "audio_params": {"format": "opus", "sample_rate": SR, "channels": 1, "frame_duration": 60}}))
         hello = None
@@ -107,6 +118,8 @@ async def main():
             if isinstance(m, str) and json.loads(m).get("type") == "hello":
                 hello = json.loads(m)
         ok(hello is not None and hello.get("transport") == "websocket", "hello tu may chu")
+        dt_hello = time.time() - t_hello
+        ok(dt_hello < 0.5, f"hello tra trong < 0,5 s ({dt_hello:.2f})")
         ap = (hello or {}).get("audio_params", {})
         ok(ap.get("format") == "opus" and ap.get("sample_rate") == 24000, f"hello audio_params opus 24000 ({ap})")
         sid = (hello or {}).get("session_id", "")
@@ -118,8 +131,6 @@ async def main():
             ok(lat is not None and lat < 2.5, f"{tag}: het tieng noi -> tieng dau tien < 2,5 s ({lat})")
             if tag == "VI":  # thiet bi AutoStop: sau tts stop thi nghe tiep, gui lai listen start nhu firmware
                 await ws.send(json.dumps({"session_id": sid, "type": "listen", "state": "start", "mode": "auto"}))
-    print("\n%s test_live (%d loi)" % ("FAIL" if fails else "PASS", len(fails)))
-    sys.exit(1 if fails else 0)
 
 
 asyncio.run(main())
