@@ -53,6 +53,15 @@ need((H / "build-src" / "build" / "xiaozhi.bin").exists(), "build-src/build/xiao
 r = subprocess.run(["git", "-C", str(SRC), "status", "--porcelain"], capture_output=True, text=True)
 need(r.returncode == 0 and r.stdout.strip() == "", "community/78-xiaozhi-esp32 phai nguyen (khong sua ban ghim)")
 need(re.search(r"\)\s*\{\s*\}", cc) is None, "co khoi lenh rong")
+# 2026-11-06 Tuan: cham KEY4 = noi chuyen ngay; giu KEY4 5 s = ngu; lau khong noi chuyen = tu ngu
+need("talk_button_.OnPressDown" not in cc and "talk_button_.OnPressUp" not in cc, "KEY4 khong con giu-nha (OnPressDown/OnPressUp)")
+need("talk_button_.OnClick" in cc and "talk_button_.OnLongPress" in cc, "KEY4 co OnClick + OnLongPress")
+need(re.search(r"talk_button_\s*\(\s*TALK_BUTTON_GPIO\s*,\s*false\s*,\s*(5000|STLAB_TALK_LONG_MS)", cc) is not None
+     and ("STLAB_TALK_LONG_MS" not in cc or re.search(r"#define\s+STLAB_TALK_LONG_MS\s+5000", cfg) is not None),
+     "KEY4 giu 5000 ms (Button long_press_time)")
+need("PowerSaveTimer" in cc and re.search(r"OnEnterSleepMode|OnShutdownRequest", cc) is not None, "tu ngu bang PowerSaveTimer")
+m = re.search(r"#define\s+STLAB_IDLE_SLEEP_S\s+(\d+)", cfg)
+need(m is not None and 30 <= int(m.group(1)) <= 300, "STLAB_IDLE_SLEEP_S 30..300 s trong config.h")
 if fails:
     print("FAIL check_a1s:"); [print(" -", f) for f in fails]; sys.exit(1)
 print("PASS check_a1s")

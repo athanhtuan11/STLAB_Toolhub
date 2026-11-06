@@ -5,7 +5,7 @@ Hệ lắp ráp: mm, +Z lên, mặt trước −Y; mặt ráp hai nửa là mặ
 
 ## Bố trí (đổi 2026-11-05: 2 loa trái + phải)
 - 2 loa Ø52 × 26, trục x, mặt ra ngoài, tâm (±51,5; 0; 46), hốc Ø52,6. Mỗi loa nằm trong **vành loa** (`speaker-bezel.stl`, in 2 cái): mặt phẳng Ø72 (mép vát 50° + bo nhỏ, ống non 25°) chứa
-  lưới Ø56 (lỗ Ø2,8, bước 5,6, 82 lỗ), ống non 30° làm yên côn lắp **từ trong ra ngoài** (không rút ra từ ngoài được), ống ôm vành loa có 3 vấu M2.5 bắt vòng ép (xem mục "Giữ loa").
+  lưới Ø56 (lỗ Ø2,8, bước 5,6, 82 lỗ), ống non 30° làm yên côn lắp **từ trong ra ngoài** (không rút ra từ ngoài được), ống ôm vành loa có 3 chốt ngàm xoay cho vòng ép (xem mục "Giữ loa").
 - Bo 82 × 73 × 25 dựng đứng giữa thân, **82 theo Y** (sâu), 73 theo Z, dày 25 theo X; tâm (0; 8; 60). 2 tấm ray đứng (khe 0,3) + chân chặn trước.
 - Tấm bụng (kem, `belly.stl`): mặt trơn, 4 vảy lông chữ V khắc nông 0,6, KHÔNG thủng; yên côn lắp từ trong.
 - Mắt: 2 lỗ Ø34 hướng theo pháp tuyến, ống đỡ + hốc Ø40,6; kính khuếch tán 0,8 + vành 3 (Ø40) lắp từ trong; **vòng mắt kem Ø54** (`eye-ring.stl`, in 2 cái) mỏng 3 mm ôm sát mặt cong, dán ngoài vỏ (không lắp từ trong); sau kính là khoang trống cho LED (WS2812 5 mm hoặc module tròn).
@@ -14,27 +14,33 @@ Hệ lắp ráp: mm, +Z lên, mặt trước −Y; mặt ráp hai nửa là mặ
 - Nửa sau: 5 khe 2 × 18 ở lưng, khe cáp 40 × 12 chân lưng (z 4–16, y ≥ 38).
 - Vít: 4 vít M3 từ đáy xuyên **tấm đế** (`base-plate.stl`, dày 4, lõm Ø9 sâu 2,8 dưới miếng cao su Ø16) và sàn vỏ (xuyên 3,4) vào đai ốc lục giác 5,8 thả từ trên vào hốc đỉnh 4 trụ trong vỏ (2 trụ mỗi nửa).
 
-## Giữ loa (2026-11-06)
-- **Lý do đổi:** bản cũ 4 vấu nằm sau đáy loa 2,7–4,3 mm (không chạm loa → rè); chỉ bám được nếu đáy loa to Ø52; vành loa không bị chặn tụt vào trong.
-- **Mới:** giữ loa bằng **mép trước** (mép loa dày 5 mm).
-  - Ron EVA dày 2 mm (vòng ngoài Ø52, trong ~Ø46 – tự cắt) giữa mặt sau tấm lưới và mặt loa, ép còn 1,5 mm.
-  - Vòng ép `speaker-ring.stl` (in rời; dày 2,4, lỗ giữa Ø42 (đè lên mép loa 5 mm/bên), 3 tai) ép mặt sau mép loa.
-  - 3 vít M2.5 × 8 tự ren qua lỗ Ø2,8 của vòng ép vào 3 vấu trên ống ôm vành loa (lỗ mồi Ø2,3 sâu 6; lỗ theo fit-library đo mẫu cộng đồng). Mỗi loa 3 vít → tổng 6 vít M2.5 × 8.
-- **Chống tụt vào trong:** vành loa chưa có khóa cơ khí → khi lắp, dán mặt côn vành loa vào lỗ côn vỏ bằng epoxy hoặc keo CA. Loa vẫn tháo được từ bên trong nhờ vòng ép.
-- **Vành loa:** mép mặt lưới đổi từ bo R8 sang vát 50° + bo nhỏ (in úp mặt lưới không cần support). Mặt loa lùi 1,3 mm so với bản cũ.
-- **In:** `print/print.yaml` bàn `A_speakers` (2 vành loa + 2 vòng ép, Bambu PETG Basic, 0,20 mm, 3 tường, 20 %), cắt lớp PASS, không support, 169 phút, 53,4 g. File: `print/plates/A_speakers/A_speakers.3mf`. STL sinh từ `cad/out`, chép thành `-l`/`-r` trong `print/stl`.
-- **Gate `gate_owl` PASS:** kiểm thêm `speaker-bezel`, `speaker-ring` (kín, 1 khối), loa mô hình mép Ø52 × 5 + thân Ø39 không chạm, số khe kẹp.
+## Giữ loa (2026-11-06) – không vít, ngàm xoay
+- **Lý do đổi:** bản đầu 4 vấu nằm sau đáy loa 2,7–4,3 mm (không chạm loa → rè). Bản vít M2.5 bỏ vì Tuan: chỗ quá nhỏ, không có cầu bắt vít.
+- **Giữ loa bằng mép trước** (mép dày 5 mm, thân sau mép < Ø39 – Tuan đo):
+  - Ron EVA dày 2 mm (vòng ngoài Ø52, lỗ trong cắt theo mép trong của mép loa – không đè lên màng loa; TODO đo) giữa mặt sau tấm lưới và mặt loa; khi khóa còn **1,2 mm**.
+  - Vòng ép **ngàm xoay** `speaker-ring.stl`: môi lỗ Ø42 đè lên mép loa 5 mm/bên; ống tay ôm ngoài ống ôm vành loa (khe 0,25), mặt trong có **3 rãnh chữ L**.
+  - Ống ôm vành loa có **3 chốt** (rộng 4, nhô 1,1, dày 1,5). Xoay khóa **30°**; ron đẩy vòng ép lùi, mặt chốt tì vào vách rãnh → không tự xoay ra.
+- **Chống tụt vành loa vào trong:** dán mặt côn vành loa vào lỗ côn vỏ bằng **epoxy** (hoặc CA) – Tuan chốt dán keo.
+- **Vành loa:** mép mặt lưới vát 50° + bo nhỏ (in úp mặt lưới không support).
+- **In:** `print/print.yaml` bàn `A_speakers` (2 vành loa + 2 vòng ép, Bambu PETG Basic, 0,20 mm, 3 tường, 20 %): PASS, không support, 173 phút, 60,6 g. File `print/plates/A_speakers/A_speakers.3mf`.
+- **Gate `gate_owl` PASS:** chi tiết kín 1 khối; loa (mép Ø52 × 5 + thân Ø39) ở vị trí đã khóa không chạm; số khe ngàm; **thử lắp trên hình**: vòng ép lọt rãnh dọc khi đưa vào, xoay hết 30° khi ấn thêm 0,2, nằm khít ở vị trí khóa.
 
 ## Lắp loa
 > [!IMPORTANT]
-> **An toàn (bé < 3 tuổi):** vít, ron và vòng ép nằm trong vỏ, không lộ ra ngoài sau khi đóng.
+> **An toàn (bé < 3 tuổi):** ron và vòng ép nằm trong vỏ, không lộ ra sau khi đóng. Keo epoxy: nơi thoáng, đeo găng, chờ khô hẳn rồi mới cho bé dùng.
 
 1. Đặt ron EVA lên mặt sau tấm lưới của vành loa.
 2. Đặt loa vào vành (mặt loa tựa ron).
-3. Đặt vòng ép (`speaker-ring`) lên mặt sau mép loa.
-4. Vặn đều 3 vít M2.5 × 8 qua lỗ Ø2,8 của vòng ép vào 3 vấu trên ống ôm vành loa.
-5. Lặp lại bước 1–4 cho loa thứ hai.
-6. Trước khi đóng vỏ: dán mặt côn vành loa vào lỗ côn vỏ bằng epoxy hoặc keo CA.
+3. Úp vòng ép lên, xoay cho 3 rãnh dọc trùng 3 chốt, ấn xuống (ép ron), **xoay 30°** tới hết rãnh, buông tay.
+4. Thử phát tiếng xem có rè không. Tháo: ấn nhẹ vòng ép, xoay ngược 30°, rút ra.
+5. Lặp lại cho loa thứ hai.
+6. Dán mặt côn vành loa vào lỗ côn vỏ bằng epoxy (đẩy từ trong ra), chờ khô.
+
+## Nút nói KEY4 khi bo nằm trong vỏ
+- Nắp nút Ø50 trên đỉnh đầu đè công tắc tactile **6 × 6** đặt trên giá trong nửa sau (đỉnh giá z = 136,3).
+- **Hàn 2 dây từ 2 chân KEY4 trên bo** (GPIO23 và GND) sang công tắc 6 × 6, **mắc song song** với KEY4 → bấm nút trên đầu cú = bấm KEY4.
+- An toàn: rút USB trước khi hàn; dây đủ dài để mở 2 nửa vỏ; cố định dây bằng keo nến, tránh đè lên loa.
+- KEY5/KEY6 (âm lượng) nằm trong vỏ: chỉnh trước khi đóng vỏ (TODO: thêm 2 nút ở lưng nếu Tuan cần chỉnh thường xuyên).
 
 ## Khác với spec (cần Claude/Tuan duyệt)
 1. **Không có gờ–rãnh dọc đường ráp**: gờ nhô qua mặt ráp nên nửa mang gờ phải in đứng trên gờ, trong khi tai/cánh đặc nằm lơ lửng. Thay bằng 6 lỗ chốt Ø2 sâu 8 mỗi nửa
@@ -51,7 +57,7 @@ Hệ lắp ráp: mm, +Z lên, mặt trước −Y; mặt ráp hai nửa là mặ
 | shell-back | 134,7 × 168,7 × 56,5 | mặt ráp xuống | mơ |
 | belly | 87,5 × 87,5 × 16,5 | mặt trước xuống | kem |
 | speaker-bezel (×2) | 86 × 86 × 15,0 | mặt lưới xuống | mơ |
-| speaker-ring (×2) | 61 × 62,5 × 2,4 | mặt ép xuống | mơ (nằm trong, không lộ) |
+| speaker-ring (×2) | 63,3 × 63,3 × 7,7 | đáy vòng xuống, ống tay hướng lên | mơ (nằm trong, không lộ) |
 | base-plate | 101,8 × 86,4 × 4,0 | phẳng | kem hoặc mơ |
 | beak | 24 × 24 × 16,5 | gờ xuống | bơ |
 | button-cap | 58 × 58 × 25,2 | mặt trên xuống | bơ |

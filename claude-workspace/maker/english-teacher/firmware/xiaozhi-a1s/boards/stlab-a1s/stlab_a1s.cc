@@ -8,6 +8,10 @@
 #include <driver/gpio.h>
 #include <esp_timer.h>
 #include "display/display.h"
+#include "power_save_timer.h"
+#include "assets/lang_config.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
 #include <algorithm>
 #include <vector>
@@ -140,6 +144,57 @@ private:
     Button volume_up_button_;
     Button volume_down_button_;
     StlabStatusLed* led_ = nullptr;
+    PowerSaveTimer* power_save_timer_ = nullptr;
+    volatile bool sleeping_ = false;
+
+    // Tat den + ampli loa (dung chung cho ngu tu dong va ngu do giu KEY4)
+    void SleepOutputs() {
+        if (led_ != nullptr) {
+            led_->OnStateChanged();
+        }
+        GetAudioCodec()->EnableOutput(false);
+    }
+
+    // Tu ngu sau STLAB_IDLE_SLEEP_S giay khong giao tiep (PowerSaveTimer tu bo qua khi dang noi chuyen/nang cap).
+    // cpu_max_freq = -1: khong doi xung nhip, khong tat Wi-Fi/nghe -> cham la noi ngay.
+    void InitializePowerSaveTimer() {
+        power_save_timer_ = new PowerSaveTimer(-1, STLAB_IDLE_SLEEP_S);
+        power_save_timer_->OnEnterSleepMode([this]() {
+            ESP_LOGI(TAG, "Ngu (khong giao tiep %d s)", STLAB_IDLE_SLEEP_S);
+            sleeping_ = true;
+            SleepOutputs();
+        });
+        power_save_timer_->OnExitSleepMode([this]() {
+            ESP_LOGI(TAG, "Thuc day");
+            sleeping_ = false;
+            if (led_ != nullptr) {
+                led_->OnStateChanged();
+            }
+        });
+        power_save_timer_->SetEnabled(true);
+    }
+
+    // Giu KEY4: ket thuc phien neu dang noi/nghe, phat am bao, tat den + ampli.
+    static void SleepTask(void* arg) {
+        auto* self = static_cast<StlabA1sBoard*>(arg);
+        auto& app = Application::GetInstance();
+        for (int i = 0; i < 4; i++) {
+            auto st = app.GetDeviceState();
+            if (st != kDeviceStateListening && st != kDeviceStateSpeaking && st != kDeviceStateConnecting) {
+                break;
+            }
+            app.ToggleChatState();  // Speaking: ngat loi; Listening: dong kenh am thanh
+            vTaskDelay(pdMS_TO_TICKS(700));
+        }
+        if (app.GetDeviceState() == kDeviceStateIdle) {
+            app.PlaySound(Lang::Sounds::OGG_POPUP);
+            vTaskDelay(pdMS_TO_TICKS(800));
+        }
+        self->sleeping_ = true;
+        self->SleepOutputs();
+        ESP_LOGI(TAG, "Ngu theo nut giu KEY4");
+        vTaskDelete(nullptr);
+    }
 
     void InitializeI2c() {
         i2c_master_bus_config_t bus_config = {
@@ -158,6 +213,8 @@ private:
     }
 
     void ChangeVolume(int delta) {
+        sleeping_ = false;
+        power_save_timer_->WakeUp();
         auto codec = GetAudioCodec();
         int volume = std::max(0, std::min(codec->output_volume() + delta, STLAB_MAX_VOLUME));
         codec->SetOutputVolume(volume);
@@ -170,11 +227,19 @@ private:
         // Luc dang khoi dong cham de vao cau hinh Wi-Fi.
         talk_button_.OnClick([this]() {
             auto& app = Application::GetInstance();
+            // Dang ngu: cham = thuc day + noi chuyen ngay (1 lan cham)
+            sleeping_ = false;
+            power_save_timer_->WakeUp();
             if (app.GetDeviceState() == kDeviceStateStarting) {
                 EnterWifiConfigMode();
                 return;
             }
             app.ToggleChatState();
+        });
+
+        // Giu KEY4 5 s = ngu (nut nay cham nhanh van la OnClick)
+        talk_button_.OnLongPress([this]() {
+            xTaskCreate(SleepTask, "stlab_sleep", 4096, this, 3, nullptr);
         });
 
         // KEY5 / KEY6: am luong +/- 10, giu KEY5 de vao cau hinh Wi-Fi
@@ -186,11 +251,12 @@ private:
 public:
     StlabA1sBoard()
         : WifiBoard(),
-          talk_button_(TALK_BUTTON_GPIO),
+          talk_button_(TALK_BUTTON_GPIO, false, STLAB_TALK_LONG_MS),
           volume_up_button_(VOLUME_UP_BUTTON_GPIO),
           volume_down_button_(VOLUME_DOWN_BUTTON_GPIO) {
         InitializeI2c();
         InitializeButtons();
+        InitializePowerSaveTimer();
     }
 
     virtual Led* GetLed() override {

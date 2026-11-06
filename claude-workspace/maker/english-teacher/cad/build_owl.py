@@ -12,14 +12,19 @@ OUT.mkdir(parents=True, exist_ok=True)
 WALL = 2.4                 # thanh vo
 SPEAKER_POCKET_D = 52.6    # loa O52 + khe 0,3/ben
 SPEAKER_D, SPEAKER_L = 52.0, 26.0
-# 2026-11-06 giu loa bang MEP truoc (Tuan do mep day 5): ron EVA 2 ep con 1,5 giua mat tam luoi va mat loa,
-# vong ep in roi ep mat sau mep, 3 vit M2.5 tu ren vao 3 vau tren ong om (fit-library: tu ren 2,2-2,4, lo qua 2,8)
-FLANGE_T, GASKET_T = 5.0, 1.5
+# 2026-11-06 giu loa bang MEP truoc (Tuan do mep day 5, than < O39) - KHONG VIT (Tuan: khong cho bat vit):
+# ron EVA 2 giua mat tam luoi va mat loa; vong ep NGAM XOAY (bayonet): 3 chot tren ong om vanh loa, 3 ranh chu L trong ong tay vong ep;
+# an vong ep vao (ep them ron) roi xoay BAY_TWIST, nha ra -> ron day vong ep lui, mat tren chot ty vao vach ranh -> khoa.
+FLANGE_T, GASKET_T = 5.0, 1.5          # GASKET_T: khe danh nghia mat luoi - mat loa khi chua ep them
 BODY_D_MAX = 39.0          # Tuan 2026-11-06: lo O39 giu duoc mep, than loa lot -> than < O39
 SRING_T, RING_ID = 2.4, 42.0   # vong ep loa (SRING_T: RING_T da dung cho vong mat)
-M25_TAP_D, M25_CLR_D = 2.3, 2.8
-LUG_R, LUG_W, LUG_DEPTH = 31.0, 6.0, 6.0   # tam lo vit, be rong vau, sau lo moi
-LUG_ANG = (90.0, 210.0, 330.0)
+BAY_ANG = (90.0, 210.0, 330.0)         # goc 3 chot (vi tri da khoa)
+BAY_TWIST = 30.0                       # goc xoay khoa
+BPIN_W, BPIN_H, BPIN_T = 4.0, 1.1, 1.5    # chot: rong tiep tuyen, nho ra (ban kinh), day doc truc
+BPIN_DZ = 2.5                           # mat duoi chot cach mat cuoi ong om
+SLEEVE_CLR, BPIN_CLR, GROOVE_CLR = 0.25, 0.25, 0.3   # khe ong tay / dau chot / ranh doc truc (bang khe: truot 0,2-0,3)
+SLEEVE_T, SLEEVE_LEN = 2.4, 5.0        # ong tay: day, dai qua mat cuoi ong om
+LIP_PRE, OUT_GAP = 0.3, 0.3            # moi vong ep vao sau mat cuoi ong om (ep ron them); vanh ngoai vong ep cach mat cuoi
 GRILLE_HOLE_D, GRILLE_PITCH, GRILLE_ZONE_D = 2.8, 5.6, 56.0
 MIC_HOLE_D = 2.0
 M3_CLEAR_D, M3_NUT_S, NUT_DEPTH = 3.4, 5.8, 2.8
@@ -44,7 +49,7 @@ BZL_T = math.tan(math.radians(BZL_A))
 BZL_RHO = 8.0                       # bo mep mat vanh loa       # ban kinh mat phang, mat sau cua ong non (|x|)
 SPK_FACE = SPK_XF - 3.0 - GASKET_T  # mat loa (tam luoi day 3 + ron ep 1,5)
 CUP_END = SPK_FACE - FLANGE_T       # mat sau mep loa = mat cuoi ong om = mat truoc vong ep
-SPEAKERS = [{"center": [s * (SPK_FACE - SPEAKER_L / 2), 0.0, SPK_Z], "axis": "x"} for s in (-1, 1)]
+SPEAKERS = [{"center": [s * (SPK_FACE + LIP_PRE - SPEAKER_L / 2), 0.0, SPK_Z], "axis": "x"} for s in (-1, 1)]   # loa o vi tri DA KHOA (vong ep day vao LIP_PRE)
 PCB_CENTER = [0.0, 8.0, 60.0]
 EYE_X, EYE_Z, BEAK_Z = 36.5, 108.0, 102.0
 RING_D, RING_T = 54.0, 3.0        # vong mat kem
@@ -295,24 +300,42 @@ def make_bezel():
                                       depth=5.0, matrix=Matrix.Translation((x, y, h0 - 1.2)))
                 cnt += 1
     gc = new_obj('grille', bm); diff(z, gc)
-    # 3 vau bat vit M2.5 cho vong ep: tu mat cuoi ong om toi tam luoi, lo moi tu ren sau LUG_DEPTH
-    for a in LUG_ANG:
+    # 3 chot ngam xoay tren mat ngoai ong om (he cuc bo, z = |x|; z tang ve phia tam luoi).
+    # In up mat luoi xuong: mat +z cua chot (mat CHIU LUC, phang) up xuong ban, nho ra 1,1 mm - cau ngan.
+    for a in BAY_ANG:
         R = Matrix.Rotation(math.radians(a), 4, 'Z')
-        lg = box('lug', (CUP_OR - 0.5, -LUG_W / 2, CUP_END), (LUG_R + LUG_W / 2 - 0.5, LUG_W / 2, plate_back + 0.5)); lg.data.transform(R)
-        union(z, lg)
-        hole = cyl('tap', (LUG_R, 0, CUP_END - 0.5), (LUG_R, 0, CUP_END + LUG_DEPTH), M25_TAP_D / 2, seg=24); hole.data.transform(R)
-        diff(z, hole)
+        pz0 = CUP_END + BPIN_DZ
+        pn = box('bpin', (CUP_OR - 0.5, -BPIN_W / 2, pz0), (CUP_OR + BPIN_H, BPIN_W / 2, pz0 + BPIN_T)); pn.data.transform(R)
+        union(z, pn)
     return z, cnt
 
+def sector(name, r0, r1, z0, z1, a0, a1, n=16):
+    """Khoi cung vanh khuyen: ban kinh r0..r1, cao z0..z1, goc a0..a1 (do) quanh truc z."""
+    bm = bmesh.new(); V = []
+    for i in range(n + 1):
+        t = math.radians(a0 + (a1 - a0) * i / n); c, sn = math.cos(t), math.sin(t)
+        V.append([bm.verts.new((r * c, r * sn, h)) for (r, h) in ((r0, z0), (r1, z0), (r1, z1), (r0, z1))])
+    for i in range(n):
+        A, B_ = V[i], V[i + 1]
+        for k in range(4):
+            bm.faces.new((A[k], A[(k + 1) % 4], B_[(k + 1) % 4], B_[k]))
+    bm.faces.new(V[0][::-1]); bm.faces.new(V[n])
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    return new_obj(name, bm)
+
 def make_clamp_ring():
-    """Vong ep mep loa (he cuc bo nhu vanh loa, z = |x|): mat truoc o CUP_END ep mat sau mep, 3 tai lo vit M2.5."""
-    r = lathe('sring', [(RING_ID / 2, CUP_END), (CUP_OR, CUP_END), (CUP_OR, CUP_END - SRING_T), (RING_ID / 2, CUP_END - SRING_T)], seg=96)
-    for a in LUG_ANG:
-        R = Matrix.Rotation(math.radians(a), 4, 'Z')
-        e = box('ear', (CUP_OR - 0.5, -LUG_W / 2, CUP_END - SRING_T), (LUG_R + LUG_W / 2 - 0.5, LUG_W / 2, CUP_END)); e.data.transform(R)
-        union(r, e)
-        h = cyl('clr', (LUG_R, 0, CUP_END - SRING_T - 0.5), (LUG_R, 0, CUP_END + 0.5), M25_CLR_D / 2, seg=24); h.data.transform(R)
-        diff(r, h)
+    """Vong ep NGAM XOAY (he cuc bo nhu vanh loa) o vi tri DA KHOA: moi O42 ep mat sau mep loa (vao sau mat cuoi ong om LIP_PRE),
+    ong tay om ngoai ong om, 3 ranh chu L: doan doc mo o dau ong tay, doan ngang BAY_TWIST do, chot nam o cuoi doan ngang."""
+    zB = CUP_END - OUT_GAP - SRING_T; zL = CUP_END + LIP_PRE; zO = CUP_END - OUT_GAP
+    rl = SPEAKER_POCKET_D / 2 - 0.3; rsi = CUP_OR + SLEEVE_CLR; rso = rsi + SLEEVE_T; ztop = CUP_END + SLEEVE_LEN
+    r = lathe('sring', [(RING_ID / 2, zB), (RING_ID / 2, zL), (rl, zL), (rl, zO), (rsi, zO), (rsi, ztop), (rso, ztop), (rso, zB)], seg=96)
+    pz0 = CUP_END + BPIN_DZ; pz1 = pz0 + BPIN_T                 # chot (vi tri khoa): mat +z chot ty vao vach tren ranh
+    rg = CUP_OR + BPIN_H + BPIN_CLR                               # day ranh
+    half = math.degrees((BPIN_W / 2 + 0.4) / rsi)                 # nua be rong ranh theo goc (khe 0,4 hai ben chot)
+    for a in BAY_ANG:
+        g0, g1 = pz0 - GROOVE_CLR, pz1                            # ranh ngang: duoi co khe de xoay khi an them
+        diff(r, sector('gh', rsi - 0.5, rg, g0, g1, a - BAY_TWIST - half, a + half, 12))
+        diff(r, sector('gv', rsi - 0.5, rg, g0, ztop + 0.5, a - BAY_TWIST - half, a - BAY_TWIST + half, 4))
     return r
 CUP_OR = SPEAKER_POCKET_D / 2 + 2.7  # ban kinh ngoai ong om
 BEZEL_LOCAL, GRILLE_N = make_bezel()
@@ -379,7 +402,7 @@ T_ring = EYES[1].inverted()
 export_obj(RINGS[1], T_ring, OUT / "eye-ring.stl")
 export_obj(PLATE, Mx(((1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1))), OUT / "base-plate.stl")
 export_obj(BEZEL_LOCAL, Mx(((1, 0, 0, 0), (0, -1, 0, 0), (0, 0, -1, SPK_XF), (0, 0, 0, 1))), OUT / "speaker-bezel.stl")
-export_obj(SRING_LOCAL, Mx(((1, 0, 0, 0), (0, -1, 0, 0), (0, 0, -1, CUP_END), (0, 0, 0, 1))), OUT / "speaker-ring.stl")
+export_obj(SRING_LOCAL, Matrix.Identity(4), OUT / "speaker-ring.stl")   # day vong ep xuong ban, ong tay huong len
 
 # lap rap
 asm = bmesh.new()
@@ -400,7 +423,9 @@ params = dict(wall=WALL, speaker_pocket_d=SPEAKER_POCKET_D, grille_hole_d=GRILLE
               belly=dict(z=BELLY_Z, front_y=BELLY_FRONT, rf=BELLY_RF), eye=dict(x=EYE_X, z=EYE_Z), beak_z=BEAK_Z,
               screws=dict(x=SCREW_X, y=SCREW_Y, m3_nut_depth=NUT_DEPTH),
               speaker_clamp=dict(flange_t=FLANGE_T, gasket_t=GASKET_T, body_d_max=BODY_D_MAX, ring_t=SRING_T, ring_id=RING_ID,
-                                 m25_tap_d=M25_TAP_D, m25_clr_d=M25_CLR_D, lug_r=LUG_R, lug_depth=LUG_DEPTH, face_abs_x=SPK_FACE, cup_end_abs_x=CUP_END), pins=dict(d=PIN_D, half_depth=PIN_HALF), floor_cut=FLOOR_CUT, cone_clearance=CONE_CLR, fit=FIT, slide=SLIDE)
+                                 bayonet=dict(n=len(BAY_ANG), twist=BAY_TWIST, pin_w=BPIN_W, pin_h=BPIN_H, pin_t=BPIN_T, sleeve_clr=SLEEVE_CLR, pin_clr=BPIN_CLR,
+                                 groove_clr=GROOVE_CLR, lip_pre=LIP_PRE, out_gap=OUT_GAP, sleeve_t=SLEEVE_T), gasket_locked=round(GASKET_T - LIP_PRE, 3),
+                                 face_abs_x=SPK_FACE, cup_end_abs_x=CUP_END), pins=dict(d=PIN_D, half_depth=PIN_HALF), floor_cut=FLOOR_CUT, cone_clearance=CONE_CLR, fit=FIT, slide=SLIDE)
 (OUT / "owl-params.json").write_text(json.dumps(params, indent=1), encoding="utf-8")
 
 # ============================================================ ANH XEM TRUOC (Eevee, dung STL that)

@@ -131,12 +131,50 @@ if not sc_:
 else:
     if abs(sc_["flange_t"] - 5.0) > 0.01: fails.append("flange_t phai 5,0 (Tuan do)")
     if not 1.0 <= sc_["gasket_t"] <= 1.8: fails.append("ron ep 1,0-1,8 (EVA 2 mm)")
-    if not 2.2 <= sc_["m25_tap_d"] <= 2.4: fails.append("lo tu ren M2.5 phai 2,2-2,4 (fit-library)")
-    if abs(sc_["m25_clr_d"] - 2.8) > 0.01: fails.append("lo qua M2.5 phai 2,8 (fit-library)")
+    bay = sc_.get("bayonet")  # 2026-11-06 Tuan: khong vit -> vong ep ngam xoay
+    if not bay:
+        fails.append("speaker_clamp can bayonet (vong ep ngam xoay, khong vit)")
+    else:
+        if bay["n"] < 3: fails.append("ngam xoay can >= 3 chot")
+        if not 0.2 <= bay["sleeve_clr"] <= 0.35: fails.append("khe ong tay 0,2-0,35 (truot)")
+        if bay["pin_clr"] < 0.2: fails.append("khe dau chot >= 0,2")
+        if bay["pin_h"] < 0.8: fails.append("chot nho ra >= 0,8 mm (an du)")
+        if not 20 <= bay["twist"] <= 45: fails.append("goc xoay khoa 20-45 do")
+        if bay["groove_clr"] < 0.2: fails.append("ranh ngang can khe doc truc >= 0,2 de xoay khi an")
+    if not 0.8 <= sc_.get("gasket_locked", 0) <= 1.4: fails.append("ron EVA 2 mm khi khoa phai con 0,8-1,4 mm (ep 30-60 %)")
     if sc_["ring_id"] <= sc_["body_d_max"]: fails.append("lo vong ep phai lon hon than loa")
     if sc_["ring_id"] >= 52.0 - 2 * 2.0: fails.append("vong ep phai de len mep loa >= 2 mm moi ben")
-    if sc_["lug_depth"] < 5.0: fails.append("lo moi M2.5 sau >= 5")
     if abs(sc_["face_abs_x"] - sc_["flange_t"] - sc_["cup_end_abs_x"]) > 0.01: fails.append("mat truoc vong ep phai trung mat sau mep loa")
+# ngam xoay lap duoc that (2026-11-06): vong ep phai (1) nam khit o vi tri khoa, (2) theo 1 chieu xoay: lot ranh doc khi dua vao
+# va xoay het goc khoa khi an them - khong cham vanh loa. Dung out/asm (vi tri lap that), loa phai (truc +x qua (0,0,z_loa)).
+bay = (p.get("speaker_clamp") or {}).get("bayonet")
+bz_m, rg_m = load(OUT / "asm" / "speaker-bezel-R.stl"), load(OUT / "asm" / "speaker-ring-R.stl")
+if bay and bz_m and rg_m and p.get("speakers"):
+    import math
+    from mathutils import Matrix
+    c = Vector((0.0, 0.0, max(s["center"] for s in p["speakers"])[2]))
+    bz_tree = BVHTree.FromBMesh(bz_m)
+
+    def hit(dx, ang_deg):
+        b = rg_m.copy()
+        T = Matrix.Translation((dx, 0, 0)) @ Matrix.Translation(c) @ Matrix.Rotation(math.radians(ang_deg), 4, 'X') @ Matrix.Translation(-c)
+        bmesh.ops.transform(b, matrix=T, verts=b.verts)
+        r_ = bz_tree.overlap(BVHTree.FromBMesh(b)); b.free()
+        return bool(r_)
+
+    if hit(0.1, 0.0):
+        fails.append("vong ep cham vanh loa o vi tri khoa")
+    tw, press = bay["twist"], min(0.2, bay["groove_clr"] - 0.05)
+    ok_dir = None
+    for sg in (1, -1):
+        entry = all(not hit(-d, sg * tw) for d in (0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0)) and not hit(press, sg * tw)
+        turn = all(not hit(press, sg * tw * k / 6) for k in range(7))
+        if entry and turn:
+            ok_dir = sg
+    if ok_dir is None:
+        fails.append("ngam xoay khong lap duoc: khong co chieu xoay nao vua lot ranh doc vua xoay het goc khoa")
+    else:
+        print(f"ngam xoay: lap duoc (chieu {'+' if ok_dir > 0 else '-'}, xoay {tw:.0f} do)")
 for f in ("owl-preview.png", "owl-exploded.png"):
     if not (OUT / f).exists():
         fails.append(f"out/{f} khong co")
