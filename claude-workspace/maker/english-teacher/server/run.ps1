@@ -2,6 +2,8 @@
 $ErrorActionPreference = "Stop"
 # Task Scheduler chay o muc BelowNormal -> Whisper cham 2 s -> 6 s (do 2026-11-06). Nang len Normal; tien trinh con ke thua.
 try { (Get-Process -Id $PID).PriorityClass = "Normal" } catch {}
+# Co file live.on -> chay cau noi Gemini Live (CHI NGUOI LON THU, xem live/bridge.py) thay may chu xinnan. Xoa file de quay lai.
+if (Test-Path (Join-Path $PSScriptRoot "live.on")) { & (Join-Path $PSScriptRoot "run-live.ps1"); return }
 $H = $PSScriptRoot
 $RT = Join-Path $H "runtime"
 $py = Join-Path $RT ".venv\Scripts\python.exe"
