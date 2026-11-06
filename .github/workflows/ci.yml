@@ -1,10 +1,9 @@
 name: ci
 
+# 2026-11-06 Tuan: tat tu chay khi push/PR (email bao loi spam). Chi chay tay: GitHub -> Actions -> ci -> Run workflow.
+# Bat lai: them lai khoi push/pull_request ben duoi.
 "on":
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
