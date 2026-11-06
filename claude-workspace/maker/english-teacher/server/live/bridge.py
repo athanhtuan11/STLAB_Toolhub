@@ -34,6 +34,7 @@ HTTP_PORT = int(os.environ.get("STLAB_LIVE_HTTP_PORT", "8003"))
 MODEL = os.environ.get("STLAB_LIVE_MODEL", "gemini-3.8-live")
 VOICE = os.environ.get("STLAB_LIVE_VOICE", "").strip()
 IN_RATE, OUT_RATE = 16000, 24000
+RATE_BYTES = IN_RATE * 2              # 1 s PCM 16 kHz s16le
 IN_FRAME, OUT_FRAME = 960, 1440      # 60 ms
 FRAME_S = 0.06
 PRE_BUFFER = 5                        # nhu sendAudioHandle cua xinnan
@@ -72,7 +73,34 @@ def load_prompt():
     return (parts[1] if len(parts) > 1 else txt).strip()
 
 
-from curriculum import Curriculum, ALLOWED_NICKNAMES, live_tools, find_nickname  # noqa: E402
+from curriculum import Curriculum, ALLOWED_NICKNAMES, live_tools, find_nickname, _fold  # noqa: E402
+import voiceid  # noqa: E402
+
+
+def _voice_enabled():
+    """Nhan dien giong chi bat khi bo/me dong y (data/consent.json: parent_consent true) va co mo hinh."""
+    try:
+        c = json.loads((SERVER / "data" / "consent.json").read_text(encoding="utf-8"))
+        if c.get("parent_consent") is not True:
+            raise ValueError
+    except Exception:
+        print(time.strftime("%H:%M:%S ") + "[LIVE-VOICE] tat: khong co data/consent.json (parent_consent true)", flush=True)
+        return None
+    if not voiceid.MODEL.exists():
+        print(time.strftime("%H:%M:%S ") + "[LIVE-VOICE] tat: chua co mo hinh (chay setup-voiceid.ps1)", flush=True)
+        return None
+    return voiceid.VoiceID(voiceid.default_store())
+
+
+VOICE_ID = _voice_enabled()
+VOICE_ENROLL = os.environ.get("VOICEID_ENROLL", "1") != "0"
+ENROLL_TURNS = 3
+ANON_LESSON = os.environ.get("STLAB_ANON_LESSON", "1") != "0"   # khong biet danh sau 2 luot be -> bai ngau nhien
+NUDGE_S = float(os.environ.get("STLAB_NUDGE_S", "6"))   # be im bay nhieu giay sau luot co -> nhac
+NUDGE_RMS = 400                       # nguong nang luong PCM: cung nguong 'dang noi' cua mic_rx (tieng be > ~1000, nen phong < 400)
+BYE_WORDS = ("bye bye", "goodbye", "tam biet")
+YES_WORDS = {"co", "dung", "vang", "u", "yes", "phai", "da"}
+NO_WORDS = {"khong", "no", "sai"}
 
 SILENCE_MS = int(os.environ.get("STLAB_LIVE_SILENCE_MS", "600"))
 
@@ -80,8 +108,10 @@ CUR = Curriculum(os.environ.get("STLAB_LEARNERS_PATH") or (SERVER / "data" / "le
 CURRICULUM_PROMPT = (
     "\n\nAt the start, ask in Vietnamese which animal friend is learning today (e.g. bạn thỏ, bạn mèo, bạn gấu). "
     "Then wait. The system will send a [lesson] message with the lesson to follow. Until then, do not start a lesson "
-    "and do not call tools. After a [lesson] message: follow it; after the child repeats a vocabulary word call "
-    "mark_word; at the end call finish_lesson then say a short goodbye. Never ask for real names."
+    "and do not call tools. After a [lesson] message: treat it as goals and teach in your own fresh way; after the child repeats a vocabulary word call "
+    "mark_word; at the end call finish_lesson then say a short goodbye. Never ask for real names. "
+    "Listen carefully. If you are not sure what the child said, or the answer does not fit, do NOT guess: "
+    "kindly ask again in Vietnamese ('Con nói lại cho cô nghe nhé?'), at most twice, then gently give the answer and move on."
 )
 PROMPT = load_prompt() + CURRICULUM_PROMPT
 
@@ -104,7 +134,12 @@ def live_config():
     return types.LiveConnectConfig(**kw)
 
 
+POOL = None
+
+
 async def ota_handler(request):
+    if POOL is not None:
+        POOL.touch()   # bo vua khoi dong / goi OTA -> giu phien du phong san cho lan bam dau
     ver = ""
     try:
         data = await request.json() if request.method == "POST" else {}
@@ -164,24 +199,48 @@ async def close_late(task):
         pass
 
 
+WARM_WINDOW_S = int(os.environ.get("STLAB_WARM_WINDOW_S", "600"))   # giu phien du phong 10 ph sau hoat dong cuoi
+
+
 class LivePool:
     def __init__(self, client):
         self.client = client
         self.standby = None
         self.taken = asyncio.Event()
+        self.last_activity = time.time()   # bo hoat dong gan nhat (khoi dong may chu, OTA, ket noi, het phien)
+        self.paused = False
+        self.fail = 0
+
+    def touch(self):
+        self.last_activity = time.time()
+
+    def warm(self):
+        # 2026-11-06 Tuan duyet: chi giu phien du phong WARM_WINDOW_S sau lan bo hoat dong cuoi (Google dong phien ranh ~2 ph
+        # -> mo lai ~30 phien/gio du khong ai noi, ton han muc mien phi)
+        return time.time() - self.last_activity < WARM_WINDOW_S
 
     async def maintain(self):
         while True:
             if self.standby is None:
+                if not self.warm():
+                    if not self.paused:
+                        log(f"tam dung phien du phong (bo khong hoat dong > {WARM_WINDOW_S} s)")
+                        self.paused = True
+                    await asyncio.sleep(2)
+                    continue
+                self.paused = False
                 t0 = time.time()
                 try:
                     h = await asyncio.wait_for(open_live(self.client), OPEN_TOTAL_S)
                 except asyncio.CancelledError:
                     raise
                 except BaseException as e:
-                    log(f"phien du phong loi: {type(e).__name__}: {str(e)[:120]}")
-                    await asyncio.sleep(3)
+                    self.fail += 1
+                    wait = min(60, 3 * 2 ** (self.fail - 1))   # loi (vd het han muc 1011): cho tang dan, khong thu moi 3 s mai
+                    log(f"phien du phong loi ({self.fail}): {type(e).__name__}: {str(e)[:120]} - thu lai sau {wait} s")
+                    await asyncio.sleep(wait)
                     continue
+                self.fail = 0
                 self.standby = h
                 self.taken.clear()
                 log(f"phien du phong san sang ({int((time.time() - t0) * 1000)} ms)")
@@ -189,7 +248,11 @@ class LivePool:
                 await asyncio.wait_for(self.taken.wait(), timeout=5)
             except asyncio.TimeoutError:
                 h = self.standby
-                if h is not None and (time.time() - h.born >= STANDBY_MAX_S or not h.alive()):
+                if h is not None and not self.warm():
+                    log("dong phien du phong (het cua so hoat dong)")
+                    self.standby = None
+                    await h.close()
+                elif h is not None and (time.time() - h.born >= STANDBY_MAX_S or not h.alive()):
                     log("phien du phong het han/dong, mo lai")
                     self.standby = None
                     await h.close()
@@ -199,6 +262,7 @@ class LivePool:
 
     async def acquire(self):
         """Tra handle. Uu tien phien du phong; neu khong thi mo moi co hedge."""
+        self.touch()
         h = self.standby
         if h is not None:
             self.standby = None
@@ -268,6 +332,21 @@ class Session:
         self.pending_lesson = None         # tin [lesson] cho gui khi luot hien tai xong
         self.gen_open = False              # Gemini dang sinh am thanh cua 1 luot (chua turn_complete)
         self.dev_on = False                # thiet bi da nhan tts start (chua stop)
+        self.turn_pcm = bytearray()        # PCM 16 kHz luot be dang noi (chi trong bo nho, bo sau khi dung)
+        self.guess = None                  # biet danh doan tu giong, cho be xac nhan
+        self.voice_tried = False
+        self.enrolled = 0
+        self.finishing = False             # da goi finish_lesson
+        self.last_speech = 0.0
+        self.bye_task = None
+        self.end_done = False
+        self.fast_stop = False
+        self.anon_turns = 0
+        self.anon_sent = False
+        self.heard_at = 0.0
+        self.silent_n = 0                  # so lan nhac lien tiep ma be van im
+        self.nudge_task = None
+        self.ending = False                # be bam KEY4 xin ket thuc (abort luc co khong noi)
 
     async def handle_tool_call(self, tc):
         resps = []
@@ -279,6 +358,7 @@ class Session:
                     log(f"[LIVE-TOOL] mark_word {a.get('word', '')} {bool(a.get('correct'))}")
                 elif fc.name == "finish_lesson":
                     res = CUR.finish(self.nick) if self.nick else {"next_lesson": None}
+                    self.finishing = True
                     log(f"[LIVE-TOOL] finish_lesson -> {res.get('next_lesson')}")
                 else:
                     res = {"error": "unknown tool"}
@@ -322,12 +402,24 @@ class Session:
                         await self.send_json({"type": "stt", "text": self.user_txt, "session_id": self.sid})
                 continue
             if isinstance(item, str):  # "STOP": chi sau khi da xa het khung truoc no
-                await asyncio.sleep(PRE_BUFFER * FRAME_S if n else 0)
+                await asyncio.sleep(PRE_BUFFER * FRAME_S if n and not self.fast_stop else 0)
+                self.fast_stop = False
                 n = 0
                 if self.dev_on:
                     self.dev_on = False
                     dbg("tts stop")
                     await self.send_json({"type": "tts", "state": "stop", "session_id": self.sid})
+                    if self.ending:
+                        asyncio.create_task(self.end_close(0.4))
+                    elif not self.finishing and not any(w in _fold(self.reply_txt)[-40:] for w in BYE_WORDS):
+                        if self.nudge_task:
+                            self.nudge_task.cancel()
+                        self.nudge_task = asyncio.create_task(self.nudge_watch(time.time()))
+                    tail = _fold(self.reply_txt)[-40:]
+                    if not self.ending and self.finishing or any(w in tail for w in BYE_WORDS):
+                        if self.bye_task:
+                            self.bye_task.cancel()
+                        self.bye_task = asyncio.create_task(self.bye_close(time.time()))
                     self.log_turn()
                 if not self.gen_open and self.out_q.empty():
                     self.tts_on = False
@@ -341,6 +433,74 @@ class Session:
             if self.dev_on:
                 await self.ws.send(item)
             n += 1
+
+    async def tell_interrupted(self):
+        try:
+            await self.live.send_client_content(
+                turns=types.Content(role="user", parts=[types.Part(text="[interrupted] The child interrupted you. Stop and listen.")]),
+                turn_complete=False)
+        except Exception as e:
+            dbg(f"interrupted loi {type(e).__name__}")
+
+    async def nudge_watch(self, stop_t):
+        """Sau luot co, be im NUDGE_S giay -> nhac be (toi da 2 lan nhac, lan 3 chuyen tu, lan 4 tam biet + dong)."""
+        await asyncio.sleep(NUDGE_S)
+        if (self.closed or self.ending or self.finishing or self.tts_on or self.gen_open or self.dev_on
+                or self.last_speech > stop_t or self.heard_at > stop_t or self.live is None):
+            return
+        self.silent_n += 1
+        n = self.silent_n
+        log(f"[LIVE-T] nhac be (lan {n})")
+        if n <= 2:
+            await self.send_lesson("[silence] The child has not answered. Gently encourage in Vietnamese and make it easier: "
+                                   "repeat the question more simply, or say the answer and ask the child to repeat it "
+                                   "(e.g. 'Con nói theo cô nhé: red!'). One or two short sentences.")
+        elif n == 3:
+            await self.send_lesson("[silence] Still no answer. Move on to the next word kindly.")
+        else:
+            await self.end_request()
+            return
+        await asyncio.sleep(5)                 # Gemini khong tra loi loi nhac -> van nhac tiep (khong dung giua chung)
+        if not (self.closed or self.tts_on or self.gen_open or self.dev_on):
+            self.nudge_task = asyncio.create_task(self.nudge_watch(time.time()))
+
+    async def end_close(self, delay):
+        await asyncio.sleep(delay)
+        if self.closed or self.end_done:
+            return
+        self.end_done = True
+        log("[LIVE-T] be xin ket thuc -> tam biet -> dong")
+        await self.ws.close()
+
+    async def end_request(self):
+        """Be cham KEY4 luc thiet bi dang nghe (abort khi co khong noi): luu tien do, co chao tam biet roi dong."""
+        if self.ending or self.live is None:
+            if self.live is None:
+                await self.end_close(0)
+            return
+        self.ending = True
+        self.pending_lesson = None
+        self.aborted = False
+        if self.nick:
+            try:
+                res = CUR.finish(self.nick)
+                log(f"[LIVE-TOOL] finish_lesson (be xin ket thuc) -> {res.get('next_lesson')}")
+            except Exception as e:
+                log(f"finish loi {type(e).__name__}")
+        await self.send_lesson("[end] The child wants to stop now. Say one short warm goodbye "
+                               "(Vietnamese + 'bye bye'), no questions.")
+        await asyncio.sleep(3)
+        if not (self.gen_open or self.dev_on or self.tts_on):
+            await self.end_close(0)
+
+    async def bye_close(self, stop_t):
+        """Sau cau tam biet, be im 4 s -> dong ket noi de thiet bi ve nghi."""
+        await asyncio.sleep(4)
+        if self.tts_on or self.last_speech > stop_t or self.closed:
+            self.finishing = False
+            return
+        log("[LIVE-T] ket thuc phien sau tam biet")
+        await self.ws.close()
 
     def log_turn(self):
         if self.first_ms is not None:
@@ -378,13 +538,53 @@ class Session:
             log(f"send_client_content loi ({type(e).__name__}), dung send_realtime_input")
             await self.live.send_realtime_input(text=text)
 
+    async def after_turn(self):
+        """Het luot be noi: ghi giong (da co biet danh) hoac doan be tu giong (chua co). PCM bo ngay sau do."""
+        pcm, self.turn_pcm = bytes(self.turn_pcm), bytearray()
+        if VOICE_ID is None or len(pcm) < RATE_BYTES:
+            return
+        loop = asyncio.get_running_loop()
+        try:
+            if self.nick:
+                if VOICE_ENROLL and self.enrolled < ENROLL_TURNS:
+                    if await loop.run_in_executor(None, VOICE_ID.enroll, self.nick, pcm):
+                        self.enrolled += 1
+                        log(f"[LIVE-VOICE] ghi giong {self.nick} ({self.enrolled}/{ENROLL_TURNS})")
+            elif not self.voice_tried and not self.guess and not self.pending_lesson:
+                nick, score = await loop.run_in_executor(None, VOICE_ID.identify, pcm)
+                if score > 0:
+                    self.voice_tried = True
+                if nick and nick in ALLOWED_NICKNAMES and not self.pending_lesson:
+                    log(f"[LIVE-VOICE] nhan {nick} ({score:.2f})")
+                    self.guess = nick
+                    self.pending_lesson = (f"[lesson] The child's voice sounds like bạn {nick}, but you are not sure. "
+                                           f"Ask in Vietnamese, one short sentence: \"Có phải bạn {nick} không?\" and wait. "
+                                           "Do not start a lesson and do not call tools yet.")
+                    self.mute_current_turn()
+                    asyncio.create_task(self.lesson_timeout())
+        except Exception as e:
+            log(f"[LIVE-VOICE] loi {type(e).__name__}")
+
     def check_nick(self):
         """Be nhan biet danh: cau noi tu goi Curriculum.start va nho Gemini bat dau bai."""
         if self.nick or self.pending_lesson:
             return
         nick = find_nickname(self.in_buf)
+        if not nick and self.guess:
+            w = set(_fold(self.in_buf).split())
+            if w & NO_WORDS:
+                log(f"[LIVE-VOICE] be noi khong ({self.guess})")
+                self.guess = None
+                self.pending_lesson = ("[lesson] The child said no. Say sorry kindly in Vietnamese and ask which animal friend "
+                                       "is learning today (bạn thỏ, bạn mèo, bạn gấu…). Do not call tools yet.")
+                self.mute_current_turn()
+                asyncio.create_task(self.lesson_timeout())
+                return
+            if w & YES_WORDS:
+                nick = self.guess
         if not nick:
             return
+        self.guess = None
         res = CUR.start(nick)
         if res.get("allowed"):
             self.nick = res["learner"]
@@ -420,6 +620,8 @@ class Session:
                 self.last_active = time.time()
                 if sc.input_transcription and sc.input_transcription.text:
                     self.user_txt += sc.input_transcription.text
+                    self.heard_at = time.time()
+                    self.silent_n = 0
                     self.in_buf += sc.input_transcription.text
                     self.check_nick()
                 if sc.interrupted:
@@ -435,12 +637,16 @@ class Session:
                     if self.tts_on:
                         await self.send_json({"type": "tts", "state": "sentence_start",
                                               "text": self.reply_txt.strip(), "session_id": self.sid})
+                if (sc.model_turn and not self.aborted and not self.gen_open and VOICE_ID is not None
+                        and any(p.inline_data and p.inline_data.data for p in sc.model_turn.parts or [])):
+                    await self.after_turn()
                 if sc.model_turn and not self.aborted:
                     for p in sc.model_turn.parts or []:
                         if p.inline_data and p.inline_data.data:
                             self.tts_start()
                             self.push_pcm(p.inline_data.data)
                 if sc.turn_complete:
+                    await self.after_turn()
                     dbg(f"turn_complete gen_open={self.gen_open} dev_on={self.dev_on}")
                     if self.gen_open or self.pcm_buf:
                         self.end_turn()
@@ -448,6 +654,14 @@ class Session:
                         self.aborted = False
                         if not self.dev_on and self.out_q.empty():
                             self.user_txt, self.reply_txt, self.t_user_end = "", "", None
+                    if self.in_buf.strip() and not (self.nick or self.guess or self.pending_lesson or self.ending):
+                        self.anon_turns += 1
+                        if self.anon_turns >= 2 and not self.anon_sent and ANON_LESSON:
+                            self.anon_sent = True
+                            lid, instr = CUR.anonymous_lesson()
+                            log(f"[LIVE-TOOL] khong co biet danh sau 2 luot -> bai ngau nhien {lid}")
+                            self.pending_lesson = ("[lesson] No nickname was given. Say kindly that today we learn together, "
+                                                   f"and start this lesson now (do not call mark_word/finish_lesson). {instr}")
                     self.in_buf = ""
                     if self.pending_lesson:
                         txt, self.pending_lesson = self.pending_lesson, None
@@ -464,7 +678,12 @@ class Session:
                 except Exception:
                     continue
                 if audioop.rms(pcm, 2) > 400:  # tieng noi gan nhat -> moc do do tre
-                    self.t_user_end = time.time()
+                    self.t_user_end = self.last_speech = time.time()
+                    self.silent_n = 0
+                if VOICE_ID is not None:
+                    self.turn_pcm += pcm
+                    if len(self.turn_pcm) > RATE_BYTES * 20:
+                        del self.turn_pcm[:-RATE_BYTES * 20]
                 if self.live is None:              # phien chua san sang -> dem
                     self.mic_buf.append(pcm)
                     if len(self.mic_buf) > MIC_BUF_MAX:
@@ -480,11 +699,18 @@ class Session:
             if t == "listen" and j.get("state") == "start":
                 self.last_active = time.time()
             elif t == "abort":
+                if j.get("reason") == "wake_word_detected":      # be cham KEY4 luc thiet bi nghe -> xin ket thuc
+                    asyncio.create_task(self.end_request())
+                    continue
+                # abort khong reason = be ngat loi: dung phat, bo phan Gemini con sinh, cho be noi tiep
                 self.clear_out()
-                if self.gen_open or self.dev_on:
+                if self.gen_open or self.dev_on or self.tts_on:
+                    self.fast_stop = True
                     self.aborted = True
                     self.gen_open = False
                     self.out_q.put_nowait("STOP")
+                    if self.live is not None:
+                        asyncio.create_task(self.tell_interrupted())
             # hello trung / mcp / listen stop: bo qua
 
     async def idle_watch(self):
@@ -524,6 +750,8 @@ class Session:
             pcm = self.mic_buf.pop(0)
             await live.send_realtime_input(audio=types.Blob(data=pcm, mime_type=f"audio/pcm;rate={IN_RATE}"))
         self.live = live                           # khong await giua kiem tra rong va gan
+        await self.send_lesson("[session start] Greet the child warmly in Vietnamese in one short sentence and ask which "
+                               "animal friend is learning today (bạn thỏ, bạn mèo, bạn gấu…).")
         await self.gemini_rx()
 
 
@@ -539,6 +767,7 @@ async def ws_handler(ws, pool):
         except Exception:
             pass
         log("thiet bi ngat")
+        pool.touch()
 
 
 async def main():
@@ -552,7 +781,11 @@ async def main():
     except Exception as e:
         log(f"no_ecoqos: {e}")
     client = genai.Client(api_key=key)
-    pool = LivePool(client)
+    global POOL
+    pool = POOL = LivePool(client)
+    if VOICE_ID is not None:
+        await asyncio.get_running_loop().run_in_executor(None, voiceid._get_extractor)
+        log(f"[LIVE-VOICE] bat (ho so: {len(VOICE_ID.list())}, ghi giong: {'bat' if VOICE_ENROLL else 'tat'})")
     asyncio.create_task(pool.maintain())
     app = web.Application()
     app.router.add_route("*", "/xiaozhi/ota/", ota_handler)

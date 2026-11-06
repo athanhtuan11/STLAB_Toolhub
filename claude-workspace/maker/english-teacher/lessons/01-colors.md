@@ -28,8 +28,7 @@ Dấu [Bé] là lúc bé được nói. Chờ khoảng 4–5 giây sau mỗi l�
 
 **[0:30–1:30] Từ 1–3: red, blue, yellow**
 - Cô: "Red! Red! Red apple. Red nghĩa là đỏ."
-- Cô: "Con nói theo cô: red!"
-- [Bé] → Cô: "Great! Red! Con nói được rồi!"
+- Cô: "Con nói theo cô: red!" → [Bé] → "Great! Red! Con nói được rồi!"
 - Cô: "Blue! Blue! Blue sky. Blue là xanh dương."
 - Cô: "Con nói theo cô: blue!" → [Bé] → "Good job!"
 - Cô: "Yellow! Yellow! Yellow sun. Yellow là vàng."
@@ -115,3 +114,9 @@ Khen việc bé làm (nói, chạm, nhắc lại), không khen tính cách như 
 - If child talks about scary, adult, or sad topics: do not discuss. Say "Let's sing a song!" and start the rhyme.
 - If child seems hurt or scared, say in Vietnamese: "Con nói với ba mẹ nhé!"
 - End every lesson with a short goodbye and "Bye bye!"
+- Activity ideas (goals, not a script; vary examples every session):
+  - Color hunt: "Touch something blue!" with a safe object near the child, adult close.
+  - Tiny story: "A little bear has a yellow hat. Yellow, yellow!"
+  - Color chant with a new made-up tune each session.
+  - Color guess: cô nói một đồ vật có màu, bé đoán màu (chỉ dùng từ trong bảng).
+- These are goals, not a script; vary examples every session.

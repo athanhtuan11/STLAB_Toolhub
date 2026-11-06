@@ -1,6 +1,6 @@
 """Giao trinh + ho so hoc sinh theo biet danh con vat (khong ten that, khong sinh trac hoc).
 Chi luu: biet danh, bai hien tai, tu dat/chua dat, gio phien. Khong luu hoi thoai/am thanh. Thuan Python, khong goi mang."""
-import json, os, re, threading, unicodedata
+import json, os, random, re, threading, unicodedata
 from datetime import datetime
 from pathlib import Path
 
@@ -8,6 +8,7 @@ ALLOWED_NICKNAMES = ["thỏ", "mèo", "gấu", "cá", "chim", "voi", "khỉ", "c
 MAX_SESSIONS_PER_DAY = 2
 REASON_LIMIT = "Hôm nay con học đủ rồi, mai mình học tiếp nhé!"
 HEADING = "## Chỉ dẫn cho AI"
+ACTIVITIES = ("repeat-after-me", "quiz", "touch-game", "rhyme-chant", "tiny-story", "guessing-game")
 
 
 def normalize(nick):
@@ -55,7 +56,9 @@ class Curriculum:
                     if w:
                         vocab.append(w)
             self.order.append(f.stem)
-            self.lessons[f.stem] = {"instructions": instr, "vocab": vocab}
+            mt = re.match(r"#[^\n]*?[–-]\s*(.+)", txt)
+            self.lessons[f.stem] = {"instructions": instr, "vocab": vocab,
+                                    "title": re.sub(r"\s*\(.*?\)", "", mt.group(1)).strip() if mt else f.stem}
 
     def lesson_ids(self):
         return list(self.order)
@@ -96,9 +99,51 @@ class Curriculum:
             lid = L["lesson"]
             review = [w for w in L["failed"] if w in self.lessons[lid]["vocab"] and w not in L["passed"]]
             instr = self.lessons[lid]["instructions"]
+            last = list(L.get("last_activities", []))
+            vocab = self.lessons[lid]["vocab"]
+            if vocab and all(w in L["passed"] for w in vocab) and lid == self.order[-1]:
+                # da hoc het bai cuoi -> che do on tu do (khong con tu moi)
+                learned = [w for i in self.order for w in self.lessons[i]["vocab"]]
+                instr += "\n" + self.review_plan(learned)
+                self._save(d)
+                return {"allowed": True, "learner": nick, "lesson_id": lid, "instructions": instr, "review": [],
+                        "mode": "review"}
             if review:
                 instr += "\n- Words to review first today: " + ", ".join(review) + "."
+            plan, act = self.today_plan(lid, review, last)
+            L["last_activities"] = (last + [act])[-3:]
+            self._save(d)
+            instr += "\n" + plan
             return {"allowed": True, "learner": nick, "lesson_id": lid, "instructions": instr, "review": review}
+
+    def review_plan(self, learned):
+        words = list(dict.fromkeys(learned))
+        random.shuffle(words)
+        return ("Review mode: the child has learned every lesson. Have a free, warm chat on a safe topic "
+                "(animals, colors, numbers, family, toys) and weave in these learned words at random: "
+                + ", ".join(words[:8]) + ". Invent fresh games, short stories or chants. Keep each turn short.")
+
+    def today_plan(self, lid, review=(), last=()):
+        """Muc tieu buoi hoc: tu xao thu tu (tu on len dau), goi y 1 kieu hoat dong khac lan truoc;
+        Gemini tu sang tao cach day, khong dung lai <last_activities>. Tra (van ban, nhan hoat dong)."""
+        vocab = list(self.lessons[lid]["vocab"])
+        rest = [w for w in vocab if w not in review]
+        random.shuffle(rest)
+        order = [w for w in vocab if w in review] + rest
+        pool = [a for a in ACTIVITIES if a not in last] or list(ACTIVITIES)
+        act = random.choice(pool)
+        title = self.lessons[lid].get("title", lid)
+        avoid = ", ".join(last) if last else "none"
+        return (f"Today's goal words, in this order: {', '.join(order)}. Suggested activity type: {act}. "
+                "These are GOALS, not a script. Invent fresh ways to teach them this session: new example sentences "
+                "(<= 5 words), a tiny story, a guessing game, a made-up song or chant, a touch-something game. "
+                f"Do NOT reuse these from last time: {avoid}. Keep each turn short. First, say in Vietnamese what we "
+                f"learn today (\"Hôm nay mình học {title.lower()} nhé\"), then teach the first word '{order[0]}' in English.", act)
+
+    def anonymous_lesson(self):
+        """Ket noi khong co biet danh: chon NGAU NHIEN 1 bai (khong ghi ho so). Tra (lesson_id, instructions)."""
+        lid = random.choice(self.order)
+        return lid, self.lessons[lid]["instructions"] + "\n" + self.today_plan(lid)[0]
 
     def mark(self, nickname, word, correct):
         nick = normalize(nickname)
