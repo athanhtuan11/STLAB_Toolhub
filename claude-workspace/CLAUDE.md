@@ -64,13 +64,14 @@ Sổ nhân sự (sinh tự động – sửa `org/agents.yaml` rồi chạy `pyt
 | 1 – Quản lý | Quản lý tài liệu | `doc-writer` | haiku | claude-quota | tai-lieu | claude-main | chinh-thuc |
 | 1 – Quản lý | Lập trình viên (tầng giữa) | `coder` | sonnet | claude-quota | code, firmware, sua-loi | claude-main | thu-viec |
 | 1 – Quản lý | Thiết kế dáng sản phẩm | `product-designer` | sonnet | claude-quota | thiet-ke-dang, cmf, render, duyet-anh | claude-main | thu-viec |
-| 1 – Quản lý | Nghiên cứu giáo dục (mầm non – đại học) | `edu-researcher` | haiku | claude-quota | nghien-cuu, giao-duc, chuong-trinh, cuoc-thi | claude-main | thu-viec |
+| 1 – Quản lý | Nghiên cứu giáo dục (mầm non – đại học) | `edu-researcher` | haiku | claude-quota | nghien-cuu, giao-duc, chuong-trinh, cuoc-thi, soan-bai | claude-main | thu-viec |
 | 1 – Quản lý | Quản lý git | `git-scribe` | haiku | claude-quota | commit, push | claude-main | chinh-thuc |
 | 2 – Nhân viên | Nhân viên lập trình (chính) | `codex` | codex-chatgpt-free | free | code, cad-script, doc-ma, bao-cao | claude-main | chinh-thuc |
 | 2 – Nhân viên | Nhân viên lập trình | `opencode` | opencode/deepseek-v4.1-flash-free | free | code, cad-script | claude-main | chinh-thuc |
 | 2 – Nhân viên | Nhân viên lập trình | `kilo` | kilo/kilo-auto/free | free | code, cad-script | claude-main | chinh-thuc |
 | 2 – Nhân viên | Nhân viên lập trình | `agy-sonnet` | claude-sonnet-4-6 | free | code, cad-script, doc-ma | claude-main | chinh-thuc |
 | 2 – Nhân viên | Nhân viên lập trình | `copilot` | auto | free | code, doc-ma | claude-main | chinh-thuc |
+| 2 – Nhân viên | Nhân viên lập trình | `goose` | gemini-3.5-flash | free | code, doc-ma | claude-main | thu-viec |
 | 2 – Nhân viên | Nhân viên lập trình (dự phòng) | `agy` | gemini-3.8-flash-high | free | doc-ma | claude-main | chinh-thuc |
 | Tư vấn | Tư vấn tra web | `ask-gpt` | codex-chatgpt-free | free | tra-web | claude-main | chinh-thuc |
 | Tư vấn | Tư vấn đọc tài liệu | `ask-gemini` | gemini-3.8-flash-medium | free | doc-tai-lieu, tom-tat, dich | claude-main | chinh-thuc |

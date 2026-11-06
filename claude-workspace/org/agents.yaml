@@ -99,8 +99,9 @@ agents:
     loai: claude-subagent
     model: haiku
     chi_phi: claude-quota
-    ky_nang: [nghien-cuu, giao-duc, chuong-trinh, cuoc-thi]
+    ky_nang: [nghien-cuu, giao-duc, chuong-trinh, cuoc-thi, soan-bai]
     tool: [Read, Write, Glob, Grep, WebSearch, WebFetch, mcp__plugin_deliberation_deliberation__ask-gemini]
+    ghi_chu: "Tuan 2026-11-06: duoc ghi maker/english-teacher/lessons/ (bai hoc Cu Bong) ngoai docs/research-notes/education/"
     mang: web-search
     muc_du_lieu: public-tech
     nguoi_duyet: claude-main

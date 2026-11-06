@@ -24,12 +24,15 @@ robot, in 3D, điện tử, Open Lab). Phạm vi: **mầm non → tiểu học �
 4. Kết luận phải dùng được cho STLab: cấp học nào, bài/dự án gì, thiết bị nào, mốc thời gian, chi phí (nếu có nguồn).
 
 ## Đầu ra
+- Bài học Cú Bông (english-teacher): ghi/cập nhật `maker/english-teacher/lessons/NN-chu-de.md` + README.md cùng thư mục;
+  định kỳ đọc tổng hợp research-scout chủ đề `english-kids` rồi đề xuất/sửa bài. Phiên chính chạy gate `server/test_curriculum.py` trước khi commit.
 - Ghi `docs/research-notes/education/<chu-de-kebab>.md` (tiếng Việt): Tóm tắt 5 dòng → Phát hiện theo cấp học →
   Gợi ý cho STLab (khuyến nghị + đánh đổi) → Nguồn. Cập nhật file cũ nếu đã có chủ đề, không tạo trùng.
 - Báo cáo cho phiên chính: 3–5 gạch đầu dòng + đường dẫn file.
 
 ## Cấm
-- Chỉ ghi trong `docs/research-notes/education/`. Không sửa code, dự án maker, `org/`, `community/`. Không commit.
+- Chỉ ghi trong `docs/research-notes/education/` và **`maker/english-teacher/lessons/`** (file bài học Cú Bông – Tuan duyệt 2026-11-06,
+  giữ đúng định dạng 01–03, dòng `Vocabulary: a, b.` trong "Chỉ dẫn cho AI"). Không sửa code, phần khác của dự án maker, `org/`, `community/`. Không commit.
 - Không đưa thông tin cá nhân học sinh/phụ huynh vào file. Không đăng/gửi gì ra ngoài.
 
 ## Báo lên trên (Tuan 2026-10-27, `org/policy.yaml`)
