@@ -30,9 +30,10 @@ for name, pin in [("AUDIO_CODEC_I2C_SCL_PIN", 32), ("AUDIO_CODEC_I2C_SDA_PIN", 3
 need("Es8388AudioCodec" in cc, "dung Es8388AudioCodec")
 need(re.search(r"BOOT_BUTTON_GPIO\s+GPIO_NUM_0\b", cfg) is None, "GPIO0 la MCLK - khong dung lam nut")
 m = re.search(r"#define\s+AUDIO_DEFAULT_OUTPUT_VOLUME\s+(\d+)", cfg)
-need(m is not None and int(m.group(1)) <= 50, "AUDIO_DEFAULT_OUTPUT_VOLUME <= 50 (tai be)")
+# 2026-11-06 Tuan bo tran am luong (tu chinh KEY5/KEY6); gate chi kiem trong 0..100. Nho: cho be dung thi chinh nho lai.
+need(m is not None and 0 <= int(m.group(1)) <= 100, "AUDIO_DEFAULT_OUTPUT_VOLUME 0..100")
 m = re.search(r"#define\s+STLAB_MAX_VOLUME\s+(\d+)", cfg)
-need(m is not None and int(m.group(1)) <= 70, "STLAB_MAX_VOLUME <= 70")
+need(m is not None and 0 < int(m.group(1)) <= 100, "STLAB_MAX_VOLUME 1..100")
 need("STLAB_MAX_VOLUME" in cc, "board .cc kep am luong theo STLAB_MAX_VOLUME")
 # dang ky bo + may chu trong lab
 pat = "\n".join(p.read_text(encoding="utf-8") for p in (H / "patches").glob("*")) if (H / "patches").exists() else ""

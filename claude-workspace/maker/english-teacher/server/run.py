@@ -192,6 +192,24 @@ def patch_llm(key: str):
     LLMProvider._generate = _generate
 
 
+def patch_tts_split():
+    """xinnan chi cat cau TTS theo dau Trung (。：) va ? ! ; -> cau Viet/Anh dung "." khong duoc cat, ca cau tra loi
+    thanh 1 doan, phai cho tao giong ca doan (do 2026-11-06: 6 s). Them "." va ":" ASCII de doc cau dau som."""
+    from core.providers.tts.base import TTSProviderBase
+
+    orig = TTSProviderBase.__init__
+    if getattr(orig, "_stlab", False):
+        return
+
+    def __init__(self, *a, **k):
+        orig(self, *a, **k)
+        self.punctuations = tuple(self.punctuations) + (".", ":")
+        self.first_sentence_punctuations = tuple(self.first_sentence_punctuations) + (".", ":")
+
+    __init__._stlab = True
+    TTSProviderBase.__init__ = __init__
+
+
 def patch_loader(key: str):
     import config.config_loader as cl
 
@@ -214,6 +232,7 @@ def main():
     sys.path.insert(0, str(RT))
     patch_loader(key)
     patch_llm(key)
+    patch_tts_split()
     try:
         runpy.run_path(str(RT / "app.py"), run_name="__main__")
     except KeyboardInterrupt:

@@ -1,5 +1,7 @@
 # Chay may chu xiaozhi STLab. Dung: .\run.ps1  (Ctrl+C de tat). IP: bien STLAB_XIAOZHI_SERVER hoac IPv4 LAN tu dong.
 $ErrorActionPreference = "Stop"
+# Task Scheduler chay o muc BelowNormal -> Whisper cham 2 s -> 6 s (do 2026-11-06). Nang len Normal; tien trinh con ke thua.
+try { (Get-Process -Id $PID).PriorityClass = "Normal" } catch {}
 $H = $PSScriptRoot
 $RT = Join-Path $H "runtime"
 $py = Join-Path $RT ".venv\Scripts\python.exe"

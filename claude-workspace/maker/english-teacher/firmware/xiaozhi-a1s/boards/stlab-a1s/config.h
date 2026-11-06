@@ -8,8 +8,8 @@
 #define AUDIO_OUTPUT_SAMPLE_RATE    24000
 
 // Am luong: mac dinh 40, tran 60 (be nho, tai nghe/loa gan tai) - moi lenh dat am luong bi kep o board .cc
-#define AUDIO_DEFAULT_OUTPUT_VOLUME 40
-#define STLAB_MAX_VOLUME            60
+#define AUDIO_DEFAULT_OUTPUT_VOLUME 70   // 2026-11-06 Tuan: to hon, tu chinh KEY5/KEY6
+#define STLAB_MAX_VOLUME            100  // Tuan bo tran (2026-11-06). Cho be dung: chinh nho lai! KEY5 +10, KEY6 -10
 #define STLAB_VOLUME_STEP           10
 
 #define AUDIO_I2S_GPIO_MCLK GPIO_NUM_0
@@ -27,7 +27,7 @@
 #define STLAB_MIC_INPUT_LINE2 1
 
 // GPIO0 la MCLK nen KHONG co nut BOOT. Nut KEY1..6 = GPIO36,13,19,23,18,5 (bam = muc thap)
-#define TALK_BUTTON_GPIO        GPIO_NUM_23   // KEY4: giu de noi
+#define TALK_BUTTON_GPIO        GPIO_NUM_23   // KEY4: cham = mo/ket thuc phien noi chuyen, cham khi co noi = ngat
 #define VOLUME_UP_BUTTON_GPIO   GPIO_NUM_18   // KEY5
 #define VOLUME_DOWN_BUTTON_GPIO GPIO_NUM_5    // KEY6
 
