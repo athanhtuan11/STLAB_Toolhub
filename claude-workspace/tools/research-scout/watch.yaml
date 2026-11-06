@@ -76,6 +76,11 @@ topics:
     ten: Home Assistant
     keywords: [home assistant, esphome]
     weight: 1.0
+  # Them 2026-11-06 (Tuan: edu-researcher cap nhat bai lien tuc cho english-teacher): tai lieu day tieng Anh tre nho
+  - id: english-kids
+    ten: English for kids
+    keywords: [esl kids, english for kids, preschool english, early childhood english, phonics, nursery rhyme, kindergarten english, young learners]
+    weight: 1.0
   - id: rc-car
     ten: RC Car
     keywords: [rc car, 3d printed car, robot car]
