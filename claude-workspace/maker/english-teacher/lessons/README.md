@@ -2,6 +2,8 @@
 
 Cô Lily là cô AI trong thiết bị Cú Bông (không màn hình, bé giữ nút để nói). Thư mục này chứa nội dung bài học; máy chủ nạp phần "Chỉ dẫn cho AI" của từng bài vào prompt. Ngày tra nguồn: 2026-11-05 (nguồn cũ), 2026-11-06 (nguồn bổ sung và bài 04–08).
 
+**Lộ trình học (2026-11-06, bản nháp chờ Tuan duyệt): xem [ROADMAP.md](ROADMAP.md)** – cấp độ theo tuổi, 12 tuần đầu cụ thể, khung 35 tuần, cột mốc kiểm tra nhẹ, và bảng tuần cho máy chủ. Thứ tự học theo ROADMAP.md, không theo tên file.
+
 ## Tóm tắt nguồn
 
 1. **Thời gian màn hình cho bé 1–4 tuổi (WHO, 2019).** Thời gian ngồi xem màn hình không nên quá 1 giờ/ngày, "less is better" (ít hơn thì tốt hơn). Với bé dưới 1 tuổi: không khuyến nghị. Nguồn: WHO, thông cáo 24/4/2019, https://www.who.int/news/item/24-04-2019-to-grow-up-healthy-children-need-to-sit-less-and-play-more (truy cập 2026-11-05). Bản hướng dẫn đầy đủ (iris.who.int) không mở được lúc tra cứu, nên các con số lấy từ thông cáo.
@@ -21,22 +23,25 @@ Cô Lily là cô AI trong thiết bị Cú Bông (không màn hình, bé giữ n
 8. **Cambridge Pre A1 Starters – word list 2018.** Tìm thấy trong kết quả tìm kiếm ngày 2026-11-06: https://www.cambridgeenglish.org/images/351849-pre-a1-starters-word-list-2018.pdf . Chưa mở được nội dung (PDF lớn), **chưa đối chiếu từ nào**. TODO: mở và đối chiếu từng từ bài 04–08.
 9. **Cambridge Pre A1 Starters – tài liệu chuẩn bị (có thể có bản 2025).** Chỉ thấy trong kết quả tìm kiếm, chưa mở: https://www.cambridgeenglish.org/Images/645719-pre-a1-starters-exam-preparation-resources.pdf và https://cambridgeenglish.org/fr/exams-and-tests/young-learners/starters/how-to-prepare . Tài liệu giáo viên TES có nhắc "Pre-A1 Starters Vocabulary List (April 2025 edition)", nhưng chưa tìm được file chính thức. TODO: kiểm trên cambridgeenglish.org/starters, xác nhận bản 2025 và đối chiếu từ.
 10. **Bộ tài liệu đã duyệt (Happy Hearts, QĐ 243/QĐ-BGDĐT).** Chỉ thấy tên trong kết quả tìm kiếm, chưa mở: https://luatvietnam.vn/giao-duc/quyet-dinh-243-qd-bgddt-244072-d1.html . TODO: tải và đối chiếu chủ đề.
-11. **Từ vựng bài 04–08: quyết định thiết kế.** Chủ đề và từ đề xuất bởi edu-researcher (2026-11-06), dựa trên Thông tư 50/2020 (mục 2 ở trên) và nguyên tắc an toàn của bài. Không có nguồn đối chiếu từng từ. Ghi rõ trong từng bài là "quyết định thiết kế" hoặc "TODO".
-12. **Thứ tự chủ đề:** tên file đánh số 04–08 (quyết định thiết kế). Máy chủ sắp xếp theo tên file, nên bài 04 (chào hỏi) đứng sau bài 03 trong thứ tự chạy. Muốn đưa chào hỏi lên đầu: TODO, cần Tuan quyết định (đổi tên file hay thêm trường thứ tự).
+11. **Từ vựng bài 04–08: quyết định thiết kế.** Chủ đề và từ đề xuất bởi edu-researcher (2026-11-06), dựa trên Thông tư 50/2020 (mục 3 ở trên) và nguyên tắc an toàn của bài. Không có nguồn đối chiếu từng từ. Ghi rõ trong từng bài là "quyết định thiết kế" hoặc "TODO".
+12. **Thứ tự chủ đề:** theo ROADMAP.md (bài 04 chào hỏi đứng đầu, bài 06 gia đình và 04 buồn/đói đứng cuối). Máy chủ hiện sắp xếp theo tên file (bài 01 đứng đầu); lập trình viên cần đọc bảng tuần để đổi. TODO Tuan duyệt.
+13. **Tiếp xúc có đáp ứng, bé 9 tháng (Kuhl, Tsao & Liu, 2003, PNAS 100(15):9096–9101).** 12 buổi, 25 phút, người bản ngữ tiếp xúc trực tiếp: trẻ học được âm vị tiếng Quan Thoại; băng ghi âm và DVD không có tác dụng. Nguồn: https://pmc.ncbi.nlm.nih.gov/articles/PMC166444 (truy cập 2026-11-06). Trẻ 9 tháng, học âm, không phải từ vựng; chỉ dùng làm căn cứ cho "tương tác có đáp ứng".
+14. **Tương tác có đáp ứng, bé 24–30 tháng (Roseberry, Hirsh-Pasek & Golinkoff, 2014, Child Development 85(3), DOI 10.1111/cdev.12166).** 36 trẻ; học động từ mới khi người lớn đáp lại (trực tiếp hoặc video chat), không học từ video phát sẵn. Nguồn: https://pmc.ncbi.nlm.nih.gov/articles/PMC3962808 (truy cập 2026-11-06). Cỡ mẫu nhỏ, học động từ; là căn cứ chính cho thiết kế "cô đáp lại từng lượt nói" (ROADMAP mục 1).
 
 ## Không tìm được nguồn
 
 - **Số từ mới mỗi buổi** cho trẻ 2–5 tuổi học ngoại ngữ: không có nguồn. Thiết kế hiện tại: mỗi bài 5–6 từ, mỗi từ được nhắc tối thiểu 3 lần trong phiên (suy luận từ Horst 2011, không phải số đã kiểm chứng).
+- **Số từ mới mỗi tuần** theo tuổi (ROADMAP mục 2): không có nguồn. Thiết kế: 1 từ/tuần cho bé 2–3 tuổi, 2 từ/tuần cho bé 4–5 tuổi, đối chiếu cộng dồn với Thông tư 50 (mục 3 ở trên).
 - **Số lần lặp tối ưu** cho từng từ: không có nguồn đủ mạnh. TODO.
-- **Thời lượng phiên cho thiết bị giọng nói**: không có nguồn. 5 phút là quyết định thiết kế, dựa trên độ chú ý của bé nhỏ (không có số liệu cụ thể) và trên thời lượng 25–35 phút của lớp học (lớp có giáo viên và cả nhóm, không so sánh trực tiếp được).
+- **Thời lượng phiên cho thiết bị giọng nói**: không có nguồn. 5 phút là quyết định thiết kế, dựa trên độ chú ý của bé nhỏ (không có số liệu cụ thể) và trên thời lượng 25–35 phút của lớp học (lớp có giáo viên và cả nhóm, không so sánh trực tiếp được). Bé 2 tuổi: 3–4 phút (quyết định thiết kế).
 - **Cách khen và khi nào nghỉ**: nguồn riêng không tìm được. Các nguyên tắc dưới đây là kinh nghiệm chung của giáo dục mầm non, chưa có nguồn. TODO.
 - **An toàn TPR với cơ thể, đồ ăn, đồ vật nhỏ, gia đình**: quyết định thiết kế; nguyên tắc chung (không để bé hóc, không hỏi về gia đình thật). Chưa có nguồn chuyên môn đối chiếu. TODO.
 
 ## Nguyên tắc cho Cú Bông
 
 **Thời lượng phiên**
-- Một phiên = một bài = khoảng 5 phút (cô nói + bé nhắc, không kể thời gian bé im lặng).
-- Tối đa 2 phiên/ngày, cách nhau ít nhất 1 giờ (suy luận, không có nguồn).
+- Một phiên = một bài = khoảng 5 phút (cô nói + bé nhắc, không kể thời gian bé im lặng). Bé 2 tuổi: 3–4 phút.
+- Tối đa 2 phiên/ngày, cách nhau ít nhất 1 giờ (suy luận, không có nguồn). Bé 2–3 tuổi: 1 phiên/ngày.
 - Tổng thời gian dùng thiết bị ≤ 1 giờ/ngày, theo mốc WHO và AAP. Thiết bị không có màn hình nên không đúng định nghĩa "screen time", nhưng dùng mốc này làm giới hạn an toàn.
 - Không dùng thiết bị trước giờ ngủ (theo khuyến nghị chung, TODO nguồn chính thức).
 
@@ -44,6 +49,7 @@ Cô Lily là cô AI trong thiết bị Cú Bông (không màn hình, bé giữ n
 - Mỗi bài 5–6 từ. Mỗi từ có 1 câu mẫu ≤ 5 từ.
 - Mỗi từ được nói ít nhất 2 lần bởi cô và 1 lần bởi bé trong phiên. Từ được chơi lại trong trò đố vui.
 - Không đưa từ mới khi bé chưa nhắc được từ trước đó (suy luận).
+- Bé 2–3 tuổi: tối đa 3 từ ôn mỗi buổi (ROADMAP mục 3).
 
 **Cách khen**
 - Khen cố gắng và hành động cụ thể: "Con nói được 'red' rồi!", "Con chạm đúng màu đỏ!" Khen cụ thể hơn "Giỏi quá" chung chung.
@@ -79,17 +85,30 @@ Mỗi bài có: bảng từ, kịch bản song ngữ, xử lý tình huống, c�
 - `01-colors.md` – màu sắc (6 từ)
 - `02-animals.md` – con vật (6 từ)
 - `03-numbers-1-5.md` – số 1 đến 5 (5 từ)
-- `04-greetings-feelings.md` – chào hỏi & cảm xúc (6 từ; khớp 3–4 tuổi, đề xuất đưa lên trước)
+- `04-greetings-feelings.md` – chào hỏi & cảm xúc (6 từ; hello, goodbye ở tuần 1–2; sad, hungry ở tuần 24)
 - `05-body.md` – cơ thể (6 từ; head, eyes, nose, mouth, hands, feet)
-- `06-family.md` – gia đình, vai trò chung (6 từ; mom, dad, baby, sister, brother, grandma)
+- `06-family.md` – gia đình, vai trò chung (6 từ; tuần 21–23, nhạy cảm)
 - `07-fruits.md` – hoa quả (6 từ; apple, banana, grape, mango, watermelon, strawberry)
 - `08-toys.md` – đồ chơi (6 từ; ball, doll, car, teddy bear, block, kite)
+- `ROADMAP.md` – lộ trình học, bảng tuần cho máy chủ (không phải bài; không có tiêu đề "Chỉ dẫn cho AI" nên không được nạp như bài)
 
 Bài vè/hát là bài tự viết, không chép lời bài có bản quyền.
+
+## Bài cần soạn tiếp
+
+Đề xuất, chờ Tuan duyệt (chi tiết ROADMAP mục 9). Mỗi bài đề xuất cần đối chiếu từ trước khi đưa vào thiết bị.
+
+- `09-hanh-dong.md` – clap, sit, stand, stop (làm theo hành động một bước cho bé 2–3 tuổi).
+- `10-hinh-khoi.md` – circle, square, star, heart.
+- `11-thoi-tiet.md` – sun, rain, cloud, wind.
+- `12-dong-vat-2.md` – horse, lion, elephant, monkey.
+
+Việc khác: đối chiếu từ bài 01–08 với Cambridge Starters và bộ đã duyệt (TODO ở trên); vị trí câu xuyên suốt "daily" trong prompt (TODO Tuan và lập trình viên).
 
 ## Cập nhật định kỳ
 
 - **Mỗi tuần (thứ Hai, TODO xác nhận lịch):** edu-researcher đọc bản tổng hợp của research-scout cho chủ đề `english-kids` (đăng ký trong `tools/research-scout/watch.yaml`, thêm 2026-11-06). Nơi đọc kết quả: TODO xác nhận đường dẫn (Toolhub /research hoặc file tổng hợp).
 - Từ kết quả đó, edu-researcher đề xuất sửa hoặc thêm bài. Mỗi đề xuất ghi: nguồn (link, ngày truy cập), bài bị ảnh hưởng, và lý do. Không tự sửa khi chưa có nguồn.
 - Sau khi sửa bài, chạy gate `server/test_curriculum.py` trước khi commit (phiên chính commit).
-- **Lần rà đầu:** 2026-11-06 (tạo bài 04–08, bổ sung nguồn). Lần rà tiếp theo: TODO.
+- Khi sửa ROADMAP.md (bảng tuần), kiểm: mỗi từ trong `new` có trong `Vocabulary` của đúng bài; không từ nào lặp giữa các hàng.
+- **Lần rà đầu:** 2026-11-06 (tạo bài 04–08, bổ sung nguồn, thêm ROADMAP.md). Lần rà tiếp theo: TODO.

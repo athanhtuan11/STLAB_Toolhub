@@ -53,3 +53,17 @@ Ghi chú: danh sách trên là **đề xuất của agent, không phải số li
 - Sách tranh Starters, truy cập 2026-11-06 (không mở được): https://www.cambridgeenglish.org/Images/starters-word-list-picture-book.pdf
 - Quyết định 243/QĐ-BGDĐT (bộ Happy Hearts), chỉ thấy trong kết quả tìm kiếm, chưa mở: https://luatvietnam.vn/giao-duc/quyet-dinh-243-qd-bgddt-244072-d1.html
 - TODO: Thông tư 09/2025/TT-BGDĐT có thể sửa đổi 50/2020 (đã ghi trong README bài học). Chưa kiểm được.
+
+## Bổ sung 2026-11-06: lộ trình học theo tuổi (edu-researcher)
+
+Tóm tắt 4 dòng:
+1. Bản lộ trình nháp đã viết: `maker/english-teacher/lessons/ROADMAP.md` (chờ Tuan duyệt). Bé 2–3 tuổi: 1 từ mới/tuần, bảng 18 hàng; bé 4–5 tuổi: 2 từ/tuần, 24 hàng, cộng 11 tuần ôn.
+2. Căn cứ mới có nguồn: tương tác có đáp ứng là điều kiện để trẻ học từ/âm mới. Kuhl, Tsao & Liu (2003, PNAS) cho trẻ 9 tháng; Roseberry, Hirsh-Pasek & Golinkoff (2014, Child Development) cho trẻ 24–30 tháng (học động từ mới qua video chat hoặc trực tiếp, không qua video phát sẵn).
+3. Hệ quả cho Cú Bông: cô phải đáp lại từng lượt nói của bé; bài hát phát sẵn chỉ là nền. Nghiên cứu không đo được số từ mỗi tuần hay "nghe bao nhiêu" nên các con số trong ROADMAP là thiết kế.
+4. Khoảng cách: bảng 4–5 tuổi hiện 47 từ, dưới mốc ~70 cộng dồn của Thông tư 50 (mục 4–5 tuổi, bản tổng hợp). Đề xuất 4 bài 09–12 (hành động, hình khối, thời tiết, động vật 2), chờ Tuan duyệt và đối chiếu từ.
+
+Nguồn mới:
+- Kuhl, Tsao & Liu (2003), PNAS 100(15):9096–9101: https://pmc.ncbi.nlm.nih.gov/articles/PMC166444 (truy cập 2026-11-06). Trẻ 9 tháng, 12 buổi 25 phút, tiếp xúc trực tiếp; băng ghi âm và DVD không có tác dụng. Tác giả: "learning is influenced by the presence of a live person."
+- Roseberry, Hirsh-Pasek & Golinkoff (2014), Child Development 85(3):956–970, DOI 10.1111/cdev.12166: https://pmc.ncbi.nlm.nih.gov/articles/PMC3962808 (truy cập 2026-11-06). 36 trẻ 24–30 tháng; "socially contingent interactions are a powerful catalyst for word learning". Video phát sẵn không đáp ứng: không học được.
+
+Lưu ý khi dùng: cả hai nghiên cứu cỡ mẫu nhỏ, đối tượng là trẻ nhỏ hơn hoặc học âm/động từ chứ không phải từ vựng bài học. Chỉ dùng để chọn hướng thiết kế (có đáp ứng), không dùng làm bằng chứng hiệu quả của Cú Bông.
