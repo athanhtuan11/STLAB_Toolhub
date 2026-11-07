@@ -111,7 +111,8 @@ async def main():
         f2, a2, t2, _, _ = await turn(ws, enc, dec, b, "biet-danh")
         L = learners()
         ok(list(L) == ["thỏ"] and L["thỏ"].get("lesson") == w1["lesson_id"], f"ho so 'tho' bai tuan 1 {w1['lesson_id']} ({ {k: v.get('lesson') for k, v in L.items()} })")
-        ok(a2 > 1.0 and f2 is not None and f2 < 4.0, f"co tra loi sau biet danh (am thanh {a2:.1f} s, tre {f2})")
+        # 2026-11-07 Tuan: "be tra loi ban meo nhung lau moi phan hoi" -> co phai chao lai NGAY (khong chan cau dau de cho [lesson])
+        ok(a2 > 1.0 and f2 is not None and f2 < 1.8, f"co tra loi NHANH sau biet danh < 1,8 s (am thanh {a2:.1f} s, tre {f2})")
         ok(any(re.search(r"\b" + re.escape(w) + r"\b", t2, re.I) for w in list(w1["new"]) + list(w1.get("daily", []))),
            f"co bat dau bai tuan 1 (co tu {w1['new']})")
         f3, a3, t3, fs3, early3 = await turn(ws, enc, dec, c, "red")

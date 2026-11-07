@@ -4,7 +4,8 @@ import json, os, random, re, threading, unicodedata
 from datetime import datetime
 from pathlib import Path
 
-ALLOWED_NICKNAMES = ["thỏ", "mèo", "gấu", "cá", "chim", "voi", "khỉ", "cún"]
+ALLOWED_NICKNAMES = ["thỏ", "mèo", "gấu", "cá", "chim", "voi", "khỉ", "cún",
+                     "sóc", "vịt", "ếch", "rùa", "ong", "bướm", "hổ", "gà", "heo", "nai", "cú"]
 MAX_SESSIONS_PER_DAY = 2
 # 2026-11-07: buoi chi DUOC TINH khi >= MIN_SESSION_S giay hoac be noi >= MIN_TURNS luot (lan bam thu ngan khong tinh -> khong bi tu choi 'hoc du roi' vo ly, khong day tuan hoc len)
 MIN_SESSION_S, MIN_TURNS = 120, 3

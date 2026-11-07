@@ -112,7 +112,9 @@ VAD_THRESHOLD = float(os.environ.get("STLAB_VAD_THRESHOLD", "0.5"))
 
 CUR = Curriculum(os.environ.get("STLAB_LEARNERS_PATH") or (SERVER / "data" / "learners.json"), SERVER.parent / "lessons")
 CURRICULUM_PROMPT = (
-    "\n\nAt the start, ask in Vietnamese which animal friend is learning today (e.g. bạn thỏ, bạn mèo, bạn gấu). "
+    "\n\nAt the start, ask in Vietnamese which animal friend is learning today (offer 2-3 different animal names each time, as the system tells you). "
+    "When the child tells their animal name (bạn …), immediately greet them warmly by that name in ONE short sentence "
+    "(e.g. 'Chào bạn Mèo! Cô vui quá!') and wait for the [lesson] message; do not start teaching before it. "
     "Then wait. The system will send a [lesson] message with the lesson to follow. Until then, do not start a lesson "
     "and do not call tools. After a [lesson] message: treat it as goals and teach in your own fresh way; after the child repeats a vocabulary word call "
     "mark_word; when the lesson goals are done call finish_lesson, then keep playing and reviewing words in a fun way. NEVER say goodbye or end the session on your own - only when you receive an [end] message. Teaching the WORD 'goodbye' is fine. Never ask for real names. "
@@ -229,7 +231,34 @@ async def ota_handler(request):
 STANDBY_MAX_S = 480.0      # phien du phong khong dung qua 8 phut -> dong, mo lai
 HEDGE_AFTER_S = 2.0
 OPEN_TOTAL_S = 10.0
-SESSION_START_LAST = {}    # device-id -> kieu mo dau lan truoc
+SESSION_START_LAST = {}
+NICK_SET_LAST = {}         # device-id -> bo biet danh lan truoc (de doi bo moi)
+_lp = os.environ.get("STLAB_LEARNERS_PATH")
+DEVICES_PATH = (Path(_lp).with_name(Path(_lp).stem + "-devices.json") if _lp else SERVER / "data" / "devices.json")
+DEVICE_NICK = {}
+
+
+def _devices_load():
+    try:
+        d = json.loads(DEVICES_PATH.read_text(encoding="utf-8"))
+        DEVICE_NICK.update({k: v for k, v in d.items() if isinstance(v, str) and v in ALLOWED_NICKNAMES})
+    except Exception:
+        pass
+
+
+def device_nick_save(dev, nick):
+    """Nho biet danh gan nhat theo device-id (chi device-id -> biet danh)."""
+    if not dev or DEVICE_NICK.get(dev) == nick:
+        return
+    DEVICE_NICK[dev] = nick
+    try:
+        DEVICES_PATH.parent.mkdir(parents=True, exist_ok=True)
+        DEVICES_PATH.write_text(json.dumps(DEVICE_NICK, ensure_ascii=False), encoding="utf-8")
+    except Exception as e:
+        log(f"devices.json loi {type(e).__name__}")
+
+
+_devices_load()    # device-id -> kieu mo dau lan truoc
 MIC_BUF_MAX = 400          # khung 60 ms (~24 s) toi da dem truoc khi phien san sang
 
 
@@ -429,6 +458,8 @@ class Session:
         self.nudge_task = None
         self.mcp_id = 100
         self.mcp_wait = {}                 # id -> Future (phan hoi MCP cua thiet bi)
+        self.prefilled = False             # biet danh lay tu bo nho thiet bi (be co the doi bang 'ban <khac>')
+        self.nick_log = None               # (biet danh, ms sau het tieng be) cho log do tre
         self.ending = False                # be bam KEY4 xin ket thuc (abort luc co khong noi)
 
     async def handle_tool_call(self, tc):
@@ -671,7 +702,7 @@ class Session:
         loop = asyncio.get_running_loop()
         try:
             if self.nick:
-                if VOICE_ENROLL and self.enrolled < ENROLL_TURNS:
+                if VOICE_ENROLL and self.enrolled < ENROLL_TURNS and not self.prefilled:
                     if await loop.run_in_executor(None, VOICE_ID.enroll, self.nick, pcm):
                         self.enrolled += 1
                         log(f"[LIVE-VOICE] ghi giong {self.nick} ({self.enrolled}/{ENROLL_TURNS})")
@@ -692,8 +723,16 @@ class Session:
 
     def check_nick(self):
         """Be nhan biet danh: cau noi tu goi Curriculum.start va nho Gemini bat dau bai."""
-        if self.nick or self.pending_lesson:
+        if self.pending_lesson:
             return
+        if self.nick:
+            if not (self.prefilled and self.child_turns < 3):
+                return
+            nk = find_nickname(self.in_buf)
+            if not nk or nk == self.nick:
+                return
+            log(f"[LIVE-TOOL] be doi biet danh {self.nick} -> {nk}")
+            self.nick, self.prefilled = None, False
         nick = find_nickname(self.in_buf)
         if not nick and self.guess:
             w = set(_fold(self.in_buf).split())
@@ -701,7 +740,7 @@ class Session:
                 log(f"[LIVE-VOICE] be noi khong ({self.guess})")
                 self.guess = None
                 self.pending_lesson = ("[lesson] The child said no. Say sorry kindly in Vietnamese and ask which animal friend "
-                                       "is learning today (bạn thỏ, bạn mèo, bạn gấu…). Do not call tools yet.")
+                                       f"is learning today ({self.ask_names()}). Do not call tools yet.")
                 self.mute_current_turn()
                 asyncio.create_task(self.lesson_timeout())
                 return
@@ -710,9 +749,17 @@ class Session:
         if not nick:
             return
         self.guess = None
+        self.begin_nick(nick)
+        ms = int((time.time() - (self.last_speech or time.time())) * 1000)
+        self.nick_log = (nick, ms)
+        asyncio.create_task(self.soft_lesson_wait())
+
+    def begin_nick(self, nick):
+        """Curriculum.start + chuan bi [lesson] (gui sau cau chao ngan, khong chan cau chao tu nhien)."""
         res = CUR.start(nick)
         if res.get("allowed"):
             self.nick = res["learner"]
+            device_nick_save(self.device_id, self.nick)
             log(f"[LIVE-TOOL] nick {nick} -> {res.get('lesson_id')}")
             lw = CUR.last_words(self.nick)
             recall = (f" Last time you learned: {', '.join(lw)}. Start by recalling one of them playfully "
@@ -725,8 +772,49 @@ class Session:
             log(f"[LIVE-TOOL] nick {nick} -> refused")
             self.pending_lesson = (f"[lesson] Learner: bạn {nick}. Not allowed: {res.get('reason', '')} "
                                    "Say this reason kindly in Vietnamese, then say a short goodbye. Do not start a lesson.")
-        self.mute_current_turn()
-        asyncio.create_task(self.lesson_timeout())
+
+    def ask_names(self, k=3):
+        """Chon ngau nhien k biet danh khac bo lan truoc tren thiet bi."""
+        last = set(NICK_SET_LAST.get(self.device_id or "-", ()))
+        pool = [n for n in ALLOWED_NICKNAMES if n not in last]
+        if len(pool) < k:
+            pool = list(ALLOWED_NICKNAMES)
+        pick = random.sample(pool, k)
+        NICK_SET_LAST[self.device_id or "-"] = tuple(pick)
+        return ", ".join("bạn " + n for n in pick)
+
+    def ask_text(self):
+        a, b, c = self.ask_names().split(", ")
+        forms = [f"'Hôm nay con muốn làm bạn nào: {a}, {b} hay {c}?'",
+                 f"'Con là bạn gì nè?' and then offer {a}, {b} or {c}",
+                 f"'Ai đang học với cô đây nhỉ, {a}, {b} hay {c}?'",
+                 f"'Con chọn bạn thú nào hôm nay: {a}, {b} hay {c}?'",
+                 f"'Cô đoán xem, con là {a}, {b} hay {c} nhỉ?'"]
+        return random.choice(forms) + " (any similar fresh sentence is fine; it must name those 3 animals)."
+
+    # 2026-11-07: KHONG chan cau chao tu nhien cua Gemini; [lesson] gui ngay khi cau chao ngan xong (turn_complete)
+    # hoac sau khi be het noi ma Gemini khong sinh loi
+    async def soft_lesson_wait(self):
+        t0 = time.time()
+        while self.pending_lesson and not self.closed and time.time() - t0 < 12:
+            await asyncio.sleep(0.1)
+            if self.gen_open or self.dev_on:
+                continue                          # dang chao: turn_complete se gui [lesson]
+            if time.time() - max(self.last_speech, self.heard_at) >= 1.5:
+                await self.flush_lesson()
+                return
+
+    async def flush_lesson(self):
+        if not self.pending_lesson:
+            return
+        txt, self.pending_lesson = self.pending_lesson, None
+        self.aborted = False
+        if self.nick_log and txt.startswith("[lesson] Learner"):
+            nick, ms = self.nick_log
+            self.nick_log = None
+            log(f"[LIVE-T] nick {nick} luc +{ms} ms sau het tieng be; lesson gui luc "
+                f"+{int((time.time() - (self.last_speech or time.time())) * 1000)} ms")
+        await self.send_lesson(txt)
 
     def mute_current_turn(self):
         """Tra loi tu sinh cua Gemini cho cau biet danh bi bo (chi phat luot [lesson] sau do)."""
@@ -793,10 +881,7 @@ class Session:
                             self.pending_lesson = ("[lesson] No nickname was given. Say kindly that today we learn together, "
                                                    f"and start this lesson now (do not call mark_word/finish_lesson). {instr}")
                     self.in_buf = ""
-                    if self.pending_lesson:
-                        txt, self.pending_lesson = self.pending_lesson, None
-                        self.aborted = False
-                        await self.send_lesson(txt)
+                    await self.flush_lesson()
 
     async def mic_rx(self):
         async for m in self.ws:
@@ -906,7 +991,7 @@ class Session:
         SESSION_START_LAST[key] = i
         log(f"[LIVE-T] mo dau kieu {i}")
         return ("[session start] " + styles[i] + " Keep the opening to 1-3 short sentences, in Vietnamese. Then ask which "
-                "animal friend is learning today (bạn thỏ, bạn mèo, bạn gấu…). Vary your wording every session; "
+                "animal friend is learning today, using this fresh wording: " + self.ask_text() + " Vary your wording every session; "
                 "never reuse the exact sentences from earlier sessions.")
 
     async def mcp_init(self):
@@ -925,7 +1010,17 @@ class Session:
             pcm = self.mic_buf.pop(0)
             await live.send_realtime_input(audio=types.Blob(data=pcm, mime_type=f"audio/pcm;rate={IN_RATE}"))
         self.live = live                           # khong await giua kiem tra rong va gan
-        await self.send_lesson(self.session_start_text())
+        known = DEVICE_NICK.get(self.device_id) if self.device_id else None
+        if known:
+            self.prefilled = True
+            self.begin_nick(known)
+            self.nick_log = None
+            log(f"[LIVE-T] thiet bi quen biet danh {known} -> chao thang, khong hoi")
+            await self.send_lesson("[session start] This device's child is bạn " + known + ". Greet them directly by that animal "
+                                   "name in ONE short fresh sentence in Vietnamese (e.g. 'Chào bạn " + known.capitalize() +
+                                   "! Hôm nay mình chơi gì nhỉ?'). Do NOT ask which animal they are. Then wait for the [lesson] message.")
+        else:
+            await self.send_lesson(self.session_start_text())
         await self.gemini_rx()
 
 
