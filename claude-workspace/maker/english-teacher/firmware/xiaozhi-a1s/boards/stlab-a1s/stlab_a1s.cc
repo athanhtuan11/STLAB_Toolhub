@@ -265,10 +265,20 @@ private:
             // 2026-11-06 Tuan: tat thi co phai chao. Dang NGHE ma cham = xin ket thuc: gui "abort" (luc co khong noi, cau noi
             // hieu la "be muon dung") -> co noi 1 cau tam biet -> cau noi dong phien. Du phong: 6 s chua dong thi tu dong.
             // Dang NOI ma cham = ngat loi co (giu nhu cu). Dang nghi = mo phien.
+            // Phan biet 2 tin "abort" cho cau noi: xin ket thuc = reason "wake_word_detected" (bo nay tat wake word nen khong
+            // bao gio trung); ngat loi = abort khong reason.
             if (app.GetDeviceState() == kDeviceStateListening && !bye_pending_) {
                 bye_pending_ = true;
-                app.AbortSpeaking(kAbortReasonNone);
+                app.AbortSpeaking(kAbortReasonWakeWordDetected);
                 xTaskCreate(ByeTask, "stlab_bye", 3072, this, 3, nullptr);
+                return;
+            }
+            if (app.GetDeviceState() == kDeviceStateSpeaking) {
+                // Tuan 2026-11-06: cham khong cat ngang duoc vi bo phat not hang doi am thanh (cho drain moi nghe).
+                // Ngat loi = bao cau noi + XOA NGAY hang doi phat de co im lap tuc.
+                app.AbortSpeaking(kAbortReasonNone);
+                app.GetAudioService().ResetDecoder();
+                ESP_LOGI(TAG, "Ngat loi co (xoa hang doi phat)");
                 return;
             }
             app.ToggleChatState();
