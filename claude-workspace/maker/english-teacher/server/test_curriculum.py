@@ -74,6 +74,20 @@ ok(set(j.keys()) <= {"version", "learners"} and nick in j["learners"], "learners
 bad = [k for k in json.dumps(j) .split('"') if k.lower() in ("name", "audio", "transcript", "address", "school", "phone")]
 ok(not bad, f"khong co truong du lieu ca nhan ({bad})")
 
+# 2026-11-07 loi that: be mo thu vai lan ngan trong ngay -> lan sau bi tu choi 'hoc du roi' khi chua noi gi.
+# Buoi ngan (< 2 ph va < 3 luot be noi) KHONG tinh vao gioi han ngay.
+nick3 = ALLOWED_NICKNAMES[2]
+for _ in range(3):
+    r3 = cur.start(nick3)
+    ok(r3["allowed"] is True, "mo ngan van duoc phep")
+    cur.end_session(nick3, 30, 1)
+ok(cur.start(nick3)["allowed"] is True, "3 lan mo ngan khong lam khoa buoi hoc")
+cur.end_session(nick3, 200, 5)
+clock[0] += dt.timedelta(minutes=10)
+cur.start(nick3); cur.end_session(nick3, 150, 4)
+clock[0] += dt.timedelta(minutes=10)
+ok(cur.start(nick3)["allowed"] is False, "2 buoi du dai -> buoi thu 3 bi tu choi")
+
 # tool cho Gemini Live: khai bao 3 ham
 from curriculum import live_tools  # noqa: E402
 names = sorted(fd["name"] for fd in live_tools())

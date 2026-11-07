@@ -408,6 +408,7 @@ class Session:
         self.live = None
         self.closed = False
         self.nick = None                   # biet danh cua ket noi nay
+        self.t_open, self.child_turns = time.time(), 0   # tinh buoi: thoi luong + luot be noi
         self.in_buf = ""                   # loi be cua luot hien tai (tim biet danh)
         self.pending_lesson = None         # tin [lesson] cho gui khi luot hien tai xong
         self.gen_open = False              # Gemini dang sinh am thanh cua 1 luot (chua turn_complete)
@@ -439,7 +440,7 @@ class Session:
                     res = CUR.mark(self.nick, a.get("word", ""), bool(a.get("correct"))) if self.nick else {"ok": False}
                     log(f"[LIVE-TOOL] mark_word {a.get('word', '')} {bool(a.get('correct'))}")
                 elif fc.name == "finish_lesson":
-                    res = CUR.finish(self.nick) if self.nick else {"next_lesson": None}
+                    res = CUR.finish(self.nick, time.time() - self.t_open, self.child_turns) if self.nick else {"next_lesson": None}
                     self.finishing = True
                     log(f"[LIVE-TOOL] finish_lesson -> {res.get('next_lesson')}")
                 elif fc.name in ("set_volume", "volume_change"):
@@ -605,7 +606,7 @@ class Session:
         self.aborted = False
         if self.nick:
             try:
-                res = CUR.finish(self.nick)
+                res = CUR.finish(self.nick, time.time() - self.t_open, self.child_turns)
                 log(f"[LIVE-TOOL] finish_lesson (be xin ket thuc) -> {res.get('next_lesson')}")
             except Exception as e:
                 log(f"finish loi {type(e).__name__}")
@@ -625,6 +626,8 @@ class Session:
         await self.ws.close()
 
     def log_turn(self):
+        if self.user_txt.strip():
+            self.child_turns = getattr(self, "child_turns", 0) + 1   # dem luot be noi (tinh buoi hoc)
         if self.first_ms is not None:
             log(f"[LIVE-T] first_audio={self.first_ms}ms user='{self.user_txt.strip()}' reply='{self.reply_txt.strip()}'")
         self.first_ms, self.user_txt, self.reply_txt, self.t_user_end = None, "", "", None
@@ -936,6 +939,7 @@ def ws_device_id(ws):
 
 async def ws_handler(ws, pool):
     log("thiet bi ket noi")
+    t_conn, ses = time.time(), None
     try:
         ses = Session(ws, pool)
         ses.device_id = ws_device_id(ws)
@@ -949,6 +953,15 @@ async def ws_handler(ws, pool):
             pass
         log("thiet bi ngat")
         pool.touch()
+        # 2026-11-07: chi tinh buoi khi du dai (>= 2 ph) hoac be noi >= 3 luot (curriculum.end_session)
+        nick = getattr(ses, "nick", None) if ses is not None else None
+        if nick:
+            try:
+                secs, turns = time.time() - t_conn, getattr(ses, "child_turns", 0)
+                r = CUR.end_session(nick, secs, turns)
+                log(f"[LIVE-TOOL] ket thuc buoi {nick}: {int(secs)} s, {turns} luot be -> {'tinh' if r.get('counted') else 'khong tinh'}")
+            except Exception as e:
+                log(f"end_session loi {type(e).__name__}")
 
 
 async def main():

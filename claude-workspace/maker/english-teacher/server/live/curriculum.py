@@ -6,6 +6,8 @@ from pathlib import Path
 
 ALLOWED_NICKNAMES = ["thỏ", "mèo", "gấu", "cá", "chim", "voi", "khỉ", "cún"]
 MAX_SESSIONS_PER_DAY = 2
+# 2026-11-07: buoi chi DUOC TINH khi >= MIN_SESSION_S giay hoac be noi >= MIN_TURNS luot (lan bam thu ngan khong tinh -> khong bi tu choi 'hoc du roi' vo ly, khong day tuan hoc len)
+MIN_SESSION_S, MIN_TURNS = 120, 3
 REASON_LIMIT = "Hôm nay con học đủ rồi, mai mình học tiếp nhé!"
 HEADING = "## Chỉ dẫn cho AI"
 ACTIVITIES = ("repeat-after-me", "quiz", "touch-game", "rhyme-chant", "tiny-story", "guessing-game")
@@ -170,9 +172,10 @@ class Curriculum:
             now = self.now()
             L = d["learners"].setdefault(nick, {"lesson": self.order[0], "passed": [], "failed": [], "sessions": []})
             today = now.date().isoformat()
-            if sum(1 for s in L["sessions"] if s[:10] == today) >= MAX_SESSIONS_PER_DAY:
+            if sum(1 for s in L.get("counted", []) if s[:10] == today) >= MAX_SESSIONS_PER_DAY:
                 return {"allowed": False, "reason": REASON_LIMIT}
             L["sessions"].append(now.isoformat(timespec="minutes"))
+            L["cur"], L["cur_counted"] = now.isoformat(timespec="minutes"), False
             L["sessions"] = L["sessions"][-50:]
             age = int(L.get("age_band", DEFAULT_AGE))
             if self.roadmap(age):
@@ -209,7 +212,6 @@ class Curriculum:
             if L.get("wk_iso") and int(L.get("wk_n", 0)) >= 2:
                 week += 1
             L["wk_iso"], L["wk_n"] = iso, 0
-        L["wk_n"] = int(L.get("wk_n", 0)) + 1
         rm = self.roadmap(age)
         week = ((week - 1) % len(rm)) + 1
         L["week"] = week
@@ -294,13 +296,42 @@ class Curriculum:
         L = self._load()["learners"].get(normalize(nickname)) or {}
         return list(L.get("last_words", []))[-5:]
 
-    def finish(self, nickname):
+    def _count(self, L):
+        """Tinh buoi hien tai (1 lan/buoi): vao gioi han ngay + dem tuan hoc."""
+        if L.get("cur_counted"):
+            return
+        L.setdefault("counted", []).append(L.get("cur") or self.now().isoformat(timespec="minutes"))
+        L["counted"] = L["counted"][-50:]
+        L["wk_n"] = int(L.get("wk_n", 0)) + 1
+        L["cur_counted"] = True
+
+    @staticmethod
+    def _meaningful(seconds, turns):
+        return seconds is None or seconds >= MIN_SESSION_S or (turns or 0) >= MIN_TURNS
+
+    def end_session(self, nickname, seconds, turns):
+        """Cau noi goi khi het ket noi: buoi du dai/du luot moi duoc tinh."""
+        nick = normalize(nickname)
+        with self.lock:
+            d = self._load()
+            L = d["learners"].get(nick)
+            if L is None:
+                return {"counted": False}
+            ok = self._meaningful(seconds, turns)
+            if ok:
+                self._count(L)
+                self._save(d)
+            return {"counted": ok}
+
+    def finish(self, nickname, seconds=None, turns=None):
         nick = normalize(nickname)
         with self.lock:
             d = self._load()
             L = d["learners"].get(nick)
             if L is None:
                 return {"next_lesson": self.order[0]}
+            if self._meaningful(seconds, turns):
+                self._count(L)
             if self.roadmap(L.get("age_band", DEFAULT_AGE)):
                 w = self.roadmap_week(L.get("age_band", DEFAULT_AGE), L.get("week", 1))
                 L["lesson"] = w["lesson_id"]
