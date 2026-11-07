@@ -39,7 +39,7 @@ RATE_BYTES = IN_RATE * 2              # 1 s PCM 16 kHz s16le
 IN_FRAME, OUT_FRAME = 960, 1440      # 60 ms
 FRAME_S = 0.06
 PRE_BUFFER = 5                        # nhu sendAudioHandle cua xinnan
-IDLE_S = 60.0
+IDLE_S = float(os.environ.get("STLAB_IDLE_S", "300"))   # 2026-11-07 Tuan: co chao tam biet som qua -> chi tam dung sau 5 ph khong noi
 
 
 DEBUG = bool(os.environ.get("STLAB_LIVE_DEBUG"))
@@ -97,7 +97,8 @@ VOICE_ID = _voice_enabled()
 VOICE_ENROLL = os.environ.get("VOICEID_ENROLL", "1") != "0"
 ENROLL_TURNS = 3
 ANON_LESSON = os.environ.get("STLAB_ANON_LESSON", "1") != "0"   # khong biet danh sau 2 luot be -> bai ngau nhien
-NUDGE_S = float(os.environ.get("STLAB_NUDGE_S", "6"))   # be im bay nhieu giay sau luot co -> nhac
+NUDGE_S = float(os.environ.get("STLAB_NUDGE_S", "6"))   # be im bay nhieu giay sau luot co -> nhac (lan 1)
+NUDGE_GAPS = (NUDGE_S, 12.0, 20.0, 40.0)   # nhac gian dan
 NUDGE_RMS = 400                       # nguong nang luong PCM: cung nguong 'dang noi' cua mic_rx (tieng be > ~1000, nen phong < 400)
 BYE_WORDS = ("bye bye", "goodbye", "tam biet")
 YES_WORDS = {"co", "dung", "vang", "u", "yes", "phai", "da"}
@@ -110,7 +111,7 @@ CURRICULUM_PROMPT = (
     "\n\nAt the start, ask in Vietnamese which animal friend is learning today (e.g. bạn thỏ, bạn mèo, bạn gấu). "
     "Then wait. The system will send a [lesson] message with the lesson to follow. Until then, do not start a lesson "
     "and do not call tools. After a [lesson] message: treat it as goals and teach in your own fresh way; after the child repeats a vocabulary word call "
-    "mark_word; at the end call finish_lesson then say a short goodbye. Never ask for real names. "
+    "mark_word; when the lesson goals are done call finish_lesson, then keep playing and reviewing words in a fun way. NEVER say goodbye or end the session on your own - only when you receive an [end] message. Teaching the WORD 'goodbye' is fine. Never ask for real names. "
     "Listen carefully. If you are not sure what the child said, or the answer does not fit, do NOT guess: "
     "kindly ask again in Vietnamese ('Con nói lại cho cô nghe nhé?'), at most twice, then gently give the answer and move on."
 )
@@ -513,15 +514,12 @@ class Session:
                     await self.send_json({"type": "tts", "state": "stop", "session_id": self.sid})
                     if self.ending:
                         asyncio.create_task(self.end_close(0.4))
-                    elif not self.finishing and not any(w in _fold(self.reply_txt)[-40:] for w in BYE_WORDS):
+                    else:
+                        # 2026-11-07: KHONG tu dong khi co noi 'goodbye/bye bye' (bai chao hoi DAY tu goodbye -> phien bi dong som).
+                        # Chi dong khi be xin ket thuc ([end]) hoac im qua IDLE_S.
                         if self.nudge_task:
                             self.nudge_task.cancel()
                         self.nudge_task = asyncio.create_task(self.nudge_watch(time.time()))
-                    tail = _fold(self.reply_txt)[-40:]
-                    if not self.ending and self.finishing or any(w in tail for w in BYE_WORDS):
-                        if self.bye_task:
-                            self.bye_task.cancel()
-                        self.bye_task = asyncio.create_task(self.bye_close(time.time()))
                     self.log_turn()
                 if not self.gen_open and self.out_q.empty():
                     self.tts_on = False
@@ -545,8 +543,9 @@ class Session:
             dbg(f"interrupted loi {type(e).__name__}")
 
     async def nudge_watch(self, stop_t):
-        """Sau luot co, be im NUDGE_S giay -> nhac be (toi da 2 lan nhac, lan 3 chuyen tu, lan 4 tam biet + dong)."""
-        await asyncio.sleep(NUDGE_S)
+        """Sau luot co, be im -> nhac gian dan (6, 12, 20, 40 s). Lan 4 cho biet co van o day roi IM CHO (khong tam biet);
+        chi tam dung khi im qua IDLE_S (idle_watch). Tuan 2026-11-07: chao tam biet som qua."""
+        await asyncio.sleep(NUDGE_GAPS[min(self.silent_n, len(NUDGE_GAPS) - 1)])
         if (self.closed or self.ending or self.finishing or self.tts_on or self.gen_open or self.dev_on
                 or self.last_speech > stop_t or self.heard_at > stop_t or self.live is None):
             return
@@ -559,9 +558,13 @@ class Session:
                                    "(e.g. 'Con nói theo cô nhé: red!') ONLY if you have not asked for that word twice already. "
                                    "One or two short sentences.")
         elif n == 3:
-            await self.send_lesson("[silence] Still no answer. Move on to the next word kindly.")
+            await self.send_lesson("[silence] Still no answer. Move on to the next word kindly, or sing a short song.")
+        elif n == 4:
+            await self.send_lesson("[silence] The child is quiet. Say ONE short warm sentence in Vietnamese that you are still "
+                                   "here and they can talk to you anytime (e.g. 'Cô vẫn ở đây, khi nào con muốn chơi tiếp thì "
+                                   "gọi cô nhé!'). Do NOT say goodbye. Then wait quietly.")
+            return
         else:
-            await self.end_request()
             return
         await asyncio.sleep(5)                 # Gemini khong tra loi loi nhac -> van nhac tiep (khong dung giua chung)
         if not (self.closed or self.tts_on or self.gen_open or self.dev_on):
@@ -825,8 +828,8 @@ class Session:
         while True:
             await asyncio.sleep(2)
             if not self.tts_on and time.time() - self.last_active > IDLE_S:
-                log("im lang > 60 s, dong ket noi")
-                await self.ws.close()
+                log(f"im lang > {int(IDLE_S)} s -> chao ngan roi tam dung")
+                await self.end_request()
                 return
 
     async def run(self):
