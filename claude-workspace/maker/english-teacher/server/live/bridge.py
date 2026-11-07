@@ -4,7 +4,7 @@ Bien: GOOGLE_API_KEY (bat buoc), STLAB_LIVE_WS_PORT (8000), STLAB_LIVE_HTTP_PORT
 STLAB_LIVE_MODEL (gemini-3.8-live), STLAB_LIVE_VOICE (tuy chon).
 """
 import asyncio
-import unicodedata, audioop, json, os, re, socket, sys, time, uuid
+import unicodedata, audioop, json, os, random, re, socket, sys, time, uuid
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -105,6 +105,10 @@ YES_WORDS = {"co", "dung", "vang", "u", "yes", "phai", "da"}
 NO_WORDS = {"khong", "no", "sai"}
 
 SILENCE_MS = int(os.environ.get("STLAB_LIVE_SILENCE_MS", "600"))
+START_SENS = os.environ.get("STLAB_LIVE_START_SENS", "low").strip().lower()   # low = kho bi nhac/nen kich hoat
+PREFIX_PAD_MS = int(os.environ.get("STLAB_LIVE_PREFIX_MS", "300"))
+VAD_GATE = os.environ.get("STLAB_VAD_GATE", "1") != "0"           # cong loc giong nguoi (Silero) truoc Gemini
+VAD_THRESHOLD = float(os.environ.get("STLAB_VAD_THRESHOLD", "0.5"))
 
 CUR = Curriculum(os.environ.get("STLAB_LEARNERS_PATH") or (SERVER / "data" / "learners.json"), SERVER.parent / "lessons")
 CURRICULUM_PROMPT = (
@@ -185,6 +189,9 @@ def live_config():
         tools=[types.Tool(function_declarations=live_tools() + VOLUME_TOOLS)],
         realtime_input_config=types.RealtimeInputConfig(
             automatic_activity_detection=types.AutomaticActivityDetection(
+                start_of_speech_sensitivity=(types.StartSensitivity.START_SENSITIVITY_HIGH if START_SENS == "high"
+                                             else types.StartSensitivity.START_SENSITIVITY_LOW),
+                prefix_padding_ms=PREFIX_PAD_MS,
                 end_of_speech_sensitivity=types.EndSensitivity.END_SENSITIVITY_HIGH,
                 silence_duration_ms=SILENCE_MS)),
     )
@@ -222,6 +229,7 @@ async def ota_handler(request):
 STANDBY_MAX_S = 480.0      # phien du phong khong dung qua 8 phut -> dong, mo lai
 HEDGE_AFTER_S = 2.0
 OPEN_TOTAL_S = 10.0
+SESSION_START_LAST = {}    # device-id -> kieu mo dau lan truoc
 MIC_BUF_MAX = 400          # khung 60 ms (~24 s) toi da dem truoc khi phien san sang
 
 
@@ -379,6 +387,14 @@ class Session:
         self.handle = None
         self.mic_buf = []
         self.dec = opuslib_next.Decoder(IN_RATE, 1)
+        self.vad = None
+        if VAD_GATE:
+            try:
+                from vad_gate import VadGate
+                self.vad = VadGate(SERVER, VAD_THRESHOLD)
+            except Exception as e:
+                log(f"[LIVE-VAD] khong bat duoc ({type(e).__name__}: {str(e)[:100]}), dung micro tho")
+        self.device_id = ""
         self.enc = opuslib_next.Encoder(OUT_RATE, 1, opuslib_next.APPLICATION_AUDIO)
         self.sid = uuid.uuid4().hex
         self.out_q = asyncio.Queue()       # bytes Opus | "STOP" marker
@@ -695,7 +711,12 @@ class Session:
         if res.get("allowed"):
             self.nick = res["learner"]
             log(f"[LIVE-TOOL] nick {nick} -> {res.get('lesson_id')}")
-            self.pending_lesson = (f"[lesson] Learner: bạn {nick}. {res['instructions']} "
+            lw = CUR.last_words(self.nick)
+            recall = (f" Last time you learned: {', '.join(lw)}. Start by recalling one of them playfully "
+                      "(do not quiz hard), then continue.") if lw else ""
+            self.pending_lesson = (f"[lesson] Learner: bạn {nick}. {res['instructions']}{recall} "
+                                   "Vary your opening sentence and your first activity every session; never reuse the exact "
+                                   "sentences from earlier sessions. "
                                    "Greet the learner by this animal name and start the lesson now.")
         else:
             log(f"[LIVE-TOOL] nick {nick} -> refused")
@@ -783,19 +804,24 @@ class Session:
                     pcm = self.dec.decode(m, IN_FRAME)
                 except Exception:
                     continue
-                if audioop.rms(pcm, 2) > 400:  # tieng noi gan nhat -> moc do do tre
+                if self.vad is not None:
+                    chunks, hot = self.vad.process(pcm)       # chi giong nguoi qua cong; nhac/nen -> so 0
+                else:
+                    chunks, hot = [pcm], audioop.rms(pcm, 2) > 400
+                if hot:  # tieng noi gan nhat -> moc do do tre
                     self.t_user_end = self.last_speech = time.time()
                     self.silent_n = 0
-                if VOICE_ID is not None:
-                    self.turn_pcm += pcm
-                    if len(self.turn_pcm) > RATE_BYTES * 20:
-                        del self.turn_pcm[:-RATE_BYTES * 20]
-                if self.live is None:              # phien chua san sang -> dem
-                    self.mic_buf.append(pcm)
-                    if len(self.mic_buf) > MIC_BUF_MAX:
-                        self.mic_buf.pop(0)
-                    continue
-                await self.live.send_realtime_input(audio=types.Blob(data=pcm, mime_type=f"audio/pcm;rate={IN_RATE}"))
+                for pcm in chunks:
+                    if VOICE_ID is not None:
+                        self.turn_pcm += pcm
+                        if len(self.turn_pcm) > RATE_BYTES * 20:
+                            del self.turn_pcm[:-RATE_BYTES * 20]
+                    if self.live is None:              # phien chua san sang -> dem
+                        self.mic_buf.append(pcm)
+                        if len(self.mic_buf) > MIC_BUF_MAX:
+                            self.mic_buf.pop(0)
+                        continue
+                    await self.live.send_realtime_input(audio=types.Blob(data=pcm, mime_type=f"audio/pcm;rate={IN_RATE}"))
                 continue
             try:
                 j = json.loads(m)
@@ -848,11 +874,37 @@ class Session:
                     log(f"loi phien: {type(d.exception()).__name__}: {str(d.exception())[:200]}")
         finally:
             self.closed = True
+            if self.vad is not None and self.vad.n:
+                av, mx, n = self.vad.stats()
+                log(f"[LIVE-VAD] {n} khung, TB {av:.2f} ms, max {mx:.2f} ms / khung")
             for t in tasks:
                 t.cancel()
             await asyncio.gather(*tasks, return_exceptions=True)
             if self.handle is not None:
                 await self.handle.close()
+
+    def session_start_text(self):
+        """Mo dau buoi hoc: ngau nhien 1 trong nhieu kieu, khong trung kieu lan truoc cua cung thiet bi."""
+        hour = time.localtime().tm_hour
+        part = "morning" if hour < 11 else ("noon" if hour < 14 else ("afternoon" if hour < 18 else "evening"))
+        styles = [
+            "Sing ONE very short made-up greeting song line (cheerful), then greet the child.",
+            "Open with a tiny animal-sound riddle: make an animal sound and let the child guess the animal in one short sentence, then greet.",
+            "Greet the child and ask in one short sentence if they feel happy or sad today, with a big smile in your voice.",
+            f"Greet according to the time of day (it is {part} on the clock) in Vietnamese, with a fresh phrase.",
+            "Start the 'look around and find something of a colour' game in one sentence (e.g. 'Nhìn quanh xem có gì màu đỏ nào?'), then greet.",
+            "Invite the child to clap three times with you ('vỗ tay 1, 2, 3!'), then greet.",
+            "Tell a tiny two-sentence story about a little animal waking up, then greet the child.",
+            "Greet in the voice of Lily the owl, with 'hoo hoo' sounds, then greet the child in Vietnamese.",
+        ]
+        key = self.device_id or "-"
+        last = SESSION_START_LAST.get(key, -1)
+        i = random.choice([k for k in range(len(styles)) if k != last])
+        SESSION_START_LAST[key] = i
+        log(f"[LIVE-T] mo dau kieu {i}")
+        return ("[session start] " + styles[i] + " Keep the opening to 1-3 short sentences, in Vietnamese. Then ask which "
+                "animal friend is learning today (bạn thỏ, bạn mèo, bạn gấu…). Vary your wording every session; "
+                "never reuse the exact sentences from earlier sessions.")
 
     async def mcp_init(self):
         try:
@@ -870,15 +922,24 @@ class Session:
             pcm = self.mic_buf.pop(0)
             await live.send_realtime_input(audio=types.Blob(data=pcm, mime_type=f"audio/pcm;rate={IN_RATE}"))
         self.live = live                           # khong await giua kiem tra rong va gan
-        await self.send_lesson("[session start] Greet the child warmly in Vietnamese in one short sentence and ask which "
-                               "animal friend is learning today (bạn thỏ, bạn mèo, bạn gấu…).")
+        await self.send_lesson(self.session_start_text())
         await self.gemini_rx()
+
+
+def ws_device_id(ws):
+    try:
+        h = getattr(getattr(ws, "request", None), "headers", None) or getattr(ws, "request_headers", None)
+        return (h.get("device-id") or h.get("Device-Id") or "") if h is not None else ""
+    except Exception:
+        return ""
 
 
 async def ws_handler(ws, pool):
     log("thiet bi ket noi")
     try:
-        await Session(ws, pool).run()
+        ses = Session(ws, pool)
+        ses.device_id = ws_device_id(ws)
+        await ses.run()
     except Exception as e:
         log(f"ket noi dong: {type(e).__name__}: {str(e)[:200]}")
     finally:
@@ -895,6 +956,13 @@ async def main():
     key = os.environ.get("GOOGLE_API_KEY")
     if not key:
         sys.exit("Thieu GOOGLE_API_KEY")
+    if VAD_GATE:
+        try:
+            from vad_gate import VadGate
+            VadGate(SERVER, VAD_THRESHOLD)
+            log(f"[LIVE-VAD] bat (nguong {VAD_THRESHOLD:g})")
+        except Exception as e:
+            log(f"[LIVE-VAD] tat: {type(e).__name__}: {str(e)[:100]}")
     try:
         import no_ecoqos
         no_ecoqos.disable()

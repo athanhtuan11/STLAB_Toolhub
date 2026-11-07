@@ -281,12 +281,18 @@ class Curriculum:
             if correct:
                 if w not in L["passed"]:
                     L["passed"].append(w)
+                L["last_words"] = [x for x in L.get("last_words", []) if x != w][-4:] + [w]   # chi tu vung, toi da 5
                 L["failed"] = [x for x in L["failed"] if x != w]
             else:
                 if w not in L["passed"] and w not in L["failed"]:
                     L["failed"].append(w)
             self._save(d)
             return {"ok": True}
+
+    def last_words(self, nickname):
+        """Vai tu be dat gan nhat (chi tu vung) - de nhac lai dau buoi sau."""
+        L = self._load()["learners"].get(normalize(nickname)) or {}
+        return list(L.get("last_words", []))[-5:]
 
     def finish(self, nickname):
         nick = normalize(nickname)
