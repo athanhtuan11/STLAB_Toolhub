@@ -4,3 +4,7 @@
 
 claude-workspace/maker/english-teacher/server/data/
 claude-workspace/maker/english-teacher/server/models/
+claude-workspace/maker/english-teacher/server/tests_tmp/
+claude-workspace/maker/english-teacher/server/backup/
+# cong tac che do may chu tren may lab (xoa file = quay lai xinnan), khong dua len git
+claude-workspace/maker/english-teacher/server/live.on

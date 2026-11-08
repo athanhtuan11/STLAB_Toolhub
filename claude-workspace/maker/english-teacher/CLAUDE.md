@@ -3,8 +3,12 @@
 Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\hoang\.claude\plans\ng-l-m-tr-c-cuddly-curry.md`.
 
 ## Mục tiêu
-- Bé 2–5 tuổi; kiểu học **kết hợp**: bài theo chủ đề + AI chỉ nói trong phạm vi bài.
-- Bản 1: **ESP32-A1S Audio Kit** (có sẵn) – thử ý tưởng + nội dung. Bản 2 (sau): ESP32-S3 N16R8 + INMP441 + MAX98357A – làm kit.
+- Bé 2–5 tuổi. **Từ 2026-11-08: Gemini tự lên bài theo độ tuổi, không ràng buộc, không giới hạn buổi** (bài tự do `server/free-lesson.on`);
+  luôn có phụ huynh ngồi cạnh → không làm bộ lọc an toàn tự động. (Trước: bài theo chủ đề + AI chỉ nói trong phạm vi bài.)
+- Bản 1: **ESP32-A1S Audio Kit** (có sẵn) – thử ý tưởng + nội dung; không khử vọng → bé **bấm KEY4** để ngắt lời cô.
+- Bản 2 (khi linh kiện về): ESP32-S3 **trò chuyện trực tiếp, bé ngắt lời cô bằng giọng** (Tuan 2026-11-08) → cần **AEC trên bo** →
+  phải là bo S3 có **codec trả tham chiếu loa** (kiểu ES8311 + ES7210 như S3-BOX/Lichuang-S3 trong danh sách `USE_DEVICE_AEC` của xiaozhi v2.5.2).
+  INMP441 + MAX98357A (`bread-compact-wifi`) KHÔNG có AEC trên bo → chỉ ngắt bằng nút. Mã bo mua được ở VN: TODO. Chi tiết: `docs/review-2026-11-08.md`.
 - Nền: 78/xiaozhi-esp32 **v2.5.2** (ESP-IDF 6.1) + máy chủ xinnan-tech/xiaozhi-esp32-server **tự chạy trên máy lab**.
 
 ## Đã biết (có nguồn)
@@ -47,6 +51,14 @@ Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\
   (log `[NUT]` nhấn/nhả đủ 2 lượt, probe-log-nut.txt). Chuỗi thanh ghi ES8388 của firmware dò viết theo trí nhớ ESP-ADF – xiaozhi dùng driver riêng.
 
 ## Trạng thái
+- 2026-11-08 tối (mới nhất; chi tiết từng bước trong git log + `docs/review-2026-11-08.md`):
+  - Máy chủ đang chạy **Gemini Live** (`server/live.on`, cầu nối `server/live/bridge.py`) + **bài tự do** (`server/free-lesson.on`), IP cố định 192.168.1.56.
+    Chế độ xinnan (`run.py`, Whisper tại máy) vẫn còn, nhưng không có hồ sơ bé/lộ trình.
+  - Tự chạy khi đăng nhập: task `STLab xiaozhi server` → `run.ps1` → `run-live.ps1` (ghi nối `runtime/live.log` có dòng `[RUN-LIVE]`,
+    bridge thoát thì tự chạy lại sau 10 s). Tuan chạy lại `server\install-autostart.ps1` 1 lần để Windows tự khởi động lại task khi lỗi.
+  - Hồ sơ: `server/data/learners.json` (bo A1S → `kay` qua `devices.json`), giọng `server/data/voiceprints/` (phụ huynh đồng ý 2026-11-06); không lên git.
+  - Gate offline: `test_free`, `test_curriculum`, `test_progress`, `test_roadmap`, `test_switch`, `test_topic` (chạy bằng `runtime\.venv\Scripts\python.exe -X utf8`).
+  - CAD: nút âm lượng đang được đưa về **lưng** (cụm nút rời vol-pod, `cad/spec-vol-back.md`).
 - 2026-11-06:
   - Sửa lỗi KEY4 không phản hồi: firmware cứng IP 192.168.1.47, máy lab đổi DHCP sang 192.168.1.65 → `firmware/xiaozhi-a1s/wifi-nvs.py` nạp thêm khóa NVS `ota_url`; đổi IP chỉ cần `python wifi-nvs.py --port COM5 [--server IP]`, không build lại. Đã đặt IP cố định trên modem Viettel 192.168.1.1 (Tuan, 2026-11-06): máy lab MAC 60:FF:9E:C8:B9:36 → **192.168.1.56** (sửa lại 12:35; bo nạp ota_url .56).
   - Chế độ nói chuyện rảnh tay (Tuan chọn, giọng bé chỉ ở máy lab, KHÔNG Gemini Live): chạm KEY4 1 lần = mở phiên; bé nói, máy chủ tự chốt câu (VAD im 600 ms), cô nói xong tự nghe tiếp; chạm KEY4 khi cô đang nói = ngắt lời; chạm khi đang nghe = kết thúc; im 30 s → cô chào tạm biệt và nghỉ; nói "tạm biệt cô"/"bye bye"/"goodbye"/"thôi nghỉ" = kết thúc. A1S (ESP32) không có khử vọng AEC nên không ngắt lời cô bằng giọng được – cần bản ESP32-S3.
