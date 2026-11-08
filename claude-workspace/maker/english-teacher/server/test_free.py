@@ -52,6 +52,13 @@ ok(s.get("ok") and "short action, story" not in si and "after you" in si, "set_t
 L = json.loads(data.read_text(encoding="utf-8"))["learners"]["mèo"]
 ok([e["word"] for e in L.get("extra", [])] == ["flower", "red"] and L.get("taught", []) == [], "tu tu chon vao extra, con tro khong doi")
 
+# 3b. che do tu do: doi chu de / doi bai / khong ho so -> khong gan khung cu (Tuan 2026-11-08 'khong rang buoc')
+ok("Toddler mode" not in si and "Age 4-5" not in si, "free: set_topic khong gan TODDLER/OLDER_MODE")
+sw = cur.switch("mèo")
+ok("short toddler style" not in sw.get("instructions", ""), "free: switch khong ep 'short toddler style'")
+_, an = cur.anonymous_lesson()
+ok("Toddler mode" not in an and "FREE LESSON" in an, "free: khong ho so -> bai tu do, khong khung cu")
+
 # 4. tat file -> quay lai lo trinh
 flag.unlink()
 r = cur.start("thỏ")

@@ -362,6 +362,9 @@ class Curriculum:
             s += f" Do NOT go back to the word(s) the child just skipped: {', '.join(dropped)}."
         return s + " " + FLEXIBLE
 
+    def _free(self):
+        return bool(self.free_flag) and Path(self.free_flag).exists()
+
     def _start_free(self, d, L, learner, age):
         """Bai tu do (Tuan 2026-11-08 'mo khoa de Gemini tu len bai hoc'): bat bang file free-lesson.on. Server chi dua
         lich su tu da hoc + goi y lo trinh; Gemini tu chon chu de + 1-3 tu, luu qua change_topic (L['extra']) de on."""
@@ -386,7 +389,7 @@ class Curriculum:
         """Tien do = CON TRO TU (L['taught']), khong theo tuan lich: khoi dong lai hoc tiep, bam thu ngan khong tien/lui."""
         rm = self.roadmap(age)
         self._migrate(L, age)
-        if self.free_flag and Path(self.free_flag).exists():
+        if self._free():
             return self._start_free(d, L, learner, age)
         new = self._next_new(L, age)
         done = not [w for w in self.word_sequence(age) if w not in L["taught"]]
@@ -457,7 +460,8 @@ class Curriculum:
             if not new:
                 ins += (" Offer the child a choice between two toys or two animals to play with, and wait for the answer "
                         "(e.g. 'Cat or dog?').")
-            ins += " Keep speaking in the same short toddler style."
+            if not self._free():   # 2026-11-08 Tuan "khong rang buoc": bai tu do khong ep kieu noi
+                ins += " Keep speaking in the same short toddler style."
             self._save(d)
             return {"count": n, "new": list(new), "review": review, "instructions": ins}
 
@@ -531,12 +535,16 @@ class Curriculum:
                f"and happily follow this topic instead. Words: {', '.join(ws)}. Teach them ONE AT A TIME (one at a time, never "
                "two in one turn): say the word slowly, then the child says it after you ('Con nói theo cô: ...!'); no actions or gestures. "
                "Keep everything child-safe. Do not call mark_word for these words. ")
-        ins += TODDLER_MODE if age <= 3 else OLDER_MODE
+        if not self._free():
+            ins += TODDLER_MODE if age <= 3 else OLDER_MODE
         return {"ok": True, "words": ws, "instructions": ins}
 
     def anonymous_lesson(self):
         """Ket noi khong co biet danh: chon NGAU NHIEN 1 bai (khong ghi ho so). Tra (lesson_id, instructions)."""
         lid = random.choice(self.order)
+        if self._free():
+            return lid, ("[FREE LESSON] No profile for this child. Plan today's lesson yourself for a 2-5 year old: pick any "
+                         "child-safe topic and words and teach in your own way. Never end the session yourself.")
         return lid, self.lessons[lid]["instructions"] + "\n" + self.today_plan(lid)[0] + "\n" + TODDLER_MODE
 
     def _known_words(self):
