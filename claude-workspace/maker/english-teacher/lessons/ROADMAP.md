@@ -221,43 +221,43 @@ Week 35: 01-colors | new: - | review: red, blue, apple, banana | daily: hello, t
 Nhịp bé 2–3 tuổi: mỗi từ kéo dài 1 tuần, mỗi tuần 1 từ mới (tuần 16 không có từ mới, vì hàng "five" chỉ có 1 từ). Đơn vị "Week N" là hàng (tuần có học thứ N).
 
 ```text
-Week 1: 04-greetings-feelings | new: hello | review: - | daily: hello, thank you, good job, bye bye, let's sing | song: 04-greetings-feelings
-Week 2: 04-greetings-feelings | new: goodbye | review: hello | daily: hello, thank you, good job, bye bye, let's sing | song: 04-greetings-feelings
-Week 3: 04-greetings-feelings | new: happy | review: hello, goodbye | daily: hello, thank you, good job, bye bye, let's sing | song: 04-greetings-feelings
-Week 4: 04-greetings-feelings | new: tired | review: happy, hello, goodbye | daily: hello, thank you, good job, bye bye, let's sing | song: 04-greetings-feelings
-Week 5: 01-colors | new: red | review: happy, tired | daily: hello, thank you, good job, bye bye, let's sing | song: 01-colors
-Week 6: 01-colors | new: blue | review: red, happy, tired | daily: hello, thank you, good job, bye bye, let's sing | song: 01-colors
-Week 7: 01-colors | new: yellow | review: red, blue, hello, goodbye | daily: hello, thank you, good job, bye bye, let's sing | song: 01-colors
-Week 8: 01-colors | new: green | review: yellow, red, blue, hello, goodbye | daily: hello, thank you, good job, bye bye, let's sing | song: 01-colors
-Week 9: 01-colors | new: pink | review: yellow, green, happy, tired | daily: hello, thank you, good job, bye bye, let's sing | song: 01-colors
-Week 10: 01-colors | new: orange | review: pink, yellow, green, happy, tired | daily: hello, thank you, good job, bye bye, let's sing | song: 01-colors
-Week 11: 03-numbers-1-5 | new: one | review: pink, orange, red, blue | daily: hello, thank you, good job, bye bye, let's sing | song: 03-numbers-1-5
-Week 12: 03-numbers-1-5 | new: two | review: one, pink, orange, red, blue | daily: hello, thank you, good job, bye bye, let's sing | song: 03-numbers-1-5
-Week 13: 03-numbers-1-5 | new: three | review: one, two, yellow, green | daily: hello, thank you, good job, bye bye, let's sing | song: 03-numbers-1-5
-Week 14: 03-numbers-1-5 | new: four | review: three, one, two, yellow, green | daily: hello, thank you, good job, bye bye, let's sing | song: 03-numbers-1-5
-Week 15: 03-numbers-1-5 | new: five | review: three, four, pink, orange | daily: hello, thank you, good job, bye bye, let's sing | song: 03-numbers-1-5
-Week 16: 03-numbers-1-5 | new: - | review: five, three, four, pink, orange | daily: hello, thank you, good job, bye bye, let's sing | song: 03-numbers-1-5
-Week 17: 02-animals | new: cat | review: five, one, two | daily: hello, thank you, good job, bye bye, let's sing | song: 02-animals
-Week 18: 02-animals | new: dog | review: cat, five, one, two | daily: hello, thank you, good job, bye bye, let's sing | song: 02-animals
-Week 19: 02-animals | new: duck | review: cat, dog, three, four | daily: hello, thank you, good job, bye bye, let's sing | song: 02-animals
-Week 20: 02-animals | new: cow | review: duck, cat, dog, three, four | daily: hello, thank you, good job, bye bye, let's sing | song: 02-animals
-Week 21: 02-animals | new: pig | review: duck, cow, five | daily: hello, thank you, good job, bye bye, let's sing | song: 02-animals
-Week 22: 02-animals | new: bird | review: pig, duck, cow, five | daily: hello, thank you, good job, bye bye, let's sing | song: 02-animals
-Week 23: 05-body | new: head | review: pig, bird, cat, dog | daily: hello, thank you, good job, bye bye, let's sing | song: 05-body
-Week 24: 05-body | new: eyes | review: head, pig, bird, cat, dog | daily: hello, thank you, good job, bye bye, let's sing | song: 05-body
-Week 25: 05-body | new: nose | review: head, eyes, duck, cow | daily: hello, thank you, good job, bye bye, let's sing | song: 05-body
-Week 26: 05-body | new: mouth | review: nose, head, eyes, duck, cow | daily: hello, thank you, good job, bye bye, let's sing | song: 05-body
-Week 27: 05-body | new: hands | review: nose, mouth, pig, bird | daily: hello, thank you, good job, bye bye, let's sing | song: 05-body
-Week 28: 05-body | new: feet | review: hands, nose, mouth, pig, bird | daily: hello, thank you, good job, bye bye, let's sing | song: 05-body
-Week 29: 07-fruits | new: apple | review: hands, feet, head, eyes | daily: hello, thank you, good job, bye bye, let's sing | song: 07-fruits
-Week 30: 07-fruits | new: banana | review: apple, hands, feet, head, eyes | daily: hello, thank you, good job, bye bye, let's sing | song: 07-fruits
-Week 31: 07-fruits | new: grape | review: apple, banana, nose, mouth | daily: hello, thank you, good job, bye bye, let's sing | song: 07-fruits
-Week 32: 07-fruits | new: mango | review: grape, apple, banana, nose, mouth | daily: hello, thank you, good job, bye bye, let's sing | song: 07-fruits
-Week 33: 07-fruits | new: watermelon | review: grape, mango, hands, feet | daily: hello, thank you, good job, bye bye, let's sing | song: 07-fruits
-Week 34: 07-fruits | new: strawberry | review: watermelon, grape, mango, hands, feet | daily: hello, thank you, good job, bye bye, let's sing | song: 07-fruits
-Week 35: 08-toys | new: ball | review: watermelon, strawberry, apple, banana | daily: hello, thank you, good job, bye bye, let's sing | song: 08-toys
+> 2026-11-08 Tuan: học TỪ ĐƠN, từng từ một, SỐ trước (one → five), rồi chào hỏi, màu, con vật, cơ thể, hoa quả, đồ chơi, gia đình, hành động. Ôn = từ của tuần N-1 và N-3.
+Week 1: 03-numbers-1-5 | new: one | review: - | daily: hello, thank you, good job, bye bye, let's sing | song: 03-numbers-1-5
+Week 2: 03-numbers-1-5 | new: two | review: one | daily: hello, thank you, good job, bye bye, let's sing | song: 03-numbers-1-5
+Week 3: 03-numbers-1-5 | new: three | review: two | daily: hello, thank you, good job, bye bye, let's sing | song: 03-numbers-1-5
+Week 4: 03-numbers-1-5 | new: four | review: three, one | daily: hello, thank you, good job, bye bye, let's sing | song: 03-numbers-1-5
+Week 5: 03-numbers-1-5 | new: five | review: four, two | daily: hello, thank you, good job, bye bye, let's sing | song: 03-numbers-1-5
+Week 6: 04-greetings-feelings | new: hello | review: five, three | daily: hello, thank you, good job, bye bye, let's sing | song: 04-greetings-feelings
+Week 7: 04-greetings-feelings | new: goodbye | review: hello, four | daily: hello, thank you, good job, bye bye, let's sing | song: 04-greetings-feelings
+Week 8: 04-greetings-feelings | new: happy | review: goodbye, five | daily: hello, thank you, good job, bye bye, let's sing | song: 04-greetings-feelings
+Week 9: 04-greetings-feelings | new: tired | review: happy, hello | daily: hello, thank you, good job, bye bye, let's sing | song: 04-greetings-feelings
+Week 10: 01-colors | new: red | review: tired, goodbye | daily: hello, thank you, good job, bye bye, let's sing | song: 01-colors
+Week 11: 01-colors | new: blue | review: red, happy | daily: hello, thank you, good job, bye bye, let's sing | song: 01-colors
+Week 12: 01-colors | new: yellow | review: blue, tired | daily: hello, thank you, good job, bye bye, let's sing | song: 01-colors
+Week 13: 01-colors | new: green | review: yellow, red | daily: hello, thank you, good job, bye bye, let's sing | song: 01-colors
+Week 14: 02-animals | new: cat | review: green, blue | daily: hello, thank you, good job, bye bye, let's sing | song: 02-animals
+Week 15: 02-animals | new: dog | review: cat, yellow | daily: hello, thank you, good job, bye bye, let's sing | song: 02-animals
+Week 16: 02-animals | new: duck | review: dog, green | daily: hello, thank you, good job, bye bye, let's sing | song: 02-animals
+Week 17: 02-animals | new: cow | review: duck, cat | daily: hello, thank you, good job, bye bye, let's sing | song: 02-animals
+Week 18: 05-body | new: head | review: cow, dog | daily: hello, thank you, good job, bye bye, let's sing | song: 05-body
+Week 19: 05-body | new: eyes | review: head, duck | daily: hello, thank you, good job, bye bye, let's sing | song: 05-body
+Week 20: 05-body | new: nose | review: eyes, cow | daily: hello, thank you, good job, bye bye, let's sing | song: 05-body
+Week 21: 05-body | new: mouth | review: nose, head | daily: hello, thank you, good job, bye bye, let's sing | song: 05-body
+Week 22: 05-body | new: hands | review: mouth, eyes | daily: hello, thank you, good job, bye bye, let's sing | song: 05-body
+Week 23: 05-body | new: feet | review: hands, nose | daily: hello, thank you, good job, bye bye, let's sing | song: 05-body
+Week 24: 07-fruits | new: apple | review: feet, mouth | daily: hello, thank you, good job, bye bye, let's sing | song: 07-fruits
+Week 25: 07-fruits | new: banana | review: apple, hands | daily: hello, thank you, good job, bye bye, let's sing | song: 07-fruits
+Week 26: 08-toys | new: ball | review: banana, feet | daily: hello, thank you, good job, bye bye, let's sing | song: 08-toys
+Week 27: 08-toys | new: car | review: ball, apple | daily: hello, thank you, good job, bye bye, let's sing | song: 08-toys
+Week 28: 06-family | new: mom | review: car, banana | daily: hello, thank you, good job, bye bye, let's sing | song: 06-family
+Week 29: 06-family | new: dad | review: mom, ball | daily: hello, thank you, good job, bye bye, let's sing | song: 06-family
+Week 30: 06-family | new: baby | review: dad, car | daily: hello, thank you, good job, bye bye, let's sing | song: 06-family
+Week 31: 09-actions | new: clap | review: baby, mom | daily: hello, thank you, good job, bye bye, let's sing | song: 09-actions
+Week 32: 09-actions | new: sit | review: clap, dad | daily: hello, thank you, good job, bye bye, let's sing | song: 09-actions
+Week 33: 09-actions | new: stand | review: sit, baby | daily: hello, thank you, good job, bye bye, let's sing | song: 09-actions
+Week 34: 11-weather | new: sun | review: stand, clap | daily: hello, thank you, good job, bye bye, let's sing | song: 11-weather
+Week 35: 10-shapes | new: star | review: sun, sit | daily: hello, thank you, good job, bye bye, let's sing | song: 10-shapes
 ```
-
 ## Nguồn
 
 - Kuhl, Tsao & Liu (2003), PNAS 100(15):9096–9101: https://pmc.ncbi.nlm.nih.gov/articles/PMC166444 (truy cập 2026-11-06)

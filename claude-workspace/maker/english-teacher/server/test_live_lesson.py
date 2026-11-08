@@ -121,10 +121,11 @@ async def main():
         ok(a3 > 0.8 and fs3 is not None and fs3 > 0.3, f"luot 'Red' co tra loi rieng sau khi bat dau noi (am thanh {a3:.1f} s, tu luc noi {fs3})")
         ok(re.search(r"bạn nào|thỏ, mèo|chọn bạn", t3, re.I) is None, "khong hoi lai biet danh")
         # 2026-11-07 nghien cuu cach day (docs/research-notes/education/cu-bong-cach-day-tot-hon.md): cau NGAN, it cau/luot
-        for tag, tt in (("biet-danh", t2), ("luot be dap", t3)):
+        # luot mo bai (sau biet danh) co them 1 cau gioi thieu chu de bang tieng Viet (khung bai yeu cau) -> toi da 4 cau
+        for tag, tt, nmax in (("biet-danh", t2, 4), ("luot be dap", t3, 3)):
             sents = [x for x in re.split(r"[.!?]+", tt) if x.strip()]
             mx = max((len(x.split()) for x in sents), default=0)
-            ok(mx <= 10 and len(sents) <= 3, f"{tag}: cau co ngan (dai nhat {mx} chu <= 10, {len(sents)} cau <= 3): '{tt[:80]}'")
+            ok(mx <= 10 and len(sents) <= nmax, f"{tag}: cau co ngan (dai nhat {mx} chu <= 10, {len(sents)} cau <= {nmax}): '{tt[:80]}'")
     print("\n%s test_live_lesson (%d loi)" % ("FAIL" if fails else "PASS", len(fails)))
     sys.exit(1 if fails else 0)
 

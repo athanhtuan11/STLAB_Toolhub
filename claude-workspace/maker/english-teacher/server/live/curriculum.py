@@ -5,7 +5,10 @@ from datetime import datetime
 from pathlib import Path
 
 ALLOWED_NICKNAMES = ["thỏ", "mèo", "gấu", "cá", "chim", "voi", "khỉ", "cún",
-                     "sóc", "vịt", "ếch", "rùa", "ong", "bướm", "hổ", "gà", "heo", "nai", "cú"]
+                     "sóc", "vịt", "ếch", "rùa", "ong", "bướm", "hổ", "gà", "heo", "nai", "cú",
+                     "kay"]   # 2026-11-08 Tuan: be dang thu ten "Kay" (con Tuan, Tuan dong y)
+# cach nhan dang hay nghe nham -> quy ve biet danh chuan
+NICK_ALIASES = {"kai": "kay", "key": "kay", "kei": "kay", "khay": "kay"}
 MAX_SESSIONS_PER_DAY = 2
 # 2026-11-07: buoi chi DUOC TINH khi >= MIN_SESSION_S giay hoac be noi >= MIN_TURNS luot (lan bam thu ngan khong tinh -> khong bi tu choi 'hoc du roi' vo ly, khong day tuan hoc len)
 MIN_SESSION_S, MIN_TURNS = 120, 3
@@ -29,7 +32,11 @@ PRONUNCIATION = ("Pronunciation: listen to HOW the child says the English word. 
 TODDLER_MODE = ("Toddler mode (ages 2-3), session frame about 3-4 minutes: (1) very short opening ritual, "
                 "(2) ONE new word through an action, (3) a 2-3 sentence story with a character (Bear, or the child's animal), "
                 "(4) a ONE-line chant with an action each time, (5) you never end the session yourself: the server decides; "
-                "after the frame, keep playing or reviewing gently. Rules: English sentences at most 4 words, at most 2 sentences "
+                "after the frame, keep playing or reviewing gently. "
+                "SINGLE WORDS (Tuan 2026-11-08): for ages 2-3 say English as SINGLE WORDS only, one word at a time "
+                "(e.g. 'One!', 'One finger!' is too long -> 'One!'), never English sentences or phrases; build the story, "
+                "chant and questions in short Vietnamese with the one English word inside (e.g. 'Gấu có một quả bóng. One!'). "
+                "Rules: English sentences at most 4 words, at most 2 sentences "
                 "per turn (+ at most 1 short Vietnamese sentence); answer what the child did FIRST, teach after; ONE request per "
                 "turn (an action or a choice of two, no open questions); after a question STOP and wait; before inviting the child "
                 "to speak say 'Đến lượt con!'; never drill (a new word at most 2 times per turn, spread it through story, chant and "
@@ -47,7 +54,8 @@ OLDER_MODE = ("Age 4-5, session frame about 5 minutes: opening, 2 new words insi
 def normalize(nick):
     s = re.sub(r"[^\w\s]", " ", str(nick or "").lower())
     words = [w for w in s.split() if w not in ("bạn", "ban")]
-    return " ".join(words)
+    n = " ".join(words)
+    return NICK_ALIASES.get(n, n)
 
 
 def _fold(t):
@@ -59,6 +67,7 @@ def _fold(t):
 def find_nickname(text):
     """Chi nhan cum 'ban <ten>' (khong dau/co dau) voi ten trong ALLOWED_NICKNAMES; 'con meo', ten nguoi -> None."""
     by_fold = {_fold(n): n for n in ALLOWED_NICKNAMES}
+    by_fold.update({_fold(a): n for a, n in NICK_ALIASES.items()})
     w = _fold(text).split()
     for i in range(len(w) - 1):
         if w[i] == "ban" and w[i + 1] in by_fold:
@@ -240,6 +249,10 @@ class Curriculum:
         instr += (f"\nWeek {week}. New words: {new_s}. Review: {', '.join(review) or 'none'}. "
                   f"Daily English to use all session: {', '.join(w['daily'])} "
                   "(exposure: say them naturally many times).")
+        # 2026-11-08 Tuan: tu don, tung tu mot -> buoi nay CHI tu moi cua tuan (bai co nhieu tu nhung khong day tu khac)
+        instr += (f"\nTHIS SESSION'S ONLY NEW WORD(S): {new_s}. Even if the lesson above lists more words, do NOT teach "
+                  "any other new word today (no next number, no next color). Review words only briefly, one at a time. "
+                  "Each of your turns has at most 3 short pieces in total (e.g. 'Con giỏi quá! One! Đến lượt con!').")
         plan, act = self.today_plan(lid, review, last, words=goals)
         L["last_activities"] = (last + [act])[-3:]
         self._save(d)
