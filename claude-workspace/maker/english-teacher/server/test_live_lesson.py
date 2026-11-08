@@ -125,7 +125,8 @@ async def main():
         for tag, tt, nmax in (("biet-danh", t2, 4), ("luot be dap", t3, 3)):
             sents = [x for x in re.split(r"[.!?]+", tt) if x.strip()]
             mx = max((len(x.split()) for x in sents), default=0)
-            ok(mx <= 10 and len(sents) <= nmax, f"{tag}: cau co ngan (dai nhat {mx} chu <= 10, {len(sents)} cau <= {nmax}): '{tt[:80]}'")
+            # 2026-11-08 Tuan 'khong rang buoc': Gemini tu chon do dai cau theo tuoi -> chi ghi lai, khong cham FAIL
+            print(f"INFO {tag}: dai nhat {mx} chu, {len(sents)} cau (tham khao, truoc gioi han 10 / {nmax}): '{tt[:80]}'")
     print("\n%s test_live_lesson (%d loi)" % ("FAIL" if fails else "PASS", len(fails)))
     sys.exit(1 if fails else 0)
 

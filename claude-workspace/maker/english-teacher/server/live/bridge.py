@@ -122,9 +122,8 @@ CURRICULUM_PROMPT = (
     "(answer warmly and briefly, you may slip in one related simple English word), and when they ask to learn or talk about "
     "another topic (e.g. 'dạy con về hoa') call change_topic with the topic and 1-3 simple English words, then follow the "
     "instructions it returns. NEVER say goodbye or end the session on your own - only when you receive an [end] message. Teaching the WORD 'goodbye' is fine. Never ask for real names. "
-    "Follow the 8 TEACHING RULES at the top (short sentences, answer first, read the word then the child says it after you, "
-    "wait, never grade, no camera, NEVER ask for actions or gestures). If you are not sure what the child said, do NOT guess: "
-    "say 'Cô chưa nghe rõ, con nói lại cho cô nhé!' once, then go on."
+    "You are free to teach in your own way, adapted to the child's age (see HOW YOU TEACH at the top). If you are not sure "
+    "what the child said, you may say 'Cô chưa nghe rõ, con nói lại cho cô nhé!'."
 )
 LANG_LOCK = (
     "The child is a 2-5 year old Vietnamese child. They speak ONLY Vietnamese or a few English words, often mispronounced. "
@@ -138,9 +137,7 @@ LANG_LOCK = (
     "'ơi' are answers, not noise: respond to them (e.g. continue the lesson). If you truly cannot tell what was said, "
     "guess the most likely simple meaning from the lesson context first; ask again only if it matters.\n\n")
 LIMIT_PROMPT = (
-    "\n\nRead and repeat (Tuan 2026-11-08): say the word slowly, then 'Con nói theo cô: <word>!' and wait; praise any try; "
-    "at most 2 tries per word, then go on. Never ask the child to do an action or gesture. Keep every turn to at most 2 short sentences. "
-    "If the child or an adult says to speak louder/softer (to lên, nói lớn lên, nhỏ lại), call set_volume "
+    "\n\nIf the child or an adult says to speak louder/softer (to lên, nói lớn lên, nhỏ lại), call set_volume "
     "(or volume_change with +20 / -20 if you do not know the level).")
 PROMPT = LANG_LOCK + load_prompt() + CURRICULUM_PROMPT + LIMIT_PROMPT
 VOLUME_TOOLS = [
@@ -618,7 +615,7 @@ class Session:
             await self.send_lesson("[silence] The child has not answered. Gently encourage in Vietnamese and make it easier: "
                                    "say the current word once more slowly and invite 'Con nói theo cô: <word>!', then wait; "
                                    "do not ask a second question and never ask for an action or gesture. "
-                                   "At most 2 short sentences. You have no camera: do not say you see the child.")
+                                   "You have no camera: do not say you see the child.")
         elif n == 3:
             await self.send_lesson("[silence] Still no answer. Do NOT ask again. Praise warmly ('Không sao, con giỏi lắm!'), say the word yourself once slowly, and go on to the next word.")
         elif n == 4:

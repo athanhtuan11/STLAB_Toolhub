@@ -9,7 +9,7 @@ ALLOWED_NICKNAMES = ["thỏ", "mèo", "gấu", "cá", "chim", "voi", "khỉ", "c
                      "kay"]   # 2026-11-08 Tuan: be dang thu ten "Kay" (con Tuan, Tuan dong y)
 # cach nhan dang hay nghe nham -> quy ve biet danh chuan
 NICK_ALIASES = {"kai": "kay", "key": "kay", "kei": "kay", "khay": "kay"}
-MAX_SESSIONS_PER_DAY = 2
+MAX_SESSIONS_PER_DAY = None   # 2026-11-08 Tuan: 'khong gioi han buoi hoc' (truoc: 2 buoi/ngay)
 # 2026-11-07: buoi chi DUOC TINH khi >= MIN_SESSION_S giay hoac be noi >= MIN_TURNS luot (lan bam thu ngan khong tinh -> khong bi tu choi 'hoc du roi' vo ly, khong day tuan hoc len)
 MIN_SESSION_S, MIN_TURNS = 120, 3
 REASON_LIMIT = "Hôm nay con học đủ rồi, mai mình học tiếp nhé!"
@@ -233,7 +233,7 @@ class Curriculum:
             learner = key if is_nick else "device"
             now = self.now()
             today = now.date().isoformat()
-            if sum(1 for s in L.get("counted", []) if s[:10] == today) >= MAX_SESSIONS_PER_DAY:
+            if MAX_SESSIONS_PER_DAY and sum(1 for s in L.get("counted", []) if s[:10] == today) >= MAX_SESSIONS_PER_DAY:
                 return {"allowed": False, "reason": REASON_LIMIT}
             L["sessions"].append(now.isoformat(timespec="minutes"))
             L["cur"], L["cur_counted"] = now.isoformat(timespec="minutes"), False
@@ -373,12 +373,12 @@ class Curriculum:
         instr = ("[FREE LESSON] You plan today's lesson yourself - you are free to choose. "
                  f"The child is about {age} years old. Words the child already met: {', '.join(learned[-12:]) or 'none'}. "
                  f"Roadmap idea (only a suggestion, use it or pick something better): {', '.join(idea) or 'free choice'}. "
-                 "Pick ONE child-safe topic and 1-3 simple English words for it; vary topics between sessions and mix in a few "
-                 "known words for review. Before teaching your new words, call change_topic with your topic and words so they "
-                 "are saved for review. If you teach numbers, count in order from one. Teach in your own fresh way, but always: "
-                 "say each word slowly, then the child says it after you ('Con nói theo cô: ...!'); never ask for actions or "
-                 "gestures; never end the session yourself.\n")
-        instr += TODDLER_MODE if age <= 3 else OLDER_MODE
+                 "Design the whole lesson for this age as you think best: topic, how many words, games, songs, stories, pace "
+                 "and sentence length; vary between sessions and weave in known words for review. To save new words for later "
+                 "review, call change_topic with your topic and words (up to 3 per call). "
+                 "Hints from Tuan (not rules): ages 2-3 learn well by hearing a word and saying it after you, they cannot "
+                 "follow actions yet; count numbers in order from one. Stay child-safe; never end the session yourself.\n")
+        # 2026-11-08 Tuan 'khong rang buoc': bai tu do KHONG gan TODDLER_MODE/OLDER_MODE (khung buoi + gioi han cau)
         return {"allowed": True, "learner": learner, "lesson_id": L.get("lesson"), "instructions": instr, "review": [],
                 "week": L.get("week"), "new": [], "daily": [], "song": None, "mode": "free"}
 

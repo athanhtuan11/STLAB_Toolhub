@@ -55,11 +55,10 @@ ok(words[-1] in r.get("review", []) or ("Review" in r["instructions"] and words[
 cur.mark(nick, words[-1], True)
 cur.finish(nick)
 
-# gioi han 2 phien/ngay (README bai hoc)
+# 2026-11-08 Tuan: 'khong gioi han buoi hoc' (truoc: toi da 2 phien/ngay)
 clock[0] += dt.timedelta(hours=2)
 r = cur.start(nick)
-ok(r["allowed"] is False, "phien thu 3 trong ngay bi tu choi (toi da 2)")
-ok(re.search(r"[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]", r.get("reason", "")) is not None, "ly do tu choi bang tieng Viet")
+ok(r["allowed"] is True, "phien thu 3 trong ngay van duoc hoc (khong gioi han)")
 clock[0] = dt.datetime(2026, 11, 8, 8, 0)
 r = cur.start(nick)
 ok(r["allowed"] is True and r["lesson_id"] == w1["lesson_id"], "ngay moi (cung tuan ISO): hoc tiep bai tuan 1")
@@ -86,7 +85,7 @@ cur.end_session(nick3, 200, 5)
 clock[0] += dt.timedelta(minutes=10)
 cur.start(nick3); cur.end_session(nick3, 150, 4)
 clock[0] += dt.timedelta(minutes=10)
-ok(cur.start(nick3)["allowed"] is False, "2 buoi du dai -> buoi thu 3 bi tu choi")
+ok(cur.start(nick3)["allowed"] is True, "2 buoi du dai -> buoi thu 3 van duoc hoc (khong gioi han)")
 
 # tool cho Gemini Live: khai bao 3 ham
 from curriculum import live_tools  # noqa: E402

@@ -36,8 +36,14 @@ ins = r.get("instructions", "")
 ok(r.get("allowed") and r.get("mode") == "free", "co free-lesson.on -> mode free")
 ok(r.get("new") == [] and "Today's words, in EXACTLY this order" not in ins, "free: server khong ep danh sach tu")
 ok("change_topic" in ins and "yourself" in ins, "free: Gemini tu chon chu de + luu qua change_topic")
-ok("after you" in ins and "never ask for actions" in ins.lower().replace("never ask the child", "never ask"), "free: van doc mau, khong dong tac")
-ok("count in order from one" in ins, "free: day so thi dem tu one")
+ok("Toddler mode" not in ins and "at most 2 sentences" not in ins, "free: khong gan khung buoi / gioi han cau (khong rang buoc)")
+ok("Hints from Tuan" in ins and "count numbers in order from one" in ins, "free: goi y cua Tuan chi la goi y")
+
+# 2b. khong gioi han so buoi/ngay (Tuan 2026-11-08)
+for k in range(4):
+    cur.end_session("mèo", 300, 10)   # buoi that (>= 2 ph)
+    r = cur.start("mèo")
+    ok(r.get("allowed") is True, f"buoi that thu {k + 2} trong ngay van duoc hoc")
 
 # 3. tu Gemini chon duoc luu de on, con tro lo trinh khong doi
 s = cur.set_topic("mèo", topic="hoa", words=["flower", "red"])
