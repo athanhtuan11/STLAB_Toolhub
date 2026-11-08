@@ -111,6 +111,7 @@ VAD_GATE = os.environ.get("STLAB_VAD_GATE", "1") != "0"           # cong loc gio
 VAD_THRESHOLD = float(os.environ.get("STLAB_VAD_THRESHOLD", "0.5"))
 
 CUR = Curriculum(os.environ.get("STLAB_LEARNERS_PATH") or (SERVER / "data" / "learners.json"), SERVER.parent / "lessons")
+CUR.free_flag = os.environ.get("STLAB_FREE_FLAG") or (SERVER / "free-lesson.on")   # co file -> Gemini tu len bai (2026-11-08)
 CURRICULUM_PROMPT = (
     "\n\nAt the start, ask in Vietnamese which animal friend is learning today (offer 2-3 different animal names each time, as the system tells you). "
     "When the child tells their animal name (bạn …), immediately greet them warmly by that name in ONE short sentence "

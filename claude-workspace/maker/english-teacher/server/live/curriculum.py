@@ -95,6 +95,7 @@ class Curriculum:
     def __init__(self, data_path, lessons_dir, now=datetime.now):
         self.path = Path(data_path)
         self.now = now
+        self.free_flag = None   # duong dan file free-lesson.on (bridge dat); co file -> bai tu do do Gemini tu len
         self.lock = threading.Lock()
         self.lessons = {}
         self.order = []
@@ -361,10 +362,32 @@ class Curriculum:
             s += f" Do NOT go back to the word(s) the child just skipped: {', '.join(dropped)}."
         return s + " " + FLEXIBLE
 
+    def _start_free(self, d, L, learner, age):
+        """Bai tu do (Tuan 2026-11-08 'mo khoa de Gemini tu len bai hoc'): bat bang file free-lesson.on. Server chi dua
+        lich su tu da hoc + goi y lo trinh; Gemini tu chon chu de + 1-3 tu, luu qua change_topic (L['extra']) de on."""
+        known = [e["word"] for e in L.get("extra", []) if isinstance(e, dict) and e.get("word")]
+        learned = list(dict.fromkeys(L.get("taught", []) + known))
+        idea = [w for w in self.word_sequence(age) if w not in L.get("taught", [])][:3]
+        L["cur_new"] = []
+        self._save(d)
+        instr = ("[FREE LESSON] You plan today's lesson yourself - you are free to choose. "
+                 f"The child is about {age} years old. Words the child already met: {', '.join(learned[-12:]) or 'none'}. "
+                 f"Roadmap idea (only a suggestion, use it or pick something better): {', '.join(idea) or 'free choice'}. "
+                 "Pick ONE child-safe topic and 1-3 simple English words for it; vary topics between sessions and mix in a few "
+                 "known words for review. Before teaching your new words, call change_topic with your topic and words so they "
+                 "are saved for review. If you teach numbers, count in order from one. Teach in your own fresh way, but always: "
+                 "say each word slowly, then the child says it after you ('Con nói theo cô: ...!'); never ask for actions or "
+                 "gestures; never end the session yourself.\n")
+        instr += TODDLER_MODE if age <= 3 else OLDER_MODE
+        return {"allowed": True, "learner": learner, "lesson_id": L.get("lesson"), "instructions": instr, "review": [],
+                "week": L.get("week"), "new": [], "daily": [], "song": None, "mode": "free"}
+
     def _start_roadmap(self, d, L, learner, now, age):
         """Tien do = CON TRO TU (L['taught']), khong theo tuan lich: khoi dong lai hoc tiep, bam thu ngan khong tien/lui."""
         rm = self.roadmap(age)
         self._migrate(L, age)
+        if self.free_flag and Path(self.free_flag).exists():
+            return self._start_free(d, L, learner, age)
         new = self._next_new(L, age)
         done = not [w for w in self.word_sequence(age) if w not in L["taught"]]
         review = self._pick_review(L, new)
@@ -506,7 +529,7 @@ class Curriculum:
             self._save(d)
         ins = (f"[topic] The child (or an adult) asked for a new topic: '{topic}'. Pause the roadmap for the rest of this session "
                f"and happily follow this topic instead. Words: {', '.join(ws)}. Teach them ONE AT A TIME (one at a time, never "
-               "two in one turn), through a short action, story or choice in Vietnamese with the single English word inside. "
+               "two in one turn): say the word slowly, then the child says it after you ('Con nói theo cô: ...!'); no actions or gestures. "
                "Keep everything child-safe. Do not call mark_word for these words. ")
         ins += TODDLER_MODE if age <= 3 else OLDER_MODE
         return {"ok": True, "words": ws, "instructions": ins}
