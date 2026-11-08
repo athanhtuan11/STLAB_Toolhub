@@ -65,7 +65,11 @@ cur.end_session(nick, 200, 5)
 clock[0] = dt.datetime(2026, 11, 10, 8, 0)
 r2 = cur.start(nick)
 ok(seen or "flower" in r2.get("review", []), f"tu chu de 'flower' duoc on trong 2 buoi sau ({r.get('review')}, {r2.get('review')})")
-ok(len(r2.get("review", [])) <= 2, "on van <= 2 tu")
+# 2026-11-08 Tuan: bai so on dem tu one theo thu tu (khong gioi han) -> chi gioi han tu on ngoai day so
+NUMS = ("one", "two", "three", "four", "five")
+ok(len([w for w in r2.get("review", []) if w not in NUMS]) <= 2, f"on ngoai day so van <= 2 tu ({r2.get('review')})")
+ok([w for w in r2.get("review", []) if w in NUMS] == [w for w in NUMS if w in r2.get("review", [])],
+   f"bai so on dung thu tu dem ({r2.get('review')})")
 
 # khong biet danh -> theo may
 dev = "aa:bb:cc:dd:ee:01"

@@ -121,9 +121,9 @@ CURRICULUM_PROMPT = (
     "(answer warmly and briefly, you may slip in one related simple English word), and when they ask to learn or talk about "
     "another topic (e.g. 'dạy con về hoa') call change_topic with the topic and 1-3 simple English words, then follow the "
     "instructions it returns. NEVER say goodbye or end the session on your own - only when you receive an [end] message. Teaching the WORD 'goodbye' is fine. Never ask for real names. "
-    "Follow the 8 TEACHING RULES at the top (short sentences, answer first, one request, wait, 'Đến lượt con!', no drilling, "
-    "never grade, no camera). If you are not sure what the child said, do NOT guess and do NOT ask them to repeat: say "
-    "'Cô chưa nghe rõ, con vẫy cho cô nhé!' and move on with an action."
+    "Follow the 8 TEACHING RULES at the top (short sentences, answer first, read the word then the child says it after you, "
+    "wait, never grade, no camera, NEVER ask for actions or gestures). If you are not sure what the child said, do NOT guess: "
+    "say 'Cô chưa nghe rõ, con nói lại cho cô nhé!' once, then go on."
 )
 LANG_LOCK = (
     "The child is a 2-5 year old Vietnamese child. They speak ONLY Vietnamese or a few English words, often mispronounced. "
@@ -137,8 +137,8 @@ LANG_LOCK = (
     "'ơi' are answers, not noise: respond to them (e.g. continue the lesson). If you truly cannot tell what was said, "
     "guess the most likely simple meaning from the lesson context first; ask again only if it matters.\n\n")
 LIMIT_PROMPT = (
-    "\n\nNo drilling: never chain 'Con nói theo cô' turns; say a new word at most 2 times per turn and spread it through "
-    "story, chant and actions; never demand the child to say a word again. Keep every turn to at most 2 short sentences. "
+    "\n\nRead and repeat (Tuan 2026-11-08): say the word slowly, then 'Con nói theo cô: <word>!' and wait; praise any try; "
+    "at most 2 tries per word, then go on. Never ask the child to do an action or gesture. Keep every turn to at most 2 short sentences. "
     "If the child or an adult says to speak louder/softer (to lên, nói lớn lên, nhỏ lại), call set_volume "
     "(or volume_change with +20 / -20 if you do not know the level).")
 PROMPT = LANG_LOCK + load_prompt() + CURRICULUM_PROMPT + LIMIT_PROMPT
@@ -615,11 +615,11 @@ class Session:
         log(f"[LIVE-T] nhac be (lan {n})")
         if n <= 2:
             await self.send_lesson("[silence] The child has not answered. Gently encourage in Vietnamese and make it easier: "
-                                   "show an action once with ONE short sentence (English at most 4 words) and wait; "
-                                   "do not ask a second question and do not ask the child to repeat. "
+                                   "say the current word once more slowly and invite 'Con nói theo cô: <word>!', then wait; "
+                                   "do not ask a second question and never ask for an action or gesture. "
                                    "At most 2 short sentences. You have no camera: do not say you see the child.")
         elif n == 3:
-            await self.send_lesson("[silence] Still no answer. Do NOT ask again. Say 'Mình vẫy nào!' and move on to a one-line chant with an action that needs no words.")
+            await self.send_lesson("[silence] Still no answer. Do NOT ask again. Praise warmly ('Không sao, con giỏi lắm!'), say the word yourself once slowly, and go on to the next word.")
         elif n == 4:
             await self.send_lesson("[silence] The child is quiet. Say ONE short warm sentence in Vietnamese that you are still "
                                    "here and they can talk to you anytime (e.g. 'Cô vẫn ở đây, khi nào con muốn chơi tiếp thì "
@@ -1028,8 +1028,6 @@ class Session:
             "Open with a tiny animal-sound riddle: make an animal sound and let the child guess the animal in one short sentence, then greet.",
             "Greet the child and ask in one short sentence if they feel happy or sad today, with a big smile in your voice.",
             f"Greet according to the time of day (it is {part} on the clock) in Vietnamese, with a fresh phrase.",
-            "Start the 'look around and find something of a colour' game in one sentence (e.g. 'Nhìn quanh xem có gì màu đỏ nào?'), then greet.",
-            "Invite the child to clap three times with you ('vỗ tay 1, 2, 3!'), then greet.",
             "Tell a tiny two-sentence story about a little animal waking up, then greet the child.",
             "Greet in the voice of Lily the owl, with 'hoo hoo' sounds, then greet the child in Vietnamese.",
         ]

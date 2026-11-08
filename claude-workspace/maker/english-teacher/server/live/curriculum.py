@@ -14,7 +14,7 @@ MAX_SESSIONS_PER_DAY = 2
 MIN_SESSION_S, MIN_TURNS = 120, 3
 REASON_LIMIT = "Hôm nay con học đủ rồi, mai mình học tiếp nhé!"
 HEADING = "## Chỉ dẫn cho AI"
-ACTIVITIES = ("repeat-after-me", "quiz", "touch-game", "rhyme-chant", "tiny-story", "guessing-game")
+ACTIVITIES = ("repeat-after-me", "quiz", "rhyme-chant", "tiny-story", "guessing-game")   # bo touch-game (2026-11-08)
 
 
 DEFAULT_AGE = 2   # chua dat -> doi tuong tre nhat (be 2 tuoi)
@@ -22,10 +22,11 @@ DEFAULT_AGE = 2   # chua dat -> doi tuong tre nhat (be 2 tuoi)
 # moi thu lai), khong noi "sai", toi da 2 lan/tu roi khen va chuyen.
 # Tuan chot (2026-11-06): "phat am sai thi sua lai cho be va VAN KHEN roi TIEP TUC; be con nho, tiep xuc dan se quen".
 # -> recast: khen + noi lai mau dung 1 lan (cham, ro) + hoc tiep. KHONG bat be noi lai.
+# 2026-11-08 Tuan: "be nho khong biet hanh dong, cu doc va bat be lap lai" -> doc mau + be noi theo, toi da 2 lan/tu.
 PRONUNCIATION = ("Pronunciation: listen to HOW the child says the English word. If it is off (wrong or missing sound, "
-                 "e.g. 'ed' for 'red', 'ello' for 'hello'), first reply to the meaning, then say the correct word ONCE inside a "
-                 "short sentence, slowly and clearly (e.g. 'Ồ, hello! Hello, Bear!'), then simply continue. Do NOT grade, do NOT "
-                 "say 'wrong' / 'sai', do NOT ask the child to repeat it - exposure over drilling, the child will get used to it. "
+                 "e.g. 'ed' for 'red', 'ello' for 'hello'), praise the try, say the correct word ONCE more slowly and clearly, "
+                 "and invite the child to say it once more ('Con nói theo cô: Red!'); after at most 2 tries praise and go on. "
+                 "Do NOT grade, do NOT say 'wrong' / 'sai'. "
                  "Call mark_word correct=true only when it was close to right; otherwise correct=false (the word comes back later). "
                  "You have NO camera: never say you see the child; praise effort in general ('Con giỏi quá!') or a sound you heard.")
 FLEXIBLE = ("FLEXIBLE: the roadmap is the DEFAULT plan, not a fence. If the child or an adult talks about something else "
@@ -34,18 +35,17 @@ FLEXIBLE = ("FLEXIBLE: the roadmap is the DEFAULT plan, not a fence. If the chil
             "time. Never force the child back to the lesson. Flexibility never makes turns longer: every turn stays at most "
             "3 short pieces.")
 # 2026-11-07 bao cao cu-bong-cach-day-tot-hon.md (a)(b): 8 quy tac + khung buoi
-TODDLER_MODE = ("Toddler mode (ages 2-3), session frame about 3-4 minutes: (1) very short opening ritual, "
-                "(2) ONE new word through an action, (3) a 2-3 sentence story with a character (Bear, or the child's animal), "
-                "(4) a ONE-line chant with an action each time, (5) you never end the session yourself: the server decides; "
-                "after the frame, keep playing or reviewing gently. "
+TODDLER_MODE = ("Toddler mode (ages 2-3), session frame about 3-4 minutes, READ AND REPEAT (Tuan 2026-11-08): "
+                "(1) very short greeting, (2) review words first, one at a time IN THE GIVEN ORDER: say the word slowly, "
+                "'Con nói theo cô: <word>!', wait, praise, (3) the new word the same way, a few times, "
+                "(4) you never end the session yourself: the server decides; afterwards keep reviewing the words the same way. "
+                "NO ACTIONS: never ask the child to clap, wave, touch, show fingers, point or look for things - small children "
+                "cannot follow actions; only listen and say the word. "
                 "SINGLE WORDS (Tuan 2026-11-08): for ages 2-3 say English as SINGLE WORDS only, one word at a time "
-                "(e.g. 'One!', 'One finger!' is too long -> 'One!'), never English sentences or phrases; build the story, "
-                "chant and questions in short Vietnamese with the one English word inside (e.g. 'Gấu có một quả bóng. One!'). "
-                "Rules: English sentences at most 4 words, at most 2 sentences "
-                "per turn (+ at most 1 short Vietnamese sentence); answer what the child did FIRST, teach after; ONE request per "
-                "turn (an action or a choice of two, no open questions); after a question STOP and wait; before inviting the child "
-                "to speak say 'Đến lượt con!'; never drill (a new word at most 2 times per turn, spread it through story, chant and "
-                "actions, no chain of 'Con nói theo cô'); teach only the goal words, the child repeating is a bonus. "
+                "(e.g. 'One!', 'One finger!' is too long -> 'One!'), never English sentences or phrases; the Vietnamese around "
+                "it stays very short (e.g. 'Số một là One! Con nói theo cô: One!'). "
+                "Rules: at most 2 short sentences per turn; answer what the child said FIRST, teach after; ONE request per "
+                "turn (say the word after you, no open questions); after inviting STOP and wait; teach only the goal words. "
                 + PRONUNCIATION + " Warm, slow, sing-song voice; Vietnamese support is fine.")
 OLDER_MODE = ("Age 4-5, session frame about 5 minutes: opening, 2 new words inside a short story, a choice riddle "
               "('Hello or goodbye?', 'Happy or sad?'), one 2-word phrase, then keep playing; never end the session yourself. "
@@ -53,7 +53,7 @@ OLDER_MODE = ("Age 4-5, session frame about 5 minutes: opening, 2 new words insi
               "answer what the child said FIRST, teach after; ONE request per turn; after a question STOP and wait; say "
               "'Đến lượt con!' before inviting the child to speak; no drilling (a new word at most 2 times per turn). "
               + PRONUNCIATION + " If the child wants, you may add one simple mouth tip in Vietnamese "
-              "(e.g. 'uốn lưỡi', 'chu môi', 'cắn nhẹ môi dưới' for f/v) - still no forced repeating.")
+              "(e.g. 'uốn lưỡi', 'chu môi', 'cắn nhẹ môi dưới' for f/v).")
 
 
 def normalize(nick):
@@ -376,9 +376,14 @@ class Curriculum:
             week, lid = rm[0]["week"], rm[0]["lesson_id"]
         L["cur_new"] = list(new)
         L["week"], L["lesson"] = week, lid
+        if "number" in lid:
+            # 2026-11-08 Tuan: "hoc 1 toi 5 sao hoc so 3 truoc" -> bai so: on dem tu one theo thu tu roi moi toi so moi
+            vocab = self.lessons[lid]["vocab"]
+            review = ([v for v in vocab if v in L["taught"] and v not in new]
+                      + [x for x in review if x not in vocab])   # giu tu chu de rieng (extra) de on
         w = next((r for r in rm if r["week"] == week), rm[0])
         last = list(L.get("last_activities", []))
-        goals = list(dict.fromkeys(new + review))
+        goals = list(dict.fromkeys(review + new))
         instr = self.lessons[lid]["instructions"]
         instr += (f"\nWeek {week}. New words: {', '.join(new) or 'none (review session)'}. Review: {', '.join(review) or 'none'}. "
                   f"Daily English to use all session: {', '.join(w['daily'])} "
@@ -388,7 +393,7 @@ class Curriculum:
         if done:
             instr += "\n" + self.review_plan(L["taught"])
         else:
-            plan, act = self.today_plan(lid, review, last, words=goals)
+            plan, act = self.today_plan(lid, review, last, words=goals, toddler=age <= 3)
             L["last_activities"] = (last + [act])[-3:]
         self._save(d)
         if plan:
@@ -440,9 +445,19 @@ class Curriculum:
                 "(animals, colors, numbers, family, toys) and weave in these learned words at random: "
                 + ", ".join(words[:8]) + ". Invent fresh games, short stories or chants. Keep each turn short.")
 
-    def today_plan(self, lid, review=(), last=(), words=None):
+    def today_plan(self, lid, review=(), last=(), words=None, toddler=False):
         """Muc tieu buoi hoc: tu xao thu tu (tu on len dau), goi y 1 kieu hoat dong khac lan truoc;
-        Gemini tu sang tao cach day, khong dung lai <last_activities>. Tra (van ban, nhan hoat dong)."""
+        Gemini tu sang tao cach day, khong dung lai <last_activities>. Tra (van ban, nhan hoat dong).
+        toddler (2026-11-08 Tuan): giu dung thu tu (so dem tu one), chi doc mau + be noi theo, khong hanh dong."""
+        if toddler:
+            order = list(words) if words else list(self.lessons[lid]["vocab"])
+            title = self.lessons[lid].get("title", lid)
+            return (f"Today's words, in EXACTLY this order: {', '.join(order)}. Activity: repeat-after-me only. "
+                    "For each word: say it slowly and clearly, then 'Con nói theo cô: <word>!' and wait; praise any try "
+                    "(at most 2 tries per word), then the next word in order. No actions, no gestures, no games that need "
+                    "the child to move. When the list is done, go through it again from the first word "
+                    "(the server ends the session, never you). First, say in Vietnamese what we learn today "
+                    f"(\"Hôm nay mình học {title.lower()} nhé\"), then start with '{order[0]}'.", "repeat-after-me")
         vocab = list(words) if words else list(self.lessons[lid]["vocab"])
         rest = [w for w in vocab if w not in review]
         random.shuffle(rest)
