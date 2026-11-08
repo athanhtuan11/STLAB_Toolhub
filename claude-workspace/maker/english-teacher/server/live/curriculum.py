@@ -64,6 +64,17 @@ def _fold(t):
     return " ".join("".join(c if c.isalnum() else " " for c in t).split())
 
 
+_SWITCH_RE = (r"\bdoi (bai|tro|cai)\b", r"\b(bai|tro|cai) khac\b")
+
+
+def wants_switch(text):
+    """Be xin doi bai/tro ('doi bai di co', 'hoc bai khac', 'choi tro khac'). Cau thuong, tu tieng Anh -> False."""
+    t = _fold(text)
+    if not t:
+        return False
+    return any(re.search(r, t) for r in _SWITCH_RE)
+
+
 def find_nickname(text):
     """Chi nhan cum 'ban <ten>' (khong dau/co dau) voi ten trong ALLOWED_NICKNAMES; 'con meo', ten nguoi -> None."""
     by_fold = {_fold(n): n for n in ALLOWED_NICKNAMES}
@@ -173,6 +184,8 @@ class Curriculum:
         try:
             d = json.loads(self.path.read_text(encoding="utf-8"))
             if isinstance(d.get("learners"), dict):
+                if "devices" in d and not isinstance(d["devices"], dict):
+                    d["devices"] = {}
                 return d
         except (OSError, ValueError):
             pass
@@ -184,29 +197,50 @@ class Curriculum:
         tmp.write_text(json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
         os.replace(tmp, self.path)
 
-    def start(self, nickname):
+    def _prof(self, d, nickname, device, create=False):
+        """Ho so theo biet danh (learners) hoac, khong biet danh, theo MAY (devices). Tra (L, key, la_biet_danh) hoac None."""
         nick = normalize(nickname)
-        if nick not in ALLOWED_NICKNAMES:
-            return {"allowed": False, "nicknames": list(ALLOWED_NICKNAMES),
-                    "reason": "Con chọn một biệt danh con vật trong danh sách nhé, không dùng tên thật."}
+        if nick in ALLOWED_NICKNAMES:
+            tbl, key, is_nick = d["learners"], nick, True
+        elif device and not nick:
+            tbl, key, is_nick = d.setdefault("devices", {}), str(device), False
+        else:
+            return None
+        L = tbl.get(key)
+        if L is None:
+            if not create:
+                return None
+            L = tbl[key] = {}
+        L.setdefault("lesson", self.order[0])
+        for k in ("passed", "failed", "sessions"):
+            L.setdefault(k, [])
+        return L, key, is_nick
+
+    def start(self, nickname, device=None):
         with self.lock:
             d = self._load()
+            p = self._prof(d, nickname, device, create=True)
+            if p is None:
+                return {"allowed": False, "nicknames": list(ALLOWED_NICKNAMES),
+                        "reason": "Con chọn một biệt danh con vật trong danh sách nhé, không dùng tên thật."}
+            L, key, is_nick = p
+            learner = key if is_nick else "device"
             now = self.now()
-            L = d["learners"].setdefault(nick, {"lesson": self.order[0], "passed": [], "failed": [], "sessions": []})
             today = now.date().isoformat()
             if sum(1 for s in L.get("counted", []) if s[:10] == today) >= MAX_SESSIONS_PER_DAY:
                 return {"allowed": False, "reason": REASON_LIMIT}
             L["sessions"].append(now.isoformat(timespec="minutes"))
             L["cur"], L["cur_counted"] = now.isoformat(timespec="minutes"), False
             L["sessions"] = L["sessions"][-50:]
-            age = int(L.get("age_band", DEFAULT_AGE))
+            L["switch_n"] = 0
+            age = self._age(L)
             if self.roadmap(age):
-                return self._start_roadmap(d, L, nick, now, age)
+                return self._start_roadmap(d, L, learner, now, age)
             self._save(d)
             lid = L["lesson"]
             review = [w for w in L["failed"] if w in self.lessons[lid]["vocab"] and w not in L["passed"]]
             instr = self.lessons[lid]["instructions"]
-            toddler = int(L.get("age_band", DEFAULT_AGE)) <= 3
+            toddler = age <= 3
             last = list(L.get("last_activities", []))
             vocab = self.lessons[lid]["vocab"]
             if vocab and all(w in L["passed"] for w in vocab) and lid == self.order[-1]:
@@ -215,7 +249,7 @@ class Curriculum:
                 instr += "\n" + self.review_plan(learned)
                 instr += "\n" + (TODDLER_MODE if toddler else OLDER_MODE)
                 self._save(d)
-                return {"allowed": True, "learner": nick, "lesson_id": lid, "instructions": instr, "review": [],
+                return {"allowed": True, "learner": learner, "lesson_id": lid, "instructions": instr, "review": [],
                         "mode": "review"}
             if review:
                 instr += "\n- Words to review first today: " + ", ".join(review) + "."
@@ -224,42 +258,168 @@ class Curriculum:
             self._save(d)
             instr += "\n" + plan
             instr += "\n" + (TODDLER_MODE if toddler else OLDER_MODE)
-            return {"allowed": True, "learner": nick, "lesson_id": lid, "instructions": instr, "review": review}
+            return {"allowed": True, "learner": learner, "lesson_id": lid, "instructions": instr, "review": review}
 
-    def _start_roadmap(self, d, L, nick, now, age):
-        """Tuan hoc = tuan CO HOC: tuan ISO truoc co >= 2 buoi thi week += 1, nghi thi giu cho cu."""
-        iso = "%d-W%02d" % now.isocalendar()[:2]
-        week = max(int(L.get("week", 1)), 1)
-        if L.get("wk_iso") != iso:
-            if L.get("wk_iso") and int(L.get("wk_n", 0)) >= 2:
-                week += 1
-            L["wk_iso"], L["wk_n"] = iso, 0
+    @staticmethod
+    def _age(L):
+        try:
+            a = int(L.get("age_band", DEFAULT_AGE))
+        except (TypeError, ValueError):
+            a = DEFAULT_AGE
+        return a if 2 <= a <= 5 else DEFAULT_AGE
+
+    def word_sequence(self, age_band):
+        """Cot 'new' cua lich tuan noi lien theo thu tu, bo trung lap = thu tu day tung tu."""
+        seq = []
+        for r in self.roadmap(age_band):
+            for w in r["new"]:
+                if w not in seq:
+                    seq.append(w)
+        return seq
+
+    def _word_row(self, age, word):
+        """(tuan 1-based, lesson_id) cua tuan lich co chua tu nay; khong thay -> tuan dau."""
         rm = self.roadmap(age)
-        week = ((week - 1) % len(rm)) + 1
-        L["week"] = week
-        w = rm[week - 1]
-        lid = w["lesson_id"]
-        L["lesson"] = lid
+        for r in rm:
+            if word in r["new"]:
+                return r["week"], r["lesson_id"]
+        return (rm[0]["week"], rm[0]["lesson_id"]) if rm else (1, self.order[0])
+
+    def _migrate(self, L, age):
+        """Ho so cu (chua co 'taught', tien do theo tuan lich) -> con tro tu: tu da dat + tu cua cac tuan truoc."""
+        if "taught" in L:
+            return
+        seq = self.word_sequence(age)
+        prev = set()
+        for r in self.roadmap(age)[:max(int(L.get("week", 1)), 1) - 1]:
+            prev.update(r["new"])
+        passed = set(L.get("passed", []))
+        L["taught"] = [w for w in seq if w in passed or w in prev]
+
+    def _roll_week(self, L):
+        iso = "%d-W%02d" % self.now().isocalendar()[:2]
+        if L.get("nw_iso") != iso:
+            L["nw_iso"], L["nw_n"] = iso, 0
+
+    def _teach(self, L, words):
+        """Them tu vao 'taught' (khong trung), dem vao han muc tuan."""
+        self._migrate(L, self._age(L))
+        self._roll_week(L)
+        for w in words:
+            if w not in L["taught"]:
+                L["taught"].append(w)
+                L["nw_n"] = int(L.get("nw_n", 0)) + 1
+
+    def _next_new(self, L, age):
+        """Tu moi: tu dau trong word_sequence chua day, theo han muc buoi + tuan."""
+        self._migrate(L, age)
+        self._roll_week(L)
+        per_session, per_week = (1, 2) if age <= 3 else (2, 4)
+        room = min(per_session, per_week - int(L.get("nw_n", 0)))
+        rest = [w for w in self.word_sequence(age) if w not in L["taught"]]
+        return rest[:max(room, 0)]
+
+    def _pick_review(self, L, new):
+        """Toi da 2 tu on: failed chua passed -> tu day gan nhat -> 1 tu cu hon (cach quang)."""
+        taught = list(L.get("taught", []))
+        res = []
+
+        def add(w):
+            if w not in res and w not in new and len(res) < 2:
+                res.append(w)
+        for w in L.get("failed", []):
+            if w in taught and w not in L.get("passed", []):
+                add(w)
+        rec = [w for w in reversed(taught) if w not in new]
+        for w in rec[:1]:
+            add(w)
+        for w in rec[3:] + rec[1:3]:
+            add(w)
+        return res
+
+    def _guide_new(self, new, review, dropped=()):
+        if new:
+            s = (f"THIS SESSION'S ONLY NEW WORD(S): {', '.join(new)}. Even if the lesson above lists more words, do NOT teach "
+                 "any other new word today (no next number, no next color). Review words only briefly, one at a time. "
+                 "Each of your turns has at most 3 short pieces in total (e.g. 'Con giỏi quá! One! Đến lượt con!').")
+        else:
+            s = ("There is NO new word in this session. Do not teach any new word: only play and gently review these words, "
+                 f"one at a time: {', '.join(review) or 'none'}. Keep each turn to at most 3 short pieces.")
+        if dropped:
+            s += f" Do NOT go back to the word(s) the child just skipped: {', '.join(dropped)}."
+        return s
+
+    def _start_roadmap(self, d, L, learner, now, age):
+        """Tien do = CON TRO TU (L['taught']), khong theo tuan lich: khoi dong lai hoc tiep, bam thu ngan khong tien/lui."""
+        rm = self.roadmap(age)
+        self._migrate(L, age)
+        new = self._next_new(L, age)
+        done = not [w for w in self.word_sequence(age) if w not in L["taught"]]
+        review = self._pick_review(L, new)
+        if new:
+            week, lid = self._word_row(age, new[0])
+        elif L["taught"]:
+            week, lid = self._word_row(age, L["taught"][-1])
+        else:
+            week, lid = rm[0]["week"], rm[0]["lesson_id"]
+        L["cur_new"] = list(new)
+        L["week"], L["lesson"] = week, lid
+        w = next((r for r in rm if r["week"] == week), rm[0])
         last = list(L.get("last_activities", []))
-        failed = [x for x in L.get("failed", []) if x not in L.get("passed", [])]
-        review = list(dict.fromkeys(failed + w["review"]))
-        goals = list(dict.fromkeys(w["new"] + [x for x in review if x not in w["new"]]))
+        goals = list(dict.fromkeys(new + review))
         instr = self.lessons[lid]["instructions"]
-        new_s = ", ".join(w["new"]) or "none (review week)"
-        instr += (f"\nWeek {week}. New words: {new_s}. Review: {', '.join(review) or 'none'}. "
+        instr += (f"\nWeek {week}. New words: {', '.join(new) or 'none (review session)'}. Review: {', '.join(review) or 'none'}. "
                   f"Daily English to use all session: {', '.join(w['daily'])} "
                   "(exposure: say them naturally many times).")
-        # 2026-11-08 Tuan: tu don, tung tu mot -> buoi nay CHI tu moi cua tuan (bai co nhieu tu nhung khong day tu khac)
-        instr += (f"\nTHIS SESSION'S ONLY NEW WORD(S): {new_s}. Even if the lesson above lists more words, do NOT teach "
-                  "any other new word today (no next number, no next color). Review words only briefly, one at a time. "
-                  "Each of your turns has at most 3 short pieces in total (e.g. 'Con giỏi quá! One! Đến lượt con!').")
-        plan, act = self.today_plan(lid, review, last, words=goals)
-        L["last_activities"] = (last + [act])[-3:]
+        instr += "\n" + self._guide_new(new, review)
+        plan = ""
+        if done:
+            instr += "\n" + self.review_plan(L["taught"])
+        else:
+            plan, act = self.today_plan(lid, review, last, words=goals)
+            L["last_activities"] = (last + [act])[-3:]
         self._save(d)
-        instr += "\n" + plan
+        if plan:
+            instr += "\n" + plan
         instr += "\n" + (TODDLER_MODE if age <= 3 else OLDER_MODE)
-        return {"allowed": True, "learner": nick, "lesson_id": lid, "instructions": instr, "review": review,
-                "week": week, "new": w["new"], "daily": w["daily"], "song": w["song"]}
+        out = {"allowed": True, "learner": learner, "lesson_id": lid, "instructions": instr, "review": review,
+               "week": week, "new": list(new), "daily": w["daily"], "song": w["song"]}
+        if done:
+            out["mode"] = "review"
+        return out
+
+    def switch(self, nickname=None, device=None):
+        """Be xin doi bai giua buoi. Lan 1: tu moi hien tai coi nhu da day, sang tu ke tiep (neu con han muc tuan), doi
+        hoat dong; khong quay lai tu vua bo. Lan 2+: tro on, khong tu moi. Tra {count,new,review,instructions}."""
+        with self.lock:
+            d = self._load()
+            p = self._prof(d, nickname, device)
+            if p is None:
+                return {"count": 0, "new": [], "review": [], "instructions": ""}
+            L = p[0]
+            age = self._age(L)
+            n = int(L.get("switch_n", 0)) + 1
+            L["switch_n"] = n
+            dropped = list(L.get("cur_new", []))
+            self._teach(L, dropped)
+            new = self._next_new(L, age) if n == 1 else []
+            review = self._pick_review(L, new)
+            L["cur_new"] = list(new)
+            last = list(L.get("last_activities", []))
+            pool = [a for a in ACTIVITIES if a not in last] or list(ACTIVITIES)
+            act = random.choice(pool)
+            L["last_activities"] = (last + [act])[-3:]
+            if new:
+                L["week"], L["lesson"] = self._word_row(age, new[0])
+            ins = ("The child asked to change what we are doing. Switch right now, warmly, to a different activity "
+                   f"(suggested type: {act}); never say anything was wrong. ")
+            ins += self._guide_new(new, review, dropped if n == 1 else ())
+            if not new:
+                ins += (" Offer the child a choice between two toys or two animals to play with, and wait for the answer "
+                        "(e.g. 'Cat or dog?').")
+            ins += " Keep speaking in the same short toddler style."
+            self._save(d)
+            return {"count": n, "new": list(new), "review": review, "instructions": ins}
 
     def review_plan(self, learned):
         words = list(dict.fromkeys(learned))
@@ -300,14 +460,14 @@ class Curriculum:
             k.update(r["new"] + r["review"] + r["daily"])
         return k
 
-    def mark(self, nickname, word, correct):
-        nick = normalize(nickname)
+    def mark(self, nickname, word, correct, device=None):
         w = str(word or "").strip().lower()
         with self.lock:
             d = self._load()
-            L = d["learners"].get(nick)
-            if L is None or w not in self._known_words():
+            p = self._prof(d, nickname, device)
+            if p is None or w not in self._known_words():
                 return {"ok": False}
+            L = p[0]
             if correct:
                 if w not in L["passed"]:
                     L["passed"].append(w)
@@ -316,6 +476,8 @@ class Curriculum:
             else:
                 if w not in L["passed"] and w not in L["failed"]:
                     L["failed"].append(w)
+            if w in L.get("cur_new", []):
+                self._teach(L, [w])       # dung hay sai deu tinh la da day (sai thi van o failed de on)
             self._save(d)
             return {"ok": True}
 
@@ -337,34 +499,41 @@ class Curriculum:
     def _meaningful(seconds, turns):
         return seconds is None or seconds >= MIN_SESSION_S or (turns or 0) >= MIN_TURNS
 
-    def end_session(self, nickname, seconds, turns):
-        """Cau noi goi khi het ket noi: buoi du dai/du luot moi duoc tinh."""
-        nick = normalize(nickname)
+    def end_session(self, nickname, seconds, turns, device=None):
+        """Cau noi goi khi het ket noi: buoi du dai/du luot moi duoc tinh (va moi tinh tu moi cua buoi la da day)."""
         with self.lock:
             d = self._load()
-            L = d["learners"].get(nick)
-            if L is None:
+            p = self._prof(d, nickname, device)
+            if p is None:
                 return {"counted": False}
+            L = p[0]
             ok = self._meaningful(seconds, turns)
             if ok:
                 self._count(L)
+                if self.roadmap(self._age(L)):
+                    self._teach(L, L.get("cur_new", []))
                 self._save(d)
             return {"counted": ok}
 
-    def finish(self, nickname, seconds=None, turns=None):
-        nick = normalize(nickname)
+    def finish(self, nickname, seconds=None, turns=None, device=None):
         with self.lock:
             d = self._load()
-            L = d["learners"].get(nick)
-            if L is None:
+            p = self._prof(d, nickname, device)
+            if p is None:
                 return {"next_lesson": self.order[0]}
+            L = p[0]
+            age = self._age(L)
             if self._meaningful(seconds, turns):
                 self._count(L)
-            if self.roadmap(L.get("age_band", DEFAULT_AGE)):
-                w = self.roadmap_week(L.get("age_band", DEFAULT_AGE), L.get("week", 1))
-                L["lesson"] = w["lesson_id"]
+                if self.roadmap(age):
+                    self._teach(L, L.get("cur_new", []))
+            if self.roadmap(age):
+                self._migrate(L, age)
+                rest = [w for w in self.word_sequence(age) if w not in L["taught"]]
+                week, lid = self._word_row(age, rest[0] if rest else (L["taught"][-1] if L["taught"] else ""))
+                L["week"], L["lesson"] = week, lid
                 self._save(d)
-                return {"next_lesson": L["lesson"], "week": L.get("week", 1)}
+                return {"next_lesson": lid, "week": week}
             vocab = self.lessons[L["lesson"]]["vocab"]
             if all(w in L["passed"] for w in vocab):
                 i = self.order.index(L["lesson"])

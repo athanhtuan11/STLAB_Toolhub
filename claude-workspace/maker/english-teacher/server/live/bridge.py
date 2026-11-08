@@ -74,7 +74,7 @@ def load_prompt():
     return (parts[1] if len(parts) > 1 else txt).strip()
 
 
-from curriculum import Curriculum, ALLOWED_NICKNAMES, live_tools, find_nickname, _fold  # noqa: E402
+from curriculum import Curriculum, ALLOWED_NICKNAMES, live_tools, find_nickname, _fold, wants_switch  # noqa: E402
 import voiceid  # noqa: E402
 
 
@@ -421,10 +421,12 @@ class Session:
         if VAD_GATE:
             try:
                 from vad_gate import VadGate
-                self.vad = VadGate(SERVER, VAD_THRESHOLD)
+                self.vad = VadGate(SERVER, VAD_THRESHOLD, log=log)
             except Exception as e:
                 log(f"[LIVE-VAD] khong bat duoc ({type(e).__name__}: {str(e)[:100]}), dung micro tho")
         self.device_id = ""
+        self.dev_mode = False              # hoc theo MAY (khong biet danh): ho so luu theo device-id
+        self.switches = 0
         self.enc = opuslib_next.Encoder(OUT_RATE, 1, opuslib_next.APPLICATION_AUDIO)
         self.sid = uuid.uuid4().hex
         self.out_q = asyncio.Queue()       # bytes Opus | "STOP" marker
@@ -471,10 +473,10 @@ class Session:
             a = dict(fc.args or {})
             try:
                 if fc.name == "mark_word":
-                    res = CUR.mark(self.nick, a.get("word", ""), bool(a.get("correct"))) if self.nick else {"ok": False}
+                    res = CUR.mark(self.nick, a.get("word", ""), bool(a.get("correct")), device=self.device_id or None) if (self.nick or self.dev_mode) else {"ok": False}
                     log(f"[LIVE-TOOL] mark_word {a.get('word', '')} {bool(a.get('correct'))}")
                 elif fc.name == "finish_lesson":
-                    res = CUR.finish(self.nick, time.time() - self.t_open, self.child_turns) if self.nick else {"next_lesson": None}
+                    res = CUR.finish(self.nick, time.time() - self.t_open, self.child_turns, device=self.device_id or None) if (self.nick or self.dev_mode) else {"next_lesson": None}
                     self.finishing = True
                     log(f"[LIVE-TOOL] finish_lesson -> {res.get('next_lesson')}")
                 elif fc.name in ("set_volume", "volume_change"):
@@ -639,9 +641,9 @@ class Session:
         self.ending = True
         self.pending_lesson = None
         self.aborted = False
-        if self.nick:
+        if self.nick or self.dev_mode:
             try:
-                res = CUR.finish(self.nick, time.time() - self.t_open, self.child_turns)
+                res = CUR.finish(self.nick, time.time() - self.t_open, self.child_turns, device=self.device_id or None)
                 log(f"[LIVE-TOOL] finish_lesson (be xin ket thuc) -> {res.get('next_lesson')}")
             except Exception as e:
                 log(f"finish loi {type(e).__name__}")
@@ -889,14 +891,35 @@ class Session:
                         self.aborted = False
                         if not self.dev_on and self.out_q.empty():
                             self.user_txt, self.reply_txt, self.t_user_end = "", "", None
-                    if self.in_buf.strip() and not (self.nick or self.guess or self.pending_lesson or self.ending):
+                    if (self.in_buf.strip() and (self.nick or self.dev_mode) and not self.ending
+                            and wants_switch(self.in_buf)):
+                        try:
+                            sw = CUR.switch(self.nick, device=self.device_id or None)
+                            if sw.get("instructions"):
+                                self.switches += 1
+                                log(f"[LIVE-TOOL] doi bai lan {sw['count']} -> new={sw['new']} review={sw['review']}")
+                                self.pending_lesson = "[switch] The child asked to change. " + sw["instructions"]
+                        except Exception as e:
+                            log(f"switch loi {type(e).__name__}")
+                    if self.in_buf.strip() and not (self.nick or self.dev_mode or self.guess or self.pending_lesson or self.ending):
                         self.anon_turns += 1
                         if self.anon_turns >= 2 and not self.anon_sent and ANON_LESSON:
                             self.anon_sent = True
-                            lid, instr = CUR.anonymous_lesson()
-                            log(f"[LIVE-TOOL] khong co biet danh sau 2 luot -> bai ngau nhien {lid}")
-                            self.pending_lesson = ("[lesson] No nickname was given. Say kindly that today we learn together, "
-                                                   f"and start this lesson now (do not call mark_word/finish_lesson). {instr}")
+                            res = CUR.start(None, device=self.device_id) if self.device_id else {"allowed": None}
+                            if res.get("allowed"):
+                                self.dev_mode = True
+                                log(f"[LIVE-TOOL] khong co biet danh sau 2 luot -> hoc theo may {self.device_id} {res.get('lesson_id')}")
+                                self.pending_lesson = ("[lesson] No nickname was given. Say kindly that today we learn together, "
+                                                       f"and start this lesson now. {res['instructions']}")
+                            elif res.get("allowed") is False:
+                                log("[LIVE-TOOL] hoc theo may -> gioi han ngay")
+                                self.pending_lesson = (f"[lesson] No nickname. Not allowed: {res.get('reason', '')} "
+                                                       "Say this reason kindly in Vietnamese, then say a short goodbye. Do not start a lesson.")
+                            else:
+                                lid, instr = CUR.anonymous_lesson()
+                                log(f"[LIVE-TOOL] khong co biet danh sau 2 luot -> bai ngau nhien {lid}")
+                                self.pending_lesson = ("[lesson] No nickname was given. Say kindly that today we learn together, "
+                                                       f"and start this lesson now (do not call mark_word/finish_lesson). {instr}")
                     self.in_buf = ""
                     await self.flush_lesson()
 
@@ -982,6 +1005,7 @@ class Session:
             if self.vad is not None and self.vad.n:
                 av, mx, n = self.vad.stats()
                 log(f"[LIVE-VAD] {n} khung, TB {av:.2f} ms, max {mx:.2f} ms / khung")
+                log(f"[LIVE-LEVEL] het phien: bo_vi_nho={self.vad.skipped} luot, ep_dong={self.vad.forced_n} luot")
             for t in tasks:
                 t.cancel()
             await asyncio.gather(*tasks, return_exceptions=True)
@@ -1072,11 +1096,12 @@ async def ws_handler(ws, pool):
         pool.touch()
         # 2026-11-07: chi tinh buoi khi du dai (>= 2 ph) hoac be noi >= 3 luot (curriculum.end_session)
         nick = getattr(ses, "nick", None) if ses is not None else None
-        if nick:
+        dev_mode = bool(getattr(ses, "dev_mode", False)) if ses is not None else False
+        if nick or dev_mode:
             try:
                 secs, turns = time.time() - t_conn, getattr(ses, "child_turns", 0)
-                r = CUR.end_session(nick, secs, turns)
-                log(f"[LIVE-TOOL] ket thuc buoi {nick}: {int(secs)} s, {turns} luot be -> {'tinh' if r.get('counted') else 'khong tinh'}")
+                r = CUR.end_session(nick, secs, turns, device=getattr(ses, "device_id", "") or None)
+                log(f"[LIVE-TOOL] ket thuc buoi {nick or 'may'}: {int(secs)} s, {turns} luot be -> {'tinh' if r.get('counted') else 'khong tinh'}")
             except Exception as e:
                 log(f"end_session loi {type(e).__name__}")
 
