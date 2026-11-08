@@ -84,12 +84,16 @@ Số lắp ghép **lấy từ fit-library** (`tools/model-study/fit-library/fits
   - **Lắp:** (1) cắm nắp vào chân chữ thập switch (2) trượt cặp nắp + switch vào kênh pod từ mép dưới (ô 14,00 ép chặt) (3) hàn dây song song KEY5 / KEY6 trên bo vào chân switch – **rút USB trước, mỏ hàn nóng, điện 3,3 V** (4) thả đai ốc M3 vào 2 hốc (5) đặt pod từ trong vào cửa sổ ở lưng: nắp ra ngoài (6) vặn 2 vít từ ngoài lưng. Xem ảnh `out/vol-pod.png`, `out/owl-back.png`.
   - **Giả định / TODO:** chưa in thử lực press; mặt pod phẳng nên mép ngoài (x lớn) nhô ~2,7 mm khỏi mặt lưng cong, còn phía bo thì chìm ~3 mm: xem `owl-back.png`; nếu xấu thì cân nhắc đổi `POD_RECESS`.
 - Nắp **không chạm vỏ ở vị trí nghỉ** (khe 0,1 ở yên côn, nâng 0,2 mm lên phía trên); gate kiểm.
-- **Giả định (TODO đo switch thật):** thân switch trên mặt 6,6 mm (15,6 × 15,6 cao 3,0 + chân chữ thập cao 3,6), thân dưới 5,0, chân 3,3; hành trình MX ~ 4,0 mm: nắp chỉ chạy **~2,4 mm** (chạm thân switch) – MX bật ở ~2,0 mm nên đủ; chân chữ thập cắm vào nắp 1,2 mm lúc nghỉ. Chưa in thử, chưa kiểm lực ép lỗ 14,00 (press) với PETG.
+- **Ổ switch + lỗ chữ thập: số đã kiểm chứng**, giống hệt `maker/switch-clicker` (cùng fit-library `catpaw/mx-socket` 14,00 sâu 8,58 + rãnh V,
+  `catpaw/mx-keycap-cross` 4,19 × 1,25 – mẫu Cat Paw Clicker tác giả in + chạy thật trên Bambu A1 + PETG Basic, cùng máy/nhựa của STLab).
+- **Còn giả định – chiều cao switch phía trên mặt ổ** (switch-clicker cũng chưa đo, form-spec ghi TODO): thân trên 15,6 × 15,6 cao 3,0 + chân chữ thập 3,6
+  (= 6,6 trên mặt), thân dưới 5,0, chân 3,3; nắp chạy **~2,4 mm** (chạm thân switch), chân chữ thập cắm vào nắp 1,2 mm lúc nghỉ.
+  Nếu switch thật cao/thấp hơn thì nắp nhô/lún tương ứng → đo 1 số khi có switch: **từ vai ngàm (mặt tấm 14,00) tới đỉnh chân chữ thập**.
 - **Dây:** hàn 2 chân mỗi switch **song song** nút KEY4 / KEY5 / KEY6 trên bo A1S (GPIO23 / GPIO18 / GPIO5 xuống GND); dây xuống khoang qua cửa sổ đáy lỗ (thoi 9 mm). An toàn: rút USB trước khi hàn; điện 3,3 V (không có điện áp cao); mỏ hàn nóng; dây đủ dài để mở 2 nửa vỏ, cố định bằng keo nến; nắp nút bị giữ trong vỏ (vành trong lớn hơn lỗ vỏ).
 
 ## Chưa chắc / TODO
 - Độ dày, cao linh kiện bo Audio Kit; vị trí USB: không có nguồn → khe cáp rộng; bo giữ bằng ray + chân chặn phía trước, **sau bo chưa có chốt giữ** (gate cấm vật chạm khối 82 × 73 × 25) → dùng xốp/keo nóng.
-- Kích thước switch MX (xem mục 3 nút MX): giả định, TODO đo switch thật; lực press lỗ 14,00 chưa in thử. Thân loa sau mép < Ø39 (Tuan đo 2026-11-06), lọt lỗ vòng ép Ø42.
+- Switch MX (xem mục 3 nút MX): ổ 14,00 + rãnh V + chữ thập đã kiểm chứng (giống switch-clicker); chỉ còn chiều cao phía trên mặt ổ là giả định. Thân loa sau mép < Ø39 (Tuan đo 2026-11-06), lọt lỗ vòng ép Ø42.
 - fit-library chưa có mục M3 / ống non: **chưa in thử** mọi khe (0,3 hốc linh kiện, 0,3 yên côn, 0,4 nút).
 - Đáy phẳng vát 0,8 mm chưa làm. Khắc ▲ và logo STLAB chưa làm.
 
