@@ -1,7 +1,7 @@
 # build_owl.py - CAD vo "Cu Bong" ban 1 (ESP32-A1S Audio Kit, 2 loa trai/phai). Blender 5.2 bpy/bmesh, chay nen.
 # Chay: "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b --python-exit-code 1 -P build_owl.py -- out
 # He lap rap: mm, +Z len, mat truoc = -Y, x ngang. Mat ranh gioi hai nua vo: mat phang y = Y0.
-import bpy, bmesh, math, json, sys
+import bpy, bmesh, math, json, sys, os
 from pathlib import Path
 from mathutils import Vector, Matrix
 
@@ -37,7 +37,7 @@ Y0 = 0.37                  # mat phang ranh gioi 2 nua
 BZ, BR, NT, NB, TAPER = 78.0, (66.0, 56.0, 80.0), 2.2, 4.2, 0.05
 FLOOR_CUT = 4.0           # vo cat phang o z = 4; tam de (base plate) day 4 mm dut z 0..4
 CZ, CRAD = 81.0, (BR[0] - WALL, BR[1] - WALL, 74.6)   # day khoang trong z = 6,4 (san 2,4), dinh 155,6
-CONE_T = math.tan(math.radians(30))
+CONE_T = math.tan(math.radians(10))   # nua goc yen non tam bung 10 do (2026-11-08: 30 do -> ong tru bung rong 44 cham mai/ giong kinh tao rang nhon 'floating')
 CONE_CLR = 0.3             # khe lo non / ben
 # tam bung (trang tri, khong con luoi loa)
 BELLY_Z, BELLY_FRONT, BELLY_RF, BELLY_REAR = 48.0, -58.5, 34.2, -42.0
@@ -50,10 +50,28 @@ BZL_RHO = 8.0                       # bo mep mat vanh loa       # ban kinh mat p
 SPK_FACE = SPK_XF - 3.0 - GASKET_T  # mat loa (tam luoi day 3 + ron ep 1,5)
 CUP_END = SPK_FACE - FLANGE_T       # mat sau mep loa = mat cuoi ong om = mat truoc vong ep
 SPEAKERS = [{"center": [s * (SPK_FACE + LIP_PRE - SPEAKER_L / 2), 0.0, SPK_Z], "axis": "x"} for s in (-1, 1)]   # loa o vi tri DA KHOA (vong ep day vao LIP_PRE)
-PCB_CENTER = [0.0, 8.0, 60.0]
+PCB_CENTER = [0.0, 0.37, 70.0]   # 2026-11-08: y = Y0 (82 theo Y chia deu 2 nua) + z 70 -> tran mai nhon khong support
 EYE_X, EYE_Z, BEAK_Z = 36.5, 108.0, 102.0
-RING_D, RING_T = 54.0, 3.0        # vong mat kem
-BTN_TOP, BTN_F0, BTN_F1, SEAT_Z, SHELF_TOP = 166.0, 142.3, 144.8, 145.0, 136.3
+RING_D, RING_T = 54.0, 3.0        # vong mat kem (mat truoc phang)
+BTN_TOP, SEAT_Z = 166.0, 145.0
+# ---- 2026-11-08 Tuan: nut = switch phim co MX KHONG PCB (y tuong clicker). So lap ghep LAY TU fit-library:
+#   catpaw/mx-socket: lo vuong 14,00 (press) sau 8,58 tu mieng; ranh V 45 do: 1,94-3,44 duoi mieng, sau nhat 2,69, rong 15,44
+#   catpaw/mx-keycap-cross: lo chu thap 4,19 x 1,25 (sau 5,6 - o day chi can 3,6 = chieu cao chan MX)
+# GIA DINH (TODO do switch that): thân switch tren mat ~6,6 (than 15,6 x 15,6 cao 3,0 + chan chu thap cao 3,6), than duoi 5,0, chan 3,3.
+MX_HOLE, MX_DEPTH, MX_STEM_L, MX_STEM_W, MX_STEM_H = 14.0, 8.58, 4.19, 1.25, 3.6
+MX_BODY_UP, MX_BODY_W, MX_HOUSING_H = 15.6, 5.0, 3.0           # than tren rong 15,6; than duoi sau 5,0; cao than tren (chua tinh chan chu thap) 3,0
+MX_GROOVE = (1.94, 2.69, 3.44, 15.44)                          # ranh V: bat dau, sau nhat, het (duoi mieng), rong tai day
+MX_INSERT, MX_TRAVEL = 1.2, 2.4                                # chan chu thap cam vao lo nap 1,2 mm luc nghi; nap chay toi da 2,4 mm (cham than switch; MX bat o ~2,0)
+REST_UP = 0.2                                                  # nap nut nam sat dau cao 0,2 (vanh con lo khe 0,1 voi yen non)
+CONE_CLR_KEY = 0.3                                             # khe ngang yen non nap nut
+PAD_X, KEY_Z = 66.0, 117.0                                     # nut am luong: mat phang dem |x|, do cao z (tren duong rap, tren vanh loa z<=82)
+VOL_NECK_R, VOL_HOLE_R, VOL_FLANGE_R = 4.0, 4.5, 7.2           # nap nho: co O8, lo O9,0, vanh O14,4 (vanh trong rong hon lo 2,7 mm/ben)
+TALK_FLANGE_R = 29.0                                           # nap nut dau: vanh trong O58 (lo vo O50,8 -> hon 3,6 mm/ben)
+TALK_ZB = 139.0                                                # mat duoi nap nut dau (z)
+TENT_XM, TENT_ZLO, TENT_ZHI = 48.0, 6.0, 124.0                 # khoang trong chinh: mai chu A (45 do), de khong support
+PCB_SLOT_X = 12.8                                              # 12,5 + khe 0,3
+TENT_SL = 1.0                                                  # do doc mai: x giam TENT_SL mm moi mm cao (<= 1,07 -> nghieng >= 43 do so voi phuong ngang)
+TENT_FLAT = 1.0                                                # nua be rong dinh mai (<= 1 mm: cau 2 mm)
 SCREW_X, SCREW_Y = 24.0, 14.0     # 4 vit tu de len; boss: truoc y=-14 (nua truoc), sau y=+14 (nua sau)
 BOSS_TOP = 16.0
 PIN_D, PIN_HALF = 2.0, 8.0         # chot dinh vi: doan nhua 1,75 mm
@@ -69,6 +87,13 @@ SC = bpy.context.scene
 def new_obj(name, bm):
     me = bpy.data.meshes.new(name); bm.to_mesh(me); bm.free()
     o = bpy.data.objects.new(name, me); SC.collection.objects.link(o); return o
+
+def place(o, M):
+    """Dat vat o bang ma tran M (dao chieu mat neu M co dinh thuc am - ma tran guong)."""
+    o.data.transform(M)
+    if M.determinant() < 0:
+        o.data.flip_normals()
+    return o
 
 def cp(o, name=None):
     n = o.copy(); n.data = o.data.copy(); n.name = name or o.name + "_c"; SC.collection.objects.link(n); return n
@@ -146,9 +171,9 @@ def lathe(name, prof, seg=72, M=None):
             else:
                 bm.faces.new((A[i], A[j], B[j], B[i]))
     bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-6)
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     if M is not None:
         bmesh.ops.transform(bm, matrix=M, verts=bm.verts)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     return new_obj(name, bm)
 
 def arc(cr, ch, rho, a0, a1, n=8):
@@ -178,6 +203,85 @@ def body_normal(x, z):
 def cavity(grow=0.0):
     return sup('cav', (0, 0, CZ), (CRAD[0] + grow, CRAD[1] + grow, CRAD[2] + grow), NT, NB, TAPER)
 
+# ============================================================ HAM KHOANG TRONG / NUT MX (2026-11-08)
+def extrude(name, poly, u0, u1, M):
+    """Lang tru: da giac 2D (a, b) keo doc truc local z tu u0 den u1, dat bang ma tran M (local -> the gioi)."""
+    bm = bmesh.new()
+    lo = [bm.verts.new((a, b, u0)) for a, b in poly]; hi = [bm.verts.new((a, b, u1)) for a, b in poly]
+    n = len(poly)
+    bm.faces.new(lo[::-1]); bm.faces.new(hi)
+    for i in range(n):
+        j = (i + 1) % n
+        bm.faces.new((lo[i], lo[j], hi[j], hi[i]))
+    bmesh.ops.transform(bm, matrix=M, verts=bm.verts)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    return new_obj(name, bm)
+
+def M_half(sgn):
+    """Toa do nua vo: local (x, h, z) -> the gioi (x, Y0 + sgn*h, z); h = cao tinh tu mat rap theo huong IN (nua truoc sgn=-1, nua sau sgn=+1)."""
+    return Matrix(((1, 0, 0, 0), (0, sgn, 0, Y0), (0, 0, 1, 0), (0, 0, 0, 1)))
+
+def diamond(r): return [(r, 0.0), (0.0, r), (-r, 0.0), (0.0, -r)]       # hinh vuong xoay 45 do, nua duong cheo r (mai 45 do, khong mai phang)
+def hr(w): return w * math.sqrt(2) / 2                                    # nua duong cheo cua hinh vuong canh w
+
+def teardrop(r, h0=-0.5):
+    """Tiet dien giot nuoc (tron + chop 45 do huong len): (a, h) voi a = lech ngang, h = cao in; cung tron r, chop tai h = r*sqrt2."""
+    pts = [(-r, h0), (-r, 0.0)]
+    for k in range(1, 8):                       # cung 180 -> 135 do
+        t = math.radians(180 - 45 * k / 7); pts.append((r * math.cos(t), r * math.sin(t)))
+    pts += [(0.0, r * math.sqrt(2))]
+    for k in range(0, 8):
+        t = math.radians(45 - 45 * k / 7); pts.append((r * math.cos(t), r * math.sin(t)))
+    pts += [(r, 0.0), (r, h0)]
+    return pts
+
+def bcone(y, extra): return BELLY_RF + extra + CONE_T * (y - BELLY_FRONT)    # ban kinh lo non tam bung tai y
+
+def make_cavity():
+    """Khoang trong in KHONG SUPPORT (2026-11-08): khoang cu (elipsoid) giao voi tap hop khoi mai 45 do (moi nua in mat rap xuong):
+    mai chu A dai doc theo z (do rong tai mat rap +-TENT_XM, dinh = TENT_XM), ham bo mach (thanh dung +-12,8 + mai chu A), duong ham loa (giot nuoc),
+    ong tru bung (phia truoc). Tran luon nghieng >= 45 do hoac dinh phang <= 2 mm."""
+    parts = []
+    pcb = PCB_CENTER; hp = PCB_BOX[1] / 2 + FIT                  # nua sau bo (y) + khe: tran ham bo mach = chan chan dau cuoi bo
+    pz0, pz1 = pcb[2] - PCB_BOX[2] / 2 - FIT, pcb[2] + PCB_BOX[2] / 2 + FIT
+    xm, f = TENT_XM, TENT_FLAT
+    tent = [(-xm, -0.5), (xm, -0.5), (f, (xm - f) / TENT_SL), (-f, (xm - f) / TENT_SL)]
+    xs_ = PCB_SLOT_X
+    slot = [(-xs_, -0.5), (xs_, -0.5), (xs_, hp), (f, hp + (xs_ - f) / TENT_SL), (-f, hp + (xs_ - f) / TENT_SL), (-xs_, hp)]
+    for sgn in (-1, 1):
+        M = M_half(sgn)
+        parts.append(extrude('tent', tent, TENT_ZLO, TENT_ZHI, M))
+        parts.append(extrude('slot', slot, pz0, pz1, M))
+        for sx in (-1, 1):                                       # duong ham loa: truc x, tam (y=Y0, z=SPK_Z), x tu 36 den het yen non
+            Mx_ = Matrix(((0, 0, sx, 0), (0, sgn, 0, Y0), (1, 0, 0, SPK_Z), (0, 0, 0, 1)))   # local (a, h, u) -> (sx*u, Y0+sgn*h, SPK_Z + a)
+            parts.append(extrude('spk', teardrop(BODY_D_MAX / 2 + 0.8), 36.0, 55.0, Mx_))
+    rb = bcone(BELLY_REAR, CONE_CLR) + 0.4; h_top = Y0 - BELLY_REAR; cham = rb - 40.0          # ong cho tam bung lap tu trong: tru + non 45 do o dinh (khong de tran phang/ nong)
+    parts.append(cyl('belly_t1', (0, Y0 + 0.5, BELLY_Z), (0, Y0 - (h_top - cham), BELLY_Z), rb, seg=96))
+    parts.append(cyl('belly_t2', (0, Y0 - (h_top - cham) + 0.01, BELLY_Z), (0, BELLY_REAR, BELLY_Z), rb, rb - cham, seg=96))
+    cav = parts[0]
+    for p_ in parts[1:]:
+        union(cav, p_)
+    return inter(cav, cavity())
+
+def mx_cutters(M, u_rim):
+    """Cac khoi khoet cho 1 switch MX (truc local z; u tang tu mat tren nap vao trong): 'bay' vai switch, lo switch 14 xoay 45 do, ranh V, cua so day.
+    M: local -> the gioi (local z = huong vao trong); u_rim = vi tri mieng lo (u); tra ve list vat the can diff."""
+    out = []
+    out.append(extrude('mxbay', diamond(hr(MX_BODY_UP + 0.2)), u_rim - MX_HOUSING_H - 0.6, u_rim + 0.02, M))
+    out.append(extrude('mxpocket', diamond(hr(MX_HOLE)), u_rim, u_rim + MX_DEPTH, M))
+    g0, g1, g2, gw = MX_GROOVE
+    bm = bmesh.new(); pts = []
+    for (u, w) in ((g0, MX_HOLE), (g1, gw), (g2, MX_HOLE)):
+        r = hr(w)
+        for a, b in diamond(r):
+            pts.append(bm.verts.new(Vector((a, b, u_rim + u))))
+    bmesh.ops.convex_hull(bm, input=pts)
+    bmesh.ops.transform(bm, matrix=M, verts=bm.verts)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    out.append(new_obj('mxgroove', bm))
+    out.append(extrude('mxwin', diamond(hr(9.0)), u_rim + MX_DEPTH - 0.1, u_rim + MX_DEPTH + 7.0, M))   # cua so day: day chan / day dan thoat vao khoang trong
+    return out
+
 # ============================================================ THAN NGOAI
 OUTER = sup('outer', (0, 0, BZ), BR, NT, NB, TAPER)
 for s in (-1, 1):
@@ -189,46 +293,64 @@ diff(OUTER, box('flat', (-200, -200, -50), (200, 200, FLOOR_CUT)))
 def outer(): return cp(OUTER, 'o')
 def clip(o): return inter(o, outer())
 
-S = outer(); diff(S, cavity())
+S = outer(); diff(S, make_cavity())
 
 # ---------------- chi tiet noi bo (them truoc khi cat lo) ----------------
 EYES = []
+EYE_COLLAR_R = 22.6        # 20,3 + 2,3: vanh dau ong <= 2,4 mm -> khong can support
 for s in (-1, 1):
     P = Vector((s * EYE_X, body_y(s * EYE_X, EYE_Z), EYE_Z))
     M = frame(P, body_normal(s * EYE_X, EYE_Z)); EYES.append(M)
-    t = cyl_local('tube', M, -12.9, 2.0, 23.2, seg=60); clip(t); union(S, t)
+    t = cyl_local('tube', M, -12.9, 2.0, EYE_COLLAR_R, seg=60); clip(t); union(S, t)
 BEAK_P = Vector((0, body_y(0, BEAK_Z), BEAK_Z))
 BEAK_M = frame(BEAK_P, body_normal(0, BEAK_Z) + Vector((0, 0, -0.25)))
-t = cyl_local('bcollar', BEAK_M, -5.0, 2.0, 11.8); clip(t); union(S, t)
-t = cyl('bcol', (0, 0, SEAT_Z), (0, 0, 175), 31.6, seg=90); clip(t); union(S, t)
-t = box("shelf", (-12, 0.9, SHELF_TOP - 3.0), (12, 45, SHELF_TOP)); clip(t); union(S, t)
+t = cyl_local('bcollar', BEAK_M, -5.0, 2.0, 11.6); clip(t); union(S, t)
+t = cyl('bcol', (0, Y0, SEAT_Z), (0, Y0, 175), 31.6, seg=90); clip(t); union(S, t)
 
-# ray dung giu bo (2 tam, bo trong 25 theo x) + chan truoc
+# ray (vay) giu bo: 2 tam hai ben khoang bo, dung tren san
 hx = PCB_BOX[0] / 2 + FIT
 pz0, pz1 = PCB_CENTER[2] - PCB_BOX[2] / 2, PCB_CENTER[2] + PCB_BOX[2] / 2
 py0, py1 = PCB_CENTER[1] - PCB_BOX[1] / 2, PCB_CENTER[1] + PCB_BOX[1] / 2
 for s in (-1, 1):
     a, b = sorted((s * hx, s * (hx + 2.0)))
-    t = box('rail', (a, py0 + 6, 5.0), (b, py1 - 6, pz0 + 30)); clip(t); union(S, t)
-t = box('stop', (-hx - 2, py0 - FIT - 2, 5.0), (hx + 2, py0 - FIT, pz0 + 12)); clip(t); union(S, t)
+    t = box('rail', (a, py0 + 6, 5.0), (b, py1 - 6, pz0 + 30)); clip(t); union(S, t)   # vay noi san va mai (dau tren cham thanh mai chu A -> khong bi khe USB cat roi)
 
-# boss vit: 4 tru tren san, dai doc theo mat ranh gioi khong vuot qua (nua truoc y<0, nua sau y>0)
+# boss vit: 4 tru tren san, keo toi mat rap (hinh 'bia mo': tru + khoi xuong mat rap) -> khong co mat tru treo
 for sx in (-SCREW_X, SCREW_X):
     for sy in (-SCREW_Y, SCREW_Y):
-        union(S, cyl('boss', (sx, sy, 5.0), (sx, sy, BOSS_TOP), 7.0, seg=48))
+        b_ = cyl('boss', (sx, sy, 5.0), (sx, sy, BOSS_TOP), 7.0, seg=48)
+        y_a, y_b = sorted((sy, Y0))
+        union(b_, box('bossw', (sx - 7.0, y_a, 5.0), (sx + 7.0, y_b, BOSS_TOP)))
+        union(S, b_)
+
+# khoi dem nut am luong (2 ben, tren duong rap): lap day phan khoang trong |x| 38..56 de dem nut / switch nam trong khoi dac
+for sx in (-1, 1):
+    a, b = sorted((sx * 38.0, sx * 55.6))
+    t = box('keyblk', (a, Y0 - 30.0, KEY_Z - 13.7), (b, Y0 + 30.0, KEY_Z + 13.9)); clip(t); union(S, t)
+    t = cyl('keyboss', (sx * 52.0, Y0, KEY_Z), (sx * PAD_X, Y0, KEY_Z), 10.0, seg=48); union(S, t)   # dem phang quanh nut (khong clip: nho ra khoi vo mot chut)
 
 # ============================================================ CAT LO
-# lo nut chi khoet qua vanh giu nut (tu SEAT_Z - 1 len). Ban cu khoet tu z 120 -> cat mat gia cong tac trong r 25,4
-# (cong tac lo lung) - Tuan hoi 'nut nhan o dau' 2026-11-06 moi thay.
-diff(S, cyl('bhole', (0, 0, SEAT_Z - 1.0), (0, 0, 180), BUTTON_HOLE_D / 2, seg=96))
-for dx in (-9, 0, 9):
-    diff(S, cyl('mic', (dx, -85, 132), (dx, -20, 132), MIC_HOLE_D / 2, seg=16))
+# lo nut dau: lo O50,8 tu mat tua (z 145) len; yen non 45 do + hoc vanh duoi mat tua (nap nut cam tu duoi len, lap truoc khi dong vo)
+for sgn in (-1, 1):                                              # lo nut: giot nuoc (chop 45 do) de tran lo ngang khong treo
+    diff(S, extrude('bhole', teardrop(BUTTON_HOLE_D / 2), SEAT_Z - 0.3, 180.0, M_half(sgn)))
+TALK_R = TALK_FLANGE_R + 0.4
+TALK_ZPOCKET = TALK_ZB - MX_TRAVEL - 0.4
+z_cone_end = SEAT_Z - (TALK_R - BUTTON_HOLE_D / 2)
+diff(S, lathe('tseat', [(0, SEAT_Z), (BUTTON_HOLE_D / 2, SEAT_Z), (TALK_R, z_cone_end), (TALK_R, TALK_ZPOCKET), (0, TALK_ZPOCKET)],
+              seg=96, M=Matrix.Translation((0, Y0, 0))))        # yen non 45 do + hoc vanh (mot khoi xoay, khong mat trung nhau)
+TALK_RIM = TALK_ZB + MX_INSERT - MX_STEM_H - MX_HOUSING_H           # mieng lo switch MX (z)
+MT = Matrix(((1, 0, 0, 0), (0, 1, 0, Y0), (0, 0, -1, TALK_RIM), (0, 0, 0, 1)))   # local (a,b,u) -> (x, Y0 + y, TALK_RIM - u): u tang di xuong
+for o_ in mx_cutters(MT, 0.0):
+    diff(S, o_)
+for dx in (-7, 0, 7):
+    diff(S, cyl('mic', (dx, -8, 120), (dx, -85, 120), MIC_HOLE_D / 2, seg=16))
 for M in EYES:
-    diff(S, cyl_local('ehole', M, -30, 12, 17.0, seg=64))
+    diff(S, cyl_local('ehole', M, -30, 12, 17.9, seg=64))
     diff(S, cyl_local('epocket', M, -13.0, -6.0, 20.3, seg=64))
+    diff(S, cyl_local('eshaft', M, -27.0, -12.9, 20.3, seg=64))          # duong lap kinh khuech tan tu khoang trong vao hoc
 diff(S, cyl_local('beakhole', BEAK_M, -8.0, 12.0, 9.2))
+diff(S, cyl_local('beakpocket', BEAK_M, -40.0, -5.0, 11.4))             # hoc vanh mo O22,8 (mo lap tu trong); tran vong 2,2 mm
 # lo non cho tam bung (nho ngoai, rong vao trong -> yen non, lap tu trong)
-def bcone(y, extra): return BELLY_RF + extra + CONE_T * (y - BELLY_FRONT)
 diff(S, cyl('bhole2', (0, BELLY_FRONT - 1.5, BELLY_Z), (0, BELLY_REAR, BELLY_Z), bcone(BELLY_FRONT - 1.5, CONE_CLR), bcone(BELLY_REAR, CONE_CLR), seg=96))
 # lo non cho vanh loa 2 suon
 def zcone(h, extra): return BZL_RF + extra + BZL_T * (SPK_XF - h)
@@ -237,13 +359,23 @@ for s in (-1, 1):
 for i in range(5):
     x = (i - 2) * 7.0
     diff(S, box('vent', (x - VENT_W / 2, 30, 82 - VENT_L / 2), (x + VENT_W / 2, 70, 82 + VENT_L / 2)))
-diff(S, box('usb', (-20, 38, 3), (20, 70, FLOOR_CUT + 12)))
 for sx in (-SCREW_X, SCREW_X):
     for sy in (-SCREW_Y, SCREW_Y):
         diff(S, hexp('nut', (sx, sy, BOSS_TOP - NUT_DEPTH), (sx, sy, BOSS_TOP + 0.1)))
         diff(S, cyl('mclear', (sx, sy, 3.0), (sx, sy, BOSS_TOP - NUT_DEPTH + 0.1), M3_CLEAR_D / 2, seg=24))
+# nut am luong (2 cai, tren duong rap, truc x): tu mat dem vao trong: co O9 -> yen non 45 do -> hoc vanh -> bay vai switch -> lo switch 14 xoay 45 do
+VOL_D = dict(neck=3.0, cone=3.0, band=2.0)     # co xuyen vo 3,0; non 3,0; vanh 2,0
+VOL_ZB = VOL_D['neck'] + VOL_D['cone'] + VOL_D['band']          # mat duoi nap (u tu mat dem)
+VOL_RIM = VOL_ZB + MX_TRAVEL + MX_HOUSING_H                       # mieng lo switch (u): mat tren than = ZB + 2,4; mieng = +3,0
+MKS = {sx: Matrix(((0, 0, -sx, sx * PAD_X), (1, 0, 0, Y0), (0, 1, 0, KEY_Z), (0, 0, 0, 1))) for sx in (-1, 1)}   # local (a, b, u) -> (sx*(PAD_X - u), Y0 + a, KEY_Z + b)
+for sx in (-1, 1):
+    Mk = MKS[sx]
+    zn, zc, zp = VOL_D['neck'], VOL_D['neck'] + VOL_D['cone'], VOL_ZB + MX_TRAVEL + 0.4
+    diff(S, lathe('vseat', [(0, -0.5), (VOL_HOLE_R, -0.5), (VOL_HOLE_R, zn), (VOL_HOLE_R + VOL_D['cone'], zc), (VOL_HOLE_R + VOL_D['cone'], zp), (0, zp)], seg=48, M=Mk))   # co + non 45 do + hoc vanh
+    for o_ in mx_cutters(Mk, VOL_RIM):
+        diff(S, o_)
 # chot dinh vi o cac khoi dac (tai, canh, vanh nut): lo O2 sau 8 moi nua
-for (px, pz) in ((-43, 142), (43, 142), (-59, 92), (59, 92), (-28.7, 160), (28.7, 160)):
+for (px, pz) in ((-43, 142), (43, 142), (-34, 130), (34, 130), (-28.7, 160), (28.7, 160)):
     diff(S, cyl('pin', (px, Y0 - PIN_HALF, pz), (px, Y0 + PIN_HALF, pz), PIN_D / 2, seg=16))
 
 # ============================================================ TACH 2 NUA
@@ -251,6 +383,7 @@ SRC = cp(S, 'src')
 A = S; B = cp(S, 'back')
 inter(A, box('fr', (-300, -300, -50), (300, Y0, 300)))
 inter(B, box('bk', (-300, Y0, -50), (300, 300, 300)))
+diff(B, box('usb', (-20, Y0 - 1.0, 3), (20, 70, FLOOR_CUT + 12)))    # khe cap USB: khoet RIENG nua sau (khong dung mat rap)
 # de (plate): bat 4 vit vao tru, lo chim O9 sau 2,8 duoi, xuyen 3,4
 for sx in (-SCREW_X, SCREW_X):
     for sy in (-SCREW_Y, SCREW_Y):
@@ -352,14 +485,61 @@ def sring_world(s):
 SRINGS = [sring_world(-1), sring_world(1)]
 
 # --- mo
-bp = [(0, -9.0), (12, -9.0), (12, -6.2), (9, -6.2), (9, 0.0)]
+bp = [(0, -9.0), (11.0, -9.0), (11.0, -6.2), (9, -6.2), (9, 0.0)]
 bp += [(9 * math.cos(math.radians(a)), 7.5 * math.sin(math.radians(a))) for a in range(10, 91, 10)]
 BEAK = lathe('beak', bp[:-1] + [(0, 7.5)], seg=64, M=BEAK_M)
 
-# --- nut
-cp_ = [(0, BTN_TOP), (19, BTN_TOP)] + arc(19, BTN_TOP - 6, 6, 90, 0, 8)[1:] + [(25, BTN_F1), (29, BTN_F1), (29, BTN_F0), (0, BTN_F0)]
-CAP = lathe('cap', cp_, seg=96)
-union(CAP, cyl('pad', (0, 8, BTN_F0 - 1.5), (0, 8, BTN_F0 + 0.3), 8.0, seg=48))
+# --- nut dau (talk): vanh trong O58 vat 45 do (in up dau xuong khong support), lo chu thap 4,19 x 1,25 o mat duoi (cam than MX), nap tren yen non cua vo
+def cross_cutters(M, u_open, depth, dirn):
+    """Lo chu thap (2 thanh 4,19 x 1,25, xoay 45 do cung than switch) tu mat u_open vao 'depth' mm theo huong dirn (+1/-1) doc truc local z."""
+    out = []
+    for ang in (45.0, 135.0):
+        z0, z1 = sorted((u_open - dirn * 0.2, u_open + dirn * depth))
+        b_ = box('crs', (-MX_STEM_L / 2, -MX_STEM_W / 2, z0), (MX_STEM_L / 2, MX_STEM_W / 2, z1))
+        b_.data.transform(M @ Matrix.Rotation(math.radians(ang), 4, 'Z')); out.append(b_)
+    return out
+cp_ = [(0, BTN_TOP), (19, BTN_TOP)] + arc(19, BTN_TOP - 6, 6, 90, 0, 8)[1:]
+cp_ += [(25.0, SEAT_Z + REST_UP + 0.1), (TALK_FLANGE_R, SEAT_Z + REST_UP + 0.1 - (TALK_FLANGE_R - 25.0)), (TALK_FLANGE_R, TALK_ZB + REST_UP), (0, TALK_ZB + REST_UP)]
+CAP = lathe('cap', cp_, seg=96, M=Matrix.Translation((0, Y0, 0)))
+for o_ in cross_cutters(Matrix.Translation((0, Y0, TALK_ZB + REST_UP)), 0.0, MX_STEM_H, 1):
+    diff(CAP, o_)
+
+# --- 2 nap nut am luong nho (in up dau xuong): dau O16 co dau + / - lom (khong noi -> mat day phang), co O8 xuyen vo, non 45 do, vanh O14,4, lo chu thap o mat tren
+VOL_HEAD_R, VOL_HEAD_H = 8.6, 3.5
+def make_vol_cap(plus):
+    z_neck, z_cone, z_top = VOL_HEAD_H, VOL_HEAD_H + VOL_D['neck'], VOL_HEAD_H + VOL_ZB
+    pr = [(0, 0), (VOL_HEAD_R - 0.6, 0), (VOL_HEAD_R, 0.6), (VOL_HEAD_R, z_neck), (VOL_NECK_R, z_neck), (VOL_NECK_R, z_cone),
+          (VOL_FLANGE_R, z_cone + (VOL_FLANGE_R - VOL_NECK_R - 0.2)), (VOL_FLANGE_R, z_top), (0, z_top)]
+    c = lathe('vcap', pr, seg=48)
+    bars = [(9.0, 1.8)] + ([(1.8, 9.0)] if plus else [])
+    for (w, h) in bars:
+        diff(c, box('sym', (-w / 2, -h / 2, -0.1), (w / 2, h / 2, 0.8)))
+    for o_ in cross_cutters(Matrix.Translation((0, 0, z_top)), 0.0, MX_STEM_H, -1):
+        diff(c, o_)
+    return c
+VCAPS = {1: make_vol_cap(True), -1: make_vol_cap(False)}          # +x: vol_up (+), -x: vol_down (-)
+def vol_cap_world(sx):
+    o = cp(VCAPS[sx], 'vcapw%d' % sx)
+    place(o, MKS[sx] @ Matrix.Translation((0, 0, -(VOL_HEAD_H + REST_UP))))      # z cuc bo -> u = z - dau - nang len 0,2
+    return o
+VCAPS_W = {sx: vol_cap_world(sx) for sx in (-1, 1)}
+
+def mx_dummy(M, u_rim, name):
+    """Khoi gia switch MX kich thuoc that (xoay 45 do quanh truc): than duoi 14 x 14 sau 5,0 + 2 chan; than tren 15,6 x 15,6 cao 3,0; chan chu thap 4,0 x 1,2 cao 3,6 (TODO kiem switch that)."""
+    R45 = Matrix.Rotation(math.radians(45), 4, 'Z')
+    parts = [box('lo', (-MX_HOLE / 2, -MX_HOLE / 2, u_rim), (MX_HOLE / 2, MX_HOLE / 2, u_rim + MX_BODY_W)),
+             box('up', (-MX_BODY_UP / 2, -MX_BODY_UP / 2, u_rim - MX_HOUSING_H), (MX_BODY_UP / 2, MX_BODY_UP / 2, u_rim)),
+             box('c1', (-2.0, -0.6, u_rim - MX_HOUSING_H - MX_STEM_H), (2.0, 0.6, u_rim - MX_HOUSING_H + 0.01)),
+             box('c2', (-0.6, -2.0, u_rim - MX_HOUSING_H - MX_STEM_H), (0.6, 2.0, u_rim - MX_HOUSING_H + 0.01))]
+    for (px, py) in ((-3.81, 2.54), (2.54, 5.08)):
+        parts.append(cyl('pin', (px, py, u_rim + MX_BODY_W - 0.01), (px, py, u_rim + MX_BODY_W + 3.3), 0.8, seg=12))
+    o = parts[0]
+    for q in parts[1:]:
+        union(o, q)
+    place(o, M @ R45)
+    o.name = name
+    return o
+MXSW = {'talk': mx_dummy(MT, 0.0, 'mx_talk'), 'vol_up': mx_dummy(MKS[1], VOL_RIM, 'mx_up'), 'vol_down': mx_dummy(MKS[-1], VOL_RIM, 'mx_dn')}
 
 # --- kinh khuech tan mat (1 cai); vanh giu
 dp = [(0, -6.0), (20, -6.0), (20, -9.8), (18.8, -9.8), (18.8, -6.0 - DIFFUSER_T), (0, -6.0 - DIFFUSER_T)]
@@ -368,10 +548,9 @@ DIFFS = [lathe('diff%d' % i, dp, seg=72, M=M) for i, M in enumerate(EYES)]
 # --- vong mat kem (x2): dan len vo, mat sau theo be mat than, mat truoc phang; in mat truoc xuong
 RINGS = []
 for M in EYES:
-    r = cyl_local('ring', M, -16.0, 16.0, RING_D / 2, seg=96)
-    inter(r, sup('bb', (0, 0, BZ), (BR[0] + RING_T, BR[1] + RING_T, BR[2] + RING_T), NT, NB, TAPER))
+    r = cyl_local('ring', M, -16.0, RING_T, RING_D / 2, seg=96)        # mat truoc PHANG (vuong goc truc mat) cach tiep diem RING_T: in up mat phang xuong, khong support
     diff(r, outer())
-    diff(r, cyl_local('rw', M, -30, 12, 17.3, seg=72))
+    diff(r, cyl_local('rw', M, -30, 12, 18.2, seg=72))
     RINGS.append(r)
 
 # ============================================================ XUAT STL (huong in)
@@ -400,15 +579,17 @@ export_obj(BELLY, T_belly, OUT / "belly.stl")
 export_obj(BEAK, T_beak, OUT / "beak.stl")
 export_obj(CAP, T_cap, OUT / "button-cap.stl")
 export_obj(DIFFS[1], T_diff, OUT / "eye-diffuser.stl")
-T_ring = EYES[1].inverted()
+T_ring = Mx(((1, 0, 0, 0), (0, -1, 0, 0), (0, 0, -1, 0), (0, 0, 0, 1))) @ EYES[1].inverted()      # mat truoc phang xuong ban
 export_obj(RINGS[1], T_ring, OUT / "eye-ring.stl")
-export_obj(PLATE, Mx(((1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1))), OUT / "base-plate.stl")
+export_obj(PLATE, Mx(((1, 0, 0, 0), (0, -1, 0, 0), (0, 0, -1, FLOOR_CUT), (0, 0, 0, 1))), OUT / "base-plate.stl")   # lat: mat sat vo (rong hon) xuong ban -> mep vo thon dan len, khong treo
+export_obj(VCAPS[1], Matrix.Identity(4), OUT / "mx-cap-vol-up.stl")
+export_obj(VCAPS[-1], Matrix.Identity(4), OUT / "mx-cap-vol-down.stl")
 export_obj(BEZEL_LOCAL, Mx(((1, 0, 0, 0), (0, -1, 0, 0), (0, 0, -1, SPK_XF), (0, 0, 0, 1))), OUT / "speaker-bezel.stl")
 export_obj(SRING_LOCAL, Matrix.Identity(4), OUT / "speaker-ring.stl")   # day vong ep xuong ban, ong tay huong len
 
 # lap rap
 asm = bmesh.new()
-for o in [A, B, PLATE, BELLY, BEAK, CAP] + BEZELS + SRINGS + DIFFS + RINGS:
+for o in [A, B, PLATE, BELLY, BEAK, CAP, VCAPS_W[1], VCAPS_W[-1]] + BEZELS + SRINGS + DIFFS + RINGS:
     asm.from_mesh(o.data)
 am = bpy.data.meshes.new('asm'); asm.to_mesh(am); asm.free()
 ao = bpy.data.objects.new('asm', am); SC.collection.objects.link(ao)
@@ -427,7 +608,13 @@ params = dict(wall=WALL, speaker_pocket_d=SPEAKER_POCKET_D, grille_hole_d=GRILLE
               speaker_clamp=dict(flange_t=FLANGE_T, gasket_t=GASKET_T, body_d_max=BODY_D_MAX, ring_t=SRING_T, ring_id=RING_ID,
                                  bayonet=dict(n=len(BAY_ANG), twist=BAY_TWIST, pin_w=BPIN_W, pin_h=BPIN_H, pin_t=BPIN_T, sleeve_clr=SLEEVE_CLR, pin_clr=BPIN_CLR,
                                  groove_clr=GROOVE_CLR, lip_pre=LIP_PRE, out_gap=OUT_GAP, sleeve_t=SLEEVE_T), gasket_locked=round(GASKET_T - LIP_PRE, 3),
-                                 face_abs_x=SPK_FACE, cup_end_abs_x=CUP_END), pins=dict(d=PIN_D, half_depth=PIN_HALF), floor_cut=FLOOR_CUT, cone_clearance=CONE_CLR, fit=FIT, slide=SLIDE)
+                                 face_abs_x=SPK_FACE, cup_end_abs_x=CUP_END), pins=dict(d=PIN_D, half_depth=PIN_HALF), floor_cut=FLOOR_CUT, cone_clearance=CONE_CLR, fit=FIT, slide=SLIDE,
+              mx=dict(hole=MX_HOLE, socket_depth=MX_DEPTH, stem_cross_l=MX_STEM_L, stem_cross_w=MX_STEM_W, stem_cross_depth_used=MX_STEM_H,
+                      groove=dict(from_rim=MX_GROOVE[0], deepest_at=MX_GROOVE[1], to=MX_GROOVE[2], width=MX_GROOVE[3]),
+                      rotated_deg=45, travel_used=MX_TRAVEL, stem_insert=MX_INSERT, source="fit-library catpaw/mx-socket + catpaw/mx-keycap-cross; than switch 15,6 x 15,6 cao 3,0 + chan chu thap 3,6, than duoi 5,0: TODO kiem switch that",
+                      keys=[dict(name="talk", gpio=23, key="KEY4", axis="z", pos=[0, Y0, TALK_RIM], flange_r=TALK_FLANGE_R, hole_r=BUTTON_HOLE_D / 2, flange_over=round(TALK_FLANGE_R - BUTTON_HOLE_D / 2, 2)),
+                            dict(name="vol_up", gpio=18, key="KEY5", axis="x", pos=[PAD_X, Y0, KEY_Z], flange_r=VOL_FLANGE_R, hole_r=VOL_HOLE_R, flange_over=round(VOL_FLANGE_R - VOL_HOLE_R, 2)),
+                            dict(name="vol_down", gpio=5, key="KEY6", axis="x", pos=[-PAD_X, Y0, KEY_Z], flange_r=VOL_FLANGE_R, hole_r=VOL_HOLE_R, flange_over=round(VOL_FLANGE_R - VOL_HOLE_R, 2))]))
 (OUT / "owl-params.json").write_text(json.dumps(params, indent=1), encoding="utf-8")
 
 # ============================================================ ANH XEM TRUOC (Eevee, dung STL that)
@@ -444,24 +631,27 @@ for sp in SPEAKERS:
     c = Vector(sp["center"]); sg = 1 if c.x > 0 else -1; fx = c.x + sg * SPEAKER_L / 2
     so = cyl('spk', Vector((fx - sg * FLANGE_T, c.y, c.z)), Vector((fx, c.y, c.z)), SPEAKER_D / 2, seg=48)
     union(so, cyl('spkb', Vector((fx - sg * SPEAKER_L, c.y, c.z)), Vector((fx - sg * (FLANGE_T - 0.5), c.y, c.z)), BODY_D_MAX / 2 - 3, seg=48)); spk.append(so)
-# cong tac tactile 6 x 6 giu cho (KEY4 noi song song, Tuan 2026-11-06): de tren gia, chan nut ep o (0, 8); cao 4,3 (TODO do)
-SW_H = 4.3
-swo = box('sw', (-3.0, 5.0, SHELF_TOP), (3.0, 11.0, SHELF_TOP + 3.5)); union(swo, cyl('swst', (0, 8, SHELF_TOP + 3.0), (0, 8, SHELF_TOP + SW_H), 1.75, seg=24))
 pcbo = box('pcb', (-PCB_BOX[0] / 2, PCB_CENTER[1] - PCB_BOX[1] / 2, PCB_CENTER[2] - PCB_BOX[2] / 2), (PCB_BOX[0] / 2, PCB_CENTER[1] + PCB_BOX[1] / 2, PCB_CENTER[2] + PCB_BOX[2] / 2))
 ITEMS = [(A, 'front', 'shell', (0, -75, 0)), (B, 'back', 'shell', (0, 75, 0)), (PLATE, 'plate', 'cream', (0, 0, -45)), (BELLY, 'belly', 'cream', (0, -130, 0)),
          (BEAK, 'beak', 'butter', (0, -135, 30)), (CAP, 'cap', 'butter', (0, 0, 55)), (BEZELS[0], 'bz0', 'shell', (-105, 0, 0)), (BEZELS[1], 'bz1', 'shell', (105, 0, 0)), (SRINGS[0], 'sr0', 'cream', (-25, 0, 0)), (SRINGS[1], 'sr1', 'cream', (25, 0, 0)),
          (DIFFS[0], 'd0', 'white', (-30, -110, 25)), (DIFFS[1], 'd1', 'white', (30, -110, 25)), (RINGS[0], 'r0', 'cream', (-40, -100, 0)), (RINGS[1], 'r1', 'cream', (40, -100, 0)),
-         (spk[0], 's0', 'spk', (-55, 0, 0)), (spk[1], 's1', 'spk', (55, 0, 0)), (pcbo, 'pcb', 'pcb', (0, 0, 0)), (swo, 'sw', 'spk', (0, 0, 30))]
+         (spk[0], 's0', 'spk', (-55, 0, 0)), (spk[1], 's1', 'spk', (55, 0, 0)), (pcbo, 'pcb', 'pcb', (0, 0, 0)),
+         (VCAPS_W[1], 'cvu', 'butter', (30, 0, 0)), (VCAPS_W[-1], 'cvd', 'butter', (-30, 0, 0)),
+         (MXSW['talk'], 'mxt', 'spk', (0, 0, 40)), (MXSW['vol_up'], 'mxu', 'spk', (60, 0, 0)), (MXSW['vol_down'], 'mxd', 'spk', (-60, 0, 0))]
 for o, n, c, off in ITEMS:
     dump(o, n)
 # ban lap rap DO DUOC (Tuan 2026-11-06): moi chi tiet 1 STL o dung vi tri lap (mm) -> export_cad.py ra .blend + STEP
 ASM_NAMES = dict(front="shell-front", back="shell-back", plate="base-plate", belly="belly", beak="beak", cap="button-cap",
                  bz0="speaker-bezel-L", bz1="speaker-bezel-R", sr0="speaker-ring-L", sr1="speaker-ring-R", d0="eye-diffuser-L",
-                 d1="eye-diffuser-R", r0="eye-ring-L", r1="eye-ring-R", s0="speaker-dummy-L", s1="speaker-dummy-R", pcb="pcb-dummy", sw="switch-6x6-dummy")
+                 d1="eye-diffuser-R", r0="eye-ring-L", r1="eye-ring-R", s0="speaker-dummy-L", s1="speaker-dummy-R", pcb="pcb-dummy", cvu="mx-cap-vol-up", cvd="mx-cap-vol-down", mxt="mx-switch-talk", mxu="mx-switch-vol_up", mxd="mx-switch-vol_down")
 (OUT / "asm").mkdir(exist_ok=True)
 import shutil
 for _, n, _, _ in ITEMS:
     shutil.copyfile(TMP / (n + ".stl"), OUT / "asm" / (ASM_NAMES[n] + ".stl"))
+
+import os
+if os.environ.get("OWL_FAST"):   # chi sinh STL + params, bo qua anh Eevee (dung khi lap thiet ke)
+    shutil.rmtree(TMP, ignore_errors=True); print("BUILD OK (fast)"); sys.exit(0)
 
 def fresh_scene(res):
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -505,7 +695,7 @@ def merge(p1, p2, out):
     nim = bpy.data.images.new('m', width=big.shape[1], height=big.shape[0], alpha=True)
     nim.pixels.foreach_set(big.reshape(-1)); nim.filepath_raw = str(out); nim.file_format = 'PNG'; nim.save()
 
-ASM = ['front', 'back', 'plate', 'belly', 'beak', 'cap', 'bz0', 'bz1', 'sr0', 'sr1', 'd0', 'd1', 'r0', 'r1']
+ASM = ['front', 'back', 'plate', 'belly', 'beak', 'cap', 'cvu', 'cvd', 'bz0', 'bz1', 'sr0', 'sr1', 'd0', 'd1', 'r0', 'r1']
 sc = fresh_scene((800, 1200)); load_items(sc, ASM, False)
 cam_at(sc, (0, 0, 85), -32, 12, 560); render_png(sc, OUT / "_v1.png")
 bpy.data.objects.remove(sc.camera)

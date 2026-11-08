@@ -7,7 +7,8 @@ from mathutils.bvhtree import BVHTree
 
 OUT = Path(sys.argv[sys.argv.index("--") + 1]).resolve()
 fails = []
-PARTS = ["shell-front", "shell-back", "belly", "beak", "button-cap", "eye-diffuser", "speaker-bezel", "speaker-ring"]
+PARTS = ["shell-front", "shell-back", "belly", "beak", "button-cap", "eye-diffuser", "speaker-bezel", "speaker-ring",
+         "mx-cap-vol-up", "mx-cap-vol-down"]   # 2026-11-08 Tuan: nut = switch phim co MX (y tuong clicker)
 BED = 250.0
 
 
@@ -175,23 +176,48 @@ if bay and bz_m and rg_m and p.get("speakers"):
         fails.append("ngam xoay khong lap duoc: khong co chieu xoay nao vua lot ranh doc vua xoay het goc khoa")
     else:
         print(f"ngam xoay: lap duoc (chieu {'+' if ok_dir > 0 else '-'}, xoay {tw:.0f} do)")
-# cong tac 6 x 6 (KEY4 song song) phai DUNG TREN GIA trong nua sau (2026-11-06: ban cu lo nut cat mat gia -> lo lung)
-sw_m, sb_m = load(OUT / "asm" / "switch-6x6-dummy.stl"), load(OUT / "asm" / "shell-back.stl")
-if sw_m and sb_m:
-    zmin = min(v.co.z for v in sw_m.verts)
-    xs_ = [v.co.x for v in sw_m.verts]; ys_ = [v.co.y for v in sw_m.verts]
-    sb_tree = BVHTree.FromBMesh(sb_m)
-    for px_ in (min(xs_) + 0.3, max(xs_) - 0.3):
-        for py_ in (min(ys_) + 0.3, max(ys_) - 0.3):
-            hit_ = sb_tree.ray_cast(Vector((px_, py_, zmin + 0.05)), Vector((0, 0, -1)), 0.3)
-            if hit_[0] is None:
-                fails.append(f"cong tac 6x6 khong co gia do tai ({px_:.1f}, {py_:.1f}) - lo lung")
-                break
-    bc_m = load(OUT / "asm" / "button-cap.stl")
-    if bc_m:
-        gap = min(v.co.z for v in bc_m.verts) - max(v.co.z for v in sw_m.verts)
-        if not 0.05 <= gap <= 1.0:
-            fails.append(f"khe chan nut - dinh cong tac {gap:.2f} mm (can 0,05-1,0)")
+# 2026-11-08 Tuan: "su dung clicker lam chan button de dieu khien GPIO: bat tat tang giam" -> 3 switch MX (khong PCB):
+# talk (KEY4 GPIO23, duoi nap nut dau cu), vol_up (KEY5 GPIO18), vol_down (KEY6 GPIO5) - han song song nut tren bo (bam = noi GND).
+# So o switch theo fit-library catpaw/mx-socket (lo vuong 14,00 press, sau 8,58, ranh V ngam) + catpaw/mx-keycap-cross (lo chu thap 4,19 x 1,25).
+# Be < 3 tuoi: nap nut KHONG duoc rut ra tu ngoai -> co vanh trong lon hon lo vo (bi giu boi vo), lap tu trong truoc khi dong vo.
+mx = p.get("mx")
+if not mx:
+    fails.append("params can mx (3 switch MX: talk / vol_up / vol_down)")
+else:
+    if abs(float(mx.get("hole", 0)) - 14.0) > 0.01: fails.append(f"mx.hole {mx.get('hole')} phai 14,00 (fit-library catpaw/mx-socket, press)")
+    if float(mx.get("socket_depth", 0)) < 8.0: fails.append("mx.socket_depth >= 8,0 (catpaw 8,58)")
+    if abs(float(mx.get("stem_cross_l", 0)) - 4.19) > 0.01 or abs(float(mx.get("stem_cross_w", 0)) - 1.25) > 0.01:
+        fails.append("lo chu thap nap nut 4,19 x 1,25 (fit-library catpaw/mx-keycap-cross)")
+    keys = {k.get("name"): k for k in mx.get("keys", [])}
+    for nm, gp in (("talk", 23), ("vol_up", 18), ("vol_down", 5)):
+        k = keys.get(nm)
+        if not k or k.get("gpio") != gp:
+            fails.append(f"mx.keys can {nm} gpio {gp}")
+        elif float(k.get("flange_over", 0)) < 1.5:
+            fails.append(f"nap nut {nm}: vanh trong phai rong hon lo vo >= 1,5 mm/ben (khong rut ra duoc)")
+    for nm, cap in (("talk", "button-cap"), ("vol_up", "mx-cap-vol-up"), ("vol_down", "mx-cap-vol-down")):
+        sw_m, cp_m = load(OUT / "asm" / f"mx-switch-{nm}.stl"), load(OUT / "asm" / f"{cap}.stl")
+        sh_m = load(OUT / "asm" / "shell-back.stl") or load(OUT / "asm" / "shell-front.stl")
+        if not (sw_m and cp_m and sh_m):
+            continue
+        sw_t, cp_t, sh_t = BVHTree.FromBMesh(sw_m), BVHTree.FromBMesh(cp_m), BVHTree.FromBMesh(sh_m)
+        # nap nut khong duoc cham vo o vi tri nghi (truot tu do), switch khong cham nap
+        if cp_t.overlap(sh_t): fails.append(f"nap nut {nm} cham vo o vi tri nghi (can khe truot)")
+        print(f"mx {nm}: switch + nap nut co trong lap rap")
+# tat ca ban in phai cat lop PASS, khong can support (Tuan 2026-11-05: sua model cho het support, gui ban .3mf)
+rep = OUT.parent.parent / "print" / "plates" / "print-report.json"
+if rep.exists():
+    try:
+        r_ = json.loads(rep.read_text(encoding="utf-8"))
+        bad_ = [b["ban"] for b in r_.get("ban", []) if b.get("trang_thai") != "PASS"]
+        if bad_ or r_.get("stl_chua_xep"): fails.append(f"ban in chua PASS (can support/loi): {bad_} chua xep: {r_.get('stl_chua_xep')}")
+        stl_dir = OUT.parent.parent / "print" / "stl"
+        old = [f.name for f in stl_dir.glob("*.stl") if f.stat().st_mtime < (OUT / "owl-params.json").stat().st_mtime - 5]
+        if old: fails.append(f"print/stl cu hon model (chep lai tu cad/out): {old}")
+    except Exception as e:
+        fails.append(f"doc print-report.json loi {type(e).__name__}")
+else:
+    fails.append("chua co print/plates/print-report.json - chay slice.py truoc")
 for f in ("owl-preview.png", "owl-exploded.png"):
     if not (OUT / f).exists():
         fails.append(f"out/{f} khong co")

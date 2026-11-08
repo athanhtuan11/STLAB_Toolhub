@@ -1,10 +1,21 @@
-# english-teacher (Cu Bong) - ban in. STL sinh bang cad/build_owl.py (Blender), chep sang print/stl/ (2 bo loa trai/phai giong nhau).
+# english-teacher (Cu Bong) - ban in. STL sinh bang cad/build_owl.py (Blender), chep sang print/stl/ (part doi: -l/-r giong nhau).
 # Cat lop: python ../../tools/robotics-cad/scripts/slice.py print/print.yaml   (STL da dung huong in)
+# 2026-11-08: du bo than cu, xep ban THEO MAU (han che AMS, moi ban 1 mau; mau theo cad/README.md).
 machine: Bambu Lab A1 0.4 nozzle
 filament: Bambu PETG Basic @BBL A1
 stl: stl
 plates_dir: plates
 common: {sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
 plates:
-  # 2 vanh loa (mat luoi up xuong) + 2 vong ep mep loa (mat ep up xuong) - mau mo
+  # mau MO: 2 vanh loa (mat luoi up xuong) + 2 vong ep mep loa
   A_speakers: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%"}, stl: ["speaker-bezel-*.stl", "speaker-ring-*.stl"]}
+  # mau MO: nua truoc (mat rap xuong)
+  B_shell_front: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "15%"}, stl: ["shell-front.stl"]}
+  # mau MO: nua sau (mat rap xuong)
+  C_shell_back: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "15%"}, stl: ["shell-back.stl"]}
+  # mau KEM: bung + 2 vanh mat (vo mong cong -> brim) + tam de
+  D_cream: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%", brim_type: outer_only, brim_width: "5"}, stl: ["belly.stl", "eye-ring-*.stl", "base-plate.stl"]}
+  # mau BO: mo + nap nut dau (MX) + 2 nap nut am luong nho (MX, dau +/-)
+  E_butter: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%"}, stl: ["beak.stl", "button-cap.stl", "mx-cap-vol-up.stl", "mx-cap-vol-down.stl"]}
+  # PETG TRANG tu nhien: 2 tam tan sang mat LED (day 3,8 -> gan nhu toan lop dac tren/duoi; 100 % + grid bi Bambu CLI tu choi)
+  F_white: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "2", sparse_infill_density: "20%"}, stl: ["eye-diffuser-*.stl"]}
