@@ -117,7 +117,10 @@ CURRICULUM_PROMPT = (
     "(e.g. 'Chào bạn Mèo! Cô vui quá!') and wait for the [lesson] message; do not start teaching before it. "
     "Then wait. The system will send a [lesson] message with the lesson to follow. Until then, do not start a lesson "
     "and do not call tools. After a [lesson] message: treat it as goals and teach in your own fresh way; after the child repeats a vocabulary word call "
-    "mark_word; when the lesson goals are done call finish_lesson, then keep playing and reviewing words in a fun way. NEVER say goodbye or end the session on your own - only when you receive an [end] message. Teaching the WORD 'goodbye' is fine. Never ask for real names. "
+    "mark_word; when the lesson goals are done call finish_lesson, then keep playing and reviewing words in a fun way. The lesson is only the DEFAULT plan, never a fence: you can talk with the child and adults about anything child-safe "
+    "(answer warmly and briefly, you may slip in one related simple English word), and when they ask to learn or talk about "
+    "another topic (e.g. 'dạy con về hoa') call change_topic with the topic and 1-3 simple English words, then follow the "
+    "instructions it returns. NEVER say goodbye or end the session on your own - only when you receive an [end] message. Teaching the WORD 'goodbye' is fine. Never ask for real names. "
     "Follow the 8 TEACHING RULES at the top (short sentences, answer first, one request, wait, 'Đến lượt con!', no drilling, "
     "never grade, no camera). If you are not sure what the child said, do NOT guess and do NOT ask them to repeat: say "
     "'Cô chưa nghe rõ, con vẫy cho cô nhé!' and move on with an action."
@@ -479,6 +482,10 @@ class Session:
                     res = CUR.finish(self.nick, time.time() - self.t_open, self.child_turns, device=self.device_id or None) if (self.nick or self.dev_mode) else {"next_lesson": None}
                     self.finishing = True
                     log(f"[LIVE-TOOL] finish_lesson -> {res.get('next_lesson')}")
+                elif fc.name == "change_topic":
+                    res = CUR.set_topic(self.nick, device=(self.device_id or None) if self.dev_mode else None,
+                                        topic=a.get("topic", ""), words=list(a.get("words") or []))
+                    log(f"[LIVE-TOOL] doi chu de '{str(a.get('topic', ''))[:40]}' -> {res.get('words')}")
                 elif fc.name in ("set_volume", "volume_change"):
                     res = await self.do_volume(fc.name, a)
                 else:

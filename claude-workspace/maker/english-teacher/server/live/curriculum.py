@@ -28,6 +28,11 @@ PRONUNCIATION = ("Pronunciation: listen to HOW the child says the English word. 
                  "say 'wrong' / 'sai', do NOT ask the child to repeat it - exposure over drilling, the child will get used to it. "
                  "Call mark_word correct=true only when it was close to right; otherwise correct=false (the word comes back later). "
                  "You have NO camera: never say you see the child; praise effort in general ('Con giỏi quá!') or a sound you heard.")
+FLEXIBLE = ("FLEXIBLE: the roadmap is the DEFAULT plan, not a fence. If the child or an adult talks about something else "
+            "(child-safe), follow it briefly first (you may add ONE related simple English word); if they ask for another topic "
+            "(e.g. 'dạy con về hoa') call change_topic with the topic and 1-3 simple English words, then teach it one word at a "
+            "time. Never force the child back to the lesson. Flexibility never makes turns longer: every turn stays at most "
+            "3 short pieces.")
 # 2026-11-07 bao cao cu-bong-cach-day-tot-hon.md (a)(b): 8 quy tac + khung buoi
 TODDLER_MODE = ("Toddler mode (ages 2-3), session frame about 3-4 minutes: (1) very short opening ritual, "
                 "(2) ONE new word through an action, (3) a 2-3 sentence story with a character (Bear, or the child's animal), "
@@ -257,6 +262,7 @@ class Curriculum:
             L["last_activities"] = (last + [act])[-3:]
             self._save(d)
             instr += "\n" + plan
+            instr += "\n" + FLEXIBLE
             instr += "\n" + (TODDLER_MODE if toddler else OLDER_MODE)
             return {"allowed": True, "learner": learner, "lesson_id": lid, "instructions": instr, "review": review}
 
@@ -333,21 +339,27 @@ class Curriculum:
         rec = [w for w in reversed(taught) if w not in new]
         for w in rec[:1]:
             add(w)
+        ex = [e for e in L.get("extra", []) if isinstance(e, dict) and e.get("word") and e["word"] not in new
+              and e["word"] not in res]
+        if ex and len(res) < 2:
+            e = min(ex, key=lambda x: int(x.get("rv", 0)))      # tu chu de it duoc on nhat; toi da 1 tu extra/buoi
+            e["rv"] = int(e.get("rv", 0)) + 1
+            add(e["word"])
         for w in rec[3:] + rec[1:3]:
             add(w)
         return res
 
     def _guide_new(self, new, review, dropped=()):
         if new:
-            s = (f"THIS SESSION'S ONLY NEW WORD(S): {', '.join(new)}. Even if the lesson above lists more words, do NOT teach "
-                 "any other new word today (no next number, no next color). Review words only briefly, one at a time. "
+            s = (f"THIS SESSION'S ONLY NEW WORD(S): {', '.join(new)}. This is the default plan for today: even if the lesson above "
+                 "lists more words, teach just these, one at a time. Review words only briefly, one at a time. "
                  "Each of your turns has at most 3 short pieces in total (e.g. 'Con giỏi quá! One! Đến lượt con!').")
         else:
-            s = ("There is NO new word in this session. Do not teach any new word: only play and gently review these words, "
+            s = ("There is NO new roadmap word in this session. Default plan: only play and gently review these words, "
                  f"one at a time: {', '.join(review) or 'none'}. Keep each turn to at most 3 short pieces.")
         if dropped:
             s += f" Do NOT go back to the word(s) the child just skipped: {', '.join(dropped)}."
-        return s
+        return s + " " + FLEXIBLE
 
     def _start_roadmap(self, d, L, learner, now, age):
         """Tien do = CON TRO TU (L['taught']), khong theo tuan lich: khoi dong lai hoc tiep, bam thu ngan khong tien/lui."""
@@ -446,6 +458,43 @@ class Curriculum:
                 "(short English sentences, see the mode limits): a tiny story, a choice game, a made-up chant, a touch-something game. "
                 f"Do NOT reuse these from last time: {avoid}. One request per turn, then wait. First, say in Vietnamese what we "
                 f"learn today (\"Hôm nay mình học {title.lower()} nhé\"), then teach the first word '{order[0]}' in English.", act)
+
+    @staticmethod
+    def _clean_words(words):
+        out = []
+        for w in words or []:
+            w = re.sub(r"\s+", " ", re.sub(r"[^a-z ]", "", str(w or "").lower())).strip()
+            if w and len(w) <= 20 and w not in out:
+                out.append(w)
+            if len(out) >= 3:
+                break
+        return out
+
+    def set_topic(self, nickname=None, device=None, topic="", words=None):
+        """Be/nguoi lon xin chu de khac: luu 1-3 tu vao L['extra'] (on 2 buoi sau), tra chi dan day tung tu mot.
+        Con tro lo trinh KHONG doi; khong luu hoi thoai."""
+        topic = re.sub(r"\s+", " ", re.sub(r"[^\w\s]", " ", str(topic or ""))).strip()[:40]
+        ws = self._clean_words(words)
+        if not topic or not ws:
+            return {"ok": False, "words": [], "instructions": ""}
+        with self.lock:
+            d = self._load()
+            p = self._prof(d, nickname, device)
+            if p is None:
+                return {"ok": False, "words": [], "instructions": ""}
+            L = p[0]
+            ex = [e for e in L.get("extra", []) if isinstance(e, dict) and e.get("word") not in ws]
+            for i, w in enumerate(ws):
+                ex.append({"word": w, "topic": topic, "rv": 0} if i == 0 else {"word": w, "rv": 0})
+            L["extra"] = ex[-30:]
+            age = self._age(L)
+            self._save(d)
+        ins = (f"[topic] The child (or an adult) asked for a new topic: '{topic}'. Pause the roadmap for the rest of this session "
+               f"and happily follow this topic instead. Words: {', '.join(ws)}. Teach them ONE AT A TIME (one at a time, never "
+               "two in one turn), through a short action, story or choice in Vietnamese with the single English word inside. "
+               "Keep everything child-safe. Do not call mark_word for these words. ")
+        ins += TODDLER_MODE if age <= 3 else OLDER_MODE
+        return {"ok": True, "words": ws, "instructions": ins}
 
     def anonymous_lesson(self):
         """Ket noi khong co biet danh: chon NGAU NHIEN 1 bai (khong ghi ho so). Tra (lesson_id, instructions)."""
@@ -552,6 +601,15 @@ def live_tools():
                         "properties": {"word": {"type": "STRING", "description": "English vocabulary word"},
                                        "correct": {"type": "BOOLEAN", "description": "true if said correctly"}},
                         "required": ["word", "correct"]}},
+        {"name": "change_topic",
+         "description": ("Call when the child OR an adult asks to learn or talk about a different topic (e.g. 'dạy con về hoa', "
+                         "'học về xe', 'hôm nay học con vật'). Choose 1-3 very simple English words for that topic. "
+                         "Do NOT call it for a short off-topic remark; just answer that naturally."),
+         "parameters": {"type": "OBJECT",
+                        "properties": {"topic": {"type": "STRING", "description": "the requested topic (Vietnamese or English)"},
+                                       "words": {"type": "ARRAY", "items": {"type": "STRING"},
+                                                 "description": "1-3 simple English words you choose for the topic, e.g. flower"}},
+                        "required": ["topic", "words"]}},
         {"name": "finish_lesson",
          "description": "Call at the end of the session to save progress and pick the next lesson.",
          "parameters": {"type": "OBJECT", "properties": {}}},

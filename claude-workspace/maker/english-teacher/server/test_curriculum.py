@@ -92,7 +92,8 @@ ok(cur.start(nick3)["allowed"] is False, "2 buoi du dai -> buoi thu 3 bi tu choi
 from curriculum import live_tools  # noqa: E402
 names = sorted(fd["name"] for fd in live_tools())
 # 2026-11-06: biet danh do CAU NOI tu nhan tu loi be ("ban <con vat>"), Gemini khong goi start_learner (tung tu goi truoc khi be noi)
-ok(names == ["finish_lesson", "mark_word"], f"khai bao tool Live chi mark_word + finish_lesson ({names})")
+# 2026-11-08 Tuan: khong go bo -> them change_topic (be/nguoi lon xin chu de khac, vd hoa); van KHONG co start_learner
+ok(names == ["change_topic", "finish_lesson", "mark_word"], f"khai bao tool Live: change_topic + finish_lesson + mark_word ({names})")
 from curriculum import find_nickname  # noqa: E402
 ok(find_nickname("Con là bạn Thỏ.") == "thỏ", "nhan 'Con la ban Tho' -> tho")
 ok(find_nickname("Cô ơi, con mèo tiếng Anh là gì?") is None, "KHONG nhan 'con meo' (tu vung, khong phai 'ban meo')")
