@@ -67,10 +67,16 @@ CONE_CLR_KEY = 0.3                                             # khe ngang yen n
 # ---- 2026-11-08 Tuan: 2 nut am luong VE LUNG (cum nut roi 'vol-pod' lap tu trong vo, giu bang 2 vit M3 bat tu ngoai lung).
 VOL_X, VOL_Z = float(os.environ.get("OWL_VX", 24.0)), float(os.environ.get("OWL_VZ", 103.0))           # tam nut: |x| (cua so >= 14,6: cach thanh khe bo mach x=12,8 toi 1,8 mm de tran khe co do - 22 thi tran khe bo cheo; hop bo mach x +-12,5), z (vach lung nghieng 21 do, tren 5 khe thoat nhiet z<=91)
 VOL_NECK_R, VOL_HOLE_R, VOL_FLANGE_R = 4.0, 4.5, 6.8           # nap nho: co O8, khe co O9,0, vanh O13,6 (< 14,00 de luon qua o; hon khe 2,3 mm/ben)
-POD_W, POD_CB, POD_CT, POD_D = 9.1, -9.6, 10.35, 22.0          # pod (he cuc bo a,c,u: a ngang, c doc (z), u sau tu mat ngoai): nua rong, mep duoi (HO), mep tren, day
+POD_W, POD_CB, POD_CT, POD_D = 9.6, -9.6, 10.35, 22.0          # pod (he cuc bo a,c,u: a ngang, c doc (z), u sau tu mat phang YF): nua rong, mep duoi (HO), mep tren, day
 POD_PLATE, POD_BAY, POD_CLOSE = 3.0, 15.8, 7.95                # tam ngoai day 3 (co O8 truot), kenh vai switch 15,8, dau kin cua kenh o c = +7,95
-POD_SK, POD_FLARE, POD_GAP, POD_RECESS = 3.3, 12.0, 0.3, 1.0   # gai tren 3,3; gai ben ngoai 12 (chua vit); khe 0,3; mat pod thap hon be mat lung 1,0 o tam nut
-POD_SCREW_A, POD_SCREW_C, POD_CB_D, POD_CB_FLOOR = 14.0, (-5.0, 5.5), 6.2, 3.2   # vit: a, hai c, hoc dau vit O6,2, day hoc cach be mat 3,2
+POD_GAP, POD_RECESS = 0.3, 0.5                                 # khe pod - cua so 0,3/ben; mat phang YF thap hon be mat lung 0,5 o tam nut (nap nhô 3,2)
+POD_DISH_R = 9.0                                               # lom dau nap O18,0 (dau nap O17,2): mat pod = be mat vo, lom xuong mat phang YF quanh nap
+# vit M2.5 tu ren bat TU TRONG vo ra (2026-11-08 Tuan: giau vit): 'tai' pod o phia tren (+c) la khoi duoi tran mai chu A (mat tren doc 45 do song song tran, khe 0,4) co 2 lo O2,8 + hoc dau O5,0;
+# lo moi 2,2 khoan thang vao khoi tran dac (thay tru roi: tru treo duoi tran khong in duoc khong support). POD_TF: khong con dung
+POD_TF, POD_STRIP = 3.0, (-18.8, -5.6, POD_CT - 0.5, 20.7)     # day vanh; dai vanh (a0, a1, c0, c1)
+POD_HOLES = ((-9.2, 12.3), (-15.2, 17.0))                      # (a, c) 2 lo vit (x = 24 + a: 14,8 va 8,8; z = 103 + c: tren hop bo z > 106,5)
+SCR_CLEAR, SCR_HEAD, SCR_PILOT, SCR_PILOT_DEPTH, SCR_LEN = 2.8, 5.0, 2.2, 6.2, 10.0   # lo thong 2,8, hoc dau O5,0, lo moi 2,2 (sau 6,2 trong tran vo dac), vit M2.5 x 10
+EAR_GAP, G_HEAD = 0.4, 4.0                                     # khe mat tai pod - tran mai (theo y); dau vit cach mat tai 4,0 (an ren = 10 - 4,4 = 5,6)
 TALK_FLANGE_R = 29.0                                           # nap nut dau: vanh trong O58 (lo vo O50,8 -> hon 3,6 mm/ben)
 TALK_ZB = 139.0                                                # mat duoi nap nut dau (z)
 TENT_XM, TENT_ZLO, TENT_ZHI = 48.0, 6.0, 124.0                 # khoang trong chinh: mai chu A (45 do), de khong support
@@ -375,24 +381,17 @@ def pau(poly, c0, c1, M): return extrude('pau', poly, c0, c1, M @ SW_AU)
 def pcu(poly, a0, a1, M): return extrude('pcu', poly, a0, a1, M @ SW_CU)
 def lcyl(a, c, u0, u1, r, M, seg=48): return cyl('lc', M @ Vector((a, c, u0)), M @ Vector((a, c, u1)), r, seg=seg)
 SHAFT_U = YF - 1.0                                                # day gieng: y = 1 (duoi mai/ khoang trong)
-G, FL, SK, W_, D_, CB_, CT_ = POD_GAP, POD_FLARE, POD_SK, POD_W, POD_D, POD_CB, POD_CT
-POD_SCREWS = [(POD_SCREW_A, c_) for c_ in POD_SCREW_C]
-SCREW_INFO = []
+G, W_, D_, CB_, CT_ = POD_GAP, POD_W, POD_D, POD_CB, POD_CT
+TENT_Y = lambda x: Y0 - 0.5 + (TENT_XM - abs(x)) / TENT_SL          # tran mai chu A (45 do) tai |x|
 SKIP = os.environ.get('OWL_SKIP', '')
+SCREW_INFO = []
 for sx in (-1, 1):
     M = MP(sx); Wn = W_ + G
-    if 'WIN' not in SKIP: diff(S, lbox((-Wn, CB_ - G, -12.0), (Wn, CT_ + G, SHAFT_U), M))                       # cua so cot (tuong dung): pod luon tu trong ra
-    if 'N2' not in SKIP: diff(S, pau([(W_ - 0.3, D_ - FL - 0.724), (W_ + FL + 0.6, D_ + 0.176), (W_ + FL + 0.6, SHAFT_U), (W_ - 0.3, SHAFT_U)], CB_ - G, CT_ + G, M))   # gai ben ngoai: tran doc 45 do + gieng dung
-    if 'N3' not in SKIP: diff(S, pcu([(CT_ - 0.3, D_ - SK - 0.724), (CT_ + SK + 0.6, D_ + 0.176), (CT_ + SK + 0.6, SHAFT_U), (CT_ - 0.3, SHAFT_U)], -Wn, Wn, M))      # gai tren
-    for (a_, c_) in POD_SCREWS:
+    if 'WIN' not in SKIP: diff(S, lbox((-Wn, CB_ - G, -14.0), (Wn, CT_ + G, SHAFT_U), M))                 # cua so cot (tuong dung): pod luon tu trong ra
+    for (a_, c_) in POD_HOLES:
         x_s, z_s = sx * (VOL_X + a_), VOL_Z + c_
-        y_s = -body_y(x_s, z_s); u_floor = YF - (y_s - POD_CB_FLOOR)
-        u_ramp = D_ - FL + (a_ - W_) - 0.424
-        SCREW_INFO.append(dict(x=x_s, z=z_s, wall_above_ramp=round(u_ramp - u_floor, 2), screw_len=round(D_ - u_floor, 1)))
-        if 'BORE' in SKIP: continue
-        diff(S, lcyl(a_, c_, u_ramp + 0.6, -8.0, M3_CLEAR_D / 2, M, 24))                  # lo vit O3,4 tu tran gai ra toi dau
-        if 'CB' in SKIP: continue
-        diff(S, lcyl(a_, c_, u_floor, YF - (y_s + 8.0), POD_CB_D / 2, M, 32))             # hoc dau vit chim
+        diff(S, cyl('pilot', (x_s, TENT_Y(x_s) - 1.5, z_s), (x_s, TENT_Y(x_s) + SCR_PILOT_DEPTH, z_s), SCR_PILOT / 2, seg=24))   # lo moi 2,2 khoan vao tran vo dac (khong thung ra ngoai)
+        SCREW_INFO.append(dict(x=round(x_s, 1), z=round(z_s, 1), wall_outside=round(-body_y(x_s, z_s) - (TENT_Y(x_s) + SCR_PILOT_DEPTH), 1)))
 # chot dinh vi o cac khoi dac (tai, canh, vanh nut): lo O2 sau 8 moi nua
 for (px, pz) in ((-43, 142), (43, 142), (-34, 130), (34, 130), (-28.7, 160), (28.7, 160)):
     diff(S, cyl('pin', (px, Y0 - PIN_HALF, pz), (px, Y0 + PIN_HALF, pz), PIN_D / 2, seg=16))
@@ -546,21 +545,25 @@ VCAPS_W = {sx: vol_cap_world(sx) for sx in (-1, 1)}
 # --- vol-pod (in MAT NGOAI XUONG, khong support): tam ngoai day 3 co kenh truot (co nap O8 truot tu mep HO duoi), kenh vai switch 15,8 (nap + than tren), mieng 45 do ->
 #     o switch 14,00 (press) + ranh V (fit-library catpaw/mx-socket) mo ra mat trong; gai 45 do ben ngoai (chua 2 hoc dai oc M3) + gai tren de ty vao tran vo.
 #     Lap tren ban: nap + switch truot vao kenh tu mep duoi (nap co chu thap), vo giu lai o cua so (nap khong truot ra duoc: dau nap tuy vao mep cua so).
+O_LOC = outer(); O_LOC.data.transform(MP(1).inverted())            # be mat ngoai vo trong he cuc bo cua pod
 def make_pod():
     L = Matrix.Identity(4); bw = POD_BAY / 2
-    pod = lbox((-W_, CB_, 0.0), (W_, CT_, D_), L)
-    union(pod, pau([(W_ - 0.2, D_ - FL - 0.2), (W_ + FL, D_), (W_ - 0.2, D_)], CB_, CT_, L))
-    union(pod, pcu([(CT_ - 0.2, D_ - SK - 0.2), (CT_ + SK, D_), (CT_ - 0.2, D_)], -W_, W_, L))
+    pod = lbox((-W_, CB_, -14.0), (W_, CT_, D_), L)
+    inter(pod, cp(O_LOC, 'oloc'))                                  # mat ngoai pod = be mat vo (cong theo vach lung)
+    ut = lambda a: YF - TENT_Y(VOL_X + a) + EAR_GAP                  # u cua mat tren tai pod tai a (song song tran mai, khe 0,4)
+    union(pod, pau([(POD_STRIP[0], D_), (POD_STRIP[1], D_), (POD_STRIP[1], ut(POD_STRIP[1])), (POD_STRIP[0], ut(POD_STRIP[0]))], POD_STRIP[2], POD_STRIP[3], L))   # tai giu vit (phia tren)
     cb = CB_ - 0.1
-    cuts = [lcyl(0.0, 0.0, -0.1, POD_PLATE + 0.05, VOL_HOLE_R, L), lbox((-VOL_HOLE_R, cb, -0.1), (VOL_HOLE_R, 0.0, POD_PLATE + 0.05), L),   # kenh co nap
-            lbox((-bw, cb, POD_PLATE), (bw, POD_CLOSE, VOL_RIM - 0.1), L),                                                              # kenh vai
+    cuts = [lcyl(0.0, 0.0, -14.0, POD_PLATE + 0.05, VOL_HOLE_R, L), lbox((-VOL_HOLE_R, cb, -14.0), (VOL_HOLE_R, 0.0, POD_PLATE + 0.05), L),   # kenh co nap (xuyen lop da)
+            lcyl(0.0, 0.0, -14.0, 0.0, POD_DISH_R, L, 64),                                                                                      # lom dau nap
+            pau([(-VOL_HOLE_R, POD_PLATE - 0.05), (VOL_HOLE_R, POD_PLATE - 0.05), (bw, POD_PLATE + bw - VOL_HOLE_R), (-bw, POD_PLATE + bw - VOL_HOLE_R)], cb, POD_CLOSE, L),   # yen non 45 do cho non nap
+            lbox((-bw, cb, POD_PLATE + bw - VOL_HOLE_R - 0.05), (bw, POD_CLOSE, VOL_RIM - 0.1), L),                                             # kenh vai
             pau([(-bw, VOL_RIM - 0.2), (bw, VOL_RIM - 0.2), (MX_HOLE / 2, VOL_RIM + 0.8), (-MX_HOLE / 2, VOL_RIM + 0.8)], cb, POD_CLOSE, L),   # vat 45 do ve 14,00
-            lbox((-MX_HOLE / 2, cb, VOL_RIM + 0.7), (MX_HOLE / 2, POD_CLOSE, D_ + 0.1), L)]                                             # o switch 14,00 (mo ra mat trong)
+            lbox((-MX_HOLE / 2, cb, VOL_RIM + 0.7), (MX_HOLE / 2, POD_CLOSE, D_ + 0.1), L)]                                                     # o switch 14,00 (mo ra mat trong)
     g0, g1, g2, gw = MX_GROOVE; hw = MX_HOLE / 2; gh = gw / 2
     cuts.append(pau([(-hw, VOL_RIM + g0), (-gh, VOL_RIM + g1), (-hw, VOL_RIM + g2), (hw, VOL_RIM + g2), (gh, VOL_RIM + g1), (hw, VOL_RIM + g0)], cb, POD_CLOSE, L))   # ranh V
-    for (a_, c_) in POD_SCREWS:
-        cuts.append(lcyl(a_, c_, D_ - NUT_DEPTH, D_ + 0.1, M3_NUT_S / math.sqrt(3), L, 6))                                           # hoc dai oc luc giac (mo ra mat trong)
-        cuts.append(lcyl(a_, c_, D_ - FL - 1.0, D_ - NUT_DEPTH + 0.1, M3_CLEAR_D / 2, L, 24))                                          # lo vit 3,4
+    for (a_, c_) in POD_HOLES:
+        cuts.append(lcyl(a_, c_, ut(a_) - 0.1, D_ + 0.1, SCR_CLEAR / 2, L, 24))                                                                # lo vit 2,8
+        cuts.append(lcyl(a_, c_, ut(a_) + G_HEAD, D_ + 0.1, SCR_HEAD / 2, L, 32))                                                              # hoc dau vit O5,0 (mat dau cach mat tai 4,0)
     for c_ in cuts:
         diff(pod, c_)
     return pod
@@ -628,9 +631,10 @@ export_obj(DIFFS[1], T_diff, OUT / "eye-diffuser.stl")
 T_ring = Mx(((1, 0, 0, 0), (0, -1, 0, 0), (0, 0, -1, 0), (0, 0, 0, 1))) @ EYES[1].inverted()      # mat truoc phang xuong ban
 export_obj(RINGS[1], T_ring, OUT / "eye-ring.stl")
 export_obj(PLATE, Mx(((1, 0, 0, 0), (0, -1, 0, 0), (0, 0, -1, FLOOR_CUT), (0, 0, 0, 1))), OUT / "base-plate.stl")   # lat: mat sat vo (rong hon) xuong ban -> mep vo thon dan len, khong treo
-export_obj(POD_LOCAL, Matrix.Identity(4), OUT / "vol-pod-up.stl")      # +x (vol_up): gai chua vit o +a
+T_pod = Mx(((-1, 0, 0, 0), (0, 1, 0, 0), (0, 0, -1, D_), (0, 0, 0, 1)))   # in MAT TRONG xuong ban (mat ngoai cong huong len), xoay 180 do quanh c
+export_obj(POD_LOCAL, T_pod, OUT / "vol-pod-up.stl")      # +x (vol_up)
 _pm = cp(POD_LOCAL, 'podmir'); place(_pm, Matrix.Diagonal((-1, 1, 1, 1)))
-export_obj(_pm, Matrix.Identity(4), OUT / "vol-pod-down.stl")          # -x (vol_down): guong
+export_obj(_pm, T_pod, OUT / "vol-pod-down.stl")          # -x (vol_down): guong
 export_obj(VCAPS[1], Matrix.Identity(4), OUT / "mx-cap-vol-up.stl")
 export_obj(VCAPS[-1], Matrix.Identity(4), OUT / "mx-cap-vol-down.stl")
 export_obj(BEZEL_LOCAL, Mx(((1, 0, 0, 0), (0, -1, 0, 0), (0, 0, -1, SPK_XF), (0, 0, 0, 1))), OUT / "speaker-bezel.stl")
@@ -648,6 +652,36 @@ ao.select_set(True); bpy.context.view_layer.objects.active = ao
 bpy.ops.wm.stl_export(filepath=str(OUT / "owl-assembled.stl"), export_selected_objects=True, global_scale=1.0, apply_modifiers=False)
 bpy.data.objects.remove(ao)
 
+# do that do lech mat ngoai pod so voi be mat vo (BVH raycast tu ngoai vao, doc vien cua so; mat vo lay cach vien 0,35 mm ra ngoai cua so) + do nho cua nap
+from mathutils.bvhtree import BVHTree
+def _bvh(o):
+    bm_ = bmesh.new(); bm_.from_mesh(o.data); t_ = BVHTree.FromBMesh(bm_); bm_.free(); return t_
+T_SHELL = _bvh(B)
+def _top(t_, x, z):
+    h = t_.ray_cast(Vector((x, 120.0, z)), Vector((0, -1, 0)))
+    return None if h[0] is None else h[0].y
+FLUSH_DEV, CAP_PROT = 0.0, 0.0
+for sx in (-1, 1):
+    T_POD = _bvh(PODS_W[sx]); n_ok = 0
+    for k in range(0, 41):
+        for (a_, c_) in ((-W_ + 0.02 + (2 * W_ - 0.04) * k / 40, CB_ + 0.02), (-W_ + 0.02 + (2 * W_ - 0.04) * k / 40, CT_ - 0.02),
+                         (-W_ + 0.02, CB_ + 0.02 + (CT_ - CB_ - 0.04) * k / 40), (W_ - 0.02, CB_ + 0.02 + (CT_ - CB_ - 0.04) * k / 40)):
+            x_, z_ = sx * (VOL_X + a_), VOL_Z + c_
+            yp = _top(T_POD, x_, z_)
+            dx_, dz_ = (0.0, 0.0)
+            if c_ <= CB_ + 0.05: dz_ = -(G + 0.05)
+            elif c_ >= CT_ - 0.05: dz_ = G + 0.05
+            elif a_ <= -W_ + 0.05: dx_ = -sx * (G + 0.05)
+            else: dx_ = sx * (G + 0.05)
+            ys = _top(T_SHELL, x_ + dx_, z_ + dz_)
+            if yp is None or ys is None:
+                continue
+            n_ok += 1; FLUSH_DEV = max(FLUSH_DEV, abs(yp - ys))
+    assert n_ok > 100, "raycast khong du mau"
+    yc = -body_y(sx * VOL_X, VOL_Z); CAP_PROT = max(CAP_PROT, YF + VOL_HEAD_H + REST_UP + 0.0 - yc)
+FLUSH_DEV, CAP_PROT = round(FLUSH_DEV, 2), round(CAP_PROT, 2)
+print("FLUSH_MAX_DEV %.2f CAP_PROT %.2f" % (FLUSH_DEV, CAP_PROT))
+
 params = dict(wall=WALL, speaker_pocket_d=SPEAKER_POCKET_D, grille_hole_d=GRILLE_HOLE_D, mic_hole_d=MIC_HOLE_D, m3_clear_d=M3_CLEAR_D,
               m3_nut_s=M3_NUT_S, button_cap_d=BUTTON_CAP_D, button_hole_d=BUTTON_HOLE_D, diffuser_t=DIFFUSER_T, vent_w=VENT_W,
               speakers=SPEAKERS, pcb_center=PCB_CENTER, pcb_box=list(PCB_BOX),
@@ -664,9 +698,10 @@ params = dict(wall=WALL, speaker_pocket_d=SPEAKER_POCKET_D, grille_hole_d=GRILLE
                       keys=[dict(name="talk", gpio=23, key="KEY4", axis="z", pos=[0, Y0, TALK_RIM], flange_r=TALK_FLANGE_R, hole_r=BUTTON_HOLE_D / 2, flange_over=round(TALK_FLANGE_R - BUTTON_HOLE_D / 2, 2)),
                             dict(name="vol_up", gpio=18, key="KEY5", axis="y", pos=[VOL_X, round(YF, 2), VOL_Z], flange_r=VOL_FLANGE_R, hole_r=VOL_HOLE_R, flange_over=round(VOL_FLANGE_R - VOL_HOLE_R, 2)),
                             dict(name="vol_down", gpio=5, key="KEY6", axis="y", pos=[-VOL_X, round(YF, 2), VOL_Z], flange_r=VOL_FLANGE_R, hole_r=VOL_HOLE_R, flange_over=round(VOL_FLANGE_R - VOL_HOLE_R, 2))]),
-              vol_pod=dict(parts=["vol-pod-up", "vol-pod-down"], face_y=round(YF, 2), center_x=VOL_X, center_z=VOL_Z, recess=POD_RECESS, depth=POD_D,
-                           window=dict(width=2 * (POD_W + POD_GAP), height=CT_ - CB_ + 2 * POD_GAP, gap=POD_GAP), flange_margin=dict(outer_x=POD_FLARE, top=POD_SK),
-                           screws=dict(size="M3", nut_s=M3_NUT_S, nut_depth=NUT_DEPTH, clear_d=M3_CLEAR_D, from_outside=True, per_pod=2, info=SCREW_INFO),
+              vol_pod=dict(parts=["vol-pod-up", "vol-pod-down"], face_y=round(YF, 2), center_x=VOL_X, center_z=VOL_Z, recess=POD_RECESS, depth=POD_D, flush_max_dev=FLUSH_DEV, cap_protrusion=CAP_PROT,
+                           window=dict(width=2 * (POD_W + POD_GAP), height=CT_ - CB_ + 2 * POD_GAP, gap=POD_GAP), flange_margin=dict(ear_c_top=POD_STRIP[3] - POD_CT, ear_a=[POD_STRIP[0], POD_STRIP[1]]),
+                           screws={"side": "inside", "size": "M2.5", "type": "tu ren, dau chim", "pilot_d": SCR_PILOT, "clear_d": SCR_CLEAR, "head_d": SCR_HEAD, "head_gap_to_ear": G_HEAD, "per_pod": 2,
+                                   "len": SCR_LEN, "engage": round(SCR_LEN - G_HEAD - EAR_GAP, 1), "pilot_depth": SCR_PILOT_DEPTH, "boss": "khoi tran mai dac (khong tru roi)", "info": SCREW_INFO},
                            channel=dict(neck_slot=2 * VOL_HOLE_R, bay=POD_BAY, plate=POD_PLATE, open_edge="bottom")))
 (OUT / "owl-params.json").write_text(json.dumps(params, indent=1), encoding="utf-8")
 

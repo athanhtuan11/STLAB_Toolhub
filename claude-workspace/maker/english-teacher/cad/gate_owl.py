@@ -209,6 +209,16 @@ else:
                 fails.append(f"nut {k.get('name')} ngoai vung lung |x| 8..40, z 60..130: pos={pos}")
             if 2 * float(k.get("flange_r", 99)) > 13.8:
                 fails.append(f"nap {k.get('name')}: vanh Ø{2 * float(k.get('flange_r', 99)):.1f} > 13,8 -> khong luon qua lo switch 14,00 tu trong")
+        # 2026-11-08 Tuan: "cong theo vo. ngoai lung neu giau vit duoc thi tot" -> vit M2.5 tu ren bat TU TRONG vao tru kin
+        # (fit-library mec1/tipflow m2.5-self-tap 2,2-2,4; mec1/m2.5-clearance 2,8 + hoc dau O5,0), mat pod cong theo vo (lech <= 0,6).
+        vp = p.get("vol_pod", {})
+        sc = vp.get("screws", {}) if isinstance(vp.get("screws"), dict) else {}
+        if sc.get("side") != "inside":
+            fails.append(f"vit giu pod phai bat TU TRONG (giau vit), vol_pod.screws.side={sc.get('side')}")
+        if not (2.2 <= float(sc.get("pilot_d", 0)) <= 2.4) or abs(float(sc.get("clear_d", 0)) - 2.8) > 0.01:
+            fails.append(f"vit M2.5 tu ren: lo moi 2,2-2,4, lo xuyen 2,8 (fit-library): {sc}")
+        if float(vp.get("flush_max_dev", 99)) > 0.6:
+            fails.append(f"mat ngoai pod phai cong theo vo (lech <= 0,6 mm): flush_max_dev={vp.get('flush_max_dev')}")
         a_, b_ = ([float(c) for c in k.get("pos", [0, 0, 0])] for k in vks)
         if ((a_[0] - b_[0]) ** 2 + (a_[2] - b_[2]) ** 2) ** 0.5 < 25:
             fails.append("2 nut am luong cach nhau < 25 mm (de bam nham)")

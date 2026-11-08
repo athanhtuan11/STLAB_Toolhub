@@ -132,7 +132,7 @@
     "axis": "y",
     "pos": [
      24.0,
-     48.09,
+     48.59,
      103.0
     ],
     "flange_r": 6.8,
@@ -146,7 +146,7 @@
     "axis": "y",
     "pos": [
      -24.0,
-     48.09,
+     48.59,
      103.0
     ],
     "flange_r": 6.8,
@@ -160,51 +160,58 @@
    "vol-pod-up",
    "vol-pod-down"
   ],
-  "face_y": 48.09,
+  "face_y": 48.59,
   "center_x": 24.0,
   "center_z": 103.0,
-  "recess": 1.0,
+  "recess": 0.5,
   "depth": 22.0,
+  "flush_max_dev": 0.21,
+  "cap_protrusion": 3.2,
   "window": {
-   "width": 18.8,
+   "width": 19.8,
    "height": 20.55,
    "gap": 0.3
   },
   "flange_margin": {
-   "outer_x": 12.0,
-   "top": 3.3
+   "ear_c_top": 10.35,
+   "ear_a": [
+    -18.8,
+    -5.6
+   ]
   },
   "screws": {
-   "size": "M3",
-   "nut_s": 5.8,
-   "nut_depth": 2.8,
-   "clear_d": 3.4,
-   "from_outside": true,
+   "side": "inside",
+   "size": "M2.5",
+   "type": "tu ren, dau chim",
+   "pilot_d": 2.2,
+   "clear_d": 2.8,
+   "head_d": 5.0,
+   "head_gap_to_ear": 4.0,
    "per_pod": 2,
+   "len": 10.0,
+   "engage": 5.6,
+   "pilot_depth": 6.2,
+   "boss": "khoi tran mai dac (khong tru roi)",
    "info": [
     {
-     "x": -38.0,
-     "z": 98.0,
-     "wall_above_ramp": 6.62,
-     "screw_len": 14.1
+     "x": -14.8,
+     "z": 115.3,
+     "wall_outside": 8.9
     },
     {
-     "x": -38.0,
-     "z": 108.5,
-     "wall_above_ramp": 3.78,
-     "screw_len": 11.3
+     "x": -8.8,
+     "z": 120.0,
+     "wall_outside": 2.2
     },
     {
-     "x": 38.0,
-     "z": 98.0,
-     "wall_above_ramp": 6.62,
-     "screw_len": 14.1
+     "x": 14.8,
+     "z": 115.3,
+     "wall_outside": 8.9
     },
     {
-     "x": 38.0,
-     "z": 108.5,
-     "wall_above_ramp": 3.78,
-     "screw_len": 11.3
+     "x": 8.8,
+     "z": 120.0,
+     "wall_outside": 2.2
     }
    ]
   },
