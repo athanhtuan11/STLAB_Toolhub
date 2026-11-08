@@ -43,3 +43,44 @@ Hiện đang làm bước 1: biệt danh con vật, tiến độ bài học lưu
 1. **Nhà cung cấp AI cho bé thật:** Azure OpenAI, OpenAI hay LLM tại máy.
 2. **Có làm thẻ NFC không:** nếu có, kiểm địa chỉ I2C và chân trống trước khi mua linh kiện.
 3. **Có thử nhận diện giọng không:** nếu có, cần mẫu đơn đồng ý của phụ huynh (TODO: soạn mẫu).
+
+## Cập nhật 2026-11-08: hồ sơ từng bé + ESP32-CAM
+
+### Đã chạy
+
+- **Hồ sơ theo biệt danh:** 19 con vật + "kay" cho bé Kay (con Tuan, Tuan đồng ý).
+- **Nhớ biệt danh theo mã thiết bị** (`server/data/devices.json`): thiết bị đã quen thì chào thẳng tên.
+- **Nhận giọng tại máy** (sherpa-onnx CAM++, https://github.com/k2-fsa/sherpa-onnx): chỉ lưu đặc trưng giọng, có lệnh xóa, cần `consent.json`.
+- **Lộ trình tuần theo độ tuổi:** chỉnh bằng `--set-age`.
+
+### So sánh cách nhận ra bé
+
+| Cách làm | Ưu | Nhược | Pháp lý | Công sức |
+|---|---|---|---|---|
+| **Biệt danh lời** (đã làm) | Không cần thiết bị thêm; làm được ngay | Trùng hoặc nhầm tên | Không thuộc dữ liệu sinh trắc học | Rất thấp |
+| **Nhớ theo thiết bị** (đã làm) | Thiết bị quen thì chào thẳng tên | Gắn với thiết bị, không gắn với bé (TODO: kiểm khi nhiều bé dùng chung) | Không thuộc dữ liệu sinh trắc học | Thấp (đã chạy) |
+| **Giọng tại máy** (đã chạy) | Tự nhiên, không cần cầm thẻ | Chưa đo với trẻ 2–5 tuổi; nhạy với ồn và micro | Dữ liệu sinh trắc học; cần đồng ý cha mẹ và xóa được | Đã làm; cần đo tại lớp |
+| **Thẻ NFC / thẻ hình con vật** | Ít nhầm; không dùng giọng nói | Cần thẻ và đầu đọc | Không thuộc dữ liệu sinh trắc học | Trung bình (xem bảng phương án trên) |
+| **Camera nhận diện mặt trên bo** (ESP-WHO, https://github.com/espressif/esp-who) | Chạy ngay trên ESP32-S3, có ví dụ sẵn | Repo không công bố độ chính xác hay số người tối đa. ESP-DL đo bước nhận diện ~287 ms (8-bit) / ~554 ms (16-bit) trên S3 (https://docs.espressif.com/projects/esp-dl/en/release-v1.1/esp32s3/performance.html). OV3660 + bộ nhớ: phải thử trên bo | Ảnh mặt là dữ liệu sinh trắc học nhạy cảm; cần đồng ý cha mẹ | TODO: 1 buổi dò khả thi |
+| **Camera gửi ảnh về máy chủ nhận diện CPU** | Có nhiều model chạy CPU để chọn | OpenCV YuNet + SFace (Apache-2.0, https://github.com/opencv/opencv_zoo) cần kiểm license từng model. InsightFace: trọng số pretrained chỉ cho nghiên cứu phi thương mại (https://github.com/deepinsight/insightface/blob/master/server/LICENSING.md). face_recognition/dlib: 99,38% là trên LFW người lớn | Như trên; ảnh rời bo gửi sang máy chủ | Cao hơn |
+
+**Mặt trẻ nhỏ:** nghiên cứu YFA (https://arxiv.org/abs/2204.01760) đo MagFace TAR 98,3% khi cách nhau 6 tháng và 94,9% khi cách 36 tháng (FAR 0,1%). Nhóm 3–5 tuổi giảm rõ khi khoảng cách thời gian tăng. Đây không phải cam kết cho camera lớp học, nên phải cập nhật ảnh mẫu định kỳ.
+
+**Lợi ích thêm của camera:** cô "thấy" bé làm động tác. Hiện cô không có camera nên không khen được việc bé làm. Nhưng đây là ghi hình trẻ, rủi ro riêng tư cao hơn hẳn giọng nói.
+
+### Pháp lý camera
+
+- Ảnh mặt dùng để nhận diện là dữ liệu sinh trắc học nhạy cảm: NĐ 13/2023 và Luật 91/2025/QH15, hiệu lực 01/01/2026 (https://congbao.chinhphu.vn/van-ban/luat-so-91-2025-qh15-45578/57730.htm).
+- Trẻ em cần: đồng ý của cha mẹ, thông báo mục đích, giới hạn người truy cập, xóa khi rút đồng ý.
+- Camera trong lớp: chưa xác minh hướng dẫn chính thức. TODO.
+
+### Khuyến nghị
+
+1. **Nhà chỉ có bé Kay:** hiện tại đủ (nhớ theo thiết bị + giọng).
+2. **Lớp nhiều bé:** thẻ NFC/thẻ hình con vật là cách CHÍNH. Giọng làm xác nhận phụ. Hỏi lại khi không chắc.
+3. **Camera nhận diện mặt:** chỉ thử sau, khi làm bản ESP32-S3 (có thể tích hợp camera + AEC). Cần đồng ý phụ huynh bằng văn bản, xử lý tại máy, không lưu ảnh, chỉ lưu đặc trưng. Ưu tiên dùng camera để "thấy động tác" hơn là định danh.
+
+### Việc Tuan cần quyết
+
+1. Có làm thẻ NFC/thẻ hình cho lớp không.
+2. Có muốn thử ESP-WHO trên bo ESP32-S3-CAM (1 buổi dò khả thi) không.
