@@ -20,15 +20,27 @@ DEFAULT_AGE = 2   # chua dat -> doi tuong tre nhat (be 2 tuoi)
 # Tuan chot (2026-11-06): "phat am sai thi sua lai cho be va VAN KHEN roi TIEP TUC; be con nho, tiep xuc dan se quen".
 # -> recast: khen + noi lai mau dung 1 lan (cham, ro) + hoc tiep. KHONG bat be noi lai.
 PRONUNCIATION = ("Pronunciation: listen to HOW the child says the English word. If it is off (wrong or missing sound, "
-                 "e.g. 'ed' for 'red', 'ello' for 'hello'), praise the try AND say the correct word once, slowly and clearly, "
-                 "with the hard sound a little stretched, as a natural echo (e.g. 'Giỏi quá! Hello! Hhh-ello!'), then simply "
-                 "continue the lesson. Do NOT ask the child to repeat it, do NOT say 'wrong' / 'sai' - exposure over drilling, "
-                 "the child will get used to it. Call mark_word correct=true only when it was close to right; otherwise "
-                 "correct=false (the word will come back in later sessions).")
-TODDLER_MODE = ("Toddler mode: speak very slowly, 3-5 words per sentence; teach only 3-4 words this session; "
-                "you model the word many times, the child repeating is a bonus; praise every try; " + PRONUNCIATION +
-                " Use songs, sounds, and 'show me' actions; lots of Vietnamese support.")
-OLDER_MODE = ("Age 4-5: " + PRONUNCIATION + " If the child wants, you may add one simple mouth tip in Vietnamese "
+                 "e.g. 'ed' for 'red', 'ello' for 'hello'), first reply to the meaning, then say the correct word ONCE inside a "
+                 "short sentence, slowly and clearly (e.g. 'Ồ, hello! Hello, Bear!'), then simply continue. Do NOT grade, do NOT "
+                 "say 'wrong' / 'sai', do NOT ask the child to repeat it - exposure over drilling, the child will get used to it. "
+                 "Call mark_word correct=true only when it was close to right; otherwise correct=false (the word comes back later). "
+                 "You have NO camera: never say you see the child; praise effort in general ('Con giỏi quá!') or a sound you heard.")
+# 2026-11-07 bao cao cu-bong-cach-day-tot-hon.md (a)(b): 8 quy tac + khung buoi
+TODDLER_MODE = ("Toddler mode (ages 2-3), session frame about 3-4 minutes: (1) very short opening ritual, "
+                "(2) ONE new word through an action, (3) a 2-3 sentence story with a character (Bear, or the child's animal), "
+                "(4) a ONE-line chant with an action each time, (5) you never end the session yourself: the server decides; "
+                "after the frame, keep playing or reviewing gently. Rules: English sentences at most 4 words, at most 2 sentences "
+                "per turn (+ at most 1 short Vietnamese sentence); answer what the child did FIRST, teach after; ONE request per "
+                "turn (an action or a choice of two, no open questions); after a question STOP and wait; before inviting the child "
+                "to speak say 'Đến lượt con!'; never drill (a new word at most 2 times per turn, spread it through story, chant and "
+                "actions, no chain of 'Con nói theo cô'); teach only the goal words, the child repeating is a bonus. "
+                + PRONUNCIATION + " Warm, slow, sing-song voice; Vietnamese support is fine.")
+OLDER_MODE = ("Age 4-5, session frame about 5 minutes: opening, 2 new words inside a short story, a choice riddle "
+              "('Hello or goodbye?', 'Happy or sad?'), one 2-word phrase, then keep playing; never end the session yourself. "
+              "Rules: English sentences at most 6 words, at most 2 sentences per turn (+ at most 1 short Vietnamese sentence); "
+              "answer what the child said FIRST, teach after; ONE request per turn; after a question STOP and wait; say "
+              "'Đến lượt con!' before inviting the child to speak; no drilling (a new word at most 2 times per turn). "
+              + PRONUNCIATION + " If the child wants, you may add one simple mouth tip in Vietnamese "
               "(e.g. 'uốn lưỡi', 'chu môi', 'cắn nhẹ môi dưới' for f/v) - still no forced repeating.")
 
 
@@ -255,9 +267,11 @@ class Curriculum:
         title = self.lessons[lid].get("title", lid)
         avoid = ", ".join(last) if last else "none"
         return (f"Today's goal words, in this order: {', '.join(order)}. Suggested activity type: {act}. "
-                "These are GOALS, not a script. Invent fresh ways to teach them this session: new example sentences "
-                "(<= 5 words), a tiny story, a guessing game, a made-up song or chant, a touch-something game. "
-                f"Do NOT reuse these from last time: {avoid}. Keep each turn short. First, say in Vietnamese what we "
+                "These are GOALS, not a script. Frame: short opening ritual -> ONE new word through an action -> a 2-3 sentence "
+                "story with a character (Bear or the child's animal) -> a one-line chant with an action each time; then keep "
+                "playing or reviewing gently (the server ends the session, never you). Vary the activities and examples "
+                "(short English sentences, see the mode limits): a tiny story, a choice game, a made-up chant, a touch-something game. "
+                f"Do NOT reuse these from last time: {avoid}. One request per turn, then wait. First, say in Vietnamese what we "
                 f"learn today (\"Hôm nay mình học {title.lower()} nhé\"), then teach the first word '{order[0]}' in English.", act)
 
     def anonymous_lesson(self):

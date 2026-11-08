@@ -118,8 +118,9 @@ CURRICULUM_PROMPT = (
     "Then wait. The system will send a [lesson] message with the lesson to follow. Until then, do not start a lesson "
     "and do not call tools. After a [lesson] message: treat it as goals and teach in your own fresh way; after the child repeats a vocabulary word call "
     "mark_word; when the lesson goals are done call finish_lesson, then keep playing and reviewing words in a fun way. NEVER say goodbye or end the session on your own - only when you receive an [end] message. Teaching the WORD 'goodbye' is fine. Never ask for real names. "
-    "Listen carefully. If you are not sure what the child said, or the answer does not fit, do NOT guess: "
-    "kindly ask again in Vietnamese ('Con nói lại cho cô nghe nhé?'), at most twice, then gently give the answer and move on."
+    "Follow the 8 TEACHING RULES at the top (short sentences, answer first, one request, wait, 'Đến lượt con!', no drilling, "
+    "never grade, no camera). If you are not sure what the child said, do NOT guess and do NOT ask them to repeat: say "
+    "'Cô chưa nghe rõ, con vẫy cho cô nhé!' and move on with an action."
 )
 LANG_LOCK = (
     "The child is a 2-5 year old Vietnamese child. They speak ONLY Vietnamese or a few English words, often mispronounced. "
@@ -133,8 +134,8 @@ LANG_LOCK = (
     "'ơi' are answers, not noise: respond to them (e.g. continue the lesson). If you truly cannot tell what was said, "
     "guess the most likely simple meaning from the lesson context first; ask again only if it matters.\n\n")
 LIMIT_PROMPT = (
-    "\n\nRepeat limits: ask the child to repeat the SAME word at most 2 times in total; after that say a warm "
-    "'Con giỏi lắm!' and move to a different word. Say 'nói lại nhé' at most once per turn. "
+    "\n\nNo drilling: never chain 'Con nói theo cô' turns; say a new word at most 2 times per turn and spread it through "
+    "story, chant and actions; never demand the child to say a word again. Keep every turn to at most 2 short sentences. "
     "If the child or an adult says to speak louder/softer (to lên, nói lớn lên, nhỏ lại), call set_volume "
     "(or volume_change with +20 / -20 if you do not know the level).")
 PROMPT = LANG_LOCK + load_prompt() + CURRICULUM_PROMPT + LIMIT_PROMPT
@@ -460,6 +461,8 @@ class Session:
         self.mcp_wait = {}                 # id -> Future (phan hoi MCP cua thiet bi)
         self.prefilled = False             # biet danh lay tu bo nho thiet bi (be co the doi bang 'ban <khac>')
         self.nick_log = None               # (biet danh, ms sau het tieng be) cho log do tre
+        self.m_replies = []                # loi co theo luot (chi de dem chi so, khong ghi ra log)
+        self.m_silence = 0                 # so lan nhac be im
         self.ending = False                # be bam KEY4 xin ket thuc (abort luc co khong noi)
 
     async def handle_tool_call(self, tc):
@@ -599,14 +602,15 @@ class Session:
             return
         self.silent_n += 1
         n = self.silent_n
+        self.m_silence += 1
         log(f"[LIVE-T] nhac be (lan {n})")
         if n <= 2:
             await self.send_lesson("[silence] The child has not answered. Gently encourage in Vietnamese and make it easier: "
-                                   "repeat the question more simply, or say the answer and ask the child to repeat it "
-                                   "(e.g. 'Con nói theo cô nhé: red!') ONLY if you have not asked for that word twice already. "
-                                   "One or two short sentences.")
+                                   "show an action once with ONE short sentence (English at most 4 words) and wait; "
+                                   "do not ask a second question and do not ask the child to repeat. "
+                                   "At most 2 short sentences. You have no camera: do not say you see the child.")
         elif n == 3:
-            await self.send_lesson("[silence] Still no answer. Move on to the next word kindly, or sing a short song.")
+            await self.send_lesson("[silence] Still no answer. Do NOT ask again. Say 'Mình vẫy nào!' and move on to a one-line chant with an action that needs no words.")
         elif n == 4:
             await self.send_lesson("[silence] The child is quiet. Say ONE short warm sentence in Vietnamese that you are still "
                                    "here and they can talk to you anytime (e.g. 'Cô vẫn ở đây, khi nào con muốn chơi tiếp thì "
@@ -659,9 +663,22 @@ class Session:
     def log_turn(self):
         if self.user_txt.strip():
             self.child_turns = getattr(self, "child_turns", 0) + 1   # dem luot be noi (tinh buoi hoc)
+        if self.reply_txt.strip():
+            self.m_replies.append(self.reply_txt.strip())
         if self.first_ms is not None:
             log(f"[LIVE-T] first_audio={self.first_ms}ms user='{self.user_txt.strip()}' reply='{self.reply_txt.strip()}'")
         self.first_ms, self.user_txt, self.reply_txt, self.t_user_end = None, "", "", None
+
+    def metric_line(self):
+        """Chi so buoi hoc (1 dong, chi la so, khong chu hoi thoai): luot be, luot co, tu TB moi cau co, cau dai nhat, so lan nhac im."""
+        if self.reply_txt.strip():
+            self.m_replies.append(self.reply_txt.strip())
+            self.reply_txt = ""
+        lens = [len(s.split()) for r in self.m_replies for ln in r.splitlines()
+                for s in re.split(r"[.!?\u2026]+", ln) if s.strip()]
+        avg = sum(lens) / len(lens) if lens else 0.0
+        return (f"[LIVE-METRIC] luot_be={self.child_turns} luot_co={len(self.m_replies)} tu_tb_cau_co={avg:.1f} "
+                f"cau_dai_nhat={max(lens, default=0)} im_lang_nhac={self.m_silence}")
 
     def push_pcm(self, pcm):
         self.pcm_buf += pcm
@@ -990,7 +1007,7 @@ class Session:
         i = random.choice([k for k in range(len(styles)) if k != last])
         SESSION_START_LAST[key] = i
         log(f"[LIVE-T] mo dau kieu {i}")
-        return ("[session start] " + styles[i] + " Keep the opening to 1-3 short sentences, in Vietnamese. Then ask which "
+        return ("[session start] " + styles[i] + " Keep the opening to 1-2 short sentences, in Vietnamese. Then ask which "
                 "animal friend is learning today, using this fresh wording: " + self.ask_text() + " Vary your wording every session; "
                 "never reuse the exact sentences from earlier sessions.")
 
@@ -1047,6 +1064,11 @@ async def ws_handler(ws, pool):
         except Exception:
             pass
         log("thiet bi ngat")
+        try:
+            if ses is not None:
+                log(ses.metric_line())
+        except Exception as e:
+            log(f"metric loi {type(e).__name__}")
         pool.touch()
         # 2026-11-07: chi tinh buoi khi du dai (>= 2 ph) hoac be noi >= 3 luot (curriculum.end_session)
         nick = getattr(ses, "nick", None) if ses is not None else None
