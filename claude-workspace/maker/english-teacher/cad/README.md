@@ -47,15 +47,16 @@ Hệ lắp ráp: mm, +Z lên, mặt trước −Y; mặt ráp hai nửa là mặ
 ## Kích thước part (đã đặt hướng in, mm)
 | Part | X × Y × Z | Hướng in | Ghi chú |
 |---|---|---|---|
-| shell-front | 134,4 × 168,7 × 56,1 | mặt ráp xuống | mơ; 128 g, 4 h 23 |
-| shell-back | 134,7 × 168,7 × 56,5 | mặt ráp xuống | mơ; 152 g, 4 h 55 |
+| shell-front | 134,4 × 168,7 × 56,1 | mặt ráp xuống | mơ; 126,5 g, 4 h 11 |
+| shell-back | 134,7 × 168,7 × 56,5 | mặt ráp xuống | mơ; 155,7 g + 2 pod, 5 h 11 (cả bàn C) |
 | belly | 87,5 × 87,5 × 16,5 | mặt trước xuống | kem |
 | speaker-bezel (×2) | 86 × 86 × 15,0 | mặt lưới xuống | mơ |
 | speaker-ring (×2) | 63,3 × 63,3 × 7,7 | đáy vòng xuống, ống tay hướng lên | mơ (nằm trong, không lộ) |
 | base-plate | 101,8 × 86,4 × 4,0 | **lật**: mặt sát vỏ (rộng hơn) xuống, lõm Ø9 hướng lên | kem hoặc mơ |
 | beak | 22 × 22 × 16,5 | gờ xuống | bơ |
 | button-cap | 58 × 58 × 26,8 | mặt trên xuống (vành vát 45° ở trên) | bơ |
-| mx-cap-vol-up / -down | 17,2 × 17,2 × 11,5 | đầu Ø17,2 xuống (dấu + / − lõm ở mặt đầu), lỗ chữ thập hướng lên | bơ |
+| mx-cap-vol-up / -down | 17,2 × 17,2 × 11,5 | đầu Ø17,2 xuống (dấu + / − lõm ở mặt đầu), lỗ chữ thập hướng lên | bơ (vành Ø13,6, côn 45°) |
+| **vol-pod-up / -down** (2026-11-08) | 30,2 × 23,2 × 22,0 | **mặt ngoài xuống** (tấm 3 mm có rãnh cổ nắp), lỗ switch + 2 hốc đai ốc hướng lên | mơ (cùng vỏ sau); down = gương của up |
 | eye-diffuser (×2) | 40 × 40 × 3,8 | cửa sổ xuống | PETG trắng tự nhiên |
 | eye-ring (×2) | 54 × 54 × 9,6 | **mặt trước phẳng xuống**, mặt lõm ôm vỏ hướng lên | kem (không support) |
 
@@ -67,14 +68,21 @@ Sửa hình học (giữ ngoại hình + các khe lắp loa / ngàm xoay / ron /
 3. **Trụ vít** ×4: thêm khối xuống mặt ráp (hình bia mộ) – không còn trụ tròn treo; hốc đai ốc vẫn thả từ trên vào.
 4. Ống mắt: vành đầu ống 2,3 mm, gờ tựa kính 2,4 mm (lỗ mắt Ø35,8), giếng Ø40,6 xiên 34° cho kính lắp từ trong; hốc vành mỏ: vành trần 2,2 mm; **lỗ nút đầu** dạng giọt nước (chóp 45°, lỗ ngang không treo; chóp lộ thành rãnh nhọn nhỏ ở mép lỗ trước/sau đầu).
 5. Đế `base-plate`: in lật. Vòng mắt: mặt trước phẳng. Nắp nút đầu: vành vát 45°.
-6. Chốt định vị Ø2 dời (±56, 92) → (±34, 130) (chỗ cũ trùng cụm nút âm lượng).
+6. Chốt định vị Ø2 dời (±56, 92) → (±34, 130) (chỗ cũ trùng cụm nút âm lượng; giữ nguyên chỗ mới).
+7. 2026-11-08 (sau): bỏ đệm + lỗ nút âm lượng hai bên đầu (commit 25accf3); nút âm lượng về **lưng** bằng cụm rời `vol-pod` (mục dưới). Cắt lớp lại: A 171 ph / 60,6 g, B 251 ph / 126,5 g, C 311 ph / 155,7 g, D 96 ph / 48,8 g, E 50 ph / 26,9 g, F 8 ph / 3,4 g – **tổng 14 h 51, 421,9 g, 6 bàn PASS, không support**.
 Lưu ý: hai nửa vỏ có khối đặc dày (mái chữ A) – hộp bo vẫn lọt, nhưng **dây loa / LED phải đi qua đường hầm loa + giếng mắt** (chưa vẽ rãnh đi dây riêng – TODO nếu cần). Công cụ kiểm nhanh: `tools/robotics-cad/scripts/printability.py out`; build nhanh bỏ ảnh: đặt biến môi trường `OWL_FAST=1`.
 
 ## 3 nút MX (2026-11-08, ý tưởng clicker – thay công tắc 6 × 6)
 Số lắp ghép **lấy từ fit-library** (`tools/model-study/fit-library/fits.json`): `catpaw/mx-socket` (lỗ vuông 14,00 press, sâu 8,58 từ miệng, rãnh V 45°: 1,94 → 3,44 dưới miệng, sâu nhất 2,69, rộng 15,44) và `catpaw/mx-keycap-cross` (lỗ chữ thập 4,19 × 1,25). Ghi vào `out/owl-params.json` mục `mx`; file lắp ráp: `out/asm/mx-switch-<talk|vol_up|vol_down>.stl` (khối giả switch), `mx-cap-vol-up/-down.stl`, `button-cap.stl`.
 - **Lỗ switch xoay 45° quanh trục** (hình thoi) – như mẫu catpaw – nên trần lỗ là mái 45° (in không support). Lỗ nằm **trên đường ráp**: mỗi nửa vỏ giữ nửa lỗ → **kẹp switch + nắp khi đóng vỏ** (lắp từ trong trước khi đóng; bé < 3 tuổi không rút nắp ra từ ngoài được).
 - **talk** (KEY4, GPIO23): dưới nắp nút đầu, trục z, miệng lỗ z = 133,6. Nắp `button-cap`: vành Ø58 vát 45° tì vào yên côn của vỏ (lỗ vỏ Ø50,8, nắp Ø50, vành hơn lỗ **3,6 mm/bên**), mặt dưới có lỗ chữ thập 4,19 × 1,25 sâu 3,6 cắm vào chân MX.
-- **vol_up** (KEY5, GPIO18) ở +x và **vol_down** (KEY6, GPIO5) ở −x: 2 nắp nhỏ `mx-cap-vol-up/-down.stl` (đầu Ø17,2 + dấu + / − **lõm** 0,8 mm, cổ Ø8 qua lỗ vỏ Ø9, vành Ø14,4 vát 45° tì yên côn: hơn lỗ **2,7 mm/bên**) – đặt ở **hai bên đầu** (z = 117, đệm Ø20 nhô ≤ 3 mm), **không ở lưng** như ý ban đầu: lỗ trục y ở lưng khi in mặt ráp xuống có trần kín và không có đường lắp switch + nắp từ trong; trên đường ráp thì lắp được. Khối đệm đặc |x| 38–55,6 quanh nút.
+- **vol_up** (KEY5, GPIO18) ở +x và **vol_down** (KEY6, GPIO5) ở −x – **ở LƯNG** (Tuan 2026-11-08, bản 25accf3 tự ý đưa lên hai bên đầu, đã bỏ). Mỗi nút là **cụm rời `vol-pod-up/-down`** (2 pod giống nhau, down = gương) lắp **từ trong vỏ** qua cửa sổ ở lưng, giữ bằng **2 vít M3 mỗi pod bắt từ ngoài lưng**:
+  - **Vị trí:** tâm x = ±24, **z = 103**, trục +y. Lý do z = 103: vách lưng ở đó nghiêng ~23° so với phương thẳng đứng (≤ 25°); cửa sổ (z 93,1 → 113,7) nằm trên 5 khe thoát nhiệt (z ≤ 91) và dưới tai/nút đầu; chốt định vị (±34, 130) không vướng. **|x| = 24, không phải 16 như spec** vì hộp bo 25 × 82 × 73 (x ±12,5, y tới 41,4, z tới 106,5) chạm switch ở x = 16; 24 còn giúp cửa sổ cách thành khe bo (x = 12,8) tới 1,8 mm – ở x = 22 (cách 0,2 mm) máy cắt lớp báo "floating cantilever" ở trần khe bo. 2 tâm nút cách nhau 48 mm.
+  - **Nắp** `mx-cap-vol-up/-down`: đầu Ø17,2 + dấu +/− lõm, cổ Ø8, **vành Ø13,6** (côn 45°, hơn khe cổ Ø9,0 **2,3 mm/bên**, < 14,00 nên không cần luồn qua lỗ ép). Nắp nhô ra ngoài lưng 2,7 mm ở tâm (mặt pod thấp hơn mặt lưng 1,0 mm).
+  - **Pod** (in mặt ngoài xuống, 22 mm sâu): tấm ngoài dày 3 mm có **rãnh cổ nắp 9,0** hở về mép dưới; kênh vai switch rộng 15,8 (nắp + thân trên 15,6); vát 45° → ô switch **14,00 (press)** + rãnh V catpaw, mở ra mặt trong (chân switch quay vào trong để hàn). Switch **không xoay 45°** như nút đầu (ở pod trục dựng đứng khi in, xoay không có lợi). Vì thân trên 15,6 > 14,00 nên switch + nắp **trượt vào từ mép dưới của pod** (nắp có cổ trượt trong rãnh); khi pod vào vỏ, thành dưới cửa sổ cao hơn mặt pod (vách lưng dốc xuống phía trên) chặn **đầu nắp** → nắp + switch không trượt ra, nắp không rút ra từ ngoài (vành sau tấm 3 mm).
+  - **Giữ pod:** gai **45° bên ngoài** (nhô 12 mm, chứa 2 hốc đai ốc lục giác 5,8 sâu 2,8 + lỗ vít Ø3,4 ở a = 14, c = −5 và +5,5) và **gai trên** (3,3 mm) tì vào trần dốc 45° trong vỏ (in không support); **không có gai ở phía trong (bo mạch) và phía dưới (miệng kênh)**: gai phía bo sẽ chạm hộp bo, gai phía dưới chặn miệng kênh trượt switch. **Đai ốc nằm trong pod** (hốc mở ra mặt trong, thả từ trong vào), **vít M3 × 16 bắt từ ngoài lưng**, đầu vít chìm trong hốc Ø6,2 ở lưng (spec cho phép phương án này khi hốc đai ốc ở vỏ không in được: lực vít kéo đai ốc về phía ngoài nên hốc đai ốc ở vỏ phải mở ra phía ngoài). Lực ấn nút đi qua pod → đầu vít tì vào đáy hốc (đáy dày ≥ 4,4 mm trên trần gai, `owl-params.json` mục `vol_pod.screws.info`); chiều dài vít cần 11,9 – 14,7 mm → dùng M3 × 16 (đầu vít 5,5 – 5,7, TODO đo vít thật).
+  - **Lắp:** (1) cắm nắp vào chân chữ thập switch (2) trượt cặp nắp + switch vào kênh pod từ mép dưới (ô 14,00 ép chặt) (3) hàn dây song song KEY5 / KEY6 trên bo vào chân switch – **rút USB trước, mỏ hàn nóng, điện 3,3 V** (4) thả đai ốc M3 vào 2 hốc (5) đặt pod từ trong vào cửa sổ ở lưng: nắp ra ngoài (6) vặn 2 vít từ ngoài lưng. Xem ảnh `out/vol-pod.png`, `out/owl-back.png`.
+  - **Giả định / TODO:** chưa in thử lực press; mặt pod phẳng nên mép ngoài (x lớn) nhô ~2,7 mm khỏi mặt lưng cong, còn phía bo thì chìm ~3 mm: xem `owl-back.png`; nếu xấu thì cân nhắc đổi `POD_RECESS`.
 - Nắp **không chạm vỏ ở vị trí nghỉ** (khe 0,1 ở yên côn, nâng 0,2 mm lên phía trên); gate kiểm.
 - **Giả định (TODO đo switch thật):** thân switch trên mặt 6,6 mm (15,6 × 15,6 cao 3,0 + chân chữ thập cao 3,6), thân dưới 5,0, chân 3,3; hành trình MX ~ 4,0 mm: nắp chỉ chạy **~2,4 mm** (chạm thân switch) – MX bật ở ~2,0 mm nên đủ; chân chữ thập cắm vào nắp 1,2 mm lúc nghỉ. Chưa in thử, chưa kiểm lực ép lỗ 14,00 (press) với PETG.
 - **Dây:** hàn 2 chân mỗi switch **song song** nút KEY4 / KEY5 / KEY6 trên bo A1S (GPIO23 / GPIO18 / GPIO5 xuống GND); dây xuống khoang qua cửa sổ đáy lỗ (thoi 9 mm). An toàn: rút USB trước khi hàn; điện 3,3 V (không có điện áp cao); mỏ hàn nóng; dây đủ dài để mở 2 nửa vỏ, cố định bằng keo nến; nắp nút bị giữ trong vỏ (vành trong lớn hơn lỗ vỏ).
@@ -86,6 +94,6 @@ Số lắp ghép **lấy từ fit-library** (`tools/model-study/fit-library/fits
 - Đáy phẳng vát 0,8 mm chưa làm. Khắc ▲ và logo STLAB chưa làm.
 
 ## File CAD để đo (SolidCraft, 2026-11-06)
-- `out/owl-assembly.sc`: mở bằng SolidCraft, 22 chi tiết, mỗi chi tiết một component **đúng vị trí lắp**, đơn vị mm (gồm loa và bo mạch giữ chỗ `*-dummy`, không in).
+- `out/owl-assembly.sc`: mở bằng SolidCraft, 24 chi tiết, mỗi chi tiết một component **đúng vị trí lắp**, đơn vị mm (gồm loa và bo mạch giữ chỗ `*-dummy`, không in).
 - Sinh lại: chạy `build_owl.py` (Blender) rồi `python export_cad.py out`.
 - Chi tiết là thân lưới: đo bằng Measure, bắt đỉnh/cạnh. Vành loa và vòng ép có thể chuyển sang mặt phẳng/trụ thật bằng Convert Mesh để đo dễ hơn.

@@ -195,6 +195,23 @@ else:
             fails.append(f"mx.keys can {nm} gpio {gp}")
         elif float(k.get("flange_over", 0)) < 1.5:
             fails.append(f"nap nut {nm}: vanh trong phai rong hon lo vo >= 1,5 mm/ben (khong rut ra duoc)")
+    # 2026-11-08 Tuan: "am luong dua ve lung" (25accf3 tu y doi len hai ben dau khi chua duyet).
+    # Nut vol o LUNG nua sau: truc +y, cach mat rap >= 30, |x| 8..40, z 60..130 (tren khe cap z<=16), 2 tam cach >= 25.
+    # Nap luon tu TRONG qua lo switch 14,00 -> vanh nap Ø <= 13,8 (van giu boi lo vo: flange_over >= 1,5 o tren).
+    Y0_ = float(p.get("split_plane_y", 0.37))
+    vks = [keys.get("vol_up"), keys.get("vol_down")]
+    if all(vks):
+        for k in vks:
+            pos = [float(c) for c in k.get("pos", [0, 0, 0])]
+            if k.get("axis") != "y" or pos[1] < Y0_ + 30:
+                fails.append(f"nut {k.get('name')} phai o LUNG (truc y, y >= {Y0_ + 30:.1f}): axis={k.get('axis')} pos={pos}")
+            if not (8 <= abs(pos[0]) <= 40 and 60 <= pos[2] <= 130):
+                fails.append(f"nut {k.get('name')} ngoai vung lung |x| 8..40, z 60..130: pos={pos}")
+            if 2 * float(k.get("flange_r", 99)) > 13.8:
+                fails.append(f"nap {k.get('name')}: vanh Ø{2 * float(k.get('flange_r', 99)):.1f} > 13,8 -> khong luon qua lo switch 14,00 tu trong")
+        a_, b_ = ([float(c) for c in k.get("pos", [0, 0, 0])] for k in vks)
+        if ((a_[0] - b_[0]) ** 2 + (a_[2] - b_[2]) ** 2) ** 0.5 < 25:
+            fails.append("2 nut am luong cach nhau < 25 mm (de bam nham)")
     for nm, cap in (("talk", "button-cap"), ("vol_up", "mx-cap-vol-up"), ("vol_down", "mx-cap-vol-down")):
         sw_m, cp_m = load(OUT / "asm" / f"mx-switch-{nm}.stl"), load(OUT / "asm" / f"{cap}.stl")
         sh_m = load(OUT / "asm" / "shell-back.stl") or load(OUT / "asm" / "shell-front.stl")

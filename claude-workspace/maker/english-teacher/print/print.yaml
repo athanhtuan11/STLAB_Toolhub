@@ -11,8 +11,8 @@ plates:
   A_speakers: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%"}, stl: ["speaker-bezel-*.stl", "speaker-ring-*.stl"]}
   # mau MO: nua truoc (mat rap xuong)
   B_shell_front: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "15%"}, stl: ["shell-front.stl"]}
-  # mau MO: nua sau (mat rap xuong)
-  C_shell_back: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "15%"}, stl: ["shell-back.stl"]}
+  # mau MO: nua sau (mat rap xuong) + 2 cum nut am luong vol-pod (mat ngoai xuong)
+  C_shell_back: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "15%"}, stl: ["shell-back.stl", "vol-pod-*.stl"]}
   # mau KEM: bung + 2 vanh mat (vo mong cong -> brim) + tam de
   D_cream: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%", brim_type: outer_only, brim_width: "5"}, stl: ["belly.stl", "eye-ring-*.stl", "base-plate.stl"]}
   # mau BO: mo + nap nut dau (MX) + 2 nap nut am luong nho (MX, dau +/-)
