@@ -6,4 +6,4 @@ Không màn hình, đọc lệnh song ngữ Việt–Anh. ESP32 + RC522 + 2 × 2
 Trạng thái: Bước 0 (giao diện) – xem `design/brief.md`.
 
 ## Lịch sử sửa
-- 2026-11-09: tạo dự án, brief bước 0.
+- 2026-11-09: tạo dự án, brief bước 0. Tuan chọn concept **C – Cú con**.

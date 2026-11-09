@@ -53,6 +53,9 @@ Theo `docs/research-notes/education/card-coding-robot-lessons.md` (2026-11-09): 
 
 ## Quyết định
 <!-- Tuan chọn: ngày | concept | ghi chú → chép 1 dòng vào README "Lịch sử sửa" -->
+2026-11-09 | **C – Cú con** | Tuan chọn. Cùng thương hiệu Cú Bông, kể chuyện tốt. Bù rủi ro lật (cao 98 mm): pin 4×AA nằm phẳng sát đáy,
+bánh + bi đỡ đặt rộng hết đế, giai đoạn 1 tính góc lật ≥ 30° (gate), quay chậm có tăng/giảm tốc.
+
 
 ## Ghi chú thiết kế
 - Bước 0 dựng bằng Blender (`design/make_concepts.py`): ảnh trong `design/concepts/`, `design/cmf.png`, `design/contact-sheet.png`. Khối bên trong chỉ là ước lượng (hộp pin 62×58×16 chưa đo).

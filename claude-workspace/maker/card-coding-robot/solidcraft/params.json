@@ -1,0 +1,33 @@
+{
+  "_ghi_chu": "Claude 2026-11-09. Don vi mm, g. Muc uoc_luong = chua do hang that (TODO thay khi Tuan chup/do linh kien). Datasheet = so hang cong bo, van do lai.",
+  "cell_mm": 150,
+  "max_bbox": [120, 120, 100],
+  "max_turn_radius": 70,
+  "shell": {
+    "_nguon": "concept C design/make_concepts.py: superquadric ban truc 56,56,46, so mu .5/.6, tam z 47 (Blender). Cho phep chinh nhe de in khong support.",
+    "a_x": 55, "a_y": 56, "a_z": 46, "e_xy": 0.5, "e_z": 0.6, "z_center": 47, "wall": 2.0
+  },
+  "ground_clearance_min": 4.0,
+  "wheel": {"od": 48.0, "_od_ly_do": "chu vi 150,8 mm ~ 1 vong / o tham 150 mm", "width": 8.0, "oring_groove_w": 3.0, "oring_groove_d": 1.5, "_oring": "TODO chon O-ring/day chun theo hang co"},
+  "skid": {"_ghi_chu": "2 chan truot vom PETG truoc + sau, tiep dat z=0", "d": 10.0},
+  "motor_28byj48": {
+    "_nguon": "datasheet 28BYJ-48 pho bien - TODO do hang that",
+    "body_d": 28.0, "body_h": 19.0, "shaft_d": 5.0, "shaft_flat": 3.0, "shaft_len": 10.0, "shaft_offset": 8.0,
+    "ear_pitch": 35.0, "ear_hole": 4.2, "ear_t": 1.0, "cap_w": 17.0, "cap_h": 15.0, "mass_g": 33, "_mass": "uoc_luong"
+  },
+  "uln2003_board": {"l": 35, "w": 32, "h": 15, "mass_g": 8, "_": "uoc_luong, 2 cai"},
+  "esp32_devkit": {"l": 55, "w": 28, "h": 13, "usb_side": "-x", "mass_g": 10, "_": "uoc_luong esp32-doit-devkit-v1 (thu vien Toolhub: kiem lai)"},
+  "rc522": {"l": 60, "w": 40, "h": 5, "mass_g": 7, "card_gap_max": 6.0, "_": "uoc_luong; khoang cach doc NTAG213 TODO thu"},
+  "speaker": {"d": 36, "h": 10, "mass_g": 12, "_": "uoc_luong"},
+  "max98357": {"l": 19, "w": 18, "h": 4, "mass_g": 2, "_": "uoc_luong"},
+  "battery_4aa": {"l": 62, "w": 58, "h": 16, "mass_g": 115, "_": "uoc_luong hop 4xAA phang + 4 pin NiMH ~27 g/vien"},
+  "battery_z_max": 22.0,
+  "button": {"tact_l": 12, "tact_w": 12, "tact_h": 7.3, "_": "uoc_luong nut 12x12 - TODO"},
+  "led_ws2812_d": 5.0,
+  "petg_density_g_cm3": 1.27,
+  "print_fill_factor": 0.45,
+  "_fill": "uoc_luong ti le khoi dac thuc te (2 wall + 15 % infill) de tinh trong tam",
+  "tip_angle_min_deg": 30,
+  "screw": {"_": "chua co trong fit-library -> coupon thu", "m3_selftap_try": [2.5, 2.6, 2.8], "m3_clear": 3.4, "m2_selftap_try": [1.6, 1.7, 1.8]},
+  "dshaft_press_try": [[5.0, 3.0], [5.1, 3.1], [5.2, 3.2]]
+}

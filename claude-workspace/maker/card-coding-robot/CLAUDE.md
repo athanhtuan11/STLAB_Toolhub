@@ -15,4 +15,4 @@ Thiết kế mới của STLab – tham khảo ý tưởng Plobot/Cubetto (lập
 - Trẻ 4–7: không chi tiết nhỏ rời, hộp pin khóa vít, NiMH (không Li-ion), bánh giấu trong vỏ. Chi tiết ở `design/brief.md`.
 
 ## Trạng thái
-- 2026-11-09: tạo dự án, brief bước 0 xong, đang làm concept (product-designer) + giáo án khung (edu-researcher).
+- 2026-11-09: bước 0 xong, Tuan chọn **C – Cú con**. Giai đoạn 1: dựng SolidCraft theo số ước lượng + chờ ảnh linh kiện thật.
