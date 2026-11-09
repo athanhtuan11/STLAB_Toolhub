@@ -31,6 +31,12 @@ P = dict(
     ch_gap=5,                           # mep tren canh -> mieng mang tren
     ch_depth=45, ch_wall=2,             # mang ray tren chu U (long sau 45)
     aj_gap=5,                           # khe con lai tren khoa chong nhay sau khi van len
+    # ---- khoa + chot (Tuan 2026-11-09: chot bi + khoa chong mi) – TODO so theo hang mua
+    lock_d=20,                          # mat khoa an (push lock) lo tren lam canh truoc
+    plunger_d=8, plunger_travel=14,     # chot khoa bat ra sau
+    plunger_engage=5,                   # an vao vien canh sau toi thieu
+    lock_rail=1,                        # khoa bat vao giang sau thu may (0-based) ~ tam tay
+    ball_d=6, ball_hole_d=5,            # chot bi lo xo tren khoa chong nhay, lo tren lung mang
     DZ=120,                     # vung 2 ray phia truoc
     tube=(40, 40, 1.4),         # khung chiu luc hop sat 40x40x1.4 son tinh dien
     header=(40, 80, 1.4),       # dam dau cua (do ray tren) 40x80
@@ -70,6 +76,23 @@ CHECK = dict(
               "chong mi trong 40..150 (ngoai khoang -> doi door_bars)"),
     vung_ray=(LANES[1] + FD / 2 + 5 <= p["DZ"], "canh trong nam gon trong vung ray DZ"),
 )
+# ---- vi tri khoa chong mi: giua vien canh SAU tai cho chong mi (canh truoc o ray ngoai)
+GAP_DOOR = LANES[1] - LANES[0] - FDP                 # khe giua 2 canh (theo chieu sau)
+LOCKS = []
+for i in range(p["door_n"] - 1):
+    fi, bi = (i, i + 1) if i % 2 == 0 else (i + 1, i)   # canh truoc (ray ngoai, chi so chan) / canh sau
+    xv = DX0[bi] + FW / 2 if bi > fi else DX0[bi] + DWS[bi] - FW / 2   # tam vien canh sau phia chong mi
+    LOCKS.append(dict(front=fi, back=bi, x=xv))
+zl0_ = dz0 + FW + p["lam_gap_end"]
+Z_LOCK = zl0_ + (p["lock_rail"] + 0.5) * DH / p["n_rail_back"]
+def _in_lam(L):
+    x0f = DX0[L["front"]] + FW + p["lam_gap_side"]
+    return x0f + p["lock_d"] / 2 + 3 <= L["x"] <= x0f + KB[L["front"]] * LW - p["lock_d"] / 2 - 3
+CHECK["khoa_tren_lam"] = (all(_in_lam(L) for L in LOCKS), "lo khoa nam tron tren lam canh truoc (khong cat vien)")
+CHECK["khoa_an_vien"] = (p["plunger_travel"] >= GAP_DOOR + p["plunger_engage"],
+                         "chot khoa qua khe giua 2 canh + an vao vien canh sau >= engage")
+CHECK["chot_bi"] = (p["ball_d"] / 2 > p["aj_gap"] / 2 and p["ball_hole_d"] < p["ball_d"],
+                    "bi lo xo chạm lung mang, lo nho hon bi (bi khong lot)")
 z_rail_top = H_TOP - TB
 y0i, y1i = p["DZ"], D
 y_mid = (y0i + y1i) / 2
@@ -171,6 +194,7 @@ def build():
         alu=mat("Ray nhom", "#B9BEC3", 0.3, 1.0),
         nylon=mat("Banh nylon", "#F2F2EE", 0.35),
         rubber=mat("Cao su", "#C0392B", 0.7),
+        dark=mat("Lo khoan", "#111111", 0.8),
         wall=mat("Tuong", "#E9E6E0", 0.9),
         floor=mat("San", "#CFC8BC", 0.8),
     )
@@ -216,9 +240,14 @@ def build():
             yw = yc + sgn * cw / 2
             box(f"Ray-tren-thanh{li + 1}{'ab'[sgn > 0]}", "Ray", 0, W, min(yw, yw + sgn * p["ch_wall"]),
                 max(yw, yw + sgn * p["ch_wall"]), z_ch0, z_ch1, "alu")
-        for xa in (0, W - 30):     # chan cuoi hanh trinh cao su
-            box(f"Chan-cuoi-L{li + 1}-{int(xa)}", "Ray", xa, xa + 30, yc - cw / 2, yc + cw / 2, z_ch0 + 5, z_ch1,
+        st = p["roller_in"] - p["roller_d"] / 2 - 1     # mat chan: canh dung sat tuong (mep canh x=0 / x=W)
+        for xa, xb in ((0, st), (W - st, W)):     # chan cuoi hanh trinh cao su
+            box(f"Chan-cuoi-L{li + 1}-{int(xa)}", "Ray", xa, xb, yc - cw / 2, yc + cw / 2, z_ch0 + 5, z_ch1,
                 "rubber", "stop", "chan cuoi cao su")
+    # lo chot bi tren lung mang tai vi tri dong cua tung canh
+    for i in range(p["door_n"]):
+        yc = LANES[i % 2]
+        cyl(f"Lo-chot-bi-C{i + 1}", "Ray", p["ball_hole_d"] / 2, 1, (DX0[i] + DWS[i] / 2, yc, z_ch1 - 0.4), (0, 0, 0), "dark")
     # ---- canh: vien hop 20x40 (mat 20) + giang sau 13x26 + k thanh lam nguyen cay lot trong vien
     r = 13
     pitch = LW / p["lam_waves"]
@@ -256,7 +285,28 @@ def build():
                 (xr, yc, dz1 + 4 + (p["roller_h"] - 4) / 2), (0, 0, 0), "nylon")
         box(pre + "khoa-chong-nhay", g, x0 + DW / 2 - 20, x0 + DW / 2 + 20, yc - 10, yc + 10,
             dz1, z_ch1 - p["aj_gap"], "rubber", "hw", "khoa chong nhay")
-    return dict(P=P, DW=max(DWS), DWS=DWS, DX0=DX0, OPEN=OPEN, KB=KB, OV=OV, k=max(KB), DH=DH, DHD=DHD, FW=FW, FDP=FDP, H_TOP=H_TOP, LANES=LANES, dz=[dz0, dz1], z_ridge=z_ridge, z_ch=[z_ch0, z_ch1], CHECK={kk: [bool(v[0]), v[1]] for kk, v in CHECK.items()}, x_lines=x_lines, BAYS=BAYS, y_mid=y_mid)
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=p["ball_d"] / 2 * M, location=(
+            (x0 + DW / 2) * M, yc * M, (z_ch1 - p["aj_gap"]) * M))
+        bo = bpy.context.active_object
+        bo.name = pre + "chot-bi"
+        bo.data.materials.append(MAT["rod"])
+        for c_ in bo.users_collection:
+            c_.objects.unlink(bo)
+        col(g).objects.link(bo)
+        parts.append(dict(name=pre + "chot-bi", group=g, mat="rod", kind="hw", spec="chot bi lo xo",
+                          bbox=[0] * 6, L=0, Wd=0, Th=0))
+        for L in LOCKS:
+            if L["front"] == i:      # khoa an tren canh truoc: mat khoa tren lam + than bat giang sau
+                cyl(pre + f"khoa-an-{int(L['x'])}", g, p["lock_d"] / 2, LT + 4,
+                    (L["x"], yl + LT / 2 - 2, Z_LOCK), (math.pi / 2, 0, 0), "rod")
+                box(pre + f"than-khoa-{int(L['x'])}", g, L["x"] - 14, L["x"] + 14, yl + LT, yf1, Z_LOCK - 25, Z_LOCK + 25,
+                    "steel", "hw", "khoa an (push lock) dong chia")
+                cyl(pre + f"chot-khoa-{int(L['x'])}", g, p["plunger_d"] / 2, GAP_DOOR + p["plunger_engage"],
+                    (L["x"], yf1 + (GAP_DOOR + p["plunger_engage"]) / 2, Z_LOCK), (math.pi / 2, 0, 0), "rod")
+            if L["back"] == i:       # lo bat chot tren vien canh sau
+                cyl(pre + f"lo-bat-chot-{int(L['x'])}", g, (p["plunger_d"] + 2) / 2, 1,
+                    (L["x"], yf0 - 0.4, Z_LOCK), (math.pi / 2, 0, 0), "dark")
+    return dict(P=P, LOCKS=LOCKS, Z_LOCK=Z_LOCK, GAP_DOOR=GAP_DOOR, DW=max(DWS), DWS=DWS, DX0=DX0, OPEN=OPEN, KB=KB, OV=OV, k=max(KB), DH=DH, DHD=DHD, FW=FW, FDP=FDP, H_TOP=H_TOP, LANES=LANES, dz=[dz0, dz1], z_ridge=z_ridge, z_ch=[z_ch0, z_ch1], CHECK={kk: [bool(v[0]), v[1]] for kk, v in CHECK.items()}, x_lines=x_lines, BAYS=BAYS, y_mid=y_mid)
 
 
 def env():

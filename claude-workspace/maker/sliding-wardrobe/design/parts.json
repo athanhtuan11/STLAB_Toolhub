@@ -43,6 +43,13 @@
    "ch_depth": 45,
    "ch_wall": 2,
    "aj_gap": 5,
+   "lock_d": 20,
+   "plunger_d": 8,
+   "plunger_travel": 14,
+   "plunger_engage": 5,
+   "lock_rail": 1,
+   "ball_d": 6,
+   "ball_hole_d": 5,
    "DZ": 120,
    "tube": [
     40,
@@ -58,6 +65,25 @@
    "board_t": 17,
    "rod_d": 27
   },
+  "LOCKS": [
+   {
+    "front": 0,
+    "back": 1,
+    "x": 629.3333333333334
+   },
+   {
+    "front": 2,
+    "back": 1,
+    "x": 1531.3333333333335
+   },
+   {
+    "front": 2,
+    "back": 3,
+    "x": 2308.0
+   }
+  ],
+  "Z_LOCK": 1129.0,
+  "GAP_DOOR": 8.0,
   "DW": 922,
   "DWS": [
    702,
@@ -123,6 +149,18 @@
    "vung_ray": [
     true,
     "canh trong nam gon trong vung ray DZ"
+   ],
+   "khoa_tren_lam": [
+    true,
+    "lo khoa nam tron tren lam canh truoc (khong cat vien)"
+   ],
+   "khoa_an_vien": [
+    true,
+    "chot khoa qua khe giua 2 canh + an vao vien canh sau >= engage"
+   ],
+   "chot_bi": [
+    true,
+    "bi lo xo chạm lung mang, lo nho hon bi (bi khong lot)"
    ]
   },
   "x_lines": [
@@ -1091,32 +1129,32 @@
    "spec": "chan cuoi cao su",
    "bbox": [
     0,
-    30,
+    46.5,
     16.5,
     43.5,
     2973.0,
     3013.0
    ],
-   "L": 40.0,
-   "Wd": 30,
+   "L": 46.5,
+   "Wd": 40.0,
    "Th": 27.0
   },
   {
-   "name": "Chan-cuoi-L1-2970",
+   "name": "Chan-cuoi-L1-2953",
    "group": "Ray",
    "mat": "rubber",
    "kind": "stop",
    "spec": "chan cuoi cao su",
    "bbox": [
-    2970,
+    2953.5,
     3000,
     16.5,
     43.5,
     2973.0,
     3013.0
    ],
-   "L": 40.0,
-   "Wd": 30,
+   "L": 46.5,
+   "Wd": 40.0,
    "Th": 27.0
   },
   {
@@ -1163,32 +1201,32 @@
    "spec": "chan cuoi cao su",
    "bbox": [
     0,
-    30,
+    46.5,
     64.5,
     91.5,
     2973.0,
     3013.0
    ],
-   "L": 40.0,
-   "Wd": 30,
+   "L": 46.5,
+   "Wd": 40.0,
    "Th": 27.0
   },
   {
-   "name": "Chan-cuoi-L2-2970",
+   "name": "Chan-cuoi-L2-2953",
    "group": "Ray",
    "mat": "rubber",
    "kind": "stop",
    "spec": "chan cuoi cao su",
    "bbox": [
-    2970,
+    2953.5,
     3000,
     64.5,
     91.5,
     2973.0,
     3013.0
    ],
-   "L": 40.0,
-   "Wd": 30,
+   "L": 46.5,
+   "Wd": 40.0,
    "Th": 27.0
   },
   {
@@ -1478,6 +1516,42 @@
    "L": 45.0,
    "Wd": 40.0,
    "Th": 20.0
+  },
+  {
+   "name": "C1-chot-bi",
+   "group": "Canh 1",
+   "mat": "rod",
+   "kind": "hw",
+   "spec": "chot bi lo xo",
+   "bbox": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "L": 0,
+   "Wd": 0,
+   "Th": 0
+  },
+  {
+   "name": "C1-than-khoa-629",
+   "group": "Canh 1",
+   "mat": "steel",
+   "kind": "hw",
+   "spec": "khoa an (push lock) dong chia",
+   "bbox": [
+    615.3333333333334,
+    643.3333333333334,
+    37.0,
+    50.0,
+    1104.0,
+    1154.0
+   ],
+   "L": 50.0,
+   "Wd": 28.0,
+   "Th": 13.0
   },
   {
    "name": "C2-vien-dung-trai",
@@ -1786,6 +1860,24 @@
    "Th": 20.0
   },
   {
+   "name": "C2-chot-bi",
+   "group": "Canh 2",
+   "mat": "rod",
+   "kind": "hw",
+   "spec": "chot bi lo xo",
+   "bbox": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "L": 0,
+   "Wd": 0,
+   "Th": 0
+  },
+  {
    "name": "C3-vien-dung-trai",
    "group": "Canh 3",
    "mat": "steel",
@@ -2092,6 +2184,60 @@
    "Th": 20.0
   },
   {
+   "name": "C3-chot-bi",
+   "group": "Canh 3",
+   "mat": "rod",
+   "kind": "hw",
+   "spec": "chot bi lo xo",
+   "bbox": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "L": 0,
+   "Wd": 0,
+   "Th": 0
+  },
+  {
+   "name": "C3-than-khoa-1531",
+   "group": "Canh 3",
+   "mat": "steel",
+   "kind": "hw",
+   "spec": "khoa an (push lock) dong chia",
+   "bbox": [
+    1517.3333333333335,
+    1545.3333333333335,
+    37.0,
+    50.0,
+    1104.0,
+    1154.0
+   ],
+   "L": 50.0,
+   "Wd": 28.0,
+   "Th": 13.0
+  },
+  {
+   "name": "C3-than-khoa-2308",
+   "group": "Canh 3",
+   "mat": "steel",
+   "kind": "hw",
+   "spec": "khoa an (push lock) dong chia",
+   "bbox": [
+    2294.0,
+    2322.0,
+    37.0,
+    50.0,
+    1104.0,
+    1154.0
+   ],
+   "L": 50.0,
+   "Wd": 28.0,
+   "Th": 13.0
+  },
+  {
    "name": "C4-vien-dung-trai",
    "group": "Canh 4",
    "mat": "steel",
@@ -2378,6 +2524,24 @@
    "L": 45.0,
    "Wd": 40.0,
    "Th": 20.0
+  },
+  {
+   "name": "C4-chot-bi",
+   "group": "Canh 4",
+   "mat": "rod",
+   "kind": "hw",
+   "spec": "chot bi lo xo",
+   "bbox": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "L": 0,
+   "Wd": 0,
+   "Th": 0
   },
   {
    "name": "San",

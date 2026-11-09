@@ -187,6 +187,8 @@ def bom():
         w.writerow(["Banh do duoi (o bi, ranh U/V) + hop banh chinh cao", "", "2 banh/canh", 2 * P["door_n"]])
         w.writerow(["Banh dan huong tren truc dung", "", "2 banh/canh", 2 * P["door_n"]])
         w.writerow(["Khoa chong nhay ray", "", "1/canh", P["door_n"]])
+        w.writerow(["Vit bi lo xo (chot bi) gan tren khoa chong nhay", "", "1/canh", P["door_n"]])
+        w.writerow(["Khoa an tu cua lua (push lock) DONG CHIA", "", "3 cho chong mi", len(m["LOCKS"])])
         w.writerow(["Ron choi chong bui (mep chong mi)", m["DH"], "1/canh", P["door_n"]])
         w.writerow(["LUU Y", "", "tai moi banh >= (khoi luong canh / 2) x 1.5 – can 1 thanh lam truoc khi mua", ""])
         w.writerow(["Khoi luong sat uoc tinh (kg)", round(kg, 1), "do day 1.4/1.2 gia dinh", ""])
@@ -288,6 +290,73 @@ def rail_detail():
     plt.close(fig)
 
 
+def lock_detail():
+    """Ban ve khoa chong mi + chot bi."""
+    LOCKS, ZL, GAP = m["LOCKS"], m["Z_LOCK"], m["GAP_DOOR"]
+    L1, L2 = m["LANES"]
+    fig = plt.figure(figsize=(17, 9))
+    af = fig.add_axes([0.0, 0.05, 0.42, 0.88])
+    ap = fig.add_axes([0.44, 0.40, 0.32, 0.52])
+    ab = fig.add_axes([0.78, 0.40, 0.22, 0.52])
+    # mat dung 4 canh + vi tri khoa
+    for i in range(P["door_n"]):
+        x0, dw = DX0[i], DWS[i]
+        z0 = m["dz"][0]
+        front = i % 2 == 0
+        af.add_patch(Rectangle((x0, z0), dw, DHD, fc=C["steel"], ec="k", lw=0.5, zorder=3 if front else 2))
+        af.add_patch(Rectangle((x0 + FW, z0 + FW), dw - 2 * FW, DHD - 2 * FW, fc=C["lam"], ec="none",
+                               zorder=3 if front else 2, alpha=1 if front else 0.75))
+        af.text(x0 + dw / 2, z0 + DHD + 60, f"C{i + 1} ({'ngoài' if front else 'trong'})", ha="center", fontsize=8)
+        af.add_patch(Circle((x0 + dw / 2, z0 + DHD + 10), 18, fc="#ddd", ec="k", zorder=4))
+    for L in LOCKS:
+        af.add_patch(Circle((L["x"], ZL), 35, fc="#DADDE0", ec="k", lw=1.2, zorder=5))
+        af.text(L["x"], ZL - 120, f"khóa\nx={L['x']:.0f}", ha="center", fontsize=7.5, zorder=5,
+                bbox=dict(fc="white", ec="none", alpha=0.8))
+    dim(af, -60, 0, -60, ZL, f"cao khóa {ZL:.0f}", vert=True, fs=8)
+    af.text(W / 2, -230, "3 khóa ấn đồng chìa ở 3 chỗ chồng mí (cánh ngoài khóa vào viền cánh trong).\n"
+            "Cả hàng 4 cánh kín tường–tường, C1 và C4 tì chặn cuối → khóa 3 điểm là không lùa được cánh nào.\n"
+            "Vòng xám trên đầu cánh = chốt bi giữ vị trí đóng.", ha="center", fontsize=9)
+    af.set_xlim(-250, W + 50); af.set_ylim(-420, DHD + 200); af.set_aspect("equal"); af.axis("off")
+    af.set_title("VỊ TRÍ KHÓA + CHỐT (nhìn trước, đã đóng)", fontsize=11)
+    # mat bang cat ngang tai do cao khoa – cho chong mi C1/C2
+    L = LOCKS[0]
+    fi, bi = L["front"], L["back"]
+    for idx, ln in ((fi, L1), (bi, L2)):
+        y0 = ln - FDP / 2
+        x0, dw = DX0[idx], DWS[idx]
+        for xe in (x0, x0 + dw - FW):
+            ap.add_patch(Rectangle((xe, y0), FW, FDP, fc=C["steel"], ec="k", lw=0.6))
+            ap.add_patch(Rectangle((xe + 1.2, y0 + 1.2), FW - 2.4, FDP - 2.4, fc="w"))
+        yl = y0 + FDP - P["rail_back"][0] - P["lam_t"]
+        ap.add_patch(Rectangle((x0 + FW + 1, yl), dw - 2 * FW - 2, P["lam_t"], fc=C["lam"], ec="k", lw=0.5))
+        ap.add_patch(Rectangle((x0 + FW, y0 + FDP - P["rail_back"][0]), dw - 2 * FW, P["rail_back"][0],
+                               fc=C["steel"], ec="k", lw=0.4))
+    yf0 = L1 - FDP / 2
+    ap.add_patch(Rectangle((L["x"] - P["lock_d"] / 2, yf0 - 2), P["lock_d"], P["lam_t"] + 3, fc="#DADDE0", ec="k"))
+    ap.add_patch(Rectangle((L["x"] - P["plunger_d"] / 2, L1 + FDP / 2), P["plunger_d"], GAP + P["plunger_engage"],
+                           fc="#888", ec="k"))
+    ap.annotate("khóa ấn: mặt khóa xuyên lam,\nthân bắt giằng sau 13×26", (L["x"], yf0), (L["x"] - 160, yf0 - 70),
+                fontsize=7.5, arrowprops=dict(arrowstyle="->"))
+    ap.annotate(f"chốt Ø{P['plunger_d']} qua khe {GAP:.0f}\nvào lỗ trên viền C{bi + 1}", (L["x"], L2 - FDP / 2 + 3),
+                (L["x"] + 40, L2 + 60), fontsize=7.5, arrowprops=dict(arrowstyle="->"))
+    ap.set_xlim(L["x"] - 200, L["x"] + 160); ap.set_ylim(L2 + 110, L1 - 110)
+    ap.set_aspect("equal"); ap.axis("off")
+    ap.set_title(f"MẶT BẰNG CẮT TẠI KHÓA (chồng mí C{fi + 1}/C{bi + 1}), trước ở trên", fontsize=10)
+    # chot bi
+    zc1 = m["z_ch"][1]
+    ab.add_patch(Rectangle((-40, zc1), 80, P["ch_wall"], fc=C["alu"], ec="k"))
+    ab.add_patch(Rectangle((-P["ball_hole_d"] / 2, zc1), P["ball_hole_d"], P["ch_wall"], fc="w", ec="k", lw=0.5))
+    ab.add_patch(Rectangle((-20, m["dz"][1]), 40, zc1 - P["aj_gap"] - m["dz"][1], fc="#C0392B", ec="k"))
+    ab.add_patch(Circle((0, zc1 - P["aj_gap"] + 1), P["ball_d"] / 2, fc="#DADDE0", ec="k"))
+    ab.add_patch(Rectangle((-30, m["dz"][1] - 25), 60, 25, fc=C["steel"], ec="k"))
+    ab.text(0, m["dz"][1] - 60, f"Khóa chống nhảy + vít bi lò xo\nbi Ø{P['ball_d']} bật vào lỗ Ø{P['ball_hole_d']}\n"
+            "khoan trên lưng máng ở vị trí đóng\n→ cánh đứng yên, lỗ khóa thẳng hàng", ha="center", va="top", fontsize=8)
+    ab.set_xlim(-70, 70); ab.set_ylim(m["dz"][1] - 140, zc1 + 20); ab.set_aspect("equal"); ab.axis("off")
+    ab.set_title("CHỐT BI (cắt dọc ray trên)", fontsize=10)
+    save(fig, os.path.join(OUT, "13-khoa-chot.png"))
+    plt.close(fig)
+
+
 def contact():
     names = ["01-mat-truoc-dong-cua", "03-iso-mo-khoang-1-4", "05-iso-mo-khoang-2-3",
              "12-chi-tiet-ray", "10-ban-ve-khung-sat", "11-canh-mat-bang-mat-cat"]
@@ -312,6 +381,7 @@ def contact():
 front_elevation()
 door_and_plan()
 rail_detail()
+lock_detail()
 kg, tm = bom()
 contact()
 print("SAT:", {s: round(v, 1) for s, v in tm.items()}, "m; ~%.0f kg" % kg)

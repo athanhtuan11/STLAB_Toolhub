@@ -63,6 +63,17 @@ khớp nhau. Khi mua, đối chiếu 4 số với model: chiều cao gờ ray d�
   (chưa công bố tải). Cánh nặng hơn ~40 kg → bộ bánh đỡ dưới tải 80–100 kg (cửa lùa nhôm/kho), giá TODO.
 - Có số thật thì sửa `P` (trk_base, ridge_h, wheel_d, roller_d, ch_depth…) → chạy lại, script báo FAIL nếu không lắp được.
 
+## Khóa + chốt (Tuan 2026-11-09: chốt bi + khóa chồng mí; bản vẽ `renders/13-khoa-chot.png`)
+- **Chốt bi** (4 cái): vít bi lò xo gắn trên khóa chống nhảy, bi Ø6 bật vào lỗ Ø5 khoan trên lưng máng trên ở đúng vị trí
+  đóng của từng cánh → cánh không tự trôi, và lỗ khóa 2 cánh luôn thẳng hàng khi đóng.
+- **Khóa chồng mí** (3 khóa ấn **đồng chìa**) ở 3 chỗ chồng mí, cao 1129: mặt khóa xuyên lam cánh ngoài (C1, C3), thân bắt
+  vào giằng sau 13×26; chốt Ø8 bắn ra sau qua khe 8 vào lỗ Ø10 khoan trên **viền sắt** cánh trong (C2, C4) – không bắn vào lam.
+  Vị trí khóa x = 629 / 1531 / 2308 (tâm viền cánh trong). Viền 2 cánh lệch nhau ~60 nên khóa phải nằm trên lam cánh ngoài.
+- 4 cánh đóng kín tường–tường, C1/C4 tì chặn cuối → khóa 3 điểm là cả hàng không lùa được.
+- Chặn cuối đã sửa: mặt chặn cách tường 46,5 (bánh trên cách mép 60, Ø25) → mép cánh dừng sát tường.
+- Script kiểm thêm: `khoa_tren_lam` (lỗ khóa không cắt viền), `khoa_an_vien` (hành trình chốt ≥ khe + 5), `chot_bi`.
+- TODO theo khóa mua: đường kính mặt khóa, hành trình chốt (đang giả định 14), chiều dài thân.
+
 ## TODO
 - W thực tế; số sóng, khối lượng 1 thanh lam; bộ ray (khe dưới, cao ray trên, sâu ray đôi); độ dày hộp sắt.
 - Tường sau ẩm thì chừa khe ~20 sau quần áo hoặc ốp tấm chống ẩm (chưa có trong model).
