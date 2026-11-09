@@ -2,7 +2,7 @@
 
 Chay: python draw_plans.py  (tu design/)
 """
-import csv, json, math, os
+import csv, io, json, math, os, time
 from collections import Counter
 import matplotlib
 matplotlib.use("Agg")
@@ -10,16 +10,33 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle, Circle
 from PIL import Image, ImageDraw, ImageFont
 
+def save(fig, path):
+    """Ghi PNG, thu lai neu file dang bi khoa (trinh xem anh/dong bo)."""
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=105, bbox_inches="tight")
+    for _ in range(10):
+        try:
+            with open(path, "wb") as f:
+                f.write(buf.getvalue())
+            return
+        except OSError:
+            time.sleep(1)
+    alt = path.replace(".png", "-moi.png")
+    open(alt, "wb").write(buf.getvalue())
+    print("KHOA FILE, ghi sang", alt)
+
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "renders")
 data = json.load(open(os.path.join(HERE, "parts.json"), encoding="utf-8"))
 m, parts = data["meta"], data["parts"]
 P = m["P"]
 W, D, DW, OV, k, H_TOP = P["W"], P["D"], m["DW"], m["OV"], m["k"], m["H_TOP"]
+DWS, DX0, OPEN, KB, FW, FDP, DHD = m["DWS"], m["DX0"], m["OPEN"], m["KB"], m["FW"], m["FDP"], m["DHD"]
 XL, YM = m["x_lines"], m["y_mid"]
 C = {"steel": "#2B2D30", "lam": "#8B6A4F", "board": "#D9C7A6", "rod": "#7D8790", "alu": "#B9BEC3"}
 # kg/m tinh tu tiet dien hop (thep 7,85 g/cm3) - do day theo gia dinh, TODO theo hang mua
-KGM = {"40x40": (4 * 40 * 1.4 - 4 * 1.4 ** 2) * 7.85e-3, "40x80": (2 * 120 * 1.4 - 4 * 1.4 ** 2) * 7.85e-3,
+KGM = {"13x26": (2 * 39 * 1.0 - 4 * 1.0 ** 2) * 7.85e-3, "40x40": (4 * 40 * 1.4 - 4 * 1.4 ** 2) * 7.85e-3, "40x80": (2 * 120 * 1.4 - 4 * 1.4 ** 2) * 7.85e-3,
        "20x40": (2 * 60 * 1.2 - 4 * 1.2 ** 2) * 7.85e-3}
 
 
@@ -64,7 +81,7 @@ def front_elevation():
     ax.set_xlim(-500, W + 250); ax.set_ylim(-420, H_TOP + 330)
     ax.set_aspect("equal"); ax.axis("off")
     ax.set_title("MẶT ĐỨNG KHUNG SẮT (bỏ cánh) – mm, cao độ từ sàn", fontsize=12)
-    fig.savefig(os.path.join(OUT, "10-ban-ve-khung-sat.png"), dpi=105, bbox_inches="tight")
+    save(fig, os.path.join(OUT, "10-ban-ve-khung-sat.png"))
     plt.close(fig)
 
 
@@ -74,18 +91,19 @@ def door_and_plan():
     a1 = fig.add_axes([0.24, 0.45, 0.55, 0.5])
     a2 = fig.add_axes([0.80, 0.05, 0.2, 0.9])
     # 1 canh
-    fw = P["door_frame"][1]
+    gs, ge = P["lam_gap_side"], P["lam_gap_end"]
+    a0.add_patch(Rectangle((0, 0), DW, DHD, fc=C["steel"], ec="k"))
     for j in range(k):
-        a0.add_patch(Rectangle((j * P["lam_w"], 0), P["lam_w"], m["DH"], fc=C["lam"], ec="k", lw=0.5))
-    for xx in (10, DW - 10 - fw):
-        a0.add_patch(Rectangle((xx, 0), fw, m["DH"], fc="none", ec="#222", ls="--", lw=0.8))
-    for zz in (30, m["DH"] / 2, m["DH"] - 30):
-        a0.add_patch(Rectangle((10 + fw, zz - 10), DW - 20 - 2 * fw, 20, fc="none", ec="#222", ls="--", lw=0.8))
-    dim(a0, 0, m["DH"], DW, m["DH"], f"{DW} = {k} thanh × {P['lam_w']}", off=80)
-    dim(a0, 0, 0, 0, m["DH"], f"{m['DH']} = lam nguyên cây", off=-60, vert=True)
-    a0.text(DW / 2, -150, "Khung hộp 20×40 (nét đứt) sau lam\nbánh xe dưới, dẫn hướng trên", ha="center", fontsize=8)
-    a0.set_xlim(-300, DW + 100); a0.set_ylim(-350, m["DH"] + 250); a0.set_aspect("equal"); a0.axis("off")
-    a0.set_title("1 CÁNH (nhìn trước)", fontsize=11)
+        a0.add_patch(Rectangle((FW + gs + j * P["lam_w"], FW + ge), P["lam_w"], m["DH"], fc=C["lam"], ec="k", lw=0.5))
+    for n in range(P["n_rail_back"]):
+        zz = FW + ge + (n + 0.5) * m["DH"] / P["n_rail_back"]
+        a0.add_patch(Rectangle((FW, zz - 13), DW - 2 * FW, 26, fc="none", ec="w", ls="--", lw=0.8))
+    dim(a0, 0, DHD, DW, DHD, f"{DW} = {k}×{P['lam_w']} + 2×{gs} + viền 2×{FW}", off=80, fs=7)
+    dim(a0, 0, 0, 0, DHD, f"{DHD:.0f} = lam {m['DH']} + 2×{ge} + viền 2×{FW}", off=-60, vert=True, fs=7)
+    a0.text(DW / 2, -150, f"Viền hộp 20×40 đặt nằm (mặt 20 lộ, sâu 40)\ngiằng sau 13×26 (nét đứt trắng) đỡ lam\n"
+            f"cánh ngoài cùng loại, {min(KB)} thanh = {min(DWS)}", ha="center", fontsize=8)
+    a0.set_xlim(-320, DW + 100); a0.set_ylim(-380, DHD + 250); a0.set_aspect("equal"); a0.axis("off")
+    a0.set_title(f"CÁNH GIỮA {k} THANH (nhìn trước)", fontsize=11)
     # mat bang
     a1.add_patch(Rectangle((-120, -150), 120, D + 270, fc="#ddd", hatch="//", ec="#999"))
     a1.add_patch(Rectangle((W, -150), 120, D + 270, fc="#ddd", hatch="//", ec="#999"))
@@ -96,24 +114,25 @@ def door_and_plan():
             a1.add_patch(Rectangle((x, y), w, h, fc=C["steel"]))
     for i in range(P["door_n"]):
         front = i % 2 == 0
-        yl = m["LANES"][i % 2] - P["door_frame"][0] / 2 - P["lam_t"]
-        x0 = i * (DW - OV)
-        a1.add_patch(Rectangle((x0, yl), DW, P["lam_t"] + 20, fc=C["lam"], ec="k", lw=0.5, alpha=0.9))
-        a1.text(x0 + DW / 2, -40 if front else 150, f"Cánh {i + 1} – ray {'ngoài' if front else 'trong'}",
+        yl = m["LANES"][i % 2] - FDP / 2
+        x0, dwi = DX0[i], DWS[i]
+        a1.add_patch(Rectangle((x0, yl), dwi, FDP, fc=C["lam"], ec="k", lw=0.5, alpha=0.9))
+        a1.add_patch(Rectangle((x0, yl), FW, FDP, fc=C["steel"]))
+        a1.add_patch(Rectangle((x0 + dwi - FW, yl), FW, FDP, fc=C["steel"]))
+        a1.text(x0 + dwi / 2, -40 if front else 150, f"Cánh {i + 1}: {KB[i]} thanh, {DWS[i]} – ray {'ngoài' if front else 'trong'}",
                 ha="center", fontsize=7)
     for b, spec in enumerate(m["BAYS"]):
         a1.text((XL[b] + XL[b + 1]) / 2, D / 2 + 60, spec["name"], ha="center", fontsize=8)
     a1.plot([0, W], [YM, YM], ls=":", c="#1a4d80", lw=1)
     a1.text(W / 2, YM - 30, f"tim ống treo – cách mặt trong khung {YM - P['DZ']:.0f}", ha="center", fontsize=7,
             color="#1a4d80")
-    dim(a1, 0, -150, DW, -150, f"cánh {DW}", off=0, fs=7)
-    dim(a1, DW - OV, -230, DW, -230, f"chồng mí {OV:.0f}", off=0, fs=7)
+    dim(a1, DX0[1], -150, DWS[0], -150, f"chồng mí {OV:.0f}", off=0, fs=7)
     dim(a1, W, 0, W, P["DZ"], f"ray {P['DZ']}", off=170, vert=True, fs=7)
     dim(a1, W, 0, W, D, f"sâu {D}", off=280, vert=True, fs=7)
     a1.set_xlim(-200, W + 350); a1.set_ylim(-300, D + 150); a1.invert_yaxis()
     a1.set_aspect("equal"); a1.axis("off")
     a1.set_title("MẶT BẰNG (mặt trước ở trên) – cột giữa đứng sau chỗ chồng mí", fontsize=11)
-    open_end, open_mid = DW - OV, DW - 2 * OV
+    open_end, open_mid = OPEN[0], OPEN[1]
     a1.text(0, D + 330, f"Lùa 1 cánh: khoang ngoài mở {open_end:.0f}, khoang giữa mở {open_mid:.0f}", fontsize=9)
     # mat cat
     a2.add_patch(Rectangle((D, 0), 100, H_TOP + 100, fc="#ddd", hatch="//", ec="#999"))
@@ -127,11 +146,10 @@ def door_and_plan():
         a2.add_patch(Circle((YM, zr), 27, fc=C["rod"], ec="k"))
         a2.text(YM, zr - 480, f"ống @ {zr}\náo ≤ 850\nmóc ~450", ha="center", fontsize=7)
     for ln in m["LANES"]:
-        yl = ln - P["door_frame"][0] / 2 - P["lam_t"]
-        a2.add_patch(Rectangle((yl, m["dz"][0]), P["lam_t"] + 20, m["DH"], fc=C["lam"], alpha=0.8))
+        a2.add_patch(Rectangle((ln - FDP / 2, m["dz"][0]), FDP, DHD, fc=C["lam"], alpha=0.8))
     a2.set_xlim(-100, D + 150); a2.set_ylim(-50, H_TOP + 150); a2.set_aspect("equal"); a2.axis("off")
     a2.set_title("MẶT CẮT khoang 2 tầng", fontsize=11)
-    fig.savefig(os.path.join(OUT, "11-canh-mat-bang-mat-cat.png"), dpi=105, bbox_inches="tight")
+    save(fig, os.path.join(OUT, "11-canh-mat-bang-mat-cat.png"))
     plt.close(fig)
 
 
@@ -156,6 +174,9 @@ def bom():
             rows[("Chan cuoi cao su", "", "2 dau moi mang tren")] += 1
         elif pt["kind"] == "eprof":
             rows[("Nep nhom U boc mep canh (tay nam)", pt["L"], "2 mep moi canh")] += 1
+        elif pt["kind"] == "rback":
+            rows[("Sat hop 13x26", pt["L"], "giang sau lam (canh)")] += 1
+            kg += KGM["13x26"] * pt["L"] / 1000
     path = os.path.join(HERE, "bom.csv")
     with open(path, "w", newline="", encoding="utf-8-sig") as f:
         w = csv.writer(f)
@@ -171,7 +192,7 @@ def bom():
         w.writerow(["Khoi luong sat uoc tinh (kg)", round(kg, 1), "do day 1.4/1.2 gia dinh", ""])
     tube_m = Counter()
     for pt in parts:
-        if pt["kind"] in ("steel", "dframe"):
+        if pt["kind"] in ("steel", "dframe", "rback"):
             tube_m[pt["spec"]] += pt["L"] / 1000
     return kg, tube_m
 
@@ -185,12 +206,18 @@ def rail_detail():
     L1, L2 = m["LANES"]
     dz0, dz1 = m["dz"]
     zr, (zc0, zc1) = m["z_ridge"], m["z_ch"]
-    FD, LT = P["door_frame"][0], P["lam_t"]
+    LT = P["lam_t"]
 
     def door_sec(ax, ln, z0, z1):
-        yl = ln - FD / 2 - LT
-        ax.add_patch(Rectangle((yl, z0), LT, z1 - z0, fc=C["lam"], ec="k", lw=0.5))
-        ax.add_patch(Rectangle((yl + LT, z0), FD, z1 - z0, fc="#555", ec="k", lw=0.5))
+        """Cat ngang canh: vien hop 20x40 o mep (duoi hoac tren) + lam lot trong."""
+        y0 = ln - FDP / 2
+        bottom = z0 == dz0
+        ze = z0 if bottom else z1 - FW
+        ax.add_patch(Rectangle((y0, ze), FDP, FW, fc=C["steel"], ec="k", lw=0.6))
+        ax.add_patch(Rectangle((y0 + 1.2, ze + 1.2), FDP - 2.4, FW - 2.4, fc="w", ec="none"))
+        zl0, zl1 = (z0 + FW + P["lam_gap_end"], z1) if bottom else (z0, z1 - FW - P["lam_gap_end"])
+        yl = y0 + FDP - P["rail_back"][0] - LT
+        ax.add_patch(Rectangle((yl, zl0), LT, zl1 - zl0, fc=C["lam"], ec="k", lw=0.5))
 
     # ray duoi
     ab.add_patch(Rectangle((-10, -12), P["DZ"] + 30, 12, fc="#ddd", hatch="//", ec="#999"))
@@ -241,9 +268,8 @@ def rail_detail():
     # 1 canh: vi tri phu kien
     sc = 0.1
     hh = m["DH"] * sc
-    ae.add_patch(Rectangle((0, 0), DW, hh, fc="#eee", ec="k"))
-    for xe in (0, DW - 15):
-        ae.add_patch(Rectangle((xe, 0), 15, hh, fc=C["alu"]))
+    ae.add_patch(Rectangle((0, 0), DW, hh, fc=C["steel"], ec="k"))
+    ae.add_patch(Rectangle((FW, FW * sc * 5), DW - 2 * FW, hh - 2 * FW * sc * 5, fc="#eee", ec="k"))
     for xw in (P["wheel_in"], DW - P["wheel_in"]):
         ae.add_patch(Circle((xw, -8), 18, fc="#f2f2ee", ec="k"))
     ae.text(P["wheel_in"], -40, f"bánh dưới cách mép {P['wheel_in']}", fontsize=7.5, va="top")
@@ -252,13 +278,13 @@ def rail_detail():
     ae.text(P["roller_in"], hh + 25, f"bánh trên cách mép {P['roller_in']}", fontsize=7.5)
     ae.add_patch(Rectangle((DW / 2 - 20, hh), 40, 18, fc="#C0392B"))
     ae.text(DW / 2, hh + 60, "khóa chống nhảy", ha="center", fontsize=7.5, color="#C0392B")
-    ae.text(DW / 2, hh / 2, f"Cánh {DW} × {m['DH']}\n(chiều cao vẽ ×0,1)\n\n2 mép: nẹp nhôm U bọc đầu lam\n= tay nắm, chống sứt mép",
+    ae.text(DW / 2, hh / 2, f"Cánh {DW} × {m['DH']}\n(chiều cao vẽ ×0,1)\n\nviền hộp 20×40 sơn đen bao 4 cạnh\n= nẹp chỉ + tay nắm",
             ha="center", va="center", fontsize=8)
     ae.text(DW / 2, -110, "Chặn cuối cao su ở 2 đầu mỗi máng trên.\nRon chổi dán mép chồng mí (chống bụi).",
             ha="center", va="top", fontsize=8)
     ae.set_xlim(-60, DW + 60); ae.set_ylim(-230, hh + 110); ae.set_aspect("equal"); ae.axis("off")
     ae.set_title("PHỤ KIỆN TRÊN 1 CÁNH", fontsize=11)
-    fig.savefig(os.path.join(OUT, "12-chi-tiet-ray.png"), dpi=105, bbox_inches="tight")
+    save(fig, os.path.join(OUT, "12-chi-tiet-ray.png"))
     plt.close(fig)
 
 
@@ -279,7 +305,7 @@ def contact():
         sheet.paste(im, (x + (tw - im.width) // 2, y + 25))
         dr.text((x + 10, y + 2), n, fill="black", font=font)
     dr.text((10, 8), f"Tủ âm tường cửa lùa 4 cánh – khung sắt + lam sóng {P['lam_w']}x{P['lam_L']}x{P['lam_t']} – "
-            f"W={W}, cánh {DW} ({k} thanh), chồng mí {OV:.0f}", fill="black", font=font)
+            f"W={W}, cánh {'-'.join(map(str, KB))} thanh ({'/'.join(map(str, DWS))}), chồng mí {OV:.0f}", fill="black", font=font)
     sheet.save(os.path.join(OUT, "00-contact-sheet.png"))
 
 
@@ -289,5 +315,5 @@ rail_detail()
 kg, tm = bom()
 contact()
 print("SAT:", {s: round(v, 1) for s, v in tm.items()}, "m; ~%.0f kg" % kg)
-print("LAM:", 4 * k, "thanh nguyen cay; canh", DW, "chong mi %.1f" % OV)
+print("LAM:", sum(KB), "thanh nguyen cay; canh", DWS, "chong mi %.1f" % OV, "mo", [round(o) for o in OPEN])
 print("PLANS OK")

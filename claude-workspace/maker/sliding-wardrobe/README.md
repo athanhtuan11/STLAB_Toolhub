@@ -10,14 +10,25 @@ cd design
 "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b -P build_wardrobe.py -- --out renders
 python draw_plans.py
 ```
-Sửa `P["W"]` (tường – tường) sau khi đo rồi chạy lại. Script tự chọn số thanh/cánh và tính chồng mí.
+Sửa `P["W"]` (tường – tường) sau khi đo rồi chạy lại. Script tính lại chồng mí, báo FAIL nếu ngoài 40–150.
 Kết quả: `wardrobe.blend`, `renders/00-contact-sheet.png`, `bom.csv` (vật tư).
 
 ## Kích thước chính (W = 3000)
-- Cánh: **4 thanh × 220 = 880**, cao **2900** (= thanh lam), chồng mí **173**. W từ ~2810 đến ~3400 vẫn dùng 4 thanh/cánh, chỉ đổi chồng mí.
-- Lùa 1 cánh: khoang ngoài mở 707, khoang giữa mở 533.
-- Đỉnh dầm đầu cửa **3012** (ray dưới 13 + khe 7 + cánh 2900 + khe 5 + máng 47 + dầm 40). TODO: chỉnh theo bộ ray thật.
-- Vùng ray phía trước sâu 120 (cánh dày 26 + khung 20 = 46/cánh × 2 ray).
+- Cánh **3-4-4-3 thanh**: 2 cánh ngoài 702 (3 thanh), 2 cánh giữa 922 (4 thanh), cao **2943**; chồng mí **83**.
+  W từ ~2800 đến ~3130 vẫn giữ cách chia này, chỉ đổi chồng mí. Lam nguyên cây 2900, **14 thanh, không cắt**.
+- Lùa 1 cánh: khoang ngoài mở 619, khoang giữa mở 757 (chia 4-4-4-4 thì khoang giữa chỉ còn ~460 vì chồng mí 229).
+- Đỉnh dầm đầu cửa **3055** (ray dưới 13 + khe 7 + cánh 2943 + khe 5 + máng 47 + dầm 40). TODO: chỉnh theo bộ ray thật.
+- Vùng ray phía trước sâu 120 (cánh dày 40 × 2 ray + khe).
+
+## Cánh tự hàn (Tuan 2026-11-09)
+- **Viền = sắt hộp 20×40×1,2 đặt nằm**: mặt 20 lộ ra trước, sâu 40 = dày cánh. Viền bao kín 4 cạnh lam, là nẹp chỉ
+  + tay nắm luôn, sơn đen cùng khung. Không dùng sắt V (cán nóng hay lệch góc, tiết diện hở dễ xoắn khi hàn).
+- Lam lọt trong viền, khe 1 mỗi bên, 1,5 mỗi đầu (giãn nở WPC – TODO theo hãng). Mặt lam lùi sau mép viền ~1.
+- 4 thanh giằng **hộp 13×26** hàn phía sau đỡ lam; **bắt vít từ sau** (khoan mồi, vít ngắn hơn chiều dày lam).
+- Hộp bánh dưới khoét lắp vào ống viền dưới; bánh trên + khóa chống nhảy bắt trên ống viền trên.
+- Sắt/cánh (tính từ tiết diện): cánh 4 thanh ~10,4 kg, cánh 3 thanh ~9,4 kg. **Khối lượng cánh = sắt + số thanh × (1 thanh lam).**
+- Chống vênh: hàn trên mặt phẳng, kẹp chặt, đính chéo các góc, **2 đường chéo lệch ≤ 2** mới hàn chết; hàn so le 2 mặt.
+- Sơn: mài mối hàn → lót chống gỉ → đen mờ; sơn xong mới bắt lam.
 
 | Khoang | Lọt lòng | Ống Ø27 (cao từ sàn) | Dùng cho |
 | --- | --- | --- | --- |
@@ -32,7 +43,7 @@ Kết quả: `wardrobe.blend`, `renders/00-contact-sheet.png`, `bom.csv` (vật 
   Mỗi khung gồm: cột giữa (sàn → 2260, bắt bát ống treo), dầm đỡ kệ, 2 cột trên + dầm đỉnh (vùng hộp nóc).
 - 4 thanh ngang tường – tường (kệ trước/sau, đỉnh trước/sau) + dầm đầu cửa 40×80 bắt ray trên.
 - Bắt vào tường bằng bát + nở sắt ở 2 tường bên và tường sau. Cột giữa có bản đế 100×100×4 bắt nở xuống sàn.
-- Vật tư (`bom.csv`): ~35,8 m hộp 40×40, 3 m hộp 40×80, 32,6 m hộp 20×40 (khung cánh), tổng ~104 kg
+- Vật tư (`bom.csv`): ~36,5 m hộp 40×40, 3 m hộp 40×80, 29,7 m hộp 20×40 + 12,4 m hộp 13×26 (cánh), tổng ~109 kg
   (tính theo độ dày giả định, TODO theo hàng mua).
 
 ## Cửa lùa – bánh đỡ dưới + bánh dẫn hướng trên (bản vẽ `renders/12-chi-tiet-ray.png`)
@@ -42,12 +53,12 @@ Kết quả: `wardrobe.blend`, `renders/00-contact-sheet.png`, `bom.csv` (vật 
 - **Bánh dẫn hướng trên** Ø25 trục đứng, 2 bánh/cánh cách mép 60, ăn vào máng 20.
 - **Lắp**: nâng cánh 25 đẩy bánh trên vào máng → hạ bánh dưới lên gờ → vặn **khóa chống nhảy** lên (khe còn 5 < 8 = độ nâng
   để bánh dưới thoát gờ) → không nhấc cánh ra được. Script tự kiểm 4 điều kiện (`PASS lap_dat/an_khop/chong_nhay/vung_ray`).
-- Chặn cuối cao su 2 đầu mỗi máng; nẹp nhôm U bọc 2 mép cánh làm tay nắm; ron chổi ở mép chồng mí.
-- Mép dưới cánh cách gờ 7, mép trên cách miệng máng 5 → đỉnh dầm 3012.
+- Chặn cuối cao su 2 đầu mỗi máng; viền sắt cánh làm tay nắm; ron chổi ở mép chồng mí.
+- Mép dưới cánh cách gờ 7, mép trên cách miệng máng 5 → đỉnh dầm 3055.
 
 **Chọn mua (tiết kiệm):** mua **bộ cửa lùa đỡ dưới** (bánh dưới + bánh trên + ray dưới/trên cùng hãng) – rẻ hơn mua lẻ và
 khớp nhau. Khi mua, đối chiếu 4 số với model: chiều cao gờ ray dưới, lòng + độ sâu máng trên, đường kính bánh, tải/bánh.
-- **Tải mỗi bánh ≥ (khối lượng cánh ÷ 2) × 1,5.** Khối lượng cánh ≈ 4 × (1 thanh lam) + ~8,8 kg khung → **cân 1 thanh trước**.
+- **Tải mỗi bánh ≥ (khối lượng cánh ÷ 2) × 1,5.** Khối lượng cánh ≈ 4 × (1 thanh lam) + ~10,4 kg sắt → **cân 1 thanh trước**.
 - Tham khảo giá: ray âm T309 ~95.000 đ/3 m, <50 kg/cánh (Phú Hải); Garis GR67 bánh 156.000 đ/cánh, ray 140.000 đ/3 m
   (chưa công bố tải). Cánh nặng hơn ~40 kg → bộ bánh đỡ dưới tải 80–100 kg (cửa lùa nhôm/kho), giá TODO.
 - Có số thật thì sửa `P` (trk_base, ridge_h, wheel_d, roller_d, ch_depth…) → chạy lại, script báo FAIL nếu không lắp được.
