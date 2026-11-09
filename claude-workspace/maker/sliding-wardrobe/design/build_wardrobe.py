@@ -15,8 +15,17 @@ P = dict(
     lam_waves=4,       # TODO so song that cua thanh mua
     door_n=4, ov_min=40,        # chong mi toi thieu; so thanh/canh tu chon
     door_frame=(20, 40, 1.2),   # khung canh hop sat 20x40x1.2 (an sau lam)
-    door_z0=15,                 # khe banh xe/ray duoi (TODO theo bo ray)
-    top_guide=45,               # chieu cao ray dan huong tren (TODO)
+    # ---- bo ray lua: banh do duoi + banh dan huong tren (TODO thay so theo bo ray mua)
+    trk_base=5, ridge_h=8, ridge_w=6,   # ray duoi nhom: de day 5, go dan 6x8 moi lan
+    wheel_d=40, wheel_t=12,             # banh do duoi (ranh V/U, o bi), 2 banh/canh
+    wheel_in=70,                        # tim banh cach mep canh
+    lift_off=8,                         # nang canh bao nhieu thi banh duoi thoat go (= ridge_h, an toan)
+    door_gap_bot=7,                     # mep duoi canh cach dinh go ray
+    roller_d=25, roller_h=25,           # banh dan huong tren truc dung, 2 banh/canh
+    roller_in=60,
+    ch_gap=5,                           # mep tren canh -> mieng mang tren
+    ch_depth=45, ch_wall=2,             # mang ray tren chu U (long sau 45)
+    aj_gap=5,                           # khe con lai tren khoa chong nhay sau khi van len
     DZ=120,                     # vung 2 ray phia truoc
     tube=(40, 40, 1.4),         # khung chiu luc hop sat 40x40x1.4 son tinh dien
     header=(40, 80, 1.4),       # dam dau cua (do ray tren) 40x80
@@ -34,18 +43,32 @@ while p["door_n"] * k * LW - W < (p["door_n"] - 1) * p["ov_min"]:
 DW = k * LW                                           # rong canh = k thanh nguyen
 OV = (p["door_n"] * DW - W) / (p["door_n"] - 1)       # chong mi thuc te
 DH = p["lam_L"]
-dz0, dz1 = p["door_z0"], p["door_z0"] + DH
-H_TOP = dz1 - 15 + p["top_guide"] + p["header"][0]    # dinh dam dau cua
+z_ridge = p["trk_base"] + p["ridge_h"]                # dinh go ray duoi
+dz0 = z_ridge + p["door_gap_bot"]                     # mep duoi canh
+dz1 = dz0 + DH                                        # mep tren canh
+z_ch0 = dz1 + p["ch_gap"]                             # mieng mang tren
+z_ch1 = z_ch0 + p["ch_depth"]                         # mat duoi lung mang
+H_TOP = z_ch1 + p["ch_wall"] + p["header"][0]         # dinh dam dau cua
+# lan ray = mat phang khung canh (banh nam trong khung 20x40)
+FD = p["door_frame"][0]
+LANES = [10 + LT + FD / 2, 10 + LT + FD + 8 + LT + FD / 2]
+roller_top = dz1 + p["roller_h"]
+CHECK = dict(
+    lap_dat=(roller_top + p["lift_off"] + 2 <= z_ch1, "nang canh lift_off+2 ma banh tren chua cham lung mang"),
+    an_khop=(roller_top - z_ch0 >= p["lift_off"] + 5, "banh tren an vao mang >= lift_off+5 (khong tuot khi nang)"),
+    chong_nhay=(p["aj_gap"] < p["lift_off"], "khe tren khoa chong nhay < do nang thoat go"),
+    vung_ray=(LANES[1] + FD / 2 + 5 <= p["DZ"], "canh trong nam gon trong vung ray DZ"),
+)
 z_rail_top = H_TOP - TB
 y0i, y1i = p["DZ"], D
 y_mid = (y0i + y1i) / 2
 # vi tri cac khung dung: 2 tuong + 3 cho chong mi
 x_lines = [TB / 2] + [(i + 1) * (DW - OV) + OV / 2 for i in range(p["door_n"] - 1)] + [W - TB / 2]
 
-BAYS = [   # Tuan 2026-11-09: chi treo ong tron Ø27, khong ngan keo/ke
+BAYS = [   # Tuan 2026-11-09: chi treo ong tron Ø27, ca 4 khoang 2 tang 2050/1030
     dict(name="K1 treo 2 tang", rods=[2050, 1030]),
-    dict(name="K2 treo dai", rods=[1950]),
-    dict(name="K3 treo dai", rods=[1950]),
+    dict(name="K2 treo 2 tang", rods=[2050, 1030]),
+    dict(name="K3 treo 2 tang", rods=[2050, 1030]),
     dict(name="K4 treo 2 tang", rods=[2050, 1030]),
 ]
 
@@ -135,6 +158,8 @@ def build():
         board=mat("Van ke", "#D9C7A6", 0.6),
         rod=mat("Inox", "#DADDE0", 0.15, 1.0),
         alu=mat("Ray nhom", "#B9BEC3", 0.3, 1.0),
+        nylon=mat("Banh nylon", "#F2F2EE", 0.35),
+        rubber=mat("Cao su", "#C0392B", 0.7),
         wall=mat("Tuong", "#E9E6E0", 0.9),
         floor=mat("San", "#CFC8BC", 0.8),
     )
@@ -167,30 +192,58 @@ def build():
             parts.append(dict(name=f"K{b + 1}-ong-{zr}", group="Ong treo", mat="rod", kind="rod",
                               spec=f"Ø{p['rod_d']}", bbox=[xa, xb, y_mid - 13.5, y_mid + 13.5, zr - 13.5, zr + 13.5],
                               L=round(xb - xa - 2, 1), Wd=p["rod_d"], Th=p["rod_d"]))
-    # ---- ray
-    box("Ray-duoi", "Ray", 0, W, 5, y0i - 5, 0, 8, "alu", "track", "ray duoi doi")
-    box("Ray-tren", "Ray", 0, W, 5, y0i - 5, dz1 - 15, dz1 - 15 + p["top_guide"], "alu", "track", "ray tren doi")
+    # ---- ray duoi (nhom, bat vit xuong san): de + 2 go
+    box("Ray-duoi-de", "Ray", 0, W, 5, y0i - 5, 0, p["trk_base"], "alu", "track", "ray duoi doi")
+    for li, yc in enumerate(LANES):
+        box(f"Ray-duoi-go{li + 1}", "Ray", 0, W, yc - p["ridge_w"] / 2, yc + p["ridge_w"] / 2,
+            p["trk_base"], z_ridge, "alu")
+    # ---- ray tren: 2 mang U (long = banh tren + 2) treo duoi dam dau cua
+    box("Ray-tren-lung", "Ray", 0, W, 5, y0i - 5, z_ch1, z_ch1 + p["ch_wall"], "alu", "track", "ray tren doi (2 mang U)")
+    cw = p["roller_d"] + 2
+    for li, yc in enumerate(LANES):
+        for sgn in (-1, 1):
+            yw = yc + sgn * cw / 2
+            box(f"Ray-tren-thanh{li + 1}{'ab'[sgn > 0]}", "Ray", 0, W, min(yw, yw + sgn * p["ch_wall"]),
+                max(yw, yw + sgn * p["ch_wall"]), z_ch0, z_ch1, "alu")
+        for xa in (0, W - 30):     # chan cuoi hanh trinh cao su
+            box(f"Chan-cuoi-L{li + 1}-{int(xa)}", "Ray", xa, xa + 30, yc - cw / 2, yc + cw / 2, z_ch0 + 5, z_ch1,
+                "rubber", "stop", "chan cuoi cao su")
     # ---- canh: khung 20x40 + k thanh lam nguyen cay
     fw, fd = p["door_frame"][1], p["door_frame"][0]
     r = 13
     pitch = LW / p["lam_waves"]
     for i in range(p["door_n"]):
         front = i % 2 == 0
-        yl = 10 if front else 10 + LT + fd + 8          # mat truoc lam
+        yc = LANES[0] if front else LANES[1]
+        yl = yc - FD / 2 - LT                       # mat truoc lam
         x0 = i * (DW - OV)
         g = f"Canh {i + 1}"
+        pre = f"C{i + 1}-"
         yf0, yf1 = yl + LT, yl + LT + fd
-        for side, (a, b_) in (("trai", (x0 + 10, x0 + 10 + fw)), ("phai", (x0 + DW - 10 - fw, x0 + DW - 10))):
-            box(f"C{i + 1}-khung-dung-{side}", g, a, b_, yf0, yf1, dz0, dz1, "steel", "dframe", "20x40")
-        for zz in (dz0 + 30, (dz0 + dz1) / 2, dz1 - 30):
-            box(f"C{i + 1}-khung-ngang-{int(zz)}", g, x0 + 10 + fw, x0 + DW - 10 - fw, yf0, yf1,
-                zz - 10, zz + 10, "steel", "dframe", "20x40")
+        for side, (a_, b_) in (("trai", (x0 + 2, x0 + 2 + fw)), ("phai", (x0 + DW - 2 - fw, x0 + DW - 2))):
+            box(pre + f"khung-dung-{side}", g, a_, b_, yf0, yf1, dz0 + 45, dz1, "steel", "dframe", "20x40")
+        box(pre + "khung-ngang-duoi", g, x0 + 2, x0 + DW - 2, yf0, yf1, dz0 + 25, dz0 + 45, "steel", "dframe", "20x40")
+        for zz in ((dz0 + dz1) / 2, dz1 - 10):
+            box(pre + f"khung-ngang-{int(zz)}", g, x0 + 2 + fw, x0 + DW - 2 - fw, yf0, yf1, zz - 10, zz + 10,
+                "steel", "dframe", "20x40")
         for j in range(k):
             bx = x0 + j * LW
-            box(f"C{i + 1}-lam{j + 1}", g, bx + 0.5, bx + LW - 0.5, yl + r, yl + LT, dz0, dz1, "lam", "lam", f"{LW}x{LT}")
-            cyl(f"C{i + 1}-lam{j + 1}-song", g, r, DH, (bx + pitch / 2, yl + r, (dz0 + dz1) / 2), (0, 0, 0), "lam",
+            box(pre + f"lam{j + 1}", g, bx + 0.5, bx + LW - 0.5, yl + r, yl + LT, dz0, dz1, "lam", "lam", f"{LW}x{LT}")
+            cyl(pre + f"lam{j + 1}-song", g, r, DH, (bx + pitch / 2, yl + r, (dz0 + dz1) / 2), (0, 0, 0), "lam",
                 array=((pitch, 0, 0), p["lam_waves"]))
-    return dict(P=P, DW=DW, OV=OV, k=k, DH=DH, H_TOP=H_TOP, x_lines=x_lines, BAYS=BAYS, y_mid=y_mid)
+        for side, xe in (("trai", x0 - 1.5), ("phai", x0 + DW)):     # nhom U boc mep = tay nam
+            box(pre + f"nep-U-{side}", g, xe, xe + 1.5, yl - 1.5, yf1 + 1.5, dz0, dz1, "alu", "eprof", "U nhom boc mep")
+        zw = z_ridge - 3 + p["wheel_d"] / 2          # go an vao ranh banh 3
+        for side, xw, xr in (("trai", x0 + p["wheel_in"], x0 + p["roller_in"]),
+                             ("phai", x0 + DW - p["wheel_in"], x0 + DW - p["roller_in"])):
+            box(pre + f"hop-banh-{side}", g, xw - 40, xw + 40, yc - 9, yc + 9, dz0 + 5, dz0 + 25, "steel", "hw", "hop banh duoi")
+            cyl(pre + f"banh-duoi-{side}", g, p["wheel_d"] / 2, p["wheel_t"], (xw, yc, zw), (math.pi / 2, 0, 0), "nylon")
+            box(pre + f"de-banh-tren-{side}", g, xr - 25, xr + 25, yc - 9, yc + 9, dz1, dz1 + 4, "steel", "hw", "de banh tren")
+            cyl(pre + f"banh-tren-{side}", g, p["roller_d"] / 2, p["roller_h"] - 4,
+                (xr, yc, dz1 + 4 + (p["roller_h"] - 4) / 2), (0, 0, 0), "nylon")
+        box(pre + "khoa-chong-nhay", g, x0 + DW / 2 - 20, x0 + DW / 2 + 20, yc - 10, yc + 10,
+            dz1, z_ch1 - p["aj_gap"], "rubber", "hw", "khoa chong nhay")
+    return dict(P=P, DW=DW, OV=OV, k=k, DH=DH, H_TOP=H_TOP, LANES=LANES, dz=[dz0, dz1], z_ridge=z_ridge, z_ch=[z_ch0, z_ch1], CHECK={kk: [bool(v[0]), v[1]] for kk, v in CHECK.items()}, x_lines=x_lines, BAYS=BAYS, y_mid=y_mid)
 
 
 def env():
@@ -270,9 +323,16 @@ def main():
     shot(iso, os.path.join(out, "03-iso-mo-khoang-1-4.png"), hide=["Tuong trai"], move={"C1-": sh, "C4-": -sh})
     shot(iso, os.path.join(out, "04-iso-khong-cua.png"), hide=doors + ["Tuong trai"])
     shot(iso, os.path.join(out, "05-iso-mo-khoang-2-3.png"), hide=["Tuong trai"], move={"C2-": -sh, "C3-": sh})
+    inside = ["Tuong trai", "Khung sat", "Ong treo", "Van", "Moi truong"]
+    cb = cam("Cam-ray-duoi", (W - 420, 520, 230), (68, 0, 205), lens=40)
+    shot(cb, os.path.join(out, "06-chi-tiet-ray-duoi.png"), hide=inside)
+    ct = cam("Cam-ray-tren", (W - 420, 520, H_TOP - 230), (112, 0, 205), lens=40)
+    shot(ct, os.path.join(out, "07-chi-tiet-ray-tren.png"), hide=inside)
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(here, "wardrobe.blend"))
     json.dump(dict(meta=meta, parts=parts), open(os.path.join(here, "parts.json"), "w", encoding="utf-8"),
               ensure_ascii=False, indent=1)
+    for kk, (ok, why) in CHECK.items():
+        print(("PASS " if ok else "FAIL ") + kk + ": " + why)
     print(f"BUILD OK parts={len(parts)} k={k} DW={DW} OV={OV:.1f} H_TOP={H_TOP:.0f}")
 
 

@@ -16,14 +16,14 @@ Kết quả: `wardrobe.blend`, `renders/00-contact-sheet.png`, `bom.csv` (vật 
 ## Kích thước chính (W = 3000)
 - Cánh: **4 thanh × 220 = 880**, cao **2900** (= thanh lam), chồng mí **173**. W từ ~2810 đến ~3400 vẫn dùng 4 thanh/cánh, chỉ đổi chồng mí.
 - Lùa 1 cánh: khoang ngoài mở 707, khoang giữa mở 533.
-- Đỉnh dầm đầu cửa **2985** (cánh 2900 + khe bánh xe 15 + ray trên + dầm 40). TODO: chỉnh theo bộ ray thật.
+- Đỉnh dầm đầu cửa **3012** (ray dưới 13 + khe 7 + cánh 2900 + khe 5 + máng 47 + dầm 40). TODO: chỉnh theo bộ ray thật.
 - Vùng ray phía trước sâu 120 (cánh dày 26 + khung 20 = 46/cánh × 2 ray).
 
 | Khoang | Lọt lòng | Ống Ø27 (cao từ sàn) | Dùng cho |
 | --- | --- | --- | --- |
 | K1 (trái) | 733 | 2050 + 1030 | treo 2 tầng: áo sơ mi, áo ngắn, quần vắt |
-| K2 | 667 | 1950 | treo dài: áo khoác, váy |
-| K3 | 667 | 1950 | treo dài |
+| K2 | 667 | 2050 + 1030 | treo 2 tầng |
+| K3 | 667 | 2050 + 1030 | treo 2 tầng |
 | K4 (phải) | 733 | 2050 + 1030 | treo 2 tầng |
 | Hộp nóc | 4 ô, kệ ván 17 ở cao 2300 | – | chăn mền, vali |
 
@@ -35,12 +35,22 @@ Kết quả: `wardrobe.blend`, `renders/00-contact-sheet.png`, `bom.csv` (vật 
 - Vật tư (`bom.csv`): ~35,8 m hộp 40×40, 3 m hộp 40×80, 32,6 m hộp 20×40 (khung cánh), tổng ~104 kg
   (tính theo độ dày giả định, TODO theo hàng mua).
 
-## Ray – gợi ý tiết kiệm
-Cánh lam WPC ngoài trời thường nặng. **Cân 1 thanh trước khi mua ray.** Khối lượng cánh ≈ 4 × (1 thanh) + ~8,8 kg khung 20×40.
-- Cánh ≤ ~40 kg: ray tủ áo phổ thông loại 40–50 kg/cánh là đủ, rẻ nhất (vd ray âm T309 ~95.000 đ/3 m, nguồn Phú Hải;
-  Garis GR67 bánh xe 156.000 đ/cánh, ray 140.000 đ/3 m – chưa công bố tải trọng, hỏi người bán).
-- Cánh nặng hơn: dùng **bánh xe đỡ dưới** loại tải 80–100 kg (cửa lùa nhôm/kho), ray trên chỉ dẫn hướng. Giá: TODO.
-- Ưu tiên kiểu **đỡ dưới** vì sàn chịu tải, dầm đầu cửa không bị võng. Bắt buộc có **chặn chống nhảy ray**.
+## Cửa lùa – bánh đỡ dưới + bánh dẫn hướng trên (bản vẽ `renders/12-chi-tiet-ray.png`)
+- **Ray dưới** (nhôm, bắt vít xuống sàn): đế dày 5 + 2 gờ 6×8, 2 lằn cách 54. **Chịu toàn bộ tải cánh.**
+- **Bánh đỡ dưới** Ø40 ổ bi, rãnh U/V ôm gờ, 2 bánh/cánh cách mép 70, hộp bánh có vít chỉnh cao (cân cánh thẳng đứng).
+- **Ray trên**: 2 máng chữ U lòng 27 × sâu 45, treo dưới dầm đầu cửa 40×80. **Không chịu tải**, chỉ giữ cánh đứng.
+- **Bánh dẫn hướng trên** Ø25 trục đứng, 2 bánh/cánh cách mép 60, ăn vào máng 20.
+- **Lắp**: nâng cánh 25 đẩy bánh trên vào máng → hạ bánh dưới lên gờ → vặn **khóa chống nhảy** lên (khe còn 5 < 8 = độ nâng
+  để bánh dưới thoát gờ) → không nhấc cánh ra được. Script tự kiểm 4 điều kiện (`PASS lap_dat/an_khop/chong_nhay/vung_ray`).
+- Chặn cuối cao su 2 đầu mỗi máng; nẹp nhôm U bọc 2 mép cánh làm tay nắm; ron chổi ở mép chồng mí.
+- Mép dưới cánh cách gờ 7, mép trên cách miệng máng 5 → đỉnh dầm 3012.
+
+**Chọn mua (tiết kiệm):** mua **bộ cửa lùa đỡ dưới** (bánh dưới + bánh trên + ray dưới/trên cùng hãng) – rẻ hơn mua lẻ và
+khớp nhau. Khi mua, đối chiếu 4 số với model: chiều cao gờ ray dưới, lòng + độ sâu máng trên, đường kính bánh, tải/bánh.
+- **Tải mỗi bánh ≥ (khối lượng cánh ÷ 2) × 1,5.** Khối lượng cánh ≈ 4 × (1 thanh lam) + ~8,8 kg khung → **cân 1 thanh trước**.
+- Tham khảo giá: ray âm T309 ~95.000 đ/3 m, <50 kg/cánh (Phú Hải); Garis GR67 bánh 156.000 đ/cánh, ray 140.000 đ/3 m
+  (chưa công bố tải). Cánh nặng hơn ~40 kg → bộ bánh đỡ dưới tải 80–100 kg (cửa lùa nhôm/kho), giá TODO.
+- Có số thật thì sửa `P` (trk_base, ridge_h, wheel_d, roller_d, ch_depth…) → chạy lại, script báo FAIL nếu không lắp được.
 
 ## TODO
 - W thực tế; số sóng, khối lượng 1 thanh lam; bộ ray (khe dưới, cao ray trên, sâu ray đôi); độ dày hộp sắt.
