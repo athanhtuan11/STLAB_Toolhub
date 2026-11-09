@@ -21,15 +21,19 @@ P = dict(
     n_rail_back=4,
     lam_gap_side=1, lam_gap_end=1.5,    # khe quanh lam trong vien (gian no WPC, TODO theo hang)
     # ---- bo ray lua: banh do duoi + banh dan huong tren (TODO thay so theo bo ray mua)
-    trk_base=5, ridge_h=8, ridge_w=6,   # ray duoi nhom: de day 5, go dan 6x8 moi lan
-    wheel_d=40, wheel_t=12,             # banh do duoi (ranh V/U, o bi), 2 banh/canh
-    wheel_in=70,                        # tim banh cach mep canh
-    lift_off=8,                         # nang canh bao nhieu thi banh duoi thoat go (= ridge_h, an toan)
-    door_gap_bot=7,                     # mep duoi canh cach dinh go ray
-    roller_d=25, roller_h=25,           # banh dan huong tren truc dung, 2 banh/canh
+    # phu kien dinh mua 2026-11-09 (TODO do hang that): banh BX48PU, ray U O21, con lan 608 O32x12
+    trk_base=3, ridge_h=21, ridge_w=21,  # ray duoi: la de 3x40 + ray tron O21 (dinh ray z=24)
+    wheel_d=48, wheel_t=22,             # banh do duoi ranh U inox, 2 banh/canh
+    wheel_groove=6,                     # ray an vao ranh banh
+    wheel_bracket=8,                    # bat banh: dinh banh -> day ong vien duoi
+    wheel_in=80,                        # tim banh cach mep canh
+    lift_off=8,                         # nang canh bao nhieu thi banh thoat ray (ranh 6 + 2)
+    skirt_gap=10,                       # tam che chan: mep duoi cach san
+    roller_d=32, roller_t=12,           # con lan 608 boc POM, truc dung, 2 cai/canh
     roller_in=60,
+    roller_lift=5,                      # day con lan cao hon mieng mang
     ch_gap=5,                           # mep tren canh -> mieng mang tren
-    ch_depth=45, ch_wall=2,             # mang ray tren chu U (long sau 45)
+    ch_depth=40, ch_wall=3, ch_clear=3, # mang = 2 thanh sat la 3x40, long = O con lan + 3
     aj_gap=5,                           # khe con lai tren khoa chong nhay sau khi van len
     # ---- khoa + chot (Tuan 2026-11-09: chot bi + khoa chong mi) – TODO so theo hang mua
     lock_d=20,                          # mat khoa an (push lock) lo tren lam canh truoc
@@ -59,18 +63,34 @@ DWS = [kb * LW + 2 * p["lam_gap_side"] + 2 * FW for kb in KB]   # rong tung canh
 OV = (sum(DWS) - W) / (p["door_n"] - 1)                        # chong mi thuc te
 DX0 = [sum(DWS[:i]) - i * OV for i in range(p["door_n"])]       # mep trai tung canh
 DW = max(DWS)
-OPEN = [DWS[0] - OV] + [DWS[i] - 2 * OV for i in range(1, p["door_n"] - 1)] + [DWS[-1] - OV]
+def _travel(i):
+    """Hanh trinh trai/phai toi da cua canh i: cham canh cung ray hoac tuong (chan cuoi)."""
+    j_l, j_r = i - 2, i + 2
+    left_lim = DX0[j_l] + DWS[j_l] if j_l >= 0 else 0
+    right_lim = DX0[j_r] if j_r < p["door_n"] else W
+    return DX0[i] - left_lim, right_lim - (DX0[i] + DWS[i])
+TRAVEL = [_travel(i) for i in range(p["door_n"])]
+OPEN = []
+for i in range(p["door_n"]):
+    tl, tr = TRAVEL[i]
+    if i == 0:
+        OPEN.append(tr)
+    elif i == p["door_n"] - 1:
+        OPEN.append(tl)
+    else:
+        OPEN.append(max(tl, tr) - OV)
 DH = p["lam_L"]
 z_ridge = p["trk_base"] + p["ridge_h"]                # dinh go ray duoi
-dz0 = z_ridge + p["door_gap_bot"]                     # mep duoi canh
+dz0 = z_ridge - p["wheel_groove"] + p["wheel_d"] + p["wheel_bracket"]   # day ong vien duoi (banh han duoi day)
 DHD = DH + 2 * p["lam_gap_end"] + 2 * FW              # cao canh (lam + vien tren/duoi)
 dz1 = dz0 + DHD                                       # mep tren canh
 z_ch0 = dz1 + p["ch_gap"]                             # mieng mang tren
-z_ch1 = z_ch0 + p["ch_depth"]                         # mat duoi lung mang
-H_TOP = z_ch1 + p["ch_wall"] + p["header"][0]         # dinh dam dau cua
+z_ch1 = z_ch0 + p["ch_depth"]                         # mat duoi dam dau cua (sat la han thang vao dam)
+H_TOP = z_ch1 + p["header"][0]                        # dinh dam dau cua
 # lan ray = tam chieu day canh
 FD = FDP
 LANES = [10 + FDP / 2, 10 + FDP + 8 + FDP / 2]
+p["roller_h"] = p["ch_gap"] + p["roller_lift"] + p["roller_t"]   # tu dinh canh toi dinh con lan
 roller_top = dz1 + p["roller_h"]
 CHECK = dict(
     lap_dat=(roller_top + p["lift_off"] + 2 <= z_ch1, "nang canh lift_off+2 ma banh tren chua cham lung mang"),
@@ -250,19 +270,20 @@ def build():
             parts.append(dict(name=f"K{b + 1}-ong-{zr}", group="Ong treo", mat="rod", kind="rod",
                               spec=f"Ø{p['rod_d']}", bbox=[xa, xb, y_mid - 13.5, y_mid + 13.5, zr - 13.5, zr + 13.5],
                               L=round(xb - xa - 2, 1), Wd=p["rod_d"], Th=p["rod_d"]))
-    # ---- ray duoi (nhom, bat vit xuong san): de + 2 go
-    box("Ray-duoi-de", "Ray", 0, W, 5, y0i - 5, 0, p["trk_base"], "alu", "track", "ray duoi doi")
+    # ---- ray duoi: la de 3x40 bat tac ke xuong san + ray tron O21 (ray U)
     for li, yc in enumerate(LANES):
-        box(f"Ray-duoi-go{li + 1}", "Ray", 0, W, yc - p["ridge_w"] / 2, yc + p["ridge_w"] / 2,
-            p["trk_base"], z_ridge, "alu")
-    # ---- ray tren: 2 mang U (long = banh tren + 2) treo duoi dam dau cua
-    box("Ray-tren-lung", "Ray", 0, W, 5, y0i - 5, z_ch1, z_ch1 + p["ch_wall"], "alu", "track", "ray tren doi (2 mang U)")
-    cw = p["roller_d"] + 2
+        box(f"Ray-duoi-de{li + 1}", "Ray", 0, W, yc - 20, yc + 20, 0, p["trk_base"], "steel", "track", "la de ray 3x40")
+        cyl(f"Ray-duoi-U{li + 1}", "Ray", p["ridge_w"] / 2, W, (W / 2, yc, p["trk_base"] + p["ridge_h"] / 2),
+            (0, math.pi / 2, 0), "alu")
+        parts.append(dict(name=f"Ray-duoi-U{li + 1}", group="Ray", mat="alu", kind="track", spec="ray U O21",
+                          bbox=[0, W, yc - 10.5, yc + 10.5, 3, 24], L=W, Wd=21, Th=21))
+    # ---- ray tren: moi lan 2 thanh sat la 3x40 han duoi dam dau cua -> mang U up nguoc
+    cw = p["roller_d"] + p["ch_clear"]
     for li, yc in enumerate(LANES):
         for sgn in (-1, 1):
             yw = yc + sgn * cw / 2
-            box(f"Ray-tren-thanh{li + 1}{'ab'[sgn > 0]}", "Ray", 0, W, min(yw, yw + sgn * p["ch_wall"]),
-                max(yw, yw + sgn * p["ch_wall"]), z_ch0, z_ch1, "alu")
+            box(f"Ray-tren-la{li + 1}{'ab'[sgn > 0]}", "Ray", 0, W, min(yw, yw + sgn * p["ch_wall"]),
+                max(yw, yw + sgn * p["ch_wall"]), z_ch0, z_ch1, "steel", "steel", "la3x40")
         st = p["roller_in"] - p["roller_d"] / 2 - 1     # mat chan: canh dung sat tuong (mep canh x=0 / x=W)
         for xa, xb in ((0, st), (W - st, W)):     # chan cuoi hanh trinh cao su
             box(f"Chan-cuoi-L{li + 1}-{int(xa)}", "Ray", xa, xb, yc - cw / 2, yc + cw / 2, z_ch0 + 5, z_ch1,
@@ -298,14 +319,16 @@ def build():
             box(pre + f"lam{j + 1}", g, bx + 0.5, bx + LW - 0.5, yl + r, yl + LT, zl0, zl0 + DH, "lam", "lam", f"{LW}x{LT}")
             cyl(pre + f"lam{j + 1}-song", g, r, DH, (bx + pitch / 2, yl + r, zl0 + DH / 2), (0, 0, 0), "lam",
                 array=((pitch, 0, 0), p["lam_waves"]))
-        zw = z_ridge - 3 + p["wheel_d"] / 2          # go an vao ranh banh 3
+        zw = z_ridge - p["wheel_groove"] + p["wheel_d"] / 2      # ray an vao ranh banh
+        box(pre + "che-chan", g, x0, x0 + DW, yf0 - 3, yf0, p["skirt_gap"], dz0 + FW, "steel", "skirt", "la 3 che chan")
         for side, xw, xr in (("trai", x0 + p["wheel_in"], x0 + p["roller_in"]),
                              ("phai", x0 + DW - p["wheel_in"], x0 + DW - p["roller_in"])):
-            box(pre + f"hop-banh-{side}", g, xw - 40, xw + 40, yc - 9, yc + 9, dz0 + 2, dz0 + FW - 2, "rubber", "hw", "hop banh duoi (khoet ong vien duoi)")
-            cyl(pre + f"banh-duoi-{side}", g, p["wheel_d"] / 2, p["wheel_t"], (xw, yc, zw), (math.pi / 2, 0, 0), "nylon")
-            box(pre + f"de-banh-tren-{side}", g, xr - 25, xr + 25, yc - 9, yc + 9, dz1, dz1 + 4, "steel", "hw", "de banh tren")
-            cyl(pre + f"banh-tren-{side}", g, p["roller_d"] / 2, p["roller_h"] - 4,
-                (xr, yc, dz1 + 4 + (p["roller_h"] - 4) / 2), (0, 0, 0), "nylon")
+            box(pre + f"bat-banh-{side}", g, xw - 30, xw + 30, yc - p["wheel_t"] / 2 - 4, yc + p["wheel_t"] / 2 + 4,
+                zw + p["wheel_d"] / 2, dz0, "steel", "hw", "bat banh han day ong vien duoi")
+            cyl(pre + f"banh-duoi-{side}", g, p["wheel_d"] / 2, p["wheel_t"], (xw, yc, zw), (math.pi / 2, 0, 0), "rod")
+            cyl(pre + f"bulong-tren-{side}", g, 4, p["roller_h"], (xr, yc, dz1 + p["roller_h"] / 2), (0, 0, 0), "rod")
+            cyl(pre + f"banh-tren-{side}", g, p["roller_d"] / 2, p["roller_t"],
+                (xr, yc, roller_top - p["roller_t"] / 2), (0, 0, 0), "nylon")
         box(pre + "khoa-chong-nhay", g, x0 + DW / 2 - 20, x0 + DW / 2 + 20, yc - 10, yc + 10,
             dz1, z_ch1 - p["aj_gap"], "rubber", "hw", "khoa chong nhay")
         bpy.ops.mesh.primitive_uv_sphere_add(radius=p["ball_d"] / 2 * M, location=(
@@ -329,7 +352,7 @@ def build():
             if L["back"] == i:       # lo bat chot tren vien canh sau
                 cyl(pre + f"lo-bat-chot-{int(L['x'])}", g, (p["plunger_d"] + 2) / 2, 1,
                     (L["x"], yf0 - 0.4, Z_LOCK), (math.pi / 2, 0, 0), "dark")
-    return dict(P=P, LOCKS=LOCKS, Z_LOCK=Z_LOCK, GAP_DOOR=GAP_DOOR, DW=max(DWS), DWS=DWS, DX0=DX0, OPEN=OPEN, KB=KB, OV=OV, k=max(KB), DH=DH, DHD=DHD, FW=FW, FDP=FDP, H_TOP=H_TOP, LANES=LANES, dz=[dz0, dz1], z_ridge=z_ridge, z_ch=[z_ch0, z_ch1], CHECK={kk: [bool(v[0]), v[1]] for kk, v in CHECK.items()}, x_lines=x_lines, BAYS=BAYS, y_mid=y_mid)
+    return dict(P=P, TRAVEL=TRAVEL, LOCKS=LOCKS, Z_LOCK=Z_LOCK, GAP_DOOR=GAP_DOOR, DW=max(DWS), DWS=DWS, DX0=DX0, OPEN=OPEN, KB=KB, OV=OV, k=max(KB), DH=DH, DHD=DHD, FW=FW, FDP=FDP, H_TOP=H_TOP, LANES=LANES, dz=[dz0, dz1], z_ridge=z_ridge, z_ch=[z_ch0, z_ch1], CHECK={kk: [bool(v[0]), v[1]] for kk, v in CHECK.items()}, x_lines=x_lines, BAYS=BAYS, y_mid=y_mid)
 
 
 def env():
@@ -392,6 +415,39 @@ def shot(c, path, hide=(), move=None):
         bpy.data.objects[nm].location.x = x
 
 
+def setup_anim(fps=24):
+    """Moi canh 1 Empty goc; lua tung canh mo -> giu -> dong; banh duoi quay theo quang duong."""
+    sc = bpy.context.scene
+    sc.render.fps = fps
+    seq = [(0, TRAVEL[0][1]), (1, TRAVEL[1][1]), (2, -TRAVEL[2][0]), (3, -TRAVEL[3][0])]
+    mv, hold, gap = int(1.6 * fps), int(0.8 * fps), int(0.4 * fps)
+    roots = []
+    for i in range(p["door_n"]):
+        e = bpy.data.objects.new(f"Canh{i + 1}-goc", None)
+        sc.collection.objects.link(e)
+        for o in list(COLS[f"Canh {i + 1}"].objects):
+            o.parent = e
+        roots.append(e)
+    f = gap
+    for i, dx in seq:
+        e = roots[i]
+        wheels = [o for o in e.children if "banh-duoi" in o.name]
+        rolls = [o for o in e.children if "banh-tren" in o.name]
+        ang = dx / (p["wheel_d"] / 2)                    # rad, lan khong truot
+        for fr, x, k in ((f, 0, 0), (f + mv, dx, 1), (f + mv + hold, dx, 1), (f + 2 * mv + hold, 0, 0)):
+            e.location.x = x * M
+            e.keyframe_insert("location", index=0, frame=fr)
+            for w in wheels:
+                w.rotation_euler = (math.pi / 2, k * ang, 0)
+                w.keyframe_insert("rotation_euler", index=1, frame=fr)
+            for rl in rolls:
+                rl.rotation_euler = (0, 0, k * dx / (p["roller_d"] / 2))
+                rl.keyframe_insert("rotation_euler", index=2, frame=fr)
+        f += 2 * mv + hold + gap
+    sc.frame_start, sc.frame_end = 1, f
+    return f
+
+
 def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     here = os.path.dirname(os.path.abspath(__file__))
@@ -406,19 +462,32 @@ def main():
     sh = DWS[0] - OV
     shot(front, os.path.join(out, "01-mat-truoc-dong-cua.png"))
     shot(front, os.path.join(out, "02-mat-truoc-khung-sat.png"), hide=doors + ["Ray"])
-    shot(iso, os.path.join(out, "03-iso-mo-khoang-1-4.png"), hide=["Tuong trai"], move={"C1-": DWS[1] - OV, "C4-": -(DWS[2] - OV)})
+    shot(iso, os.path.join(out, "03-iso-mo-khoang-1-4.png"), hide=["Tuong trai"], move={"C1-": TRAVEL[0][1], "C4-": -TRAVEL[3][0]})
     shot(iso, os.path.join(out, "04-iso-khong-cua.png"), hide=doors + ["Tuong trai"])
-    shot(iso, os.path.join(out, "05-iso-mo-khoang-2-3.png"), hide=["Tuong trai"], move={"C2-": -(DWS[0] - OV), "C3-": DWS[3] - OV})
+    shot(iso, os.path.join(out, "05-iso-mo-khoang-2.png"), hide=["Tuong trai"], move={"C2-": TRAVEL[1][1]})
     inside = ["Tuong trai", "Khung sat", "Ong treo", "Van", "Moi truong"]
     cb = cam("Cam-ray-duoi", (W - 420, 520, 230), (68, 0, 205), lens=40)
     shot(cb, os.path.join(out, "06-chi-tiet-ray-duoi.png"), hide=inside)
     ct = cam("Cam-ray-tren", (W - 420, 520, H_TOP - 230), (112, 0, 205), lens=40)
     shot(ct, os.path.join(out, "07-chi-tiet-ray-tren.png"), hide=inside)
+    n_fr = setup_anim()
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(here, "wardrobe.blend"))
     json.dump(dict(meta=meta, parts=parts), open(os.path.join(here, "parts.json"), "w", encoding="utf-8"),
               ensure_ascii=False, indent=1)
     for kk, (ok, why) in CHECK.items():
         print(("PASS " if ok else "FAIL ") + kk + ": " + why)
+    if "--anim" in argv:
+        sc = bpy.context.scene
+        sc.camera = bpy.data.objects["Cam-iso"]
+        for g in COLS:
+            COLS[g].hide_render = g == "Tuong trai"
+        sc.render.resolution_x, sc.render.resolution_y = 960, 840
+        fdir = os.path.join(here, "anim-frames")
+        os.makedirs(fdir, exist_ok=True)
+        sc.render.image_settings.file_format = "PNG"
+        sc.render.filepath = os.path.join(fdir, "f_")
+        bpy.ops.render.render(animation=True)
+        print("ANIM FRAMES", n_fr)
     print(f"BUILD OK parts={len(parts)} bars={KB} DWS={DWS} OV={OV:.1f} OPEN={[round(o) for o in OPEN]} H_TOP={H_TOP:.0f}")
 
 

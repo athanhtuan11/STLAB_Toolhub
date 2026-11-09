@@ -16,8 +16,9 @@ Kết quả: `wardrobe.blend`, `renders/00-contact-sheet.png`, `bom.csv` (vật 
 ## Kích thước chính (W = 3000)
 - Cánh **3-4-4-3 thanh**: 2 cánh ngoài 702 (3 thanh), 2 cánh giữa 922 (4 thanh), cao **2943**; chồng mí **83**.
   W từ ~2800 đến ~3130 vẫn giữ cách chia này, chỉ đổi chồng mí. Lam nguyên cây 2900, **14 thanh, không cắt**.
-- Lùa 1 cánh: khoang ngoài mở 619, khoang giữa mở 757 (chia 4-4-4-4 thì khoang giữa chỉ còn ~460 vì chồng mí 229).
-- Đỉnh dầm đầu cửa **3055** (ray dưới 13 + khe 7 + cánh 2943 + khe 5 + máng 47 + dầm 40). TODO: chỉnh theo bộ ray thật.
+- Lùa 1 cánh (hành trình thật, cánh cùng ray không đè nhau): khoang ngoài mở trọn khoang, khoang giữa mở ~674
+  (sửa 2026-11-09: số 757 trước đây sai do chưa tính cánh cùng ray chặn hành trình).
+- Đỉnh dầm đầu cửa **3102** (đáy cánh 74 = ray Ø21 + bánh Ø48 + bát; cánh 2943; khe 5; máng sắt la 40; dầm 40). TODO đo hàng thật.
 - Vùng ray phía trước sâu 120 (cánh dày 40 × 2 ray + khe).
 
 ## Cánh tự hàn (Tuan 2026-11-09)
@@ -68,6 +69,12 @@ khớp nhau. Khi mua, đối chiếu 4 số với model: chiều cao gờ ray d�
 - Tham khảo giá: ray âm T309 ~95.000 đ/3 m, <50 kg/cánh (Phú Hải); Garis GR67 bánh 156.000 đ/cánh, ray 140.000 đ/3 m
   (chưa công bố tải). Cánh nặng hơn ~40 kg → bộ bánh đỡ dưới tải 80–100 kg (cửa lùa nhôm/kho), giá TODO.
 - Có số thật thì sửa `P` (trk_base, ridge_h, wheel_d, roller_d, ch_depth…) → chạy lại, script báo FAIL nếu không lắp được.
+
+## Mô phỏng trượt (Blender)
+- Mở `design/wardrobe.blend`, bấm **Space**: lần lượt C1 → C2 → C3 → C4 lùa mở rồi đóng, đúng hành trình thật
+  (dừng khi chạm cánh cùng ray/chặn cuối), bánh dưới quay theo quãng đường lăn. Mỗi cánh gắn vào 1 Empty `CanhN-goc`.
+- Video: `blender -b -P build_wardrobe.py -- --out renders --anim` → khung ở `anim-frames/`, ghép
+  `ffmpeg -framerate 24 -i anim-frames/f_%04d.png -c:v libx264 -pix_fmt yuv420p renders/20-mo-phong-lua-cua.mp4`.
 
 ## Khóa + chốt (Tuan 2026-11-09: chốt bi + khóa chồng mí; bản vẽ `renders/13-khoa-chot.png`)
 - **Chốt bi** (4 cái): vít bi lò xo gắn trên khóa chống nhảy, bi Ø6 bật vào lỗ Ø5 khoan trên lưng máng trên ở đúng vị trí

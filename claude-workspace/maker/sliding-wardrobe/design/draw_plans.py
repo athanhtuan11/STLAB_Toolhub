@@ -36,7 +36,7 @@ DWS, DX0, OPEN, KB, FW, FDP, DHD = m["DWS"], m["DX0"], m["OPEN"], m["KB"], m["FW
 XL, YM = m["x_lines"], m["y_mid"]
 C = {"steel": "#2B2D30", "lam": "#8B6A4F", "board": "#D9C7A6", "rod": "#7D8790", "alu": "#B9BEC3"}
 # kg/m tinh tu tiet dien hop (thep 7,85 g/cm3) - do day theo gia dinh, TODO theo hang mua
-KGM = {"13x26": (2 * 39 * 1.0 - 4 * 1.0 ** 2) * 7.85e-3, "40x40": (4 * 40 * 1.4 - 4 * 1.4 ** 2) * 7.85e-3, "40x80": (2 * 120 * 1.4 - 4 * 1.4 ** 2) * 7.85e-3,
+KGM = {"la3x40": 3 * 40 * 7.85e-3, "13x26": (2 * 39 * 1.0 - 4 * 1.0 ** 2) * 7.85e-3, "40x40": (4 * 40 * 1.4 - 4 * 1.4 ** 2) * 7.85e-3, "40x80": (2 * 120 * 1.4 - 4 * 1.4 ** 2) * 7.85e-3,
        "20x40": (2 * 60 * 1.2 - 4 * 1.2 ** 2) * 7.85e-3}
 
 
@@ -174,6 +174,9 @@ def bom():
             rows[("Chan cuoi cao su", "", "2 dau moi mang tren")] += 1
         elif pt["kind"] == "eprof":
             rows[("Nep nhom U boc mep canh (tay nam)", pt["L"], "2 mep moi canh")] += 1
+        elif pt["kind"] == "skirt":
+            rows[(f"La che chan 3x{pt['Wd']:.0f}", pt["L"], "mat truoc day canh")] += 1
+            kg += 3 * pt["Wd"] * 7.85e-3 * pt["L"] / 1000
         elif pt["kind"] == "rback":
             rows[("Sat hop 13x26", pt["L"], "giang sau lam (canh)")] += 1
             kg += KGM["13x26"] * pt["L"] / 1000
@@ -223,40 +226,42 @@ def rail_detail():
 
     # ray duoi
     ab.add_patch(Rectangle((-10, -12), P["DZ"] + 30, 12, fc="#ddd", hatch="//", ec="#999"))
-    ab.add_patch(Rectangle((5, 0), P["DZ"] - 10, P["trk_base"], fc=C["alu"], ec="k", lw=0.5))
     for ln in (L1, L2):
-        ab.add_patch(Rectangle((ln - P["ridge_w"] / 2, P["trk_base"]), P["ridge_w"], P["ridge_h"],
-                               fc=C["alu"], ec="k", lw=0.5))
+        ab.add_patch(Rectangle((ln - 20, 0), 40, P["trk_base"], fc=C["steel"], ec="k", lw=0.5))
+        ab.add_patch(Circle((ln, P["trk_base"] + P["ridge_h"] / 2), P["ridge_w"] / 2, fc=C["alu"], ec="k", lw=0.6))
         door_sec(ab, ln, dz0, dz0 + 110)
-        zw = zr - 3 + P["wheel_d"] / 2
+        zw = zr - P["wheel_groove"] + P["wheel_d"] / 2
         ab.add_patch(Rectangle((ln - P["wheel_t"] / 2, zw - P["wheel_d"] / 2), P["wheel_t"], P["wheel_d"],
-                               fc="#f2f2ee", ec="k", lw=0.8, zorder=5))
-        ab.add_patch(Rectangle((ln - 9, dz0 + 5), 18, 20, fc="none", ec="w", lw=0.8, ls="--", zorder=6))
-    dim(ab, -5, 0, -5, zr, f"gờ {zr:.0f}", vert=True, fs=8)
-    dim(ab, P["DZ"] + 10, zr, P["DZ"] + 10, dz0, f"khe {dz0 - zr:.0f}", vert=True, fs=8)
-    dim(ab, L1, 125, L2, 125, f"2 lằn ray cách {L2 - L1:.0f}", fs=8)
-    ab.text(P["DZ"] / 2, -45, "ray nhôm bắt vít + tắc kê xuống sàn", ha="center", fontsize=8)
-    ab.text(P["DZ"] / 2, 175, f"Bánh đỡ dưới Ø{P['wheel_d']} (rãnh U/V, ổ bi), hộp bánh có vít chỉnh cao,\n"
-            "bắt dưới thanh ngang khung cánh", ha="center", fontsize=8)
-    ab.set_xlim(-60, P["DZ"] + 60); ab.set_ylim(-70, 205); ab.set_aspect("equal"); ab.axis("off")
+                               fc="#DADDE0", ec="k", lw=0.8, zorder=5))
+        ab.add_patch(Rectangle((ln - P["wheel_t"] / 2 - 4, zw + P["wheel_d"] / 2), P["wheel_t"] + 8,
+                               dz0 - zw - P["wheel_d"] / 2, fc="#555", ec="k", lw=0.6, zorder=5))
+        ab.add_patch(Rectangle((ln - FDP / 2 - 3, P["skirt_gap"]), 3, dz0 + FW - P["skirt_gap"], fc=C["steel"], zorder=6))
+    dim(ab, -5, 0, -5, zr, f"đỉnh ray {zr:.0f}", vert=True, fs=8)
+    dim(ab, P["DZ"] + 10, 0, P["DZ"] + 10, dz0, f"đáy cánh {dz0:.0f}", vert=True, fs=8)
+    dim(ab, L1, 160, L2, 160, f"2 lằn ray cách {L2 - L1:.0f}", fs=8)
+    ab.text(P["DZ"] / 2, -40, "ray U Ø21 trên la đế 3×40, bắt tắc kê xuống sàn", ha="center", fontsize=8)
+    ab.text(P["DZ"] / 2, 205, f"Bánh rãnh U Ø{P['wheel_d']}×{P['wheel_t']} – bát hàn ĐÁY ống viền dưới, đúng tâm cánh.\n"
+            f"Tấm che chân la 3 trước mặt cánh, cách sàn {P['skirt_gap']}", ha="center", fontsize=8)
+    ab.set_xlim(-60, P["DZ"] + 70); ab.set_ylim(-70, 235); ab.set_aspect("equal"); ab.axis("off")
     ab.set_title("MẶT CẮT RAY DƯỚI – chịu toàn bộ tải cánh", fontsize=11)
     # ray tren
     hz = m["H_TOP"]
     at.add_patch(Rectangle((-10, hz - 40), P["DZ"] + 20, 40, fc=C["steel"], ec="k"))
-    at.text(P["DZ"] / 2, hz - 20, "dầm đầu cửa hộp 40×80 (bắt nở 2 tường)", color="w", ha="center",
+    at.text(P["DZ"] / 2, hz - 20, "dầm đầu cửa 40×80 – 4 sắt la 3×40 hàn dưới = 2 máng", color="w", ha="center",
             va="center", fontsize=7.5)
-    at.add_patch(Rectangle((5, zc1), P["DZ"] - 10, P["ch_wall"], fc=C["alu"], ec="k", lw=0.5))
-    cw = P["roller_d"] + 2
+    cw = P["roller_d"] + P["ch_clear"]
     for ln in (L1, L2):
         for sg in (-1, 1):
             yw = ln + sg * cw / 2
-            at.add_patch(Rectangle((min(yw, yw + sg * 2), zc0), 2, zc1 - zc0, fc=C["alu"], ec="k", lw=0.5))
+            at.add_patch(Rectangle((min(yw, yw + sg * P["ch_wall"]), zc0), P["ch_wall"], zc1 - zc0,
+                                   fc=C["steel"], ec="k", lw=0.5))
         door_sec(at, ln, dz1 - 110, dz1)
-        at.add_patch(Rectangle((ln - P["roller_d"] / 2, dz1 + 4), P["roller_d"], P["roller_h"] - 4,
-                               fc="#f2f2ee", ec="k"))
+        at.add_patch(Rectangle((ln - 4, dz1), 8, P["roller_h"], fc="#888", ec="k", lw=0.5))
+        at.add_patch(Rectangle((ln - P["roller_d"] / 2, dz1 + P["roller_h"] - P["roller_t"]), P["roller_d"],
+                               P["roller_t"], fc="#f2f2ee", ec="k"))
     at.add_patch(Rectangle((L2 - 10, dz1), 20, zc1 - P["aj_gap"] - dz1, fc="none", ec="#C0392B", lw=1.4, ls="--"))
     dim(at, P["DZ"] + 10, dz1, P["DZ"] + 10, zc0, f"{zc0 - dz1:.0f}", vert=True, fs=8)
-    dim(at, P["DZ"] + 45, zc0, P["DZ"] + 45, zc1, f"lòng máng {zc1 - zc0:.0f}", vert=True, fs=8)
+    dim(at, P["DZ"] + 45, zc0, P["DZ"] + 45, zc1, f"máng sâu {zc1 - zc0:.0f}, lòng {P["roller_d"] + P["ch_clear"]}", vert=True, fs=8)
     dim(at, -20, zc0, -20, dz1 + P["roller_h"], f"ăn khớp {dz1 + P['roller_h'] - zc0:.0f}", vert=True, fs=8)
     dim(at, -55, dz1 + P["roller_h"], -55, zc1, f"nâng lắp {zc1 - dz1 - P['roller_h']:.0f}", vert=True, fs=8)
     at.text(P["DZ"] / 2, dz1 - 150,
@@ -344,7 +349,7 @@ def lock_detail():
     ap.set_title(f"MẶT BẰNG CẮT TẠI KHÓA (chồng mí C{fi + 1}/C{bi + 1}), trước ở trên", fontsize=10)
     # chot bi
     zc1 = m["z_ch"][1]
-    ab.add_patch(Rectangle((-40, zc1), 80, P["ch_wall"], fc=C["alu"], ec="k"))
+    ab.add_patch(Rectangle((-40, zc1), 80, 6, fc=C["steel"], ec="k"))
     ab.add_patch(Rectangle((-P["ball_hole_d"] / 2, zc1), P["ball_hole_d"], P["ch_wall"], fc="w", ec="k", lw=0.5))
     ab.add_patch(Rectangle((-20, m["dz"][1]), 40, zc1 - P["aj_gap"] - m["dz"][1], fc="#C0392B", ec="k"))
     ab.add_patch(Circle((0, zc1 - P["aj_gap"] + 1), P["ball_d"] / 2, fc="#DADDE0", ec="k"))
@@ -358,7 +363,7 @@ def lock_detail():
 
 
 def contact():
-    names = ["01-mat-truoc-dong-cua", "03-iso-mo-khoang-1-4", "05-iso-mo-khoang-2-3",
+    names = ["01-mat-truoc-dong-cua", "03-iso-mo-khoang-1-4", "05-iso-mo-khoang-2",
              "12-chi-tiet-ray", "10-ban-ve-khung-sat", "11-canh-mat-bang-mat-cat"]
     tw, th = 800, 640
     sheet = Image.new("RGB", (tw * 3, th * 2 + 40), "white")
