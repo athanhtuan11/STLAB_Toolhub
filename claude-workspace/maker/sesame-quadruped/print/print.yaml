@@ -1,0 +1,14 @@
+# sesame-quadruped - in THU bo Sesame goc (dorianborian/sesame-robot @ bb87021, Apache-2.0), STL giu nguyen cua tac gia
+# (da in + chay that -> dung lam chuan thong so, khong ve lai). Tac gia thiet ke cho PLA; o day PETG theo mac dinh STLab.
+# Cat lop: python ../../tools/robotics-cad/scripts/slice.py print/print.yaml
+machine: Bambu Lab A1 0.4 nozzle
+filament: Bambu PETG Basic @BBL A1
+stl: stl
+plates_dir: plates
+# tac gia: infill 8-10 %, 2 wall, honeycomb
+common: {sparse_infill_pattern: honeycomb, curr_bed_type: Textured PEI Plate}
+plates:
+  # khung trong + nap day + 8 khop chan: tac gia ghi khong can support
+  p1-body: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "2", sparse_infill_density: "10%"}, stl: ["Internal-Frame-*.stl", "Bottom-Cover-*.stl", "L?-*.stl", "R?-*.stl"]}
+  # nap tren Enclosed (tac gia khuyen): CAN support o vung tac gia chi dinh -> Tuan to trong Bambu Studio; brim ngoai
+  p2-top-cover: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "2", sparse_infill_density: "10%", brim_type: outer_only, brim_width: "5"}, stl: ["Top-Cover-Enclosed-*.stl"]}
