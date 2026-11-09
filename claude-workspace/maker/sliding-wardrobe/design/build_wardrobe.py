@@ -41,7 +41,13 @@ P = dict(
     plunger_engage=5,                   # an vao vien canh sau toi thieu
     lock_rail=1,                        # khoa bat vao giang sau thu may (0-based) ~ tam tay
     ball_d=6, ball_hole_d=5,            # chot bi lo xo tren khoa chong nhay, lo tren lung mang
-    DZ=120,                     # vung 2 ray phia truoc
+    # ---- tay nam (Tuan 2026-11-09 "thieu tay nam"): KHE NAM XUYEN LAM, khong loi ra truoc
+    # (2 canh lua qua nhau chi cach GAP_DOOR ~8 -> tay nam loi se vuong canh kia)
+    handle_w=30, handle_h=200,          # khe bo tron 2 dau: khoan 2 lo O30 + cua long noi
+    handle_z=1000,                      # tam khe tinh tu san (TODO chinh theo chieu cao nguoi dung)
+    handle_lam=[3, 4, 1, 1],            # thanh lam co khe cua C1..C4 (1-based) -> mat tien doi xung
+    handle_finger=15,                   # vung tay quanh khe phai lo ra (khong bi canh truoc che)
+    DZ=120,                    # vung 2 ray phia truoc
     tube=(40, 40, 1.4),         # khung chiu luc hop sat 40x40x1.4 son tinh dien
     header=(40, 80, 1.4),       # dam dau cua (do ray tren) 40x80
     z_shelf=2300,               # mat ke hop noc
@@ -117,6 +123,49 @@ CHECK["khoa_an_vien"] = (p["plunger_travel"] >= GAP_DOOR + p["plunger_engage"],
                          "chot khoa qua khe giua 2 canh + an vao vien canh sau >= engage")
 CHECK["chot_bi"] = (p["ball_d"] / 2 > p["aj_gap"] / 2 and p["ball_hole_d"] < p["ball_d"],
                     "bi lo xo chạm lung mang, lo nho hon bi (bi khong lot)")
+# ---- tay nam: khe xuyen giua 1 thanh lam moi canh
+HANDLES = []
+for i in range(p["door_n"]):
+    j = p["handle_lam"][i] - 1
+    HANDLES.append(dict(door=i, lam=j + 1, x=DX0[i] + FW + p["lam_gap_side"] + j * LW + LW / 2))
+_hz0, _hz1 = p["handle_z"] - p["handle_h"] / 2, p["handle_z"] + p["handle_h"] / 2
+_rails_z = [zl0_ + (n + 0.5) * DH / p["n_rail_back"] for n in range(p["n_rail_back"])]
+CHECK["tay_nam_ne"] = (all(_hz1 + 30 <= zr - p["rail_back"][1] / 2 or _hz0 - 30 >= zr + p["rail_back"][1] / 2 for zr in _rails_z)
+                       and (_hz1 + 30 <= Z_LOCK - p["lock_d"] / 2 or _hz0 - 30 >= Z_LOCK + p["lock_d"] / 2)
+                       and all(1 <= p["handle_lam"][i] <= KB[i] for i in range(p["door_n"])),
+                       "khe tay nam cach giang sau + lo khoa >= 30 (sau khe trong de moc tay)")
+
+
+def _front_pos(fi):
+    """Cac vi tri cua canh truoc fi: dong, lua het trai, lua het phai."""
+    tl, tr = TRAVEL[fi]
+    return {DX0[fi], DX0[fi] - tl, DX0[fi] + tr}
+
+
+def _seen(xa, xb, fronts):
+    return all(xb <= fx or xa >= fx + DWS[fi] for fi, fx in fronts)
+
+
+def _handle_ok(h):
+    i = h["door"]
+    if i % 2 == 0:
+        return True                                     # canh ray ngoai: khong gi che
+    r = p["handle_w"] / 2 + p["handle_finger"]
+    off = h["x"] - DX0[i]
+    fis = [f for f in range(p["door_n"]) if f % 2 == 0]
+    if not _seen(h["x"] - r, h["x"] + r, [(f, DX0[f]) for f in fis]):
+        return False                                    # dong cua phai thay tay nam
+    tl, tr = TRAVEL[i]
+    import itertools
+    for x0 in (DX0[i] - tl, DX0[i] + tr):               # lua het 1 phia: con cach nao thay lai tay nam
+        for combo in itertools.product(*[sorted(_front_pos(f)) for f in fis]):
+            if _seen(x0 + off - r, x0 + off + r, list(zip(fis, combo))):
+                return True
+    return False
+
+
+CHECK["tay_nam_thay"] = (all(_handle_ok(h) for h in HANDLES),
+                         "canh ray trong: dong cua thay tay nam, lua het van keo ve duoc (khong bi canh truoc che kin)")
 z_rail_top = H_TOP - TB
 y0i, y1i = p["DZ"], D
 y_mid = (y0i + y1i) / 2
@@ -319,6 +368,11 @@ def build():
             box(pre + f"lam{j + 1}", g, bx + 0.5, bx + LW - 0.5, yl + r, yl + LT, zl0, zl0 + DH, "lam", "lam", f"{LW}x{LT}")
             cyl(pre + f"lam{j + 1}-song", g, r, DH, (bx + pitch / 2, yl + r, zl0 + DH / 2), (0, 0, 0), "lam",
                 array=((pitch, 0, 0), p["lam_waves"]))
+        hx, hw_, hh = HANDLES[i]["x"], p["handle_w"], p["handle_h"]   # khe nam xuyen lam (mau toi = lo)
+        box(pre + "tay-nam", g, hx - hw_ / 2, hx + hw_ / 2, yl - 1, yl + LT + 0.5,
+            p["handle_z"] - hh / 2 + hw_ / 2, p["handle_z"] + hh / 2 - hw_ / 2, "dark", "hole", f"khe nam {hw_}x{hh} xuyen lam")
+        for zc in (p["handle_z"] - hh / 2 + hw_ / 2, p["handle_z"] + hh / 2 - hw_ / 2):
+            cyl(pre + f"tay-nam-{int(zc)}", g, hw_ / 2, LT + 1.5, (hx, yl + LT / 2 - 0.25, zc), (math.pi / 2, 0, 0), "dark")
         zw = z_ridge - p["wheel_groove"] + p["wheel_d"] / 2      # ray an vao ranh banh
         box(pre + "che-chan", g, x0, x0 + DW, yf0 - 3, yf0, p["skirt_gap"], dz0 + FW, "steel", "skirt", "la 3 che chan")
         for side, xw, xr in (("trai", x0 + p["wheel_in"], x0 + p["roller_in"]),
@@ -352,7 +406,7 @@ def build():
             if L["back"] == i:       # lo bat chot tren vien canh sau
                 cyl(pre + f"lo-bat-chot-{int(L['x'])}", g, (p["plunger_d"] + 2) / 2, 1,
                     (L["x"], yf0 - 0.4, Z_LOCK), (math.pi / 2, 0, 0), "dark")
-    return dict(P=P, TRAVEL=TRAVEL, LOCKS=LOCKS, Z_LOCK=Z_LOCK, GAP_DOOR=GAP_DOOR, DW=max(DWS), DWS=DWS, DX0=DX0, OPEN=OPEN, KB=KB, OV=OV, k=max(KB), DH=DH, DHD=DHD, FW=FW, FDP=FDP, H_TOP=H_TOP, LANES=LANES, dz=[dz0, dz1], z_ridge=z_ridge, z_ch=[z_ch0, z_ch1], CHECK={kk: [bool(v[0]), v[1]] for kk, v in CHECK.items()}, x_lines=x_lines, BAYS=BAYS, y_mid=y_mid)
+    return dict(P=P, TRAVEL=TRAVEL, LOCKS=LOCKS, HANDLES=HANDLES,Z_LOCK=Z_LOCK, GAP_DOOR=GAP_DOOR, DW=max(DWS), DWS=DWS, DX0=DX0, OPEN=OPEN, KB=KB, OV=OV, k=max(KB), DH=DH, DHD=DHD, FW=FW, FDP=FDP, H_TOP=H_TOP, LANES=LANES, dz=[dz0, dz1], z_ridge=z_ridge, z_ch=[z_ch0, z_ch1], CHECK={kk: [bool(v[0]), v[1]] for kk, v in CHECK.items()}, x_lines=x_lines, BAYS=BAYS, y_mid=y_mid)
 
 
 def env():
@@ -470,6 +524,8 @@ def main():
     shot(cb, os.path.join(out, "06-chi-tiet-ray-duoi.png"), hide=inside)
     ct = cam("Cam-ray-tren", (W - 420, 520, H_TOP - 230), (112, 0, 205), lens=40)
     shot(ct, os.path.join(out, "07-chi-tiet-ray-tren.png"), hide=inside)
+    ch = cam("Cam-tay-nam", (W / 2 - 250, -1100, p["handle_z"] + 250), (78, 0, -12), lens=35)
+    shot(ch, os.path.join(out, "08-chi-tiet-tay-nam.png"))
     n_fr = setup_anim()
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(here, "wardrobe.blend"))
     json.dump(dict(meta=meta, parts=parts), open(os.path.join(here, "parts.json"), "w", encoding="utf-8"),

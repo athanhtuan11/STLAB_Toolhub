@@ -62,6 +62,9 @@ def door_holes(i):
             h.append(("KH", L["x"] - DX0[i], ZLK, f"khóa ấn: lỗ Ø{P['lock_d']} xuyên lam, thân bắt giằng 2"))
         if L["back"] == i:
             h.append(("LB", L["x"] - DX0[i], ZLK, f"lỗ Ø{P['plunger_d'] + 2} mặt TRƯỚC viền đứng – bắt chốt khóa"))
+    H = m["HANDLES"][i]
+    h.append(("TN", H["x"] - DX0[i], P["handle_z"] - dz0,
+              f"tay nắm: khe {P['handle_w']}×{P['handle_h']} xuyên lam L{H['lam']} (2 lỗ Ø{P['handle_w']} + cưa lọng)"))
     return h
 
 
@@ -173,8 +176,8 @@ def sheet_frame():
     for i in range(4):
         extra = []
         for kind, x, z, note in door_holes(i):
-            if kind in ("KH", "LB"):
-                extra.append(f"{'KHÓA' if kind == 'KH' else 'lỗ chốt'} x={x:.0f} z={z:.0f}")
+            if kind in ("KH", "LB", "TN"):
+                extra.append(f"{dict(KH='KHÓA', LB='lỗ chốt', TN='TAY NẮM (lam)')[kind]} x={x:.0f} z={z:.0f}")
         rows.append([f"C{i + 1}", "ngoài" if i % 2 == 0 else "trong", str(KB[i]), str(DWS[i]),
                      "; ".join(extra) if extra else "–"])
     t = d4.table(cellText=rows, loc="upper center", cellLoc="left", colWidths=[0.07, 0.08, 0.09, 0.08, 0.68])
@@ -266,6 +269,14 @@ def sheet_lam():
                 ax.add_patch(Circle((x, z), P["lock_d"] / 2 * 1.6, fc="w", ec=BLUE, lw=2))
                 ax.text(x, z - 60, f"Ø{P['lock_d']} trên L{j + 1}\ncách mép trái thanh {xl:.0f}\ncách đáy thanh {z - ZL0:.0f}",
                         ha="center", va="top", fontsize=7, color=BLUE, bbox=dict(fc="w", ec="none", alpha=0.85))
+            if kind == "TN":
+                hw_, hh = P["handle_w"], P["handle_h"]
+                ax.add_patch(FancyBboxPatch((x - hw_ / 2, z - hh / 2), hw_, hh, boxstyle=f"round,pad=0,rounding_size={hw_ / 2}",
+                                            fc="#111", ec="#E67E22", lw=2))
+                j = int((x - FW - GS) // LW)
+                ax.text(x, z - hh / 2 - 30, f"tay nắm {hw_}×{hh}\ngiữa L{j + 1}\ncách đáy thanh {z - hh / 2 - ZL0:.0f}"
+                        f"\n(tâm {P['handle_z']} từ sàn)", ha="center", va="top", fontsize=7, color="#B9570F",
+                        bbox=dict(fc="w", ec="none", alpha=0.85))
         dim(ax, 0, DHD, dw, DHD, f"{dw}", off=40, fs=8)
         dim(ax, FW + GS, 0, FW + GS + LW, 0, f"{LW}", off=-45, fs=7)
         dim(ax, 0, ZL0, 0, ZL0 + DH, f"lam {DH} (nguyên cây)", off=-35, vert=True, fs=7)
@@ -297,6 +308,11 @@ def sheet_lam():
             f"• Khoan Ø{P['lock_d']} (mũi khoét) xuyên lam đúng vị trí khóa (xanh).\n"
             "• Khoan khi lam đã bắt lên khung + cánh đã treo, dóng theo lỗ chốt C2/C4.\n"
             "• Thân khóa bắt vào giằng 2 phía sau.\n\n"
+            f"D2. TAY NẮM (cả 4 cánh, khung cam) – khe {P['handle_w']}×{P['handle_h']} xuyên lam\n"
+            f"• Khoan 2 lỗ Ø{P['handle_w']} (mũi khoét) cách tâm {P['handle_h'] - P['handle_w']}, cưa lọng nối 2 lỗ.\n"
+            "• Chà nhám mép, vê tròn ~R2 cả mặt trước + sau (WPC sắc, dễ xước tay).\n"
+            "• Không lồi ra trước → 2 cánh lùa qua nhau không vướng. Nên khoét TRƯỚC khi lắp lam.\n"
+            "• TODO nếu muốn đẹp hơn: ốp viền nhựa/nhôm lòng khe (đo theo hàng mua).\n\n"
             "E. TRÌNH TỰ\n"
             "1. Khung sơn khô → đặt khung nằm sấp (mặt trước xuống, lót thảm).\n"
             "2. Thả lam vào viền từ phía sau, L1 → L4, chêm khe đều.\n"

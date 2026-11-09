@@ -60,7 +60,7 @@ Kết quả: `wardrobe.blend`, `renders/00-contact-sheet.png`, `bom.csv` (vật 
 - **Bánh dẫn hướng trên** Ø25 trục đứng, 2 bánh/cánh cách mép 60, ăn vào máng 20.
 - **Lắp**: nâng cánh 25 đẩy bánh trên vào máng → hạ bánh dưới lên gờ → vặn **khóa chống nhảy** lên (khe còn 5 < 8 = độ nâng
   để bánh dưới thoát gờ) → không nhấc cánh ra được. Script tự kiểm 4 điều kiện (`PASS lap_dat/an_khop/chong_nhay/vung_ray`).
-- Chặn cuối cao su 2 đầu mỗi máng; viền sắt cánh làm tay nắm; ron chổi ở mép chồng mí.
+- Chặn cuối cao su 2 đầu mỗi máng; ron chổi ở mép chồng mí. Tay nắm: xem mục **Tay nắm** bên dưới.
 - Mép dưới cánh cách gờ 7, mép trên cách miệng máng 5 → đỉnh dầm 3055.
 
 **Chọn mua (tiết kiệm):** mua **bộ cửa lùa đỡ dưới** (bánh dưới + bánh trên + ray dưới/trên cùng hãng) – rẻ hơn mua lẻ và
@@ -96,6 +96,16 @@ khớp nhau. Khi mua, đối chiếu 4 số với model: chiều cao gờ ray d�
 - Script kiểm thêm: `khoa_tren_lam` (lỗ khóa không cắt viền), `khoa_an_vien` (hành trình chốt ≥ khe + 5), `chot_bi`.
 - TODO theo khóa mua: đường kính mặt khóa, hành trình chốt (đang giả định 14), chiều dài thân.
 
+## Tay nắm (Tuan 2026-11-09 "thiếu tay nắm"; ảnh `renders/08-chi-tiet-tay-nam.png`, tờ `16-lam-song.png` khung cam)
+- **Khe nắm xuyên lam 30 × 200** bo tròn 2 đầu, mỗi cánh 1 khe, tâm cao **1000 từ sàn** (TODO chỉnh theo người dùng).
+  Gia công: khoan 2 lỗ Ø30 cách tâm 170 + cưa lọng nối, chà nhám vê mép ~R2. Khoét **trước** khi lắp lam. Không tốn phụ kiện.
+- Lý do không dùng tay nắm lồi: 2 cánh lùa qua nhau chỉ cách 8 → tay nắm lồi trên cánh ray trong sẽ cào cánh ray ngoài.
+  Tay nắm âm mua sẵn (chén âm) cũng khó: mặt lam có sóng, mép chén không áp phẳng.
+- Vị trí (đối xứng mặt tiền, x từ tường trái): C1 giữa L3 (571), C2 giữa L4 (1410), C3 giữa L1 (1590), C4 giữa L1 (2429).
+- Script kiểm: `tay_nam_ne` (khe cách giằng sau + lỗ khóa ≥ 30, sau khe trống để móc tay) và `tay_nam_thay`
+  (cánh ray trong: đóng cửa thấy tay nắm; lùa hết vẫn có cách kéo về – C4 lùa trái bị C3 che kín, phải lùa C3 sang phải trước).
+- TODO nếu muốn đẹp hơn: ốp viền nhựa/nhôm lòng khe theo hàng mua.
+
 ## Danh sách mua phụ kiện (giữ thiết kế bánh đỡ dưới + dẫn hướng trên, cánh ước 50–70 kg)
 Tải mỗi bánh dưới ≥ (khối lượng cánh ÷ 2) × 1,5 → cánh 50 kg: 38 kg/bánh · 60 kg: 45 · 70 kg: 53. **Cân 1 thanh lam để chốt.**
 
@@ -125,3 +135,4 @@ Tải mỗi bánh dưới ≥ (khối lượng cánh ÷ 2) × 1,5 → cánh 50 k
 - Khung sắt **phải bắt nở vào tường** ở cả 3 phía + sàn. Không để khung tự đứng.
 - Cánh cao 2,9 m, nặng: 2 người lắp, có chặn chống nhảy ray và chặn cuối ray. Trẻ nhỏ dễ kẹt tay ở chỗ chồng mí.
 - Khoan tường: dò đường điện âm trước khi khoan.
+- Khe tay nắm cánh ngoài: trẻ thò ngón tay sâu qua khe có thể chạm cánh trong khi lùa → dặn không thò tay khi đang lùa; vê mép khe.
