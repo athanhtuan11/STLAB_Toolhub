@@ -15,7 +15,13 @@ Ghi chú phương pháp: số liệu lấy từ trang nguồn qua WebFetch (tóm
 - Là gì: quadruped mini ESP32, mặt OLED, web UI + JSON API + serial CLI. https://github.com/dorianborian/sesame-robot
 - License Apache-2.0; ~4993 sao; pushed 2026-11-08 (api.github.com/repos/dorianborian/sesame-robot).
 - BOM: 8 servo MG90 180°, 2 servo/chân; MCU khuyến nghị Lolin S2 Mini (hoặc board Sesame Distro V3); nguồn 5 V 3 A (USB-C PD hoặc pin + buck); tác giả ước tính 50-60 USD phần cứng. (cùng nguồn)
-- In: có STL, thiết kế cho PLA, ít support; hướng dẫn in trong repo. Kích thước chi tiết: TODO (chưa đọc STL). Vì là mini nên gần như chắc nằm gọn bàn A1 256x256 mm, nhưng TODO kiểm bằng file thật.
+- In: có STL (tác giả đã in + chạy thật → dùng làm chuẩn thông số), thiết kế cho PLA; hướng dẫn `hardware/printing/README.md`: infill 8-10 %, 2 wall, honeycomb; chỉ Top Cover cần support (tô tay), khớp chân không support, Top Cover nên brim ngoài.
+- Đo trực tiếp STL (commit bb87021, 2026-11-08, trimesh): toàn bộ chi tiết ≤ 79,2 mm → vừa bàn A1 256x256 mm thoải mái, 1 bàn in được cả bộ.
+  - Internal-Frame-v121 79,2 x 15,7 x 68,1 mm; Bottom-Cover-v121 79,2 x 7,3 x 54,2 mm; Top-Cover-Enclosed-v117 79,2 x 38,2 x 37,4 mm (mesh không kín, cần sửa khi slice) / Cat-v100 79,2 x 43,1 x 37,6 mm / No-Ears-v100 79,2 x 33,7 x 37,4 mm.
+  - Khớp L1/L2/R1/R2: 20,3 x 30,5 x 49,5 mm (mỗi cái 5,2 cm³); L3/L4/R3/R4: 9,5 x 19,0 x 58,4 mm (4,7 cm³).
+  - Thể tích đặc 100 % cả bộ (frame + bottom + 8 khớp + 1 top cover) ≈ 108 cm³ (top Cat) → cận trên ~137 g PETG (1,27 g/cm³); thực tế infill 10 % nhẹ hơn nhiều: TODO cân bằng slice.py.
+- BOM gốc (`hardware/bom/README.md`): 8x MG90S **loại 180°** (tác giả nhấn mạnh, loại 360° không chạy), OLED SSD1306 0,96" I2C, công tắc KCD1, ESP32-S2 Mini (Lolin) + perfboard 5x7 cm + buck 5 V/3 A, ốc M2x5 tự ren ~40, M2.5x5 máy x10 (bắt horn servo), pin Bambu Lab 14500 7,4 V 800 mAh (vừa hốc khung v121). Nguồn ≥ 5 V/3 A.
+- An toàn: pin Li-ion 2S 7,4 V – không cắt giắc gốc của pin, làm dây chuyển XT30/JST; đi qua công tắc + buck trước khi vào rail; bọc co nhiệt mọi mối hàn.
 - Độ chín: firmware mô tả "basic implementation"; có Sesame Studio (animation), simulator, ML tools, Discord hỗ trợ. 171 commit.
 - Nhược: 8 DOF, chỉ 2 khớp/chân, đi đơn giản; MG90 hay nóng/mòn bánh răng nhựa (nhận xét của mình, chưa có nguồn).
 
