@@ -1,0 +1,22 @@
+﻿vat_lieu,dai_mm,rong_mm,day_mm,loai,so_luong,vua_kho_2440x1220
+carcass,2300,800,17.0,trai,1,OK
+carcass,2300,700,17.0,phai,1,OK
+carcass,2300,700,17.0,trai,1,OK
+carcass,2300,800,17.0,phai,1,OK
+carcass,2186,691,17.0,giua,2,OK
+carcass,1454.0,800,17,day,2,OK
+carcass,1454.0,700,17,tran,2,OK
+carcass,1454.0,80,17,chan,2,OK
+carcass,1454.0,700,17,day,2,OK
+carcass,1454.0,800,17,tran,2,OK
+carcass,800,600,17.0,trai,1,OK
+carcass,800,600,17.0,phai,1,OK
+carcass,700,600,17.0,phai,1,OK
+carcass,700,600,17.0,trai,1,OK
+carcass,691,566,17.0,giua,2,OK
+back,2186,727.0,9,hau,4,OK
+back,1454.0,566,9,hau,2,OK
+
+ong inox tron,,,Ø27,ong treo,6,dai moi ong 716.5
+lam song,2900,,,op 2 vach ngoai (nguyen cay),,TODO so thanh = 800/rong thanh x 2
+lam song,2681,,,dan 4 canh (cat tu thanh 2900),,TODO so thanh = 726/rong thanh x 4

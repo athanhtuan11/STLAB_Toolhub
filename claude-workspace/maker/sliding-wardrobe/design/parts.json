@@ -1,0 +1,1126 @@
+{
+ "meta": {
+  "P": {
+   "W": 3000,
+   "H": 2900,
+   "D": 800,
+   "T": 17,
+   "T_back": 9,
+   "H_low": 2300,
+   "plinth": 80,
+   "DZ": 100,
+   "door_n": 4,
+   "door_ov": 40,
+   "door_t": 18,
+   "gap_top": 40,
+   "gap_bot": 15,
+   "lam_pitch": 30,
+   "lam_r": 6,
+   "rod_d": 27,
+   "slide_len": 550,
+   "clad_t": 12,
+   "clad_sides": true
+  },
+  "W_body": 2976,
+  "CL": 12,
+  "BAYS": [
+   {
+    "name": "K1 treo 2 tang",
+    "drawers": [],
+    "shelves": [],
+    "rods": [
+     2050,
+     1030
+    ]
+   },
+   {
+    "name": "K2 treo dai",
+    "drawers": [],
+    "shelves": [],
+    "rods": [
+     1950
+    ]
+   },
+   {
+    "name": "K3 treo dai",
+    "drawers": [],
+    "shelves": [],
+    "rods": [
+     1950
+    ]
+   },
+   {
+    "name": "K4 treo 2 tang",
+    "drawers": [],
+    "shelves": [],
+    "rods": [
+     2050,
+     1030
+    ]
+   }
+  ],
+  "bay_x": [
+   [
+    17.0,
+    735.5
+   ],
+   [
+    752.5,
+    1471.0
+   ],
+   [
+    1505.0,
+    2223.5
+   ],
+   [
+    2240.5,
+    2959.0
+   ]
+  ],
+  "door_w": 765.5,
+  "door_h": 2746,
+  "door_z": [
+   112,
+   2858
+  ]
+ },
+ "parts": [
+  {
+   "name": "Duoi-L-vach-trai",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    0.0,
+    17.0,
+    0,
+    800,
+    0,
+    2300
+   ],
+   "L": 2300,
+   "Wd": 800,
+   "Th": 17.0
+  },
+  {
+   "name": "Noc-L-vach-trai",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    0.0,
+    17.0,
+    0,
+    800,
+    2300,
+    2900
+   ],
+   "L": 800,
+   "Wd": 600,
+   "Th": 17.0
+  },
+  {
+   "name": "Duoi-L-vach-phai",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    1471.0,
+    1488.0,
+    100,
+    800,
+    0,
+    2300
+   ],
+   "L": 2300,
+   "Wd": 700,
+   "Th": 17.0
+  },
+  {
+   "name": "Noc-L-vach-phai",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    1471.0,
+    1488.0,
+    100,
+    800,
+    2300,
+    2900
+   ],
+   "L": 700,
+   "Wd": 600,
+   "Th": 17.0
+  },
+  {
+   "name": "Duoi-L-day",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    17.0,
+    1471.0,
+    0,
+    800,
+    80,
+    97
+   ],
+   "L": 1454.0,
+   "Wd": 800,
+   "Th": 17
+  },
+  {
+   "name": "Duoi-L-tran",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    17.0,
+    1471.0,
+    100,
+    800,
+    2283,
+    2300
+   ],
+   "L": 1454.0,
+   "Wd": 700,
+   "Th": 17
+  },
+  {
+   "name": "Duoi-L-chan",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    17.0,
+    1471.0,
+    40,
+    57,
+    0,
+    80
+   ],
+   "L": 1454.0,
+   "Wd": 80,
+   "Th": 17
+  },
+  {
+   "name": "Duoi-L-vach-giua",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    735.5,
+    752.5,
+    100,
+    791,
+    97,
+    2283
+   ],
+   "L": 2186,
+   "Wd": 691,
+   "Th": 17.0
+  },
+  {
+   "name": "Duoi-L-hau1",
+   "group": "Than",
+   "mat": "back",
+   "cut": true,
+   "bbox": [
+    17.0,
+    744.0,
+    791,
+    800,
+    97,
+    2283
+   ],
+   "L": 2186,
+   "Wd": 727.0,
+   "Th": 9
+  },
+  {
+   "name": "Duoi-L-hau2",
+   "group": "Than",
+   "mat": "back",
+   "cut": true,
+   "bbox": [
+    744.0,
+    1471.0,
+    791,
+    800,
+    97,
+    2283
+   ],
+   "L": 2186,
+   "Wd": 727.0,
+   "Th": 9
+  },
+  {
+   "name": "Noc-L-day",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    17.0,
+    1471.0,
+    100,
+    800,
+    2300,
+    2317
+   ],
+   "L": 1454.0,
+   "Wd": 700,
+   "Th": 17
+  },
+  {
+   "name": "Noc-L-tran",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    17.0,
+    1471.0,
+    0,
+    800,
+    2883,
+    2900
+   ],
+   "L": 1454.0,
+   "Wd": 800,
+   "Th": 17
+  },
+  {
+   "name": "Noc-L-vach-giua",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    735.5,
+    752.5,
+    100,
+    791,
+    2317,
+    2883
+   ],
+   "L": 691,
+   "Wd": 566,
+   "Th": 17.0
+  },
+  {
+   "name": "Noc-L-hau",
+   "group": "Than",
+   "mat": "back",
+   "cut": true,
+   "bbox": [
+    17.0,
+    1471.0,
+    791,
+    800,
+    2317,
+    2883
+   ],
+   "L": 1454.0,
+   "Wd": 566,
+   "Th": 9
+  },
+  {
+   "name": "Duoi-R-vach-trai",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    1488.0,
+    1505.0,
+    100,
+    800,
+    0,
+    2300
+   ],
+   "L": 2300,
+   "Wd": 700,
+   "Th": 17.0
+  },
+  {
+   "name": "Noc-R-vach-trai",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    1488.0,
+    1505.0,
+    100,
+    800,
+    2300,
+    2900
+   ],
+   "L": 700,
+   "Wd": 600,
+   "Th": 17.0
+  },
+  {
+   "name": "Duoi-R-vach-phai",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    2959.0,
+    2976.0,
+    0,
+    800,
+    0,
+    2300
+   ],
+   "L": 2300,
+   "Wd": 800,
+   "Th": 17.0
+  },
+  {
+   "name": "Noc-R-vach-phai",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    2959.0,
+    2976.0,
+    0,
+    800,
+    2300,
+    2900
+   ],
+   "L": 800,
+   "Wd": 600,
+   "Th": 17.0
+  },
+  {
+   "name": "Duoi-R-day",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    1505.0,
+    2959.0,
+    0,
+    800,
+    80,
+    97
+   ],
+   "L": 1454.0,
+   "Wd": 800,
+   "Th": 17
+  },
+  {
+   "name": "Duoi-R-tran",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    1505.0,
+    2959.0,
+    100,
+    800,
+    2283,
+    2300
+   ],
+   "L": 1454.0,
+   "Wd": 700,
+   "Th": 17
+  },
+  {
+   "name": "Duoi-R-chan",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    1505.0,
+    2959.0,
+    40,
+    57,
+    0,
+    80
+   ],
+   "L": 1454.0,
+   "Wd": 80,
+   "Th": 17
+  },
+  {
+   "name": "Duoi-R-vach-giua",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    2223.5,
+    2240.5,
+    100,
+    791,
+    97,
+    2283
+   ],
+   "L": 2186,
+   "Wd": 691,
+   "Th": 17.0
+  },
+  {
+   "name": "Duoi-R-hau1",
+   "group": "Than",
+   "mat": "back",
+   "cut": true,
+   "bbox": [
+    1505.0,
+    2232.0,
+    791,
+    800,
+    97,
+    2283
+   ],
+   "L": 2186,
+   "Wd": 727.0,
+   "Th": 9
+  },
+  {
+   "name": "Duoi-R-hau2",
+   "group": "Than",
+   "mat": "back",
+   "cut": true,
+   "bbox": [
+    2232.0,
+    2959.0,
+    791,
+    800,
+    97,
+    2283
+   ],
+   "L": 2186,
+   "Wd": 727.0,
+   "Th": 9
+  },
+  {
+   "name": "Noc-R-day",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    1505.0,
+    2959.0,
+    100,
+    800,
+    2300,
+    2317
+   ],
+   "L": 1454.0,
+   "Wd": 700,
+   "Th": 17
+  },
+  {
+   "name": "Noc-R-tran",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    1505.0,
+    2959.0,
+    0,
+    800,
+    2883,
+    2900
+   ],
+   "L": 1454.0,
+   "Wd": 800,
+   "Th": 17
+  },
+  {
+   "name": "Noc-R-vach-giua",
+   "group": "Than",
+   "mat": "carcass",
+   "cut": true,
+   "bbox": [
+    2223.5,
+    2240.5,
+    100,
+    791,
+    2317,
+    2883
+   ],
+   "L": 691,
+   "Wd": 566,
+   "Th": 17.0
+  },
+  {
+   "name": "Noc-R-hau",
+   "group": "Than",
+   "mat": "back",
+   "cut": true,
+   "bbox": [
+    1505.0,
+    2959.0,
+    791,
+    800,
+    2317,
+    2883
+   ],
+   "L": 1454.0,
+   "Wd": 566,
+   "Th": 9
+  },
+  {
+   "name": "K1-ong-treo-2050",
+   "group": "Phu kien",
+   "mat": "rod",
+   "cut": false,
+   "bbox": [
+    17.0,
+    735.5,
+    433.0,
+    458.0,
+    2037.5,
+    2062.5
+   ],
+   "L": 716.5,
+   "Wd": 27,
+   "Th": 27
+  },
+  {
+   "name": "K1-ong-treo-1030",
+   "group": "Phu kien",
+   "mat": "rod",
+   "cut": false,
+   "bbox": [
+    17.0,
+    735.5,
+    433.0,
+    458.0,
+    1017.5,
+    1042.5
+   ],
+   "L": 716.5,
+   "Wd": 27,
+   "Th": 27
+  },
+  {
+   "name": "K2-ong-treo-1950",
+   "group": "Phu kien",
+   "mat": "rod",
+   "cut": false,
+   "bbox": [
+    752.5,
+    1471.0,
+    433.0,
+    458.0,
+    1937.5,
+    1962.5
+   ],
+   "L": 716.5,
+   "Wd": 27,
+   "Th": 27
+  },
+  {
+   "name": "K3-ong-treo-1950",
+   "group": "Phu kien",
+   "mat": "rod",
+   "cut": false,
+   "bbox": [
+    1505.0,
+    2223.5,
+    433.0,
+    458.0,
+    1937.5,
+    1962.5
+   ],
+   "L": 716.5,
+   "Wd": 27,
+   "Th": 27
+  },
+  {
+   "name": "K4-ong-treo-2050",
+   "group": "Phu kien",
+   "mat": "rod",
+   "cut": false,
+   "bbox": [
+    2240.5,
+    2959.0,
+    433.0,
+    458.0,
+    2037.5,
+    2062.5
+   ],
+   "L": 716.5,
+   "Wd": 27,
+   "Th": 27
+  },
+  {
+   "name": "K4-ong-treo-1030",
+   "group": "Phu kien",
+   "mat": "rod",
+   "cut": false,
+   "bbox": [
+    2240.5,
+    2959.0,
+    433.0,
+    458.0,
+    1017.5,
+    1042.5
+   ],
+   "L": 716.5,
+   "Wd": 27,
+   "Th": 27
+  },
+  {
+   "name": "Ray-tren",
+   "group": "Ray",
+   "mat": "alu",
+   "cut": false,
+   "bbox": [
+    17,
+    2959,
+    5,
+    95,
+    2843,
+    2883
+   ],
+   "L": 2942,
+   "Wd": 90,
+   "Th": 40
+  },
+  {
+   "name": "Ray-duoi",
+   "group": "Ray",
+   "mat": "alu",
+   "cut": false,
+   "bbox": [
+    17,
+    2959,
+    5,
+    95,
+    97,
+    107
+   ],
+   "L": 2942,
+   "Wd": 90,
+   "Th": 10
+  },
+  {
+   "name": "Canh1-tam",
+   "group": "Canh 1",
+   "mat": "door",
+   "cut": false,
+   "bbox": [
+    37.0,
+    762.5,
+    24.0,
+    39.0,
+    112,
+    2858
+   ],
+   "L": 2746,
+   "Wd": 725.5,
+   "Th": 15.0
+  },
+  {
+   "name": "Canh1-khung-trai",
+   "group": "Canh 1",
+   "mat": "alu",
+   "cut": false,
+   "bbox": [
+    17.0,
+    37.0,
+    17.0,
+    39.0,
+    112,
+    2858
+   ],
+   "L": 2746,
+   "Wd": 22.0,
+   "Th": 20.0
+  },
+  {
+   "name": "Canh1-khung-phai",
+   "group": "Canh 1",
+   "mat": "alu",
+   "cut": false,
+   "bbox": [
+    762.5,
+    782.5,
+    17.0,
+    39.0,
+    112,
+    2858
+   ],
+   "L": 2746,
+   "Wd": 22.0,
+   "Th": 20.0
+  },
+  {
+   "name": "Canh1-khung-tren",
+   "group": "Canh 1",
+   "mat": "alu",
+   "cut": false,
+   "bbox": [
+    37.0,
+    762.5,
+    21.0,
+    39.0,
+    2833,
+    2858
+   ],
+   "L": 725.5,
+   "Wd": 25,
+   "Th": 18.0
+  },
+  {
+   "name": "Canh1-khung-duoi",
+   "group": "Canh 1",
+   "mat": "alu",
+   "cut": false,
+   "bbox": [
+    37.0,
+    762.5,
+    21.0,
+    39.0,
+    112,
+    152
+   ],
+   "L": 725.5,
+   "Wd": 40,
+   "Th": 18.0
+  },
+  {
+   "name": "Canh2-tam",
+   "group": "Canh 2",
+   "mat": "door",
+   "cut": false,
+   "bbox": [
+    762.5,
+    1488.0,
+    66.0,
+    81.0,
+    112,
+    2858
+   ],
+   "L": 2746,
+   "Wd": 725.5,
+   "Th": 15.0
+  },
+  {
+   "name": "Canh2-khung-trai",
+   "group": "Canh 2",
+   "mat": "alu",
+   "cut": false,
+   "bbox": [
+    742.5,
+    762.5,
+    59.0,
+    81.0,
+    112,
+    2858
+   ],
+   "L": 2746,
+   "Wd": 22.0,
+   "Th": 20.0
+  },
+  {
+   "name": "Canh2-khung-phai",
+   "group": "Canh 2",
+   "mat": "alu",
+   "cut": false,
+   "bbox": [
+    1488.0,
+    1508.0,
+    59.0,
+    81.0,
+    112,
+    2858
+   ],
+   "L": 2746,
+   "Wd": 22.0,
+   "Th": 20.0
+  },
+  {
+   "name": "Canh2-khung-tren",
+   "group": "Canh 2",
+   "mat": "alu",
+   "cut": false,
+   "bbox": [
+    762.5,
+    1488.0,
+    63.0,
+    81.0,
+    2833,
+    2858
+   ],
+   "L": 725.5,
+   "Wd": 25,
+   "Th": 18.0
+  },
+  {
+   "name": "Canh2-khung-duoi",
+   "group": "Canh 2",
+   "mat": "alu",
+   "cut": false,
+   "bbox": [
+    762.5,
+    1488.0,
+    63.0,
+    81.0,
+    112,
+    152
+   ],
+   "L": 725.5,
+   "Wd": 40,
+   "Th": 18.0
+  },
+  {
+   "name": "Canh3-tam",
+   "group": "Canh 3",
+   "mat": "door",
+   "cut": false,
+   "bbox": [
+    1488.0,
+    2213.5,
+    24.0,
+    39.0,
+    112,
+    2858
+   ],
+   "L": 2746,
+   "Wd": 725.5,
+   "Th": 15.0
+  },
+  {
+   "name": "Canh3-khung-trai",
+   "group": "Canh 3",
+   "mat": "alu",
+   "cut": false,
+   "bbox": [
+    1468.0,
+    1488.0,
+    17.0,
+    39.0,
+    112,
+    2858
+   ],
+   "L": 2746,
+   "Wd": 22.0,
+   "Th": 20.0
+  },
+  {
+   "name": "Canh3-khung-phai",
+   "group": "Canh 3",
+   "mat": "alu",
+   "cut": false,
+   "bbox": [
+    2213.5,
+    2233.5,
+    17.0,
+    39.0,
+    112,
+    2858
+   ],
+   "L": 2746,
+   "Wd": 22.0,
+   "Th": 20.0
+  },
+  {
+   "name": "Canh3-khung-tren",
+   "group": "Canh 3",
+   "mat": "alu",
+   "cut": false,
+   "bbox": [
+    1488.0,
+    2213.5,
+    21.0,
+    39.0,
+    2833,
+    2858
+   ],
+   "L": 725.5,
+   "Wd": 25,
+   "Th": 18.0
+  },
+  {
+   "name": "Canh3-khung-duoi",
+   "group": "Canh 3",
+   "mat": "alu",
+   "cut": false,
+   "bbox": [
+    1488.0,
+    2213.5,
+    21.0,
+    39.0,
+    112,
+    152
+   ],
+   "L": 725.5,
+   "Wd": 40,
+   "Th": 18.0
+  },
+  {
+   "name": "Canh4-tam",
+   "group": "Canh 4",
+   "mat": "door",
+   "cut": false,
+   "bbox": [
+    2213.5,
+    2939.0,
+    66.0,
+    81.0,
+    112,
+    2858
+   ],
+   "L": 2746,
+   "Wd": 725.5,
+   "Th": 15.0
+  },
+  {
+   "name": "Canh4-khung-trai",
+   "group": "Canh 4",
+   "mat": "alu",
+   "cut": false,
+   "bbox": [
+    2193.5,
+    2213.5,
+    59.0,
+    81.0,
+    112,
+    2858
+   ],
+   "L": 2746,
+   "Wd": 22.0,
+   "Th": 20.0
+  },
+  {
+   "name": "Canh4-khung-phai",
+   "group": "Canh 4",
+   "mat": "alu",
+   "cut": false,
+   "bbox": [
+    2939.0,
+    2959.0,
+    59.0,
+    81.0,
+    112,
+    2858
+   ],
+   "L": 2746,
+   "Wd": 22.0,
+   "Th": 20.0
+  },
+  {
+   "name": "Canh4-khung-tren",
+   "group": "Canh 4",
+   "mat": "alu",
+   "cut": false,
+   "bbox": [
+    2213.5,
+    2939.0,
+    63.0,
+    81.0,
+    2833,
+    2858
+   ],
+   "L": 725.5,
+   "Wd": 25,
+   "Th": 18.0
+  },
+  {
+   "name": "Canh4-khung-duoi",
+   "group": "Canh 4",
+   "mat": "alu",
+   "cut": false,
+   "bbox": [
+    2213.5,
+    2939.0,
+    63.0,
+    81.0,
+    112,
+    152
+   ],
+   "L": 725.5,
+   "Wd": 40,
+   "Th": 18.0
+  },
+  {
+   "name": "Op-lam-song-trai",
+   "group": "Op lam song",
+   "mat": "door",
+   "cut": false,
+   "bbox": [
+    -12,
+    -6,
+    0,
+    800,
+    0,
+    2900
+   ],
+   "L": 2900,
+   "Wd": 800,
+   "Th": 6
+  },
+  {
+   "name": "Op-lam-song-phai",
+   "group": "Op lam song",
+   "mat": "door",
+   "cut": false,
+   "bbox": [
+    2982,
+    2988,
+    0,
+    800,
+    0,
+    2900
+   ],
+   "L": 2900,
+   "Wd": 800,
+   "Th": 6
+  },
+  {
+   "name": "Op-lam-song (2 vach)",
+   "group": "Op lam song",
+   "mat": "door",
+   "cut": false,
+   "bbox": [
+    -12,
+    2988,
+    0,
+    800,
+    0,
+    2900
+   ],
+   "L": 2900,
+   "Wd": 800,
+   "Th": 12
+  },
+  {
+   "name": "San",
+   "group": "Moi truong",
+   "mat": "back",
+   "cut": false,
+   "bbox": [
+    -1500,
+    4476,
+    -2500,
+    850,
+    -5,
+    0
+   ],
+   "L": 5976,
+   "Wd": 3350,
+   "Th": 5
+  },
+  {
+   "name": "Tuong",
+   "group": "Moi truong",
+   "mat": "back",
+   "cut": false,
+   "bbox": [
+    -1500,
+    4476,
+    800,
+    810,
+    0,
+    3200
+   ],
+   "L": 5976,
+   "Wd": 3200,
+   "Th": 10
+  }
+ ]
+}
