@@ -1,5 +1,5 @@
 ﻿vat_tu,dai_mm,vi_tri,so_luong
-Ban de 100x100x4,,de cot giua bat no san,3
+Ban de 60x60x4,,de cot giua bat no san,15
 Chan cuoi cao su,,2 dau moi mang tren,4
 Lam song 220x2900x26,2900,"canh (nguyen cay, khong cat)",14
 Ong inox tron Ø27,598.7,ong treo,4
@@ -12,15 +12,15 @@ Sat hop 20x40,662.0,vien-ngang-duoi,2
 Sat hop 20x40,662.0,vien-ngang-tren,2
 Sat hop 20x40,882.0,vien-ngang-duoi,2
 Sat hop 20x40,882.0,vien-ngang-tren,2
-Sat hop 40x40,2260,cot-giua,5
+Sat hop 40x40,2256,cot-giua,5
 Sat hop 40x40,3000,ke-truoc,1
 Sat hop 40x40,3000,ke-sau,1
 Sat hop 40x40,3000,dinh-truoc,1
 Sat hop 40x40,3000,dinh-sau,1
+Sat hop 40x40,3011.0,cot-truoc,5
+Sat hop 40x40,3011.0,cot-sau,5
 Sat hop 40x40,600,dam-ke,5
 Sat hop 40x40,600,dam-dinh,5
-Sat hop 40x40,715.0,cot-tren-truoc,5
-Sat hop 40x40,715.0,cot-tren-sau,5
 Sat hop 40x80,3000,dau-cua,1
 Van ke 17,680 x 620.7,ke hop noc,2
 Van ke 17,839.3 x 680,ke hop noc,2
@@ -34,4 +34,4 @@ Vit bi lo xo (chot bi) gan tren khoa chong nhay,,1/canh,4
 Khoa an tu cua lua (push lock) DONG CHIA,,3 cho chong mi,3
 Ron choi chong bui (mep chong mi),2900,1/canh,4
 LUU Y,,tai moi banh >= (khoi luong canh / 2) x 1.5 – can 1 thanh lam truoc khi mua,
-Khoi luong sat uoc tinh (kg),109.0,do day 1.4/1.2 gia dinh,
+Khoi luong sat uoc tinh (kg),147.9,do day 1.4/1.2 gia dinh,

@@ -40,10 +40,16 @@ Kết quả: `wardrobe.blend`, `renders/00-contact-sheet.png`, `bom.csv` (vật 
 
 ## Khung sắt (hộp 40×40×1,4 sơn tĩnh điện, dầm đầu cửa 40×80)
 - 5 khung đứng: 2 khung áp tường trái/phải + 3 khung ở chỗ chồng mí cánh, nên cột không cản lối lấy đồ.
-  Mỗi khung gồm: cột giữa (sàn → 2260, bắt bát ống treo), dầm đỡ kệ, 2 cột trên + dầm đỉnh (vùng hộp nóc).
+- Mỗi khung là **khung chữ nhật kín** (sửa 2026-11-09, Tuan thấy ngang kệ trước không có chống):
+  cột trước + cột sau **suốt sàn → đỉnh**, cột giữa (sàn → 2260, hàn tai đỡ ống treo), dầm kệ + dầm đỉnh.
+  Ngang kệ trước/sau tựa thẳng lên cột → tải hộp nóc xuống sàn, không còn công-xôn.
+  Cột trước cách tim ống ~300: móc áo rộng 450 không chạm.
 - 4 thanh ngang tường – tường (kệ trước/sau, đỉnh trước/sau) + dầm đầu cửa 40×80 bắt ray trên.
-- Bắt vào tường bằng bát + nở sắt ở 2 tường bên và tường sau. Cột giữa có bản đế 100×100×4 bắt nở xuống sàn.
-- Vật tư (`bom.csv`): ~36,5 m hộp 40×40, 3 m hộp 40×80, 29,7 m hộp 20×40 + 12,4 m hộp 13×26 (cánh), tổng ~109 kg
+- Mỗi chân cột có bản đế 60×60×4 (tì sàn, bắt nở tùy chọn). Bắt vào tường bằng bát + nở ở 2 tường bên và tường sau
+  (tường nhà Tuan – chọn bắt nở 2026-11-09).
+- **Ống treo** Ø27 × 1,0 inox, nhịp lớn nhất 799: treo 40 kg/ống → ứng suất 77 MPa, võng 2,0 mm (PASS).
+  Giới hạn ~52 kg/ống với dày 1,0; dày 1,2 → ~61 kg/ống. Ống bắt vào tai hàn trên cột giữa (không bắt vít vào hộp 1,4).
+- Vật tư (`bom.csv`): ~59,4 m hộp 40×40, 3 m hộp 40×80, 29,7 m hộp 20×40 + 12,4 m hộp 13×26 (cánh), tổng ~148 kg
   (tính theo độ dày giả định, TODO theo hàng mua).
 
 ## Cửa lùa – bánh đỡ dưới + bánh dẫn hướng trên (bản vẽ `renders/12-chi-tiet-ray.png`)

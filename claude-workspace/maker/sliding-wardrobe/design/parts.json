@@ -63,7 +63,11 @@
    ],
    "z_shelf": 2300,
    "board_t": 17,
-   "rod_d": 27
+   "rod_d": 27,
+   "rod_t": 1.0,
+   "rod_load_kg": 40,
+   "rod_sigma_max": 100,
+   "rod_defl_max": 3
   },
   "LOCKS": [
    {
@@ -161,6 +165,14 @@
    "chot_bi": [
     true,
     "bi lo xo chạm lung mang, lo nho hon bi (bi khong lot)"
+   ],
+   "ong_ben": [
+    true,
+    "ong O27x1.0 nhip 799 tai 40 kg: ung suat 77 MPa <= 100"
+   ],
+   "ong_vong": [
+    true,
+    "vong giua nhip 2.0 mm <= 3"
    ]
   },
   "x_lines": [
@@ -204,6 +216,42 @@
  },
  "parts": [
   {
+   "name": "KD0-cot-truoc",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    0.0,
+    40.0,
+    120.0,
+    160.0,
+    4,
+    3015.0
+   ],
+   "L": 3011.0,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD0-cot-sau",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    0.0,
+    40.0,
+    760.0,
+    800.0,
+    4,
+    3015.0
+   ],
+   "L": 3011.0,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
    "name": "KD0-cot-giua",
    "group": "Khung sat",
    "mat": "steel",
@@ -214,10 +262,10 @@
     40.0,
     440.0,
     480.0,
-    0,
+    4,
     2260
    ],
-   "L": 2260,
+   "L": 2256,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -240,42 +288,6 @@
    "Th": 40.0
   },
   {
-   "name": "KD0-cot-tren-truoc",
-   "group": "Khung sat",
-   "mat": "steel",
-   "kind": "steel",
-   "spec": "40x40",
-   "bbox": [
-    0.0,
-    40.0,
-    120.0,
-    160.0,
-    2300,
-    3015.0
-   ],
-   "L": 715.0,
-   "Wd": 40.0,
-   "Th": 40.0
-  },
-  {
-   "name": "KD0-cot-tren-sau",
-   "group": "Khung sat",
-   "mat": "steel",
-   "kind": "steel",
-   "spec": "40x40",
-   "bbox": [
-    0.0,
-    40.0,
-    760.0,
-    800.0,
-    2300,
-    3015.0
-   ],
-   "L": 715.0,
-   "Wd": 40.0,
-   "Th": 40.0
-  },
-  {
    "name": "KD0-dam-dinh",
    "group": "Khung sat",
    "mat": "steel",
@@ -294,6 +306,96 @@
    "Th": 40.0
   },
   {
+   "name": "KD0-de-cot-truoc",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "plate",
+   "spec": "60x60x4",
+   "bbox": [
+    -10.0,
+    50.0,
+    110.0,
+    170.0,
+    0,
+    4
+   ],
+   "L": 60.0,
+   "Wd": 60.0,
+   "Th": 4
+  },
+  {
+   "name": "KD0-de-cot-giua",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "plate",
+   "spec": "60x60x4",
+   "bbox": [
+    -10.0,
+    50.0,
+    430.0,
+    490.0,
+    0,
+    4
+   ],
+   "L": 60.0,
+   "Wd": 60.0,
+   "Th": 4
+  },
+  {
+   "name": "KD0-de-cot-sau",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "plate",
+   "spec": "60x60x4",
+   "bbox": [
+    -10.0,
+    50.0,
+    750.0,
+    810.0,
+    0,
+    4
+   ],
+   "L": 60.0,
+   "Wd": 60.0,
+   "Th": 4
+  },
+  {
+   "name": "KD1-cot-truoc",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    640.6666666666667,
+    680.6666666666667,
+    120.0,
+    160.0,
+    4,
+    3015.0
+   ],
+   "L": 3011.0,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD1-cot-sau",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    640.6666666666667,
+    680.6666666666667,
+    760.0,
+    800.0,
+    4,
+    3015.0
+   ],
+   "L": 3011.0,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
    "name": "KD1-cot-giua",
    "group": "Khung sat",
    "mat": "steel",
@@ -304,10 +406,10 @@
     680.6666666666667,
     440.0,
     480.0,
-    0,
+    4,
     2260
    ],
-   "L": 2260,
+   "L": 2256,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -330,42 +432,6 @@
    "Th": 40.0
   },
   {
-   "name": "KD1-cot-tren-truoc",
-   "group": "Khung sat",
-   "mat": "steel",
-   "kind": "steel",
-   "spec": "40x40",
-   "bbox": [
-    640.6666666666667,
-    680.6666666666667,
-    120.0,
-    160.0,
-    2300,
-    3015.0
-   ],
-   "L": 715.0,
-   "Wd": 40.0,
-   "Th": 40.0
-  },
-  {
-   "name": "KD1-cot-tren-sau",
-   "group": "Khung sat",
-   "mat": "steel",
-   "kind": "steel",
-   "spec": "40x40",
-   "bbox": [
-    640.6666666666667,
-    680.6666666666667,
-    760.0,
-    800.0,
-    2300,
-    3015.0
-   ],
-   "L": 715.0,
-   "Wd": 40.0,
-   "Th": 40.0
-  },
-  {
    "name": "KD1-dam-dinh",
    "group": "Khung sat",
    "mat": "steel",
@@ -384,22 +450,94 @@
    "Th": 40.0
   },
   {
-   "name": "KD1-de-cot",
+   "name": "KD1-de-cot-truoc",
    "group": "Khung sat",
    "mat": "steel",
    "kind": "plate",
-   "spec": "100x100x4",
+   "spec": "60x60x4",
    "bbox": [
-    610.6666666666667,
-    710.6666666666667,
-    410.0,
-    510.0,
+    630.6666666666667,
+    690.6666666666667,
+    110.0,
+    170.0,
     0,
     4
    ],
-   "L": 100.0,
-   "Wd": 100.0,
+   "L": 60.0,
+   "Wd": 60.0,
    "Th": 4
+  },
+  {
+   "name": "KD1-de-cot-giua",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "plate",
+   "spec": "60x60x4",
+   "bbox": [
+    630.6666666666667,
+    690.6666666666667,
+    430.0,
+    490.0,
+    0,
+    4
+   ],
+   "L": 60.0,
+   "Wd": 60.0,
+   "Th": 4
+  },
+  {
+   "name": "KD1-de-cot-sau",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "plate",
+   "spec": "60x60x4",
+   "bbox": [
+    630.6666666666667,
+    690.6666666666667,
+    750.0,
+    810.0,
+    0,
+    4
+   ],
+   "L": 60.0,
+   "Wd": 60.0,
+   "Th": 4
+  },
+  {
+   "name": "KD2-cot-truoc",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    1480.0,
+    1520.0,
+    120.0,
+    160.0,
+    4,
+    3015.0
+   ],
+   "L": 3011.0,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD2-cot-sau",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    1480.0,
+    1520.0,
+    760.0,
+    800.0,
+    4,
+    3015.0
+   ],
+   "L": 3011.0,
+   "Wd": 40.0,
+   "Th": 40.0
   },
   {
    "name": "KD2-cot-giua",
@@ -412,10 +550,10 @@
     1520.0,
     440.0,
     480.0,
-    0,
+    4,
     2260
    ],
-   "L": 2260,
+   "L": 2256,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -438,42 +576,6 @@
    "Th": 40.0
   },
   {
-   "name": "KD2-cot-tren-truoc",
-   "group": "Khung sat",
-   "mat": "steel",
-   "kind": "steel",
-   "spec": "40x40",
-   "bbox": [
-    1480.0,
-    1520.0,
-    120.0,
-    160.0,
-    2300,
-    3015.0
-   ],
-   "L": 715.0,
-   "Wd": 40.0,
-   "Th": 40.0
-  },
-  {
-   "name": "KD2-cot-tren-sau",
-   "group": "Khung sat",
-   "mat": "steel",
-   "kind": "steel",
-   "spec": "40x40",
-   "bbox": [
-    1480.0,
-    1520.0,
-    760.0,
-    800.0,
-    2300,
-    3015.0
-   ],
-   "L": 715.0,
-   "Wd": 40.0,
-   "Th": 40.0
-  },
-  {
    "name": "KD2-dam-dinh",
    "group": "Khung sat",
    "mat": "steel",
@@ -492,22 +594,94 @@
    "Th": 40.0
   },
   {
-   "name": "KD2-de-cot",
+   "name": "KD2-de-cot-truoc",
    "group": "Khung sat",
    "mat": "steel",
    "kind": "plate",
-   "spec": "100x100x4",
+   "spec": "60x60x4",
    "bbox": [
-    1450.0,
-    1550.0,
-    410.0,
-    510.0,
+    1470.0,
+    1530.0,
+    110.0,
+    170.0,
     0,
     4
    ],
-   "L": 100.0,
-   "Wd": 100.0,
+   "L": 60.0,
+   "Wd": 60.0,
    "Th": 4
+  },
+  {
+   "name": "KD2-de-cot-giua",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "plate",
+   "spec": "60x60x4",
+   "bbox": [
+    1470.0,
+    1530.0,
+    430.0,
+    490.0,
+    0,
+    4
+   ],
+   "L": 60.0,
+   "Wd": 60.0,
+   "Th": 4
+  },
+  {
+   "name": "KD2-de-cot-sau",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "plate",
+   "spec": "60x60x4",
+   "bbox": [
+    1470.0,
+    1530.0,
+    750.0,
+    810.0,
+    0,
+    4
+   ],
+   "L": 60.0,
+   "Wd": 60.0,
+   "Th": 4
+  },
+  {
+   "name": "KD3-cot-truoc",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    2319.3333333333335,
+    2359.3333333333335,
+    120.0,
+    160.0,
+    4,
+    3015.0
+   ],
+   "L": 3011.0,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD3-cot-sau",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    2319.3333333333335,
+    2359.3333333333335,
+    760.0,
+    800.0,
+    4,
+    3015.0
+   ],
+   "L": 3011.0,
+   "Wd": 40.0,
+   "Th": 40.0
   },
   {
    "name": "KD3-cot-giua",
@@ -520,10 +694,10 @@
     2359.3333333333335,
     440.0,
     480.0,
-    0,
+    4,
     2260
    ],
-   "L": 2260,
+   "L": 2256,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -546,42 +720,6 @@
    "Th": 40.0
   },
   {
-   "name": "KD3-cot-tren-truoc",
-   "group": "Khung sat",
-   "mat": "steel",
-   "kind": "steel",
-   "spec": "40x40",
-   "bbox": [
-    2319.3333333333335,
-    2359.3333333333335,
-    120.0,
-    160.0,
-    2300,
-    3015.0
-   ],
-   "L": 715.0,
-   "Wd": 40.0,
-   "Th": 40.0
-  },
-  {
-   "name": "KD3-cot-tren-sau",
-   "group": "Khung sat",
-   "mat": "steel",
-   "kind": "steel",
-   "spec": "40x40",
-   "bbox": [
-    2319.3333333333335,
-    2359.3333333333335,
-    760.0,
-    800.0,
-    2300,
-    3015.0
-   ],
-   "L": 715.0,
-   "Wd": 40.0,
-   "Th": 40.0
-  },
-  {
    "name": "KD3-dam-dinh",
    "group": "Khung sat",
    "mat": "steel",
@@ -600,22 +738,94 @@
    "Th": 40.0
   },
   {
-   "name": "KD3-de-cot",
+   "name": "KD3-de-cot-truoc",
    "group": "Khung sat",
    "mat": "steel",
    "kind": "plate",
-   "spec": "100x100x4",
+   "spec": "60x60x4",
    "bbox": [
-    2289.3333333333335,
-    2389.3333333333335,
-    410.0,
-    510.0,
+    2309.3333333333335,
+    2369.3333333333335,
+    110.0,
+    170.0,
     0,
     4
    ],
-   "L": 100.0,
-   "Wd": 100.0,
+   "L": 60.0,
+   "Wd": 60.0,
    "Th": 4
+  },
+  {
+   "name": "KD3-de-cot-giua",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "plate",
+   "spec": "60x60x4",
+   "bbox": [
+    2309.3333333333335,
+    2369.3333333333335,
+    430.0,
+    490.0,
+    0,
+    4
+   ],
+   "L": 60.0,
+   "Wd": 60.0,
+   "Th": 4
+  },
+  {
+   "name": "KD3-de-cot-sau",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "plate",
+   "spec": "60x60x4",
+   "bbox": [
+    2309.3333333333335,
+    2369.3333333333335,
+    750.0,
+    810.0,
+    0,
+    4
+   ],
+   "L": 60.0,
+   "Wd": 60.0,
+   "Th": 4
+  },
+  {
+   "name": "KD4-cot-truoc",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    2960.0,
+    3000.0,
+    120.0,
+    160.0,
+    4,
+    3015.0
+   ],
+   "L": 3011.0,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD4-cot-sau",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    2960.0,
+    3000.0,
+    760.0,
+    800.0,
+    4,
+    3015.0
+   ],
+   "L": 3011.0,
+   "Wd": 40.0,
+   "Th": 40.0
   },
   {
    "name": "KD4-cot-giua",
@@ -628,10 +838,10 @@
     3000.0,
     440.0,
     480.0,
-    0,
+    4,
     2260
    ],
-   "L": 2260,
+   "L": 2256,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -654,42 +864,6 @@
    "Th": 40.0
   },
   {
-   "name": "KD4-cot-tren-truoc",
-   "group": "Khung sat",
-   "mat": "steel",
-   "kind": "steel",
-   "spec": "40x40",
-   "bbox": [
-    2960.0,
-    3000.0,
-    120.0,
-    160.0,
-    2300,
-    3015.0
-   ],
-   "L": 715.0,
-   "Wd": 40.0,
-   "Th": 40.0
-  },
-  {
-   "name": "KD4-cot-tren-sau",
-   "group": "Khung sat",
-   "mat": "steel",
-   "kind": "steel",
-   "spec": "40x40",
-   "bbox": [
-    2960.0,
-    3000.0,
-    760.0,
-    800.0,
-    2300,
-    3015.0
-   ],
-   "L": 715.0,
-   "Wd": 40.0,
-   "Th": 40.0
-  },
-  {
    "name": "KD4-dam-dinh",
    "group": "Khung sat",
    "mat": "steel",
@@ -706,6 +880,60 @@
    "L": 600,
    "Wd": 40.0,
    "Th": 40.0
+  },
+  {
+   "name": "KD4-de-cot-truoc",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "plate",
+   "spec": "60x60x4",
+   "bbox": [
+    2950.0,
+    3010.0,
+    110.0,
+    170.0,
+    0,
+    4
+   ],
+   "L": 60.0,
+   "Wd": 60.0,
+   "Th": 4
+  },
+  {
+   "name": "KD4-de-cot-giua",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "plate",
+   "spec": "60x60x4",
+   "bbox": [
+    2950.0,
+    3010.0,
+    430.0,
+    490.0,
+    0,
+    4
+   ],
+   "L": 60.0,
+   "Wd": 60.0,
+   "Th": 4
+  },
+  {
+   "name": "KD4-de-cot-sau",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "plate",
+   "spec": "60x60x4",
+   "bbox": [
+    2950.0,
+    3010.0,
+    750.0,
+    810.0,
+    0,
+    4
+   ],
+   "L": 60.0,
+   "Wd": 60.0,
+   "Th": 4
   },
   {
    "name": "Ngang-ke-truoc",

@@ -43,6 +43,10 @@ P = dict(
     z_shelf=2300,               # mat ke hop noc
     board_t=17,                 # van ke hop noc (MFC/plywood)
     rod_d=27,
+    rod_t=1.0,                  # day ong inox (TODO theo hang mua, nen >= 1.0)
+    rod_load_kg=40,             # tai treo 1 ong (Tuan treo do kha nang - gia dinh, TODO)
+    rod_sigma_max=100,          # MPa cho phep (inox 304 chay ~205 MPa -> he so an toan ~2)
+    rod_defl_max=3,             # mm vong cho phep giua nhip
 )
 p = P
 W, D = p["W"], p["D"]
@@ -105,6 +109,24 @@ BAYS = [   # Tuan 2026-11-09: chi treo ong tron Ø27, ca 4 khoang 2 tang 2050/10
     dict(name="K3 treo 2 tang", rods=[2050, 1030]),
     dict(name="K4 treo 2 tang", rods=[2050, 1030]),
 ]
+
+# ---- kiem ong treo: dam don gian tai phan bo deu
+def _rod_check():
+    Do, t = p["rod_d"], p["rod_t"]
+    Di = Do - 2 * t
+    I = math.pi / 64 * (Do ** 4 - Di ** 4)                 # mm4
+    Z = I / (Do / 2)                                      # mm3
+    E = 193000                                            # MPa inox 304
+    span = max(x_lines[b + 1] - x_lines[b] for b in range(len(x_lines) - 1)) - TB
+    w = p["rod_load_kg"] * 9.81 / span                    # N/mm
+    Mmax = w * span ** 2 / 8
+    sig = Mmax / Z
+    defl = 5 * w * span ** 4 / (384 * E * I)
+    return dict(span=span, sigma=sig, defl=defl)
+ROD = _rod_check()
+CHECK["ong_ben"] = (ROD["sigma"] <= p["rod_sigma_max"],
+                    f"ong O{p['rod_d']}x{p['rod_t']} nhip {ROD['span']:.0f} tai {p['rod_load_kg']} kg: ung suat {ROD['sigma']:.0f} MPa <= {p['rod_sigma_max']}")
+CHECK["ong_vong"] = (ROD["defl"] <= p["rod_defl_max"], f"vong giua nhip {ROD['defl']:.1f} mm <= {p['rod_defl_max']}")
 
 M = 0.001
 parts = []
@@ -202,13 +224,14 @@ def build():
     # ---- khung dung tai moi duong (2 tuong + 3 cho chong mi)
     for i, xl in enumerate(x_lines):
         n = f"KD{i}"
-        steel(f"{n}-cot-giua", "z", 0, zs - TB, xl, y_mid)                         # cot giua (bat ong treo)
+        # khung chu nhat kin: cot truoc + cot sau suot san -> dinh (do thang ngang ke truoc/sau xuong san)
+        steel(f"{n}-cot-truoc", "z", 4, z_rail_top, xl, y0i + TB / 2)
+        steel(f"{n}-cot-sau", "z", 4, z_rail_top, xl, y1i - TB / 2)
+        steel(f"{n}-cot-giua", "z", 4, zs - TB, xl, y_mid)                         # cot giua (han tai do ong treo)
         steel(f"{n}-dam-ke", "y", y0i + TB, y1i - TB, xl, zs - TB / 2)             # dam ngang do ke
-        steel(f"{n}-cot-tren-truoc", "z", zs, z_rail_top, xl, y0i + TB / 2)
-        steel(f"{n}-cot-tren-sau", "z", zs, z_rail_top, xl, y1i - TB / 2)
         steel(f"{n}-dam-dinh", "y", y0i + TB, y1i - TB, xl, H_TOP - TB / 2)
-        if 0 < i < len(x_lines) - 1:   # chan de cot giua bat san
-            box(f"{n}-de-cot", "Khung sat", xl - 50, xl + 50, y_mid - 50, y_mid + 50, 0, 4, "steel", "plate", "100x100x4")
+        for nm_, yy in (("truoc", y0i + TB / 2), ("giua", y_mid), ("sau", y1i - TB / 2)):   # ban de chan cot
+            box(f"{n}-de-cot-{nm_}", "Khung sat", xl - 30, xl + 30, yy - 30, yy + 30, 0, 4, "steel", "plate", "60x60x4")
     # ---- thanh doc chieu ngang (tuong -> tuong)
     for nm, yc, zc in (("ke-truoc", y0i + TB / 2, zs - TB / 2), ("ke-sau", y1i - TB / 2, zs - TB / 2),
                        ("dinh-truoc", y0i + TB / 2, H_TOP - TB / 2), ("dinh-sau", y1i - TB / 2, H_TOP - TB / 2)):
