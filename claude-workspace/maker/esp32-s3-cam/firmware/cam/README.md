@@ -1,4 +1,4 @@
-# STLab Cam – firmware chính v0.3.1
+# STLab Cam – firmware chính v0.4.0
 
 Camera giám sát ESP32-S3-CAM N16R8 + OV3660. Ưu tiên: chạy ổn định, xem video và chụp cùng lúc, không kẹt khi đóng tab, không quá nóng.
 
@@ -90,3 +90,14 @@ Giảm khoảng 15–20 °C khi nghỉ. Chưa đo lúc đang stream (camera + Wi
 ### Thẻ TF
 - SDMMC 1-bit: CLK GPIO39, CMD GPIO38, D0 GPIO40, pull-up trong, 20 MHz. Chân theo Prusa-Firmware-ESP32-Cam `module_ESP32-S3-CAM.h` (cùng bộ chân camera); **chưa thử trên mạch thật** (Tuan chưa có thẻ).
 - Không bao giờ format thẻ. Không thẻ: log `[SD] Khong co the` một lần, thử mount lại mỗi 30 s. Chỉ ghi/xóa trong `/sdcard/stlab-cam/`; còn < 10 % hoặc < 200 MB thì xóa thư mục ngày cũ nhất. Ghi ở task riêng qua queue; lỗi ghi → unmount, thử lại mỗi 30 s.
+
+## v0.4.0: ghi clip AVI (MJPEG) khi có chuyển động
+- Tắt mặc định (`clip=0`). Chạy khi `motion=1` VÀ `clip=1` VÀ có thẻ TF (`sd_ok`). Không thẻ: không làm gì, không lỗi.
+- Bộ đệm trước sự kiện: task `clip` chép khung mới nhất ở `clip_fps` (mặc định 5, 1–10) vào vòng PSRAM giữ `pre_s` giây gần nhất (mặc định 3, 0–5), tối đa 2 MB. Khi `motion=1` + `clip=1` camera chạy ≥ `clip_fps` (nóng vẫn hạ về 5 fps).
+- Sự kiện chuyển động → mở `stlab-cam/YYYYMMDD/HHMMSS.avi` (chưa có giờ: `stlab-cam/boot/<giây>.avi`), ghi khung trước sự kiện rồi khung mới tới khi hết chuyển động `post_s` giây (mặc định 5, 2–30); chuyển động mới khi đang ghi → kéo dài clip; tối đa 60 s/clip.
+- Định dạng: RIFF/AVI 1.0 (`main/avi_mjpeg.h`, tự viết): `hdrl` (avih + strl: strh `vids`/`MJPG`, strf BITMAPINFOHEADER), `movi` (`00dc`, đệm chẵn byte), `idx1` ở cuối. Mở file ghi header giữ chỗ 224 byte; đóng file ghi `idx1` rồi ghi lại header với số khung, kích thước, fps thật (đo từ mốc thời gian khung). Đệm ghi 16 KB. Kiểm bằng `ffmpeg` (check_v04.py).
+- Task ghi thẻ (cùng task `sd`) nhận lệnh qua queue 32 mục; đầy → bỏ khung (`clip_drop`), không chặn camera/HTTP. Rút thẻ/lỗi ghi → đóng file nếu được, `sd_ok=false`, thử lại mỗi 30 s. Dọn thư mục ngày cũ không xóa thư mục đang ghi.
+- `/control`: `clip` 0/1, `clip_fps` 1–10, `pre_s` 0–5, `post_s` 2–30 (ngoài khoảng → 400), lưu NVS (khóa `clip`, tách khỏi cấu hình cũ). `/status`: `clip`, `clip_fps`, `pre_s`, `post_s`, `clip_rec`, `clip_count`, `clip_drop`. `/events`: mỗi mục thêm `clip` (đường dẫn hoặc `null`). `GET /sd?f=` chỉ nhận `.jpg`/`.avi` (`video/x-msvideo`), gửi theo khối 8 KB.
+- Trang web: khối "Chuyển động" thêm công tắc "Ghi clip", ô Trước/Sau (giây), trạng thái clip, link "xem clip".
+- Sửa kèm: bật FAT tên dài (`CONFIG_FATFS_LFN_HEAP`) – thư mục `stlab-cam` dài hơn 8 ký tự, thiếu LFN thì `mkdir` trên thẻ thật sẽ lỗi (chưa thử thẻ thật). Phải xóa `sdkconfig` cũ rồi build để nhận.
+- **Chưa thử thẻ thật** (Tuan chưa có thẻ): hướng dẫn thử tay ở cuối `test_v04.py`.

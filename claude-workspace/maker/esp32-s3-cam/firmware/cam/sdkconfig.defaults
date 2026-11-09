@@ -38,3 +38,7 @@ CONFIG_LWIP_MAX_SOCKETS=16
 
 # OTA: bootloader tu quay ve ban cu neu ban moi khong tu danh dau hop le
 CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y
+
+# FAT ten dai (LFN): thu muc "stlab-cam" 9 ky tu co dau '-' khong hop le 8.3 -> mkdir tren the that se loi neu tat LFN
+CONFIG_FATFS_LFN_HEAP=y
+CONFIG_FATFS_MAX_LFN=127

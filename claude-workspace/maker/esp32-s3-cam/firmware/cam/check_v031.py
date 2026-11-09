@@ -10,7 +10,7 @@ fails = []
 def need(c, m):
     if not c: fails.append(m)
 
-need(re.search(r'CAM_VERSION\s+"0\.3\.1"', src) is not None, 'CAM_VERSION "0.3.1"')
+need(re.search(r'CAM_VERSION\s+"0\.(3\.1|4\.\d+)"', src) is not None, 'CAM_VERSION >= 0.3.1')
 # 1. camera ngu that khi khong ai xem + motion tat
 need(len(re.findall(r"esp_camera_deinit\(", src)) >= 2, "esp_camera_deinit dung ca cho watchdog lan cho camera ngu (>= 2 cho)")
 need(re.search(r"CAM_IDLE_SLEEP_S", src) is not None, "hang so CAM_IDLE_SLEEP_S (giay khong ai dung truoc khi camera ngu)")

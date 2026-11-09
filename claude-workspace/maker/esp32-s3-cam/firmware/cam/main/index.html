@@ -157,6 +157,9 @@ footer{margin-top:18px;color:var(--muted);font-size:13px;display:flex;gap:16px;f
           <label class="sl"><span>Độ nhạy (ngưỡng sáng) <b id="v-thr">25</b></span><input type="range" id="in-thr" min="5" max="80" step="1" value="25"></label>
           <label class="sl"><span>Vùng đổi (%) <b id="v-pct">3</b></span><input type="range" id="in-pct" min="1" max="50" step="1" value="3"></label>
         </div>
+        <label class="sw" id="sw-clip" tabindex="0" role="switch" aria-checked="false"><s></s>Ghi clip (cần thẻ TF)</label>
+        <div class="row"><span>Trước / Sau chuyển động (giây)</span><strong><input type="number" id="in-pre" min="0" max="5" step="1" value="3" style="width:52px"> / <input type="number" id="in-post" min="2" max="30" step="1" value="5" style="width:52px"></strong></div>
+        <div class="row"><span>Clip</span><strong id="clip-txt">—</strong></div>
         <div class="row" style="margin-top:12px"><span>Số lần phát hiện</span><strong id="mo-count">—</strong></div>
         <div class="row"><span>Lần cuối</span><strong id="mo-last">—</strong></div>
         <div class="preview show" id="ev-box" style="display:none"><img id="ev-img" alt="Ảnh chuyển động gần nhất"></div>
@@ -333,6 +336,12 @@ footer{margin-top:18px;color:var(--muted);font-size:13px;display:flex;gap:16px;f
     [['in-thr','v-thr',s.motion_thr],['in-pct','v-pct',s.motion_pct]].forEach(function(a){
       if(document.activeElement!==$(a[0])){$(a[0]).value=a[2];$(a[1]).textContent=a[2]}
     });
+    var con=s.clip===1;
+    $('sw-clip').className='sw'+(con?' on':'');$('sw-clip').setAttribute('aria-checked',con);
+    [['in-pre',s.pre_s],['in-post',s.post_s]].forEach(function(a){
+      if(document.activeElement!==$(a[0])){$(a[0]).value=a[1]}
+    });
+    $('clip-txt').textContent=!con?'Tắt':(s.clip_rec?'Đang ghi…':(s.sd_ok?'Sẵn sàng':'Chờ thẻ TF'))+' · '+s.clip_count+' clip'+(s.clip_drop?(' · bỏ '+s.clip_drop+' khung'):'');
     $('mo-count').textContent=s.motion_count;
     $('mo-last').textContent=s.motion_last_s<0?'chưa có':(s.motion_last_s+' giây trước');
     $('sd-txt').textContent=s.sd_ok?('Thẻ TF: còn '+s.sd_free_mb+' MB'):'Chưa cắm thẻ TF';
@@ -349,6 +358,7 @@ footer{margin-top:18px;color:var(--muted);font-size:13px;display:flex;gap:16px;f
         var li=document.createElement('li');li.style.padding='3px 0';
         li.appendChild(document.createTextNode(e.t+' · '+fmt1(e.pct)+'%'));
         if(e.file){var a=document.createElement('a');a.href='/sd?f='+e.file;a.target='_blank';a.textContent=' · xem ảnh';li.appendChild(a)}
+        if(e.clip){var c=document.createElement('a');c.href='/sd?f='+e.clip;c.target='_blank';c.textContent=' · xem clip';li.appendChild(c)}
         ul.appendChild(li);
       });
     }).catch(function(){});
@@ -359,6 +369,15 @@ footer{margin-top:18px;color:var(--muted);font-size:13px;display:flex;gap:16px;f
     ctl('motion',on?1:0);
   };
   $('sw-mo').onkeydown=function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();$('sw-mo').onclick()}};
+  $('sw-clip').onclick=function(){
+    var on=!(st&&st.clip===1);
+    $('sw-clip').className='sw'+(on?' on':'');$('sw-clip').setAttribute('aria-checked',on);
+    ctl('clip',on?1:0);
+  };
+  $('sw-clip').onkeydown=function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();$('sw-clip').onclick()}};
+  [['in-pre','pre_s'],['in-post','post_s']].forEach(function(a){
+    $(a[0]).onchange=function(){ctl(a[1],$(a[0]).value)};
+  });
   [['in-thr','v-thr','motion_thr'],['in-pct','v-pct','motion_pct']].forEach(function(a){
     var el=$(a[0]);
     el.oninput=function(){$(a[1]).textContent=el.value};

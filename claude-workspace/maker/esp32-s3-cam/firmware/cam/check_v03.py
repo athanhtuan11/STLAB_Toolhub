@@ -23,7 +23,7 @@ html = read(m / "index.html")
 sdk = read(H / "sdkconfig.defaults")
 cmake = read(m / "CMakeLists.txt")
 
-need(re.search(r'CAM_VERSION\s+"0\.3\.\d+"', src) is not None, 'CAM_VERSION "0.3.x"')
+need(re.search(r'CAM_VERSION\s+"0\.[34]\.\d+"', src) is not None, 'CAM_VERSION >= 0.3')
 need((H / "build" / "stlab_cam.bin").exists(), "build/stlab_cam.bin chua co (build.ps1)")
 
 # --- OTA ---

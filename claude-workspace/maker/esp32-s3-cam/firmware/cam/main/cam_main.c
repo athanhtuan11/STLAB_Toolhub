@@ -1,4 +1,4 @@
-// Firmware chinh v0.3.1 (them OTA, the TF, phat hien chuyen dong): camera giam sat ESP32-S3-CAM N16R8 + OV3660.
+// Firmware chinh v0.4.0 (OTA, the TF, phat hien chuyen dong, ghi clip AVI MJPEG khi co chuyen dong): camera giam sat ESP32-S3-CAM N16R8 + OV3660.
 // - Chi MOT task camera goi esp_camera_fb_get, copy JPEG sang "khung moi nhat" (PSRAM, dem tham chieu).
 // - Server cong 80: /, /capture, /status, /control. Server cong 81: /stream (MJPEG, moi nguoi xem 1 task rieng).
 // - Khong ai giu camera_fb_t ngoai task camera, va task camera tra ngay sau khi copy.
@@ -45,8 +45,9 @@
 #include "esp_pm.h"
 
 #include "wifi_nha.h"
+#include "avi_mjpeg.h"
 
-#define CAM_VERSION "0.3.1"
+#define CAM_VERSION "0.4.0"
 
 // Giam nhiet (0.3.1): camera ngu that, tat AP khi da vao Wi-Fi nha, modem sleep khi khong ai xem
 #define CAM_IDLE_SLEEP_S 15
@@ -79,6 +80,14 @@
 #define SD_MIN_FREE_MB 200
 #define SD_MIN_FREE_PCT 10
 
+// Ghi clip AVI (0.4.0)
+#define CLIP_RING_MAX 64                  // so khung toi da trong bo dem truoc su kien
+#define CLIP_RING_BYTES (2 * 1024 * 1024) // bo dem truoc su kien <= 2 MB PSRAM
+#define CLIP_MAX_S 60                     // toi da 60 s / clip
+#define CLIP_IDX_MAX 2048                 // so muc idx1 toi da / clip
+#define CLIP_WBUF 16384                   // dem ghi >= 16 KB
+#define SD_Q_LEN 32
+
 static const char *TAG = "[CAM]";
 static const char *TAG_OTA = "[OTA]";
 static const char *TAG_SD = "[SD]";
@@ -106,6 +115,22 @@ typedef struct {
     int motion_thr;  // 5..80 nguong lech do sang 1 diem anh
     int motion_pct;  // 1..50 % diem anh doi
 } cam_cfg_t;
+
+// Tham so ghi clip (luu NVS cam_cfg/"clip", tach khoi blob cam_cfg_t de khong mat cau hinh cu)
+typedef struct {
+    int clip;      // 0/1
+    int clip_fps;  // 1..10
+    int pre_s;     // 0..5
+    int post_s;    // 2..30
+} clip_cfg_t;
+
+static clip_cfg_t g_clip = {.clip = 0, .clip_fps = 5, .pre_s = 3, .post_s = 5};
+
+static bool clip_valid(const clip_cfg_t *c)
+{
+    return (c->clip == 0 || c->clip == 1) && c->clip_fps >= 1 && c->clip_fps <= 10 && c->pre_s >= 0 &&
+           c->pre_s <= 5 && c->post_s >= 2 && c->post_s <= 30;
+}
 
 static cam_cfg_t g_cfg = {
     .framesize = FRAMESIZE_SVGA, .quality = 12, .vflip = 1, .hmirror = 1,
@@ -169,6 +194,33 @@ static void cfg_load(void)
         g_cfg = c;
     } else {
         ESP_LOGW(TAG, "Cau hinh NVS khong hop le/khong co - dung mac dinh");
+    }
+    nvs_close(h);
+}
+
+static void clip_load(void)
+{
+    nvs_handle_t h;
+    if (nvs_open("cam_cfg", NVS_READONLY, &h) != ESP_OK) {
+        return;
+    }
+    clip_cfg_t c;
+    size_t n = sizeof(c);
+    if (nvs_get_blob(h, "clip", &c, &n) == ESP_OK && n == sizeof(c) && clip_valid(&c)) {
+        g_clip = c;
+    }
+    nvs_close(h);
+}
+
+static void clip_save(void)
+{
+    nvs_handle_t h;
+    if (nvs_open("cam_cfg", NVS_READWRITE, &h) != ESP_OK) {
+        ESP_LOGW(TAG, "Khong mo duoc NVS cam_cfg");
+        return;
+    }
+    if (nvs_set_blob(h, "clip", &g_clip, sizeof(g_clip)) != ESP_OK || nvs_commit(h) != ESP_OK) {
+        ESP_LOGW(TAG, "Khong ghi duoc NVS clip");
     }
     nvs_close(h);
 }
@@ -313,6 +365,10 @@ static volatile bool s_sd_ok;
 static volatile uint32_t s_sd_free_mb;
 static volatile uint32_t s_motion_count;
 static volatile int64_t s_motion_last_us = -1;
+static volatile bool s_clip_rec;        // dang co file AVI mo de ghi
+static volatile bool s_clip_err;        // task ghi bao: clip hien tai that bai/bi huy
+static volatile uint32_t s_clip_count;  // so clip da ghi xong
+static volatile uint32_t s_clip_drop;   // so khung bi bo (queue day / loi)
 
 static bool time_ok(void)
 {
@@ -339,14 +395,42 @@ static void on_got_ip(void *arg, esp_event_base_t base, int32_t id, void *data)
 // ---------------------------------------------------------------------------
 // The TF (SDMMC 1-bit). Tuan chua co the: moi thu phai chay khi khong the.
 // ---------------------------------------------------------------------------
+enum { JOB_JPEG = 0, JOB_CLIP_OPEN, JOB_CLIP_FRAME, JOB_CLIP_CLOSE };
+
 typedef struct {
-    int idx;         // slot khung dang giu tham chieu
-    char path[56];   // duong dan tuong doi trong /sdcard, vd stlab-cam/20261105/140322.jpg
+    uint8_t kind;     // JOB_*
+    int idx;          // JOB_JPEG: slot khung dang giu tham chieu
+    char path[56];    // duong dan tuong doi trong /sdcard, vd stlab-cam/20261105/140322.jpg (.avi cho clip)
+    uint8_t *buf;     // JOB_CLIP_FRAME: ban sao JPEG (PSRAM), task ghi se free
+    uint32_t len;
+    int64_t t_us;     // thoi diem khung (clip)
+    uint32_t w, h;    // JOB_CLIP_OPEN: kich thuoc anh
+    uint32_t fps;     // JOB_CLIP_OPEN: fps danh dinh
 } sd_job_t;
 
 static QueueHandle_t s_sd_q;
 static sdmmc_card_t *s_card;
 static int64_t s_sd_next_try_us;
+
+// ---- Bo ghi AVI (chi task sd dung) ----
+typedef struct {
+    bool open;
+    FILE *f;
+    uint8_t *wbuf;       // dem ghi CLIP_WBUF byte
+    size_t wlen;
+    uint32_t *idx_off;   // muc idx1: offset + size moi khung
+    uint32_t *idx_len;
+    uint32_t frames;
+    uint32_t max_chunk;
+    uint32_t chunk_bytes;  // tong byte cac chunk trong movi
+    uint32_t w, h, fps;
+    int64_t t_first, t_last;
+    int64_t space_chk_us;
+    char path[56];
+    char dir[24];          // ten thu muc ngay dang ghi (khong cho don dep xoa)
+} avi_t;
+
+static avi_t s_avi;
 
 static bool sd_mount(void)
 {
@@ -368,9 +452,12 @@ static bool sd_mount(void)
     return esp_vfs_fat_sdmmc_mount(SD_MOUNT, &host, &slot, &mc, &s_card) == ESP_OK;
 }
 
+static void avi_abort(void);
+
 static void sd_drop(const char *why)
 {
     ESP_LOGW(TAG_SD, "Bo the (%s) - thu lai moi 30 s", why);
+    avi_abort();
     esp_vfs_fat_sdcard_unmount(SD_MOUNT, s_card);
     s_card = NULL;
     s_sd_ok = false;
@@ -404,6 +491,9 @@ static bool sd_prune_oldest(void)
     closedir(d);
     if (best[0] == '\0') {
         return false;
+    }
+    if (s_avi.open && strcmp(best, s_avi.dir) == 0) {
+        return false;  // khong xoa thu muc co file AVI dang ghi
     }
     char dir[96];
     snprintf(dir, sizeof(dir), SD_MOUNT "/" SD_DIR "/%s", best);
@@ -467,6 +557,214 @@ static bool sd_write_job(const sd_job_t *j)
     return w == s_slots[j->idx].len && c == 0;
 }
 
+// ---------------------------------------------------------------------------
+// Ghi clip AVI MJPEG (task sd). Dinh dang: avi_mjpeg.h.
+// ---------------------------------------------------------------------------
+static bool avi_flush(void)
+{
+    if (s_avi.wlen == 0) {
+        return true;
+    }
+    size_t w = fwrite(s_avi.wbuf, 1, s_avi.wlen, s_avi.f);
+    bool ok = (w == s_avi.wlen);
+    s_avi.wlen = 0;
+    return ok;
+}
+
+static bool avi_write(const void *d, size_t n)
+{
+    const uint8_t *p = (const uint8_t *)d;
+    if (s_avi.wlen == 0 && n >= CLIP_WBUF) {
+        return fwrite(p, 1, n, s_avi.f) == n;  // khoi lon: ghi thang
+    }
+    while (n > 0) {
+        size_t room = CLIP_WBUF - s_avi.wlen;
+        size_t c = n < room ? n : room;
+        memcpy(s_avi.wbuf + s_avi.wlen, p, c);
+        s_avi.wlen += c;
+        p += c;
+        n -= c;
+        if (s_avi.wlen == CLIP_WBUF && !avi_flush()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+static void avi_release(void)
+{
+    heap_caps_free(s_avi.wbuf);
+    heap_caps_free(s_avi.idx_off);
+    heap_caps_free(s_avi.idx_len);
+    s_avi.wbuf = NULL;
+    s_avi.idx_off = NULL;
+    s_avi.idx_len = NULL;
+    s_avi.f = NULL;
+    s_avi.open = false;
+    s_clip_rec = false;
+}
+
+// Huy clip khi mat the: dong file neu duoc, khong cap nhat header.
+static void avi_abort(void)
+{
+    s_clip_err = true;
+    if (!s_avi.open) {
+        return;
+    }
+    if (s_avi.f != NULL) {
+        fclose(s_avi.f);
+    }
+    ESP_LOGW(TAG_SD, "Clip bi huy: %s", s_avi.path);
+    avi_release();
+}
+
+// Dong clip: ghi idx1, ghi lai header voi so khung/kich thuoc/fps that. false = loi ghi.
+static bool avi_close(void)
+{
+    if (!s_avi.open) {
+        return true;
+    }
+    uint32_t n = s_avi.frames;
+    bool ok = avi_flush();
+    if (ok && n > 0) {
+        uint8_t ih[8];
+        avi_tag(ih, "idx1");
+        avi_p32(ih + 4, n * AVI_IDX_ENTRY);
+        ok = avi_write(ih, 8);
+        for (uint32_t i = 0; ok && i < n; i++) {
+            uint8_t e[AVI_IDX_ENTRY];
+            avi_idx_entry(e, s_avi.idx_off[i], s_avi.idx_len[i]);
+            ok = avi_write(e, AVI_IDX_ENTRY);
+        }
+        ok = ok && avi_flush();
+    }
+    if (ok && n > 0) {
+        uint32_t fps_milli = s_avi.fps * 1000;
+        if (n >= 2 && s_avi.t_last > s_avi.t_first) {
+            uint64_t m = ((uint64_t)(n - 1) * 1000000000ULL) / (uint64_t)(s_avi.t_last - s_avi.t_first);
+            if (m >= 500 && m <= 30000) {
+                fps_milli = (uint32_t)m;
+            }
+        }
+        uint8_t hdr[AVI_HDR_BYTES];
+        avi_build_header(hdr, s_avi.w, s_avi.h, fps_milli, n, s_avi.max_chunk, s_avi.chunk_bytes,
+                         n * AVI_IDX_ENTRY);
+        ok = fseek(s_avi.f, 0, SEEK_SET) == 0 && fwrite(hdr, 1, AVI_HDR_BYTES, s_avi.f) == AVI_HDR_BYTES;
+    }
+    int c = (s_avi.f != NULL) ? fclose(s_avi.f) : -1;
+    ok = ok && c == 0;
+    char full[96];
+    snprintf(full, sizeof(full), SD_MOUNT "/%s", s_avi.path);
+    if (n == 0) {
+        unlink(full);
+    } else if (ok) {
+        s_clip_count++;
+        ESP_LOGI(TAG_SD, "Clip xong %s: %u khung", s_avi.path, (unsigned)n);
+    }
+    avi_release();
+    return ok;
+}
+
+// Mo clip moi. false = loi the (goi sd_drop). Het cho/khong du dung luong: bo clip, the van tot.
+static bool avi_open(const sd_job_t *j)
+{
+    avi_close();
+    memset(&s_avi, 0, sizeof(s_avi));
+    if (!sd_ensure_space()) {
+        s_clip_err = true;
+        return true;
+    }
+    snprintf(s_avi.path, sizeof(s_avi.path), "%s", j->path);
+    const char *day = s_avi.path + strlen(SD_DIR) + 1;
+    const char *sl = strchr(day, '/');
+    if (strncmp(s_avi.path, SD_DIR "/", strlen(SD_DIR) + 1) != 0 || sl == NULL ||
+        (size_t)(sl - day) >= sizeof(s_avi.dir)) {
+        s_clip_err = true;
+        return true;
+    }
+    memcpy(s_avi.dir, day, (size_t)(sl - day));
+    s_avi.wbuf = heap_caps_malloc(CLIP_WBUF, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    s_avi.idx_off = heap_caps_malloc(CLIP_IDX_MAX * sizeof(uint32_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    s_avi.idx_len = heap_caps_malloc(CLIP_IDX_MAX * sizeof(uint32_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    if (s_avi.wbuf == NULL || s_avi.idx_off == NULL || s_avi.idx_len == NULL) {
+        ESP_LOGW(TAG_SD, "Het PSRAM - bo clip");
+        avi_release();
+        s_clip_err = true;
+        return true;
+    }
+    char full[96];
+    snprintf(full, sizeof(full), SD_MOUNT "/%s", s_avi.path);
+    char dirp[96];
+    snprintf(dirp, sizeof(dirp), "%s", full);
+    char *slash = strrchr(dirp, '/');
+    *slash = '\0';
+    mkdir(SD_MOUNT "/" SD_DIR, 0775);
+    mkdir(dirp, 0775);
+    s_avi.f = fopen(full, "wb");
+    if (s_avi.f == NULL) {
+        avi_release();
+        return false;
+    }
+    s_avi.open = true;
+    s_avi.w = j->w;
+    s_avi.h = j->h;
+    s_avi.fps = j->fps;
+    s_avi.space_chk_us = esp_timer_get_time();
+    uint8_t hdr[AVI_HDR_BYTES];
+    avi_build_header(hdr, j->w, j->h, j->fps * 1000, 0, 0, 0, 0);  // giu cho, ghi lai luc dong
+    if (!avi_write(hdr, AVI_HDR_BYTES)) {
+        return false;  // sd_drop se avi_abort
+    }
+    s_clip_rec = true;
+    ESP_LOGI(TAG_SD, "Mo clip %s (%ux%u, %u fps)", s_avi.path, (unsigned)j->w, (unsigned)j->h, (unsigned)j->fps);
+    return true;
+}
+
+// Ghi 1 khung. false = loi the.
+static bool avi_frame(const sd_job_t *j)
+{
+    if (!s_avi.open || s_avi.frames >= CLIP_IDX_MAX || j->len == 0) {
+        s_clip_drop++;
+        return true;
+    }
+    int64_t now = esp_timer_get_time();
+    if (now - s_avi.space_chk_us > 10000000LL) {
+        s_avi.space_chk_us = now;
+        if (!sd_ensure_space()) {
+            uint64_t total = 0, freeb = 0;
+            if (!sd_info(&total, &freeb)) {
+                return false;  // mat the
+            }
+            s_clip_err = true;  // day the: dong clip, giu phan da ghi
+            return avi_close();
+        }
+    }
+    uint8_t ch[AVI_CHUNK_HDR];
+    avi_tag(ch, "00dc");
+    avi_p32(ch + 4, j->len);
+    uint32_t off = 4 + s_avi.chunk_bytes;  // tinh tu chu 'movi'
+    bool ok = avi_write(ch, AVI_CHUNK_HDR) && avi_write(j->buf, j->len);
+    if (ok && (j->len & 1u)) {
+        uint8_t z = 0;
+        ok = avi_write(&z, 1);
+    }
+    if (!ok) {
+        return false;
+    }
+    s_avi.idx_off[s_avi.frames] = off;
+    s_avi.idx_len[s_avi.frames] = j->len;
+    if (s_avi.frames == 0) {
+        s_avi.t_first = j->t_us;
+    }
+    s_avi.t_last = j->t_us;
+    s_avi.frames++;
+    s_avi.chunk_bytes += avi_chunk_size(j->len);
+    if (j->len > s_avi.max_chunk) {
+        s_avi.max_chunk = j->len;
+    }
+    return true;
+}
+
 static void sd_task(void *arg)
 {
     (void)arg;
@@ -475,10 +773,36 @@ static void sd_task(void *arg)
     for (;;) {
         sd_job_t j;
         if (xQueueReceive(s_sd_q, &j, pdMS_TO_TICKS(1000)) == pdTRUE) {
-            if (s_sd_ok && !sd_write_job(&j)) {
-                sd_drop("loi ghi");
+            switch (j.kind) {
+            case JOB_CLIP_OPEN:
+                if (!s_sd_ok) {
+                    s_clip_err = true;
+                } else if (!avi_open(&j)) {
+                    avi_close();
+                    sd_drop("loi mo clip");
+                }
+                break;
+            case JOB_CLIP_FRAME:
+                if (!s_sd_ok) {
+                    s_clip_drop++;
+                } else if (!avi_frame(&j)) {
+                    avi_close();
+                    sd_drop("loi ghi clip");
+                }
+                heap_caps_free(j.buf);
+                break;
+            case JOB_CLIP_CLOSE:
+                if (!avi_close() && s_sd_ok) {
+                    sd_drop("loi dong clip");
+                }
+                break;
+            default:
+                if (s_sd_ok && !sd_write_job(&j)) {
+                    sd_drop("loi ghi");
+                }
+                store_release(j.idx);
+                break;
             }
-            store_release(j.idx);
         }
         int64_t now = esp_timer_get_time();
         if (!s_sd_ok) {
@@ -516,12 +840,18 @@ typedef struct {
     time_t wall;  // 0 neu chua co gio
     float pct;
     char file[56];  // rong neu khong luu the
+    char clip[56];  // file .avi cua su kien (rong = khong co clip)
 } event_t;
 
 static event_t s_events[N_EVENTS];
 static int s_ev_n;      // so su kien dang luu (<= N_EVENTS)
 static int s_ev_head;   // vi tri ghi tiep theo
 static SemaphoreHandle_t s_ev_mtx;
+// Yeu cau ghi clip tu motion_task -> clip_task (bao ve boi s_ev_mtx)
+static bool s_clip_pending;
+static bool s_clip_active;          // clip_task dang ghi
+static char s_clip_req_path[56];    // ten file clip cho yeu cau dang cho
+static char s_clip_cur_path[56];    // ten file clip dang ghi
 static uint8_t *s_ev_jpg;
 static size_t s_ev_cap, s_ev_len;
 
@@ -537,12 +867,22 @@ static void event_record(int idx, float pct)
     ev.pct = pct;
 
     char path[56] = "";
+    char cpath[56] = "";
     if (tok) {
         struct tm tmv;
         localtime_r(&now, &tmv);
         strftime(path, sizeof(path), SD_DIR "/%Y%m%d/%H%M%S.jpg", &tmv);
+        strftime(cpath, sizeof(cpath), SD_DIR "/%Y%m%d/%H%M%S.avi", &tmv);
     } else {
         snprintf(path, sizeof(path), SD_DIR "/boot/%" PRId64 ".jpg", boot_s);
+        snprintf(cpath, sizeof(cpath), SD_DIR "/boot/%" PRId64 ".avi", boot_s);
+    }
+    if (g_clip.clip && s_sd_ok) {  // yeu cau ghi clip (moi) hoac keo dai clip dang ghi
+        xSemaphoreTake(s_ev_mtx, portMAX_DELAY);
+        snprintf(s_clip_req_path, sizeof(s_clip_req_path), "%s", cpath);
+        snprintf(ev.clip, sizeof(ev.clip), "%s", s_clip_active ? s_clip_cur_path : s_clip_req_path);
+        s_clip_pending = true;
+        xSemaphoreGive(s_ev_mtx);
     }
 
     // ban sao JPEG cua su kien (PSRAM, thay ban cu)
@@ -566,6 +906,8 @@ static void event_record(int idx, float pct)
     bool queued = false;
     if (s_sd_ok) {
         sd_job_t j;
+        memset(&j, 0, sizeof(j));
+        j.kind = JOB_JPEG;
         j.idx = idx;
         snprintf(j.path, sizeof(j.path), "%s", path);
         xSemaphoreTake(s_store_mtx, portMAX_DELAY);
@@ -703,6 +1045,207 @@ static void motion_task(void *arg)
 }
 
 // ---------------------------------------------------------------------------
+// Clip: bo dem truoc su kien (PSRAM) + dieu khien ghi. Task nay KHONG goi esp_camera_fb_get;
+// doc khung moi nhat da copy, chep sang ban rieng, chuyen cho task sd qua queue.
+// ---------------------------------------------------------------------------
+typedef struct {
+    uint8_t *buf;
+    uint32_t len;
+    int64_t t_us;
+    uint32_t w, h;
+} ring_e_t;
+
+static ring_e_t s_ring[CLIP_RING_MAX];
+static int s_ring_head;  // phan tu cu nhat
+static int s_ring_n;
+static size_t s_ring_bytes;
+
+static void ring_drop_oldest(void)
+{
+    if (s_ring_n == 0) {
+        return;
+    }
+    heap_caps_free(s_ring[s_ring_head].buf);
+    s_ring_bytes -= s_ring[s_ring_head].len;
+    s_ring_head = (s_ring_head + 1) % CLIP_RING_MAX;
+    s_ring_n--;
+}
+
+static void ring_clear(void)
+{
+    while (s_ring_n > 0) {
+        ring_drop_oldest();
+    }
+    s_ring_head = 0;
+}
+
+static void ring_push(const ring_e_t *e)
+{
+    if (s_ring_n == CLIP_RING_MAX) {
+        ring_drop_oldest();
+    }
+    s_ring[(s_ring_head + s_ring_n) % CLIP_RING_MAX] = *e;
+    s_ring_n++;
+    s_ring_bytes += e->len;
+}
+
+// Dong clip dang ghi (gui CLOSE cho task sd; thu lai neu queue day)
+static void clip_end(bool *rec)
+{
+    sd_job_t j;
+    memset(&j, 0, sizeof(j));
+    j.kind = JOB_CLIP_CLOSE;
+    for (int i = 0; i < 3; i++) {
+        if (xQueueSend(s_sd_q, &j, pdMS_TO_TICKS(1000)) == pdTRUE) {
+            break;
+        }
+    }
+    *rec = false;
+    xSemaphoreTake(s_ev_mtx, portMAX_DELAY);
+    s_clip_active = false;
+    xSemaphoreGive(s_ev_mtx);
+}
+
+static void clip_send_frame(uint8_t *buf, uint32_t len, int64_t t_us, TickType_t wait)
+{
+    sd_job_t j;
+    memset(&j, 0, sizeof(j));
+    j.kind = JOB_CLIP_FRAME;
+    j.buf = buf;
+    j.len = len;
+    j.t_us = t_us;
+    if (xQueueSend(s_sd_q, &j, wait) != pdTRUE) {
+        heap_caps_free(buf);
+        s_clip_drop++;
+    }
+}
+
+static void clip_task(void *arg)
+{
+    (void)arg;
+    uint32_t last_seq = 0;
+    bool rec = false;
+    int64_t rec_start = 0, last_mo = 0;
+
+    for (;;) {
+        int cf = g_clip.clip_fps;
+        vTaskDelay(pdMS_TO_TICKS(1000 / (cf < 1 ? 1 : cf)));
+        bool armed = g_cfg.motion && g_clip.clip && s_sd_ok && !s_ota_busy;
+        if (!armed) {
+            if (rec) {
+                clip_end(&rec);
+            }
+            ring_clear();
+            xSemaphoreTake(s_ev_mtx, portMAX_DELAY);
+            s_clip_pending = false;
+            xSemaphoreGive(s_ev_mtx);
+            continue;
+        }
+        if (rec && s_clip_err) {  // task sd bao loi/huy clip
+            clip_end(&rec);
+        }
+        int idx = -1;
+        if (!store_acquire(last_seq, 0, &idx)) {
+            continue;
+        }
+        last_seq = s_slots[idx].seq;
+        uint32_t len = (uint32_t)s_slots[idx].len;
+        int64_t t_us = s_slots[idx].t_us;
+        uint8_t *cp = heap_caps_malloc(len, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+        if (cp != NULL) {
+            memcpy(cp, s_slots[idx].buf, len);
+        }
+        store_release(idx);
+        if (cp == NULL) {
+            continue;
+        }
+        int64_t now = esp_timer_get_time();
+
+        if (rec) {
+            clip_send_frame(cp, len, t_us, 0);  // queue day -> bo khung, khong chan
+            xSemaphoreTake(s_ev_mtx, portMAX_DELAY);
+            if (s_clip_pending) {  // chuyen dong moi: keo dai clip
+                s_clip_pending = false;
+                last_mo = now;
+            }
+            xSemaphoreGive(s_ev_mtx);
+            if (now - last_mo > (int64_t)g_clip.post_s * 1000000LL ||
+                now - rec_start > (int64_t)CLIP_MAX_S * 1000000LL) {
+                clip_end(&rec);
+            }
+            continue;
+        }
+
+        ring_e_t e = {.buf = cp, .len = len, .t_us = t_us, .w = 0, .h = 0};
+        if (!avi_jpeg_dims(cp, len, &e.w, &e.h)) {
+            e.w = 0;
+            e.h = 0;
+        }
+        ring_push(&e);
+        while (s_ring_n > 1 && (s_ring[(s_ring_head + s_ring_n - 1) % CLIP_RING_MAX].t_us - s_ring[s_ring_head].t_us >
+                                    (int64_t)g_clip.pre_s * 1000000LL ||
+                                s_ring_bytes > CLIP_RING_BYTES)) {
+            ring_drop_oldest();
+        }
+
+        char path[56] = "";
+        bool pend = false;
+        xSemaphoreTake(s_ev_mtx, portMAX_DELAY);
+        if (s_clip_pending) {
+            pend = true;
+            s_clip_pending = false;
+            snprintf(path, sizeof(path), "%s", s_clip_req_path);
+        }
+        xSemaphoreGive(s_ev_mtx);
+        if (!pend) {
+            continue;
+        }
+        uint32_t w = 0, h = 0;
+        for (int k = 0; k < s_ring_n; k++) {
+            const ring_e_t *r = &s_ring[(s_ring_head + k) % CLIP_RING_MAX];
+            if (r->w > 0 && r->h > 0) {
+                w = r->w;
+                h = r->h;
+            }
+        }
+        if (w == 0) {
+            ESP_LOGW(TAG_SD, "Khong doc duoc kich thuoc JPEG - bo clip");
+            continue;
+        }
+        sd_job_t j;
+        memset(&j, 0, sizeof(j));
+        j.kind = JOB_CLIP_OPEN;
+        snprintf(j.path, sizeof(j.path), "%s", path);
+        j.w = w;
+        j.h = h;
+        j.fps = (uint32_t)g_clip.clip_fps;
+        s_clip_err = false;
+        if (xQueueSend(s_sd_q, &j, pdMS_TO_TICKS(1000)) != pdTRUE) {
+            s_clip_drop++;
+            continue;
+        }
+        // khung truoc su kien -> task sd (so huu bo nho chuyen sang queue)
+        int n = s_ring_n, head = s_ring_head;
+        s_ring_n = 0;
+        s_ring_head = 0;
+        s_ring_bytes = 0;
+        for (int k = 0; k < n; k++) {
+            ring_e_t *r = &s_ring[(head + k) % CLIP_RING_MAX];
+            clip_send_frame(r->buf, r->len, r->t_us, pdMS_TO_TICKS(1000));
+            r->buf = NULL;
+        }
+        rec = true;
+        rec_start = now;
+        last_mo = now;
+        xSemaphoreTake(s_ev_mtx, portMAX_DELAY);
+        snprintf(s_clip_cur_path, sizeof(s_clip_cur_path), "%s", path);
+        s_clip_active = true;
+        xSemaphoreGive(s_ev_mtx);
+        ESP_LOGI(TAG_SD, "Bat dau ghi clip %s (truoc %d khung)", path, n);
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Camera
 // ---------------------------------------------------------------------------
 static esp_err_t camera_init_hw(void)
@@ -780,13 +1323,15 @@ static void sensor_apply(void)
 static int effective_fps(void)
 {
     int f = g_cfg.fps;
-    if (s_nong && f > HOT_FPS) {
-        f = HOT_FPS;
-    }
+    bool clip_armed = g_cfg.motion && g_clip.clip && s_sd_ok;
+    int need = clip_armed && g_clip.clip_fps > MOTION_FPS ? g_clip.clip_fps : MOTION_FPS;
     if (s_viewers <= 0 && s_cap_waiters <= 0) {
-        f = MOTION_FPS;  // chi chay vi phat hien chuyen dong
-    } else if (g_cfg.motion && f < MOTION_FPS) {
-        f = MOTION_FPS;
+        f = need;  // chi chay vi phat hien chuyen dong / ghi clip
+    } else if (g_cfg.motion && f < need) {
+        f = need;
+    }
+    if (s_nong && f > HOT_FPS) {
+        f = HOT_FPS;  // nong: ha fps (ca khi ghi clip)
     }
     return f;
 }
@@ -1040,7 +1585,7 @@ static esp_err_t status_get(httpd_req_t *req)
     char nha[320];
     wifi_nha_status_json(nha, sizeof(nha));
     const esp_partition_t *running = esp_ota_get_running_partition();
-    static char buf[2048];  // chi 1 handler cong 80 chay 1 luc (server don luong)
+    static char buf[2304];  // chi 1 handler cong 80 chay 1 luc (server don luong)
     int n = snprintf(buf, sizeof(buf),
         "{\"version\":\"" CAM_VERSION "\",\"uptime_s\":%" PRId64 ",\"nhiet_do_chip\":%.1f,\"nong\":%s,"
         "\"fps_cai\":%d,\"fps_thuc\":%.1f,\"so_nguoi_xem\":%d,\"framesize\":\"%s\",\"quality\":%d,"
@@ -1049,7 +1594,8 @@ static esp_err_t status_get(httpd_req_t *req)
         "\"cam_reinit\":%u,\"cam_ok\":%s,%s,\"ap_ssid\":\"%s\","
         "\"ota_partition\":\"%s\",\"sd_ok\":%s,\"sd_free_mb\":%u,\"time_ok\":%s,\"motion\":%d,"
         "\"motion_thr\":%d,\"motion_pct\":%d,\"motion_count\":%u,\"motion_last_s\":%d,"
-        "\"cam_sleep\":%s,\"ap_on\":%s,\"wifi_ps\":\"%s\"}",
+        "\"cam_sleep\":%s,\"ap_on\":%s,\"wifi_ps\":\"%s\","
+        "\"clip\":%d,\"clip_fps\":%d,\"pre_s\":%d,\"post_s\":%d,\"clip_rec\":%s,\"clip_count\":%u,\"clip_drop\":%u}",
         (esp_timer_get_time() - s_boot_us) / 1000000, (double)s_temp, s_nong ? "true" : "false",
         g_cfg.fps, (double)s_fps_thuc, (int)s_viewers, fs_name(g_cfg.framesize), g_cfg.quality,
         g_cfg.vflip, g_cfg.hmirror, g_cfg.brightness, g_cfg.contrast, g_cfg.saturation,
@@ -1060,7 +1606,9 @@ static esp_err_t status_get(httpd_req_t *req)
         time_ok() ? "true" : "false", g_cfg.motion, g_cfg.motion_thr, g_cfg.motion_pct,
         (unsigned)s_motion_count,
         s_motion_last_us < 0 ? -1 : (int)((esp_timer_get_time() - s_motion_last_us) / 1000000),
-        s_cam_sleep ? "true" : "false", s_ap_on ? "true" : "false", s_ps_none ? "none" : "min_modem");
+        s_cam_sleep ? "true" : "false", s_ap_on ? "true" : "false", s_ps_none ? "none" : "min_modem",
+        g_clip.clip, g_clip.clip_fps, g_clip.pre_s, g_clip.post_s, s_clip_rec ? "true" : "false",
+        (unsigned)s_clip_count, (unsigned)s_clip_drop);
     if (n < 0 || n >= (int)sizeof(buf)) {
         return httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "loi tao JSON");
     }
@@ -1119,6 +1667,28 @@ static esp_err_t control_get(httpd_req_t *req)
         httpd_query_key_value(query, "val", sval, sizeof(sval)) != ESP_OK ||
         !parse_int(sval, &val)) {
         return httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "can var=<ten>&val=<so>");
+    }
+
+    if (strcmp(var, "clip") == 0 || strcmp(var, "clip_fps") == 0 || strcmp(var, "pre_s") == 0 ||
+        strcmp(var, "post_s") == 0) {
+        clip_cfg_t nc = g_clip;
+        if (strcmp(var, "clip") == 0) {
+            nc.clip = val;
+        } else if (strcmp(var, "clip_fps") == 0) {
+            nc.clip_fps = val;
+        } else if (strcmp(var, "pre_s") == 0) {
+            nc.pre_s = val;
+        } else {
+            nc.post_s = val;
+        }
+        if (!clip_valid(&nc)) {
+            return httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "gia tri ngoai khoang cho phep");
+        }
+        g_clip = nc;
+        clip_save();
+        cam_wake();
+        httpd_resp_set_type(req, "application/json");
+        return httpd_resp_sendstr(req, "{\"ok\":1}");
     }
 
     cam_cfg_t n = g_cfg;
@@ -1217,11 +1787,11 @@ static esp_err_t event_jpg_get(httpd_req_t *req)
 
 static esp_err_t events_get(httpd_req_t *req)
 {
-    static char buf[3072];  // server cong 80 don luong
+    static char buf[4608];  // server cong 80 don luong
     size_t o = 0;
     o += (size_t)snprintf(buf + o, sizeof(buf) - o, "[");
     xSemaphoreTake(s_ev_mtx, portMAX_DELAY);
-    for (int k = 0; k < s_ev_n && o + 200 < sizeof(buf); k++) {
+    for (int k = 0; k < s_ev_n && o + 280 < sizeof(buf); k++) {
         int i = (s_ev_head - s_ev_n + k + 2 * N_EVENTS) % N_EVENTS;
         const event_t *e = &s_events[i];
         char t[32];
@@ -1235,7 +1805,12 @@ static esp_err_t events_get(httpd_req_t *req)
         o += (size_t)snprintf(buf + o, sizeof(buf) - o, "%s{\"t\":\"%s\",\"pct\":%.1f,\"file\":",
                               k ? "," : "", t, (double)e->pct);
         if (e->file[0] != '\0') {
-            o += (size_t)snprintf(buf + o, sizeof(buf) - o, "\"%s\"}", e->file);
+            o += (size_t)snprintf(buf + o, sizeof(buf) - o, "\"%s\",\"clip\":", e->file);
+        } else {
+            o += (size_t)snprintf(buf + o, sizeof(buf) - o, "null,\"clip\":");
+        }
+        if (e->clip[0] != '\0') {
+            o += (size_t)snprintf(buf + o, sizeof(buf) - o, "\"%s\"}", e->clip);
         } else {
             o += (size_t)snprintf(buf + o, sizeof(buf) - o, "null}");
         }
@@ -1252,6 +1827,11 @@ static bool sd_path_ok(const char *f)
     size_t n = strlen(f);
     if (n == 0 || n > 60 || f[0] == '/' || strstr(f, "..") != NULL) {
         return false;
+    }
+    bool is_jpg = n > 4 && strcmp(f + n - 4, ".jpg") == 0;
+    bool is_avi = n > 4 && strcmp(f + n - 4, ".avi") == 0;
+    if (!is_jpg && !is_avi) {
+        return false;  // chi cho xem .jpg va .avi
     }
     for (size_t i = 0; i < n; i++) {
         char c = f[i];
@@ -1287,15 +1867,16 @@ static esp_err_t sd_get(httpd_req_t *req)
     if (fp == NULL) {
         return httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "khong co file");
     }
-    char *chunk = malloc(4096);
+    char *chunk = malloc(8192);
     if (chunk == NULL) {
         fclose(fp);
         return httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "het bo nho");
     }
-    httpd_resp_set_type(req, "image/jpeg");
+    size_t fl = strlen(f);
+    httpd_resp_set_type(req, strcmp(f + fl - 4, ".avi") == 0 ? "video/x-msvideo" : "image/jpeg");
     esp_err_t r = ESP_OK;
     size_t got;
-    while (r == ESP_OK && (got = fread(chunk, 1, 4096, fp)) > 0) {
+    while (r == ESP_OK && (got = fread(chunk, 1, 8192, fp)) > 0) {  // file lon: gui theo khoi
         r = httpd_resp_send_chunk(req, chunk, got);
     }
     fclose(fp);
@@ -1585,7 +2166,7 @@ void app_main(void)
     s_cam_mtx = xSemaphoreCreateMutex();
     s_store_mtx = xSemaphoreCreateMutex();
     s_ev_mtx = xSemaphoreCreateMutex();
-    s_sd_q = xQueueCreate(4, sizeof(sd_job_t));
+    s_sd_q = xQueueCreate(SD_Q_LEN, sizeof(sd_job_t));
     setenv("TZ", "ICT-7", 1);
     tzset();
 
@@ -1596,6 +2177,7 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(err);
     cfg_load();
+    clip_load();
 
     temperature_sensor_config_t tc = TEMPERATURE_SENSOR_CONFIG_DEFAULT(-10, 80);
     if (temperature_sensor_install(&tc, &s_tsens) != ESP_OK || temperature_sensor_enable(s_tsens) != ESP_OK) {
@@ -1632,5 +2214,6 @@ void app_main(void)
     xTaskCreate(net_task, "net", 3072, NULL, 3, NULL);
     xTaskCreate(sd_task, "sd", 6144, NULL, 3, NULL);
     xTaskCreate(motion_task, "motion", 8192, NULL, 3, NULL);
+    xTaskCreate(clip_task, "clip", 4096, NULL, 3, NULL);
     ESP_LOGI(TAG, "STLab Cam " CAM_VERSION " chay");
 }

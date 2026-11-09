@@ -41,6 +41,11 @@ Dự án Tuan bắt đầu 2026-11-03. Mạch **ESP32-S3-CAM N16R8** (16 MB flas
   `CONFIG_SCCB_HARDWARE_I2C_DRIVER_LEGACY=y` (IDF 5.5 cấm trộn 2 driver → abort khởi động).
 
 ## Trạng thái
+- 2026-11-09: **firmware v0.4.0 ghi clip AVI khi có chuyển động** (`firmware/cam/spec-v04.md`, ý tưởng MJPEG2SD, code tự viết
+  `main/avi_mjpeg.h`): đệm trước 3 s PSRAM ≤ 2 MB, sau 5 s, tối đa 60 s; bật bằng `clip=1` (mặc định tắt). Build PASS (1,13 MB),
+  gate tĩnh 4/4 PASS (check_v04 giải mã AVI mẫu bằng ffmpeg). **CHƯA nạp OTA**: mạch không lên mạng lúc build → khi mạch bật:
+  `python ota.py --host stlab-cam.local` rồi `test_v04.py` + `test_v031.py`. Thêm `CONFIG_FATFS_LFN_HEAP=y` (tên `stlab-cam`
+  không hợp lệ 8.3 → v0.3 có thể đã lỗi mkdir trên thẻ thật). Phần có thẻ TF: chưa thử (Tuan chưa có thẻ).
 - 2026-11-05: **Vỏ in được 1 bàn, không support**: `solidcraft/plates/p2-enclosure/p2-enclosure.3mf` PASS (216 ph, 97,6 g). Sửa: vòng trang trí lõm
   Ø26 → rãnh rộng 1 (hết floating cantilever bezel); ray đỡ mạch + 4 chân góc kéo tới thành sau (hết support thân). Coupon
   `P1_Coupon.3mf` PASS. ASSEMBLY.md 8 bước + ảnh `solidcraft/render_assembly.py`. TODO: cổng USB đế nạp ở cạnh dưới?; đo nhiệt có vỏ.

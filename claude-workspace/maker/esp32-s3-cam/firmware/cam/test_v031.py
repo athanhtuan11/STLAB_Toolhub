@@ -16,7 +16,7 @@ def get(path, port=80, timeout=8):
 def st():
     return json.loads(get("/status")[1])
 s = st()
-ok(s.get("version") == "0.3.1", "version 0.3.1 (dang %s)" % s.get("version"))
+ok(s.get("version") in ("0.3.1",) or str(s.get("version", "")).startswith("0.4."), "version >= 0.3.1 (dang %s)" % s.get("version"))
 ok(s.get("so_nguoi_xem", 0) == 0, "khong co nguoi xem luc test (dong tab camera neu FAIL)")
 ok(s.get("sta_connected") is True and s.get("ap_on") is False, "da vao Wi-Fi nha -> AP tat (ap_on=%s)" % s.get("ap_on"))
 ok(s.get("wifi_ps") not in (None, "none", 0), "khong ai xem -> Wi-Fi tiet kiem dien (wifi_ps=%s)" % s.get("wifi_ps"))
