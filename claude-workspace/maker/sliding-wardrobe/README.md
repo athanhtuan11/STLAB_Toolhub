@@ -80,6 +80,27 @@ khớp nhau. Khi mua, đối chiếu 4 số với model: chiều cao gờ ray d�
 - Script kiểm thêm: `khoa_tren_lam` (lỗ khóa không cắt viền), `khoa_an_vien` (hành trình chốt ≥ khe + 5), `chot_bi`.
 - TODO theo khóa mua: đường kính mặt khóa, hành trình chốt (đang giả định 14), chiều dài thân.
 
+## Danh sách mua phụ kiện (giữ thiết kế bánh đỡ dưới + dẫn hướng trên, cánh ước 50–70 kg)
+Tải mỗi bánh dưới ≥ (khối lượng cánh ÷ 2) × 1,5 → cánh 50 kg: 38 kg/bánh · 60 kg: 45 · 70 kg: 53. **Cân 1 thanh lam để chốt.**
+
+| # | Phụ kiện | SL | Chọn | Giá tham khảo |
+| --- | --- | --- | --- | --- |
+| 1 | Bánh đỡ dưới cửa lùa sắt, ray U, **loại hàn** (hoặc bắt vít), bánh nylon ổ bi | 8 | hàn vào mặt sau (mặt trong) ống viền dưới → mặt trước sạch | 95.000 đ/bánh (vít 110.000) [vattunganhcua](https://www.vattunganhcua.vn/phu-kien-cua-cong?view=list) |
+| 2 | Ray dưới U đúng cặp với bánh, 3 m | 2 | bắt vít/dán sàn, dóng thẳng dưới máng trên | TODO |
+| 3 | Bánh bạc đạn 608 bọc nylon + bu lông M8 (dẫn hướng trên) | 8 | bắt lên ống viền trên bằng tán rút ren M8 | TODO |
+| 4 | Máng trên: thép U (hoặc 2 sắt la hàn) lòng = Ø bánh trên + 2, sâu ≥ 45 | 2 × 3 m | hàn dưới dầm đầu cửa, sơn đen | TODO |
+| 5 | Khóa chống nhảy tự làm: bu lông M8 + ê-cu hãm + đầu cao su trên ống viền trên | 4 | vặn lên còn khe 5 | vài nghìn đ |
+| 6 | Vít bi lò xo M8 (chốt bi) | 4 | vặn vào đầu khóa chống nhảy | TODO |
+| 7 | Khóa ấn tủ cửa lùa (push lock) **đồng chìa**, hành trình chốt ≥ 13 | 3 | thân bắt giằng sau 13×26 | TODO |
+| 8 | Tán rút ren thép M5 + M8, kìm rút | ~40 | mọi chỗ bắt vít vào hộp 1,2–1,4 | TODO |
+| 9 | Chặn cuối cao su (hoặc tự cắt cao su đặc) | 4 | 2 đầu mỗi máng, mặt chặn cách tường 46,5 | TODO |
+| 10 | Ron chổi chống bụi dán mép chồng mí | 4 × 2,94 m | | TODO |
+| 11 | Ống inox Ø27 **dày 1,2** + tai đỡ hàn | 8 ống | treo nặng: ~61 kg/ống | TODO |
+| 12 | Nở sắt M8 + bát L bắt khung vào tường | ~20 | 2 tường bên + tường sau | TODO |
+
+- Không dùng bộ bánh tủ áo thông dụng (vd Cariny CWA-204 40–50 kg/cánh): cánh 2,94 m nặng 50–70 kg vượt mức; catalogue QUITTE giới hạn bộ 50 kg ở cánh cao 2,5 m.
+- Mua xong gửi số thật (Ø bánh dưới, cao từ đáy bánh tới mặt hàn, gờ ray, Ø bánh trên) → sửa `P` → script kiểm lại lắp đặt/chống nhảy.
+
 ## TODO
 - W thực tế; số sóng, khối lượng 1 thanh lam; bộ ray (khe dưới, cao ray trên, sâu ray đôi); độ dày hộp sắt.
 - Tường sau ẩm thì chừa khe ~20 sau quần áo hoặc ốp tấm chống ẩm (chưa có trong model).
