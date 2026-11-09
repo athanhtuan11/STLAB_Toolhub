@@ -1,4 +1,4 @@
-# Gate CAD v1 Cu con (Claude viet 2026-11-09, executor KHONG sua). Spec: ../spec-cad-v1.md
+# Gate CAD v1 Cu con (Claude viet 2026-11-09, sua: 2 hop pin 2xAA; executor KHONG sua). Spec: ../spec-cad-v1.md
 # Chay tu maker/card-coding-robot/solidcraft:
 #   ../../../tools/model-study/.venv/Scripts/python.exe tests/test_build.py
 import itertools
@@ -22,13 +22,13 @@ PRINT_YAML = HERE.parent / "print" / "print.yaml"
 PRINT = ["Chassis", "Battery_lid", "Shell", "Top", "Belly", "Eye_L", "Eye_R", "Pupil_L", "Pupil_R",
          "Diffuser_L", "Diffuser_R", "Beak", "Wing_Run", "Wing_Clear", "Wheel_L", "Wheel_R", "Coupon"]
 REF = ["Ref_Motor_L", "Ref_Motor_R", "Ref_ULN_L", "Ref_ULN_R", "Ref_ESP32", "Ref_RC522", "Ref_Speaker",
-       "Ref_Amp", "Ref_Battery", "Ref_Btn_Run", "Ref_Btn_Clear", "Ref_LED_L", "Ref_LED_R"]
+       "Ref_Amp", "Ref_Battery_F", "Ref_Battery_R", "Ref_Btn_Run", "Ref_Btn_Clear", "Ref_LED_L", "Ref_LED_R"]
 CAPTURED = ["Eye_L", "Eye_R", "Pupil_L", "Pupil_R", "Diffuser_L", "Diffuser_R", "Beak", "Belly", "Wing_Run", "Wing_Clear"]
 REF_MASS = {"Ref_Motor_L": P["motor_28byj48"]["mass_g"], "Ref_Motor_R": P["motor_28byj48"]["mass_g"],
             "Ref_ULN_L": P["uln2003_board"]["mass_g"], "Ref_ULN_R": P["uln2003_board"]["mass_g"],
             "Ref_ESP32": P["esp32_devkit"]["mass_g"], "Ref_RC522": P["rc522"]["mass_g"],
             "Ref_Speaker": P["speaker"]["mass_g"], "Ref_Amp": P["max98357"]["mass_g"],
-            "Ref_Battery": P["battery_4aa"]["mass_g"]}
+            "Ref_Battery_F": P["battery_2aa"]["mass_g"], "Ref_Battery_R": P["battery_2aa"]["mass_g"]}
 ASM_ONLY = ["Coupon"]  # coupon khong nam tren robot
 
 
@@ -131,7 +131,10 @@ class TOwl(unittest.TestCase):
         ang = math.degrees(math.atan2(d, com[2]))
         print("\n  khoi luong %.0f g, trong tam (%.1f, %.1f, %.1f), goc lat %.1f deg" % (ms.sum(), *com, ang))
         self.assertGreaterEqual(ang, P["tip_angle_min_deg"], "goc lat %.1f" % ang)
-        self.assertLessEqual(self.m["Ref_Battery"].vertices[:, 2].max(), P["battery_z_max"], "pin dat qua cao")
+        for n in ("Ref_Battery_F", "Ref_Battery_R"):
+            self.assertLessEqual(self.m[n].vertices[:, 2].max(), P["battery_z_max"], n + " dat qua cao")
+        self.assertGreater(self.m["Ref_Battery_F"].bounding_box.centroid[0], 0, "Ref_Battery_F phai o phia truoc (+X)")
+        self.assertLess(self.m["Ref_Battery_R"].bounding_box.centroid[0], 0, "Ref_Battery_R phai o phia sau (-X)")
 
     def test_06_no_interference(self):
         names = self.robot + REF

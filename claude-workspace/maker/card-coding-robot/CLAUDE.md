@@ -15,4 +15,4 @@ Thiết kế mới của STLab – tham khảo ý tưởng Plobot/Cubetto (lập
 - Trẻ 4–7: không chi tiết nhỏ rời, hộp pin khóa vít, NiMH (không Li-ion), bánh giấu trong vỏ. Chi tiết ở `design/brief.md`.
 
 ## Trạng thái
-- 2026-11-09: bước 0 xong, Tuan chọn **C – Cú con**. Giai đoạn 1: dựng SolidCraft theo số ước lượng + chờ ảnh linh kiện thật.
+- 2026-11-09: bước 0 xong, Tuan chọn **C – Cú con**. Spec CAD v1 + gate xong (pin = 2 hộp 2×AA trước/sau motor, chassis bệ đứng). **TẠM DỪNG – Tuan báo mới dựng CAD** (giao coder theo `solidcraft/spec-cad-v1.md`, chưa có build_owl.py).

@@ -20,7 +20,7 @@
   "rc522": {"l": 60, "w": 40, "h": 5, "mass_g": 7, "card_gap_max": 6.0, "_": "uoc_luong; khoang cach doc NTAG213 TODO thu"},
   "speaker": {"d": 36, "h": 10, "mass_g": 12, "_": "uoc_luong"},
   "max98357": {"l": 19, "w": 18, "h": 4, "mass_g": 2, "_": "uoc_luong"},
-  "battery_4aa": {"l": 62, "w": 58, "h": 16, "mass_g": 115, "_": "uoc_luong hop 4xAA phang + 4 pin NiMH ~27 g/vien"},
+  "battery_2aa": {"l": 58, "w": 32, "h": 16, "count": 2, "mass_g": 58, "_": "uoc_luong moi hop 2xAA nam canh nhau + 2 pin NiMH ~27 g/vien; 2 hop noi tiep = 4,8 V; dat truoc + sau cum motor, chieu l theo Y (Claude 2026-11-09: hop 4xAA 62x58 vuong day motor khi banh 48)"},
   "battery_z_max": 22.0,
   "button": {"tact_l": 12, "tact_w": 12, "tact_h": 7.3, "_": "uoc_luong nut 12x12 - TODO"},
   "led_ws2812_d": 5.0,
