@@ -2,32 +2,50 @@
  "meta": {
   "P": {
    "W": 3000,
-   "H": 2900,
    "D": 800,
-   "T": 17,
-   "T_back": 9,
-   "H_low": 2300,
-   "plinth": 80,
-   "DZ": 100,
+   "lam_w": 220,
+   "lam_L": 2900,
+   "lam_t": 26,
+   "lam_waves": 4,
    "door_n": 4,
-   "door_ov": 40,
-   "door_t": 18,
-   "gap_top": 40,
-   "gap_bot": 15,
-   "lam_pitch": 30,
-   "lam_r": 6,
-   "rod_d": 27,
-   "slide_len": 550,
-   "clad_t": 12,
-   "clad_sides": true
+   "ov_min": 40,
+   "door_frame": [
+    20,
+    40,
+    1.2
+   ],
+   "door_z0": 15,
+   "top_guide": 45,
+   "DZ": 120,
+   "tube": [
+    40,
+    40,
+    1.4
+   ],
+   "header": [
+    40,
+    80,
+    1.4
+   ],
+   "z_shelf": 2300,
+   "board_t": 17,
+   "rod_d": 27
   },
-  "W_body": 2976,
-  "CL": 12,
+  "DW": 880,
+  "OV": 173.33333333333334,
+  "k": 4,
+  "DH": 2900,
+  "H_TOP": 2985,
+  "x_lines": [
+   20.0,
+   793.3333333333333,
+   1500.0,
+   2206.6666666666665,
+   2980.0
+  ],
   "BAYS": [
    {
     "name": "K1 treo 2 tang",
-    "drawers": [],
-    "shelves": [],
     "rods": [
      2050,
      1030
@@ -35,1092 +53,1556 @@
    },
    {
     "name": "K2 treo dai",
-    "drawers": [],
-    "shelves": [],
     "rods": [
      1950
     ]
    },
    {
     "name": "K3 treo dai",
-    "drawers": [],
-    "shelves": [],
     "rods": [
      1950
     ]
    },
    {
     "name": "K4 treo 2 tang",
-    "drawers": [],
-    "shelves": [],
     "rods": [
      2050,
      1030
     ]
    }
   ],
-  "bay_x": [
-   [
-    17.0,
-    735.5
-   ],
-   [
-    752.5,
-    1471.0
-   ],
-   [
-    1505.0,
-    2223.5
-   ],
-   [
-    2240.5,
-    2959.0
-   ]
-  ],
-  "door_w": 765.5,
-  "door_h": 2746,
-  "door_z": [
-   112,
-   2858
-  ]
+  "y_mid": 460.0
  },
  "parts": [
   {
-   "name": "Duoi-L-vach-trai",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
+   "name": "KD0-cot-giua",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
    "bbox": [
     0.0,
-    17.0,
+    40.0,
+    440.0,
+    480.0,
     0,
-    800,
-    0,
-    2300
+    2260
    ],
-   "L": 2300,
-   "Wd": 800,
-   "Th": 17.0
+   "L": 2260,
+   "Wd": 40.0,
+   "Th": 40.0
   },
   {
-   "name": "Noc-L-vach-trai",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
+   "name": "KD0-dam-ke",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
    "bbox": [
     0.0,
-    17.0,
-    0,
-    800,
+    40.0,
+    160,
+    760,
+    2260.0,
+    2300.0
+   ],
+   "L": 600,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD0-cot-tren-truoc",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    0.0,
+    40.0,
+    120.0,
+    160.0,
     2300,
-    2900
+    2945
    ],
-   "L": 800,
-   "Wd": 600,
-   "Th": 17.0
+   "L": 645,
+   "Wd": 40.0,
+   "Th": 40.0
   },
   {
-   "name": "Duoi-L-vach-phai",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
+   "name": "KD0-cot-tren-sau",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
    "bbox": [
-    1471.0,
-    1488.0,
-    100,
-    800,
-    0,
-    2300
-   ],
-   "L": 2300,
-   "Wd": 700,
-   "Th": 17.0
-  },
-  {
-   "name": "Noc-L-vach-phai",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
-   "bbox": [
-    1471.0,
-    1488.0,
-    100,
-    800,
+    0.0,
+    40.0,
+    760.0,
+    800.0,
     2300,
-    2900
+    2945
    ],
-   "L": 700,
-   "Wd": 600,
-   "Th": 17.0
+   "L": 645,
+   "Wd": 40.0,
+   "Th": 40.0
   },
   {
-   "name": "Duoi-L-day",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
+   "name": "KD0-dam-dinh",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
    "bbox": [
-    17.0,
-    1471.0,
+    0.0,
+    40.0,
+    160,
+    760,
+    2945.0,
+    2985.0
+   ],
+   "L": 600,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD1-cot-giua",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    773.3333333333333,
+    813.3333333333333,
+    440.0,
+    480.0,
     0,
-    800,
-    80,
-    97
+    2260
    ],
-   "L": 1454.0,
-   "Wd": 800,
-   "Th": 17
+   "L": 2260,
+   "Wd": 40.0,
+   "Th": 40.0
   },
   {
-   "name": "Duoi-L-tran",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
+   "name": "KD1-dam-ke",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
    "bbox": [
-    17.0,
-    1471.0,
-    100,
-    800,
-    2283,
-    2300
+    773.3333333333333,
+    813.3333333333333,
+    160,
+    760,
+    2260.0,
+    2300.0
    ],
-   "L": 1454.0,
-   "Wd": 700,
-   "Th": 17
+   "L": 600,
+   "Wd": 40.0,
+   "Th": 40.0
   },
   {
-   "name": "Duoi-L-chan",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
+   "name": "KD1-cot-tren-truoc",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
    "bbox": [
-    17.0,
-    1471.0,
-    40,
-    57,
+    773.3333333333333,
+    813.3333333333333,
+    120.0,
+    160.0,
+    2300,
+    2945
+   ],
+   "L": 645,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD1-cot-tren-sau",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    773.3333333333333,
+    813.3333333333333,
+    760.0,
+    800.0,
+    2300,
+    2945
+   ],
+   "L": 645,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD1-dam-dinh",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    773.3333333333333,
+    813.3333333333333,
+    160,
+    760,
+    2945.0,
+    2985.0
+   ],
+   "L": 600,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD1-de-cot",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "plate",
+   "spec": "100x100x4",
+   "bbox": [
+    743.3333333333333,
+    843.3333333333333,
+    410.0,
+    510.0,
     0,
-    80
+    4
    ],
-   "L": 1454.0,
-   "Wd": 80,
-   "Th": 17
+   "L": 100.0,
+   "Wd": 100.0,
+   "Th": 4
   },
   {
-   "name": "Duoi-L-vach-giua",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
+   "name": "KD2-cot-giua",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
    "bbox": [
-    735.5,
-    752.5,
-    100,
-    791,
-    97,
-    2283
+    1480.0,
+    1520.0,
+    440.0,
+    480.0,
+    0,
+    2260
    ],
-   "L": 2186,
-   "Wd": 691,
-   "Th": 17.0
+   "L": 2260,
+   "Wd": 40.0,
+   "Th": 40.0
   },
   {
-   "name": "Duoi-L-hau1",
-   "group": "Than",
-   "mat": "back",
-   "cut": true,
+   "name": "KD2-dam-ke",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
    "bbox": [
-    17.0,
-    744.0,
-    791,
-    800,
-    97,
-    2283
+    1480.0,
+    1520.0,
+    160,
+    760,
+    2260.0,
+    2300.0
    ],
-   "L": 2186,
-   "Wd": 727.0,
-   "Th": 9
+   "L": 600,
+   "Wd": 40.0,
+   "Th": 40.0
   },
   {
-   "name": "Duoi-L-hau2",
-   "group": "Than",
-   "mat": "back",
-   "cut": true,
+   "name": "KD2-cot-tren-truoc",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
    "bbox": [
-    744.0,
-    1471.0,
-    791,
-    800,
-    97,
-    2283
+    1480.0,
+    1520.0,
+    120.0,
+    160.0,
+    2300,
+    2945
    ],
-   "L": 2186,
-   "Wd": 727.0,
-   "Th": 9
+   "L": 645,
+   "Wd": 40.0,
+   "Th": 40.0
   },
   {
-   "name": "Noc-L-day",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
+   "name": "KD2-cot-tren-sau",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
    "bbox": [
-    17.0,
-    1471.0,
-    100,
+    1480.0,
+    1520.0,
+    760.0,
+    800.0,
+    2300,
+    2945
+   ],
+   "L": 645,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD2-dam-dinh",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    1480.0,
+    1520.0,
+    160,
+    760,
+    2945.0,
+    2985.0
+   ],
+   "L": 600,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD2-de-cot",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "plate",
+   "spec": "100x100x4",
+   "bbox": [
+    1450.0,
+    1550.0,
+    410.0,
+    510.0,
+    0,
+    4
+   ],
+   "L": 100.0,
+   "Wd": 100.0,
+   "Th": 4
+  },
+  {
+   "name": "KD3-cot-giua",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    2186.6666666666665,
+    2226.6666666666665,
+    440.0,
+    480.0,
+    0,
+    2260
+   ],
+   "L": 2260,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD3-dam-ke",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    2186.6666666666665,
+    2226.6666666666665,
+    160,
+    760,
+    2260.0,
+    2300.0
+   ],
+   "L": 600,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD3-cot-tren-truoc",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    2186.6666666666665,
+    2226.6666666666665,
+    120.0,
+    160.0,
+    2300,
+    2945
+   ],
+   "L": 645,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD3-cot-tren-sau",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    2186.6666666666665,
+    2226.6666666666665,
+    760.0,
+    800.0,
+    2300,
+    2945
+   ],
+   "L": 645,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD3-dam-dinh",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    2186.6666666666665,
+    2226.6666666666665,
+    160,
+    760,
+    2945.0,
+    2985.0
+   ],
+   "L": 600,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD3-de-cot",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "plate",
+   "spec": "100x100x4",
+   "bbox": [
+    2156.6666666666665,
+    2256.6666666666665,
+    410.0,
+    510.0,
+    0,
+    4
+   ],
+   "L": 100.0,
+   "Wd": 100.0,
+   "Th": 4
+  },
+  {
+   "name": "KD4-cot-giua",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    2960.0,
+    3000.0,
+    440.0,
+    480.0,
+    0,
+    2260
+   ],
+   "L": 2260,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD4-dam-ke",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    2960.0,
+    3000.0,
+    160,
+    760,
+    2260.0,
+    2300.0
+   ],
+   "L": 600,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD4-cot-tren-truoc",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    2960.0,
+    3000.0,
+    120.0,
+    160.0,
+    2300,
+    2945
+   ],
+   "L": 645,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD4-cot-tren-sau",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    2960.0,
+    3000.0,
+    760.0,
+    800.0,
+    2300,
+    2945
+   ],
+   "L": 645,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "KD4-dam-dinh",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    2960.0,
+    3000.0,
+    160,
+    760,
+    2945.0,
+    2985.0
+   ],
+   "L": 600,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "Ngang-ke-truoc",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    0,
+    3000,
+    120.0,
+    160.0,
+    2260.0,
+    2300.0
+   ],
+   "L": 3000,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "Ngang-ke-sau",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    0,
+    3000,
+    760.0,
+    800.0,
+    2260.0,
+    2300.0
+   ],
+   "L": 3000,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "Ngang-dinh-truoc",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    0,
+    3000,
+    120.0,
+    160.0,
+    2945.0,
+    2985.0
+   ],
+   "L": 3000,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "Ngang-dinh-sau",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x40",
+   "bbox": [
+    0,
+    3000,
+    760.0,
+    800.0,
+    2945.0,
+    2985.0
+   ],
+   "L": 3000,
+   "Wd": 40.0,
+   "Th": 40.0
+  },
+  {
+   "name": "Dam-dau-cua",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "steel",
+   "spec": "40x80",
+   "bbox": [
+    0,
+    3000,
+    20.0,
+    100.0,
+    2945.0,
+    2985.0
+   ],
+   "L": 3000,
+   "Wd": 80.0,
+   "Th": 40.0
+  },
+  {
+   "name": "K1-van-ke-noc",
+   "group": "Van",
+   "mat": "board",
+   "kind": "board",
+   "spec": null,
+   "bbox": [
+    40.0,
+    793.3333333333333,
+    120,
     800,
     2300,
     2317
    ],
-   "L": 1454.0,
-   "Wd": 700,
+   "L": 753.3,
+   "Wd": 680,
    "Th": 17
   },
   {
-   "name": "Noc-L-tran",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
+   "name": "K2-van-ke-noc",
+   "group": "Van",
+   "mat": "board",
+   "kind": "board",
+   "spec": null,
    "bbox": [
-    17.0,
-    1471.0,
-    0,
-    800,
-    2883,
-    2900
-   ],
-   "L": 1454.0,
-   "Wd": 800,
-   "Th": 17
-  },
-  {
-   "name": "Noc-L-vach-giua",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
-   "bbox": [
-    735.5,
-    752.5,
-    100,
-    791,
-    2317,
-    2883
-   ],
-   "L": 691,
-   "Wd": 566,
-   "Th": 17.0
-  },
-  {
-   "name": "Noc-L-hau",
-   "group": "Than",
-   "mat": "back",
-   "cut": true,
-   "bbox": [
-    17.0,
-    1471.0,
-    791,
-    800,
-    2317,
-    2883
-   ],
-   "L": 1454.0,
-   "Wd": 566,
-   "Th": 9
-  },
-  {
-   "name": "Duoi-R-vach-trai",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
-   "bbox": [
-    1488.0,
-    1505.0,
-    100,
-    800,
-    0,
-    2300
-   ],
-   "L": 2300,
-   "Wd": 700,
-   "Th": 17.0
-  },
-  {
-   "name": "Noc-R-vach-trai",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
-   "bbox": [
-    1488.0,
-    1505.0,
-    100,
-    800,
-    2300,
-    2900
-   ],
-   "L": 700,
-   "Wd": 600,
-   "Th": 17.0
-  },
-  {
-   "name": "Duoi-R-vach-phai",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
-   "bbox": [
-    2959.0,
-    2976.0,
-    0,
-    800,
-    0,
-    2300
-   ],
-   "L": 2300,
-   "Wd": 800,
-   "Th": 17.0
-  },
-  {
-   "name": "Noc-R-vach-phai",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
-   "bbox": [
-    2959.0,
-    2976.0,
-    0,
-    800,
-    2300,
-    2900
-   ],
-   "L": 800,
-   "Wd": 600,
-   "Th": 17.0
-  },
-  {
-   "name": "Duoi-R-day",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
-   "bbox": [
-    1505.0,
-    2959.0,
-    0,
-    800,
-    80,
-    97
-   ],
-   "L": 1454.0,
-   "Wd": 800,
-   "Th": 17
-  },
-  {
-   "name": "Duoi-R-tran",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
-   "bbox": [
-    1505.0,
-    2959.0,
-    100,
-    800,
-    2283,
-    2300
-   ],
-   "L": 1454.0,
-   "Wd": 700,
-   "Th": 17
-  },
-  {
-   "name": "Duoi-R-chan",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
-   "bbox": [
-    1505.0,
-    2959.0,
-    40,
-    57,
-    0,
-    80
-   ],
-   "L": 1454.0,
-   "Wd": 80,
-   "Th": 17
-  },
-  {
-   "name": "Duoi-R-vach-giua",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
-   "bbox": [
-    2223.5,
-    2240.5,
-    100,
-    791,
-    97,
-    2283
-   ],
-   "L": 2186,
-   "Wd": 691,
-   "Th": 17.0
-  },
-  {
-   "name": "Duoi-R-hau1",
-   "group": "Than",
-   "mat": "back",
-   "cut": true,
-   "bbox": [
-    1505.0,
-    2232.0,
-    791,
-    800,
-    97,
-    2283
-   ],
-   "L": 2186,
-   "Wd": 727.0,
-   "Th": 9
-  },
-  {
-   "name": "Duoi-R-hau2",
-   "group": "Than",
-   "mat": "back",
-   "cut": true,
-   "bbox": [
-    2232.0,
-    2959.0,
-    791,
-    800,
-    97,
-    2283
-   ],
-   "L": 2186,
-   "Wd": 727.0,
-   "Th": 9
-  },
-  {
-   "name": "Noc-R-day",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
-   "bbox": [
-    1505.0,
-    2959.0,
-    100,
+    793.3333333333333,
+    1500.0,
+    120,
     800,
     2300,
     2317
    ],
-   "L": 1454.0,
-   "Wd": 700,
+   "L": 706.7,
+   "Wd": 680,
    "Th": 17
   },
   {
-   "name": "Noc-R-tran",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
+   "name": "K3-van-ke-noc",
+   "group": "Van",
+   "mat": "board",
+   "kind": "board",
+   "spec": null,
    "bbox": [
-    1505.0,
-    2959.0,
-    0,
+    1500.0,
+    2206.6666666666665,
+    120,
     800,
-    2883,
-    2900
+    2300,
+    2317
    ],
-   "L": 1454.0,
-   "Wd": 800,
+   "L": 706.7,
+   "Wd": 680,
    "Th": 17
   },
   {
-   "name": "Noc-R-vach-giua",
-   "group": "Than",
-   "mat": "carcass",
-   "cut": true,
+   "name": "K4-van-ke-noc",
+   "group": "Van",
+   "mat": "board",
+   "kind": "board",
+   "spec": null,
    "bbox": [
-    2223.5,
-    2240.5,
-    100,
-    791,
-    2317,
-    2883
-   ],
-   "L": 691,
-   "Wd": 566,
-   "Th": 17.0
-  },
-  {
-   "name": "Noc-R-hau",
-   "group": "Than",
-   "mat": "back",
-   "cut": true,
-   "bbox": [
-    1505.0,
-    2959.0,
-    791,
+    2206.6666666666665,
+    2960.0,
+    120,
     800,
-    2317,
-    2883
+    2300,
+    2317
    ],
-   "L": 1454.0,
-   "Wd": 566,
-   "Th": 9
+   "L": 753.3,
+   "Wd": 680,
+   "Th": 17
   },
   {
-   "name": "K1-ong-treo-2050",
-   "group": "Phu kien",
+   "name": "K1-ong-2050",
+   "group": "Ong treo",
    "mat": "rod",
-   "cut": false,
+   "kind": "rod",
+   "spec": "Ø27",
    "bbox": [
-    17.0,
-    735.5,
-    433.0,
-    458.0,
-    2037.5,
-    2062.5
+    40.0,
+    773.3333333333333,
+    446.5,
+    473.5,
+    2036.5,
+    2063.5
    ],
-   "L": 716.5,
+   "L": 731.3,
    "Wd": 27,
    "Th": 27
   },
   {
-   "name": "K1-ong-treo-1030",
-   "group": "Phu kien",
+   "name": "K1-ong-1030",
+   "group": "Ong treo",
    "mat": "rod",
-   "cut": false,
+   "kind": "rod",
+   "spec": "Ø27",
    "bbox": [
-    17.0,
-    735.5,
-    433.0,
-    458.0,
-    1017.5,
-    1042.5
+    40.0,
+    773.3333333333333,
+    446.5,
+    473.5,
+    1016.5,
+    1043.5
    ],
-   "L": 716.5,
+   "L": 731.3,
    "Wd": 27,
    "Th": 27
   },
   {
-   "name": "K2-ong-treo-1950",
-   "group": "Phu kien",
+   "name": "K2-ong-1950",
+   "group": "Ong treo",
    "mat": "rod",
-   "cut": false,
+   "kind": "rod",
+   "spec": "Ø27",
    "bbox": [
-    752.5,
-    1471.0,
-    433.0,
-    458.0,
-    1937.5,
-    1962.5
+    813.3333333333333,
+    1480.0,
+    446.5,
+    473.5,
+    1936.5,
+    1963.5
    ],
-   "L": 716.5,
+   "L": 664.7,
    "Wd": 27,
    "Th": 27
   },
   {
-   "name": "K3-ong-treo-1950",
-   "group": "Phu kien",
+   "name": "K3-ong-1950",
+   "group": "Ong treo",
    "mat": "rod",
-   "cut": false,
+   "kind": "rod",
+   "spec": "Ø27",
    "bbox": [
-    1505.0,
-    2223.5,
-    433.0,
-    458.0,
-    1937.5,
-    1962.5
+    1520.0,
+    2186.6666666666665,
+    446.5,
+    473.5,
+    1936.5,
+    1963.5
    ],
-   "L": 716.5,
+   "L": 664.7,
    "Wd": 27,
    "Th": 27
   },
   {
-   "name": "K4-ong-treo-2050",
-   "group": "Phu kien",
+   "name": "K4-ong-2050",
+   "group": "Ong treo",
    "mat": "rod",
-   "cut": false,
+   "kind": "rod",
+   "spec": "Ø27",
    "bbox": [
-    2240.5,
-    2959.0,
-    433.0,
-    458.0,
-    2037.5,
-    2062.5
+    2226.6666666666665,
+    2960.0,
+    446.5,
+    473.5,
+    2036.5,
+    2063.5
    ],
-   "L": 716.5,
+   "L": 731.3,
    "Wd": 27,
    "Th": 27
   },
   {
-   "name": "K4-ong-treo-1030",
-   "group": "Phu kien",
+   "name": "K4-ong-1030",
+   "group": "Ong treo",
    "mat": "rod",
-   "cut": false,
+   "kind": "rod",
+   "spec": "Ø27",
    "bbox": [
-    2240.5,
-    2959.0,
-    433.0,
-    458.0,
-    1017.5,
-    1042.5
+    2226.6666666666665,
+    2960.0,
+    446.5,
+    473.5,
+    1016.5,
+    1043.5
    ],
-   "L": 716.5,
+   "L": 731.3,
    "Wd": 27,
    "Th": 27
-  },
-  {
-   "name": "Ray-tren",
-   "group": "Ray",
-   "mat": "alu",
-   "cut": false,
-   "bbox": [
-    17,
-    2959,
-    5,
-    95,
-    2843,
-    2883
-   ],
-   "L": 2942,
-   "Wd": 90,
-   "Th": 40
   },
   {
    "name": "Ray-duoi",
    "group": "Ray",
    "mat": "alu",
-   "cut": false,
+   "kind": "track",
+   "spec": "ray duoi doi",
    "bbox": [
-    17,
-    2959,
+    0,
+    3000,
     5,
-    95,
-    97,
-    107
-   ],
-   "L": 2942,
-   "Wd": 90,
-   "Th": 10
-  },
-  {
-   "name": "Canh1-tam",
-   "group": "Canh 1",
-   "mat": "door",
-   "cut": false,
-   "bbox": [
-    37.0,
-    762.5,
-    24.0,
-    39.0,
-    112,
-    2858
-   ],
-   "L": 2746,
-   "Wd": 725.5,
-   "Th": 15.0
-  },
-  {
-   "name": "Canh1-khung-trai",
-   "group": "Canh 1",
-   "mat": "alu",
-   "cut": false,
-   "bbox": [
-    17.0,
-    37.0,
-    17.0,
-    39.0,
-    112,
-    2858
-   ],
-   "L": 2746,
-   "Wd": 22.0,
-   "Th": 20.0
-  },
-  {
-   "name": "Canh1-khung-phai",
-   "group": "Canh 1",
-   "mat": "alu",
-   "cut": false,
-   "bbox": [
-    762.5,
-    782.5,
-    17.0,
-    39.0,
-    112,
-    2858
-   ],
-   "L": 2746,
-   "Wd": 22.0,
-   "Th": 20.0
-  },
-  {
-   "name": "Canh1-khung-tren",
-   "group": "Canh 1",
-   "mat": "alu",
-   "cut": false,
-   "bbox": [
-    37.0,
-    762.5,
-    21.0,
-    39.0,
-    2833,
-    2858
-   ],
-   "L": 725.5,
-   "Wd": 25,
-   "Th": 18.0
-  },
-  {
-   "name": "Canh1-khung-duoi",
-   "group": "Canh 1",
-   "mat": "alu",
-   "cut": false,
-   "bbox": [
-    37.0,
-    762.5,
-    21.0,
-    39.0,
-    112,
-    152
-   ],
-   "L": 725.5,
-   "Wd": 40,
-   "Th": 18.0
-  },
-  {
-   "name": "Canh2-tam",
-   "group": "Canh 2",
-   "mat": "door",
-   "cut": false,
-   "bbox": [
-    762.5,
-    1488.0,
-    66.0,
-    81.0,
-    112,
-    2858
-   ],
-   "L": 2746,
-   "Wd": 725.5,
-   "Th": 15.0
-  },
-  {
-   "name": "Canh2-khung-trai",
-   "group": "Canh 2",
-   "mat": "alu",
-   "cut": false,
-   "bbox": [
-    742.5,
-    762.5,
-    59.0,
-    81.0,
-    112,
-    2858
-   ],
-   "L": 2746,
-   "Wd": 22.0,
-   "Th": 20.0
-  },
-  {
-   "name": "Canh2-khung-phai",
-   "group": "Canh 2",
-   "mat": "alu",
-   "cut": false,
-   "bbox": [
-    1488.0,
-    1508.0,
-    59.0,
-    81.0,
-    112,
-    2858
-   ],
-   "L": 2746,
-   "Wd": 22.0,
-   "Th": 20.0
-  },
-  {
-   "name": "Canh2-khung-tren",
-   "group": "Canh 2",
-   "mat": "alu",
-   "cut": false,
-   "bbox": [
-    762.5,
-    1488.0,
-    63.0,
-    81.0,
-    2833,
-    2858
-   ],
-   "L": 725.5,
-   "Wd": 25,
-   "Th": 18.0
-  },
-  {
-   "name": "Canh2-khung-duoi",
-   "group": "Canh 2",
-   "mat": "alu",
-   "cut": false,
-   "bbox": [
-    762.5,
-    1488.0,
-    63.0,
-    81.0,
-    112,
-    152
-   ],
-   "L": 725.5,
-   "Wd": 40,
-   "Th": 18.0
-  },
-  {
-   "name": "Canh3-tam",
-   "group": "Canh 3",
-   "mat": "door",
-   "cut": false,
-   "bbox": [
-    1488.0,
-    2213.5,
-    24.0,
-    39.0,
-    112,
-    2858
-   ],
-   "L": 2746,
-   "Wd": 725.5,
-   "Th": 15.0
-  },
-  {
-   "name": "Canh3-khung-trai",
-   "group": "Canh 3",
-   "mat": "alu",
-   "cut": false,
-   "bbox": [
-    1468.0,
-    1488.0,
-    17.0,
-    39.0,
-    112,
-    2858
-   ],
-   "L": 2746,
-   "Wd": 22.0,
-   "Th": 20.0
-  },
-  {
-   "name": "Canh3-khung-phai",
-   "group": "Canh 3",
-   "mat": "alu",
-   "cut": false,
-   "bbox": [
-    2213.5,
-    2233.5,
-    17.0,
-    39.0,
-    112,
-    2858
-   ],
-   "L": 2746,
-   "Wd": 22.0,
-   "Th": 20.0
-  },
-  {
-   "name": "Canh3-khung-tren",
-   "group": "Canh 3",
-   "mat": "alu",
-   "cut": false,
-   "bbox": [
-    1488.0,
-    2213.5,
-    21.0,
-    39.0,
-    2833,
-    2858
-   ],
-   "L": 725.5,
-   "Wd": 25,
-   "Th": 18.0
-  },
-  {
-   "name": "Canh3-khung-duoi",
-   "group": "Canh 3",
-   "mat": "alu",
-   "cut": false,
-   "bbox": [
-    1488.0,
-    2213.5,
-    21.0,
-    39.0,
-    112,
-    152
-   ],
-   "L": 725.5,
-   "Wd": 40,
-   "Th": 18.0
-  },
-  {
-   "name": "Canh4-tam",
-   "group": "Canh 4",
-   "mat": "door",
-   "cut": false,
-   "bbox": [
-    2213.5,
-    2939.0,
-    66.0,
-    81.0,
-    112,
-    2858
-   ],
-   "L": 2746,
-   "Wd": 725.5,
-   "Th": 15.0
-  },
-  {
-   "name": "Canh4-khung-trai",
-   "group": "Canh 4",
-   "mat": "alu",
-   "cut": false,
-   "bbox": [
-    2193.5,
-    2213.5,
-    59.0,
-    81.0,
-    112,
-    2858
-   ],
-   "L": 2746,
-   "Wd": 22.0,
-   "Th": 20.0
-  },
-  {
-   "name": "Canh4-khung-phai",
-   "group": "Canh 4",
-   "mat": "alu",
-   "cut": false,
-   "bbox": [
-    2939.0,
-    2959.0,
-    59.0,
-    81.0,
-    112,
-    2858
-   ],
-   "L": 2746,
-   "Wd": 22.0,
-   "Th": 20.0
-  },
-  {
-   "name": "Canh4-khung-tren",
-   "group": "Canh 4",
-   "mat": "alu",
-   "cut": false,
-   "bbox": [
-    2213.5,
-    2939.0,
-    63.0,
-    81.0,
-    2833,
-    2858
-   ],
-   "L": 725.5,
-   "Wd": 25,
-   "Th": 18.0
-  },
-  {
-   "name": "Canh4-khung-duoi",
-   "group": "Canh 4",
-   "mat": "alu",
-   "cut": false,
-   "bbox": [
-    2213.5,
-    2939.0,
-    63.0,
-    81.0,
-    112,
-    152
-   ],
-   "L": 725.5,
-   "Wd": 40,
-   "Th": 18.0
-  },
-  {
-   "name": "Op-lam-song-trai",
-   "group": "Op lam song",
-   "mat": "door",
-   "cut": false,
-   "bbox": [
-    -12,
-    -6,
+    115,
     0,
-    800,
+    8
+   ],
+   "L": 3000,
+   "Wd": 110,
+   "Th": 8
+  },
+  {
+   "name": "Ray-tren",
+   "group": "Ray",
+   "mat": "alu",
+   "kind": "track",
+   "spec": "ray tren doi",
+   "bbox": [
     0,
-    2900
+    3000,
+    5,
+    115,
+    2900,
+    2945
+   ],
+   "L": 3000,
+   "Wd": 110,
+   "Th": 45
+  },
+  {
+   "name": "C1-khung-dung-trai",
+   "group": "Canh 1",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    10.0,
+    50.0,
+    36,
+    56,
+    15,
+    2915
    ],
    "L": 2900,
-   "Wd": 800,
-   "Th": 6
+   "Wd": 40.0,
+   "Th": 20
   },
   {
-   "name": "Op-lam-song-phai",
-   "group": "Op lam song",
-   "mat": "door",
-   "cut": false,
+   "name": "C1-khung-dung-phai",
+   "group": "Canh 1",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
    "bbox": [
-    2982,
-    2988,
-    0,
-    800,
-    0,
-    2900
+    830.0,
+    870.0,
+    36,
+    56,
+    15,
+    2915
    ],
    "L": 2900,
-   "Wd": 800,
-   "Th": 6
+   "Wd": 40.0,
+   "Th": 20
   },
   {
-   "name": "Op-lam-song (2 vach)",
-   "group": "Op lam song",
-   "mat": "door",
-   "cut": false,
+   "name": "C1-khung-ngang-45",
+   "group": "Canh 1",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
    "bbox": [
-    -12,
-    2988,
-    0,
-    800,
-    0,
-    2900
+    50.0,
+    830.0,
+    36,
+    56,
+    35,
+    55
+   ],
+   "L": 780.0,
+   "Wd": 20,
+   "Th": 20
+  },
+  {
+   "name": "C1-khung-ngang-1465",
+   "group": "Canh 1",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    50.0,
+    830.0,
+    36,
+    56,
+    1455.0,
+    1475.0
+   ],
+   "L": 780.0,
+   "Wd": 20,
+   "Th": 20.0
+  },
+  {
+   "name": "C1-khung-ngang-2885",
+   "group": "Canh 1",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    50.0,
+    830.0,
+    36,
+    56,
+    2875,
+    2895
+   ],
+   "L": 780.0,
+   "Wd": 20,
+   "Th": 20
+  },
+  {
+   "name": "C1-lam1",
+   "group": "Canh 1",
+   "mat": "lam",
+   "kind": "lam",
+   "spec": "220x26",
+   "bbox": [
+    0.5,
+    219.5,
+    23,
+    36,
+    15,
+    2915
    ],
    "L": 2900,
-   "Wd": 800,
-   "Th": 12
+   "Wd": 219.0,
+   "Th": 13
+  },
+  {
+   "name": "C1-lam2",
+   "group": "Canh 1",
+   "mat": "lam",
+   "kind": "lam",
+   "spec": "220x26",
+   "bbox": [
+    220.5,
+    439.5,
+    23,
+    36,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 219.0,
+   "Th": 13
+  },
+  {
+   "name": "C1-lam3",
+   "group": "Canh 1",
+   "mat": "lam",
+   "kind": "lam",
+   "spec": "220x26",
+   "bbox": [
+    440.5,
+    659.5,
+    23,
+    36,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 219.0,
+   "Th": 13
+  },
+  {
+   "name": "C1-lam4",
+   "group": "Canh 1",
+   "mat": "lam",
+   "kind": "lam",
+   "spec": "220x26",
+   "bbox": [
+    660.5,
+    879.5,
+    23,
+    36,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 219.0,
+   "Th": 13
+  },
+  {
+   "name": "C2-khung-dung-trai",
+   "group": "Canh 2",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    716.6666666666666,
+    756.6666666666666,
+    90,
+    110,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 40.0,
+   "Th": 20
+  },
+  {
+   "name": "C2-khung-dung-phai",
+   "group": "Canh 2",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    1536.6666666666665,
+    1576.6666666666665,
+    90,
+    110,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 40.0,
+   "Th": 20
+  },
+  {
+   "name": "C2-khung-ngang-45",
+   "group": "Canh 2",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    756.6666666666666,
+    1536.6666666666665,
+    90,
+    110,
+    35,
+    55
+   ],
+   "L": 780.0,
+   "Wd": 20,
+   "Th": 20
+  },
+  {
+   "name": "C2-khung-ngang-1465",
+   "group": "Canh 2",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    756.6666666666666,
+    1536.6666666666665,
+    90,
+    110,
+    1455.0,
+    1475.0
+   ],
+   "L": 780.0,
+   "Wd": 20,
+   "Th": 20.0
+  },
+  {
+   "name": "C2-khung-ngang-2885",
+   "group": "Canh 2",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    756.6666666666666,
+    1536.6666666666665,
+    90,
+    110,
+    2875,
+    2895
+   ],
+   "L": 780.0,
+   "Wd": 20,
+   "Th": 20
+  },
+  {
+   "name": "C2-lam1",
+   "group": "Canh 2",
+   "mat": "lam",
+   "kind": "lam",
+   "spec": "220x26",
+   "bbox": [
+    707.1666666666666,
+    926.1666666666666,
+    77,
+    90,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 219.0,
+   "Th": 13
+  },
+  {
+   "name": "C2-lam2",
+   "group": "Canh 2",
+   "mat": "lam",
+   "kind": "lam",
+   "spec": "220x26",
+   "bbox": [
+    927.1666666666666,
+    1146.1666666666665,
+    77,
+    90,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 219.0,
+   "Th": 13
+  },
+  {
+   "name": "C2-lam3",
+   "group": "Canh 2",
+   "mat": "lam",
+   "kind": "lam",
+   "spec": "220x26",
+   "bbox": [
+    1147.1666666666665,
+    1366.1666666666665,
+    77,
+    90,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 219.0,
+   "Th": 13
+  },
+  {
+   "name": "C2-lam4",
+   "group": "Canh 2",
+   "mat": "lam",
+   "kind": "lam",
+   "spec": "220x26",
+   "bbox": [
+    1367.1666666666665,
+    1586.1666666666665,
+    77,
+    90,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 219.0,
+   "Th": 13
+  },
+  {
+   "name": "C3-khung-dung-trai",
+   "group": "Canh 3",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    1423.3333333333333,
+    1463.3333333333333,
+    36,
+    56,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 40.0,
+   "Th": 20
+  },
+  {
+   "name": "C3-khung-dung-phai",
+   "group": "Canh 3",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    2243.333333333333,
+    2283.333333333333,
+    36,
+    56,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 40.0,
+   "Th": 20
+  },
+  {
+   "name": "C3-khung-ngang-45",
+   "group": "Canh 3",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    1463.3333333333333,
+    2243.333333333333,
+    36,
+    56,
+    35,
+    55
+   ],
+   "L": 780.0,
+   "Wd": 20,
+   "Th": 20
+  },
+  {
+   "name": "C3-khung-ngang-1465",
+   "group": "Canh 3",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    1463.3333333333333,
+    2243.333333333333,
+    36,
+    56,
+    1455.0,
+    1475.0
+   ],
+   "L": 780.0,
+   "Wd": 20,
+   "Th": 20.0
+  },
+  {
+   "name": "C3-khung-ngang-2885",
+   "group": "Canh 3",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    1463.3333333333333,
+    2243.333333333333,
+    36,
+    56,
+    2875,
+    2895
+   ],
+   "L": 780.0,
+   "Wd": 20,
+   "Th": 20
+  },
+  {
+   "name": "C3-lam1",
+   "group": "Canh 3",
+   "mat": "lam",
+   "kind": "lam",
+   "spec": "220x26",
+   "bbox": [
+    1413.8333333333333,
+    1632.8333333333333,
+    23,
+    36,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 219.0,
+   "Th": 13
+  },
+  {
+   "name": "C3-lam2",
+   "group": "Canh 3",
+   "mat": "lam",
+   "kind": "lam",
+   "spec": "220x26",
+   "bbox": [
+    1633.8333333333333,
+    1852.8333333333333,
+    23,
+    36,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 219.0,
+   "Th": 13
+  },
+  {
+   "name": "C3-lam3",
+   "group": "Canh 3",
+   "mat": "lam",
+   "kind": "lam",
+   "spec": "220x26",
+   "bbox": [
+    1853.8333333333333,
+    2072.833333333333,
+    23,
+    36,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 219.0,
+   "Th": 13
+  },
+  {
+   "name": "C3-lam4",
+   "group": "Canh 3",
+   "mat": "lam",
+   "kind": "lam",
+   "spec": "220x26",
+   "bbox": [
+    2073.833333333333,
+    2292.833333333333,
+    23,
+    36,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 219.0,
+   "Th": 13
+  },
+  {
+   "name": "C4-khung-dung-trai",
+   "group": "Canh 4",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    2130.0,
+    2170.0,
+    90,
+    110,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 40.0,
+   "Th": 20
+  },
+  {
+   "name": "C4-khung-dung-phai",
+   "group": "Canh 4",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    2950.0,
+    2990.0,
+    90,
+    110,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 40.0,
+   "Th": 20
+  },
+  {
+   "name": "C4-khung-ngang-45",
+   "group": "Canh 4",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    2170.0,
+    2950.0,
+    90,
+    110,
+    35,
+    55
+   ],
+   "L": 780.0,
+   "Wd": 20,
+   "Th": 20
+  },
+  {
+   "name": "C4-khung-ngang-1465",
+   "group": "Canh 4",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    2170.0,
+    2950.0,
+    90,
+    110,
+    1455.0,
+    1475.0
+   ],
+   "L": 780.0,
+   "Wd": 20,
+   "Th": 20.0
+  },
+  {
+   "name": "C4-khung-ngang-2885",
+   "group": "Canh 4",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    2170.0,
+    2950.0,
+    90,
+    110,
+    2875,
+    2895
+   ],
+   "L": 780.0,
+   "Wd": 20,
+   "Th": 20
+  },
+  {
+   "name": "C4-lam1",
+   "group": "Canh 4",
+   "mat": "lam",
+   "kind": "lam",
+   "spec": "220x26",
+   "bbox": [
+    2120.5,
+    2339.5,
+    77,
+    90,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 219.0,
+   "Th": 13
+  },
+  {
+   "name": "C4-lam2",
+   "group": "Canh 4",
+   "mat": "lam",
+   "kind": "lam",
+   "spec": "220x26",
+   "bbox": [
+    2340.5,
+    2559.5,
+    77,
+    90,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 219.0,
+   "Th": 13
+  },
+  {
+   "name": "C4-lam3",
+   "group": "Canh 4",
+   "mat": "lam",
+   "kind": "lam",
+   "spec": "220x26",
+   "bbox": [
+    2560.5,
+    2779.5,
+    77,
+    90,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 219.0,
+   "Th": 13
+  },
+  {
+   "name": "C4-lam4",
+   "group": "Canh 4",
+   "mat": "lam",
+   "kind": "lam",
+   "spec": "220x26",
+   "bbox": [
+    2780.5,
+    2999.5,
+    77,
+    90,
+    15,
+    2915
+   ],
+   "L": 2900,
+   "Wd": 219.0,
+   "Th": 13
   },
   {
    "name": "San",
    "group": "Moi truong",
-   "mat": "back",
-   "cut": false,
+   "mat": "floor",
+   "kind": "env",
+   "spec": null,
    "bbox": [
-    -1500,
-    4476,
-    -2500,
-    850,
-    -5,
+    -1200,
+    4200,
+    -3000,
+    820,
+    -10,
     0
    ],
-   "L": 5976,
-   "Wd": 3350,
-   "Th": 5
+   "L": 5400,
+   "Wd": 3820,
+   "Th": 10
   },
   {
-   "name": "Tuong",
+   "name": "Tuong-sau",
    "group": "Moi truong",
-   "mat": "back",
-   "cut": false,
+   "mat": "wall",
+   "kind": "env",
+   "spec": null,
    "bbox": [
-    -1500,
-    4476,
+    -200,
+    3200,
     800,
-    810,
+    900,
     0,
-    3200
+    3300
    ],
-   "L": 5976,
-   "Wd": 3200,
-   "Th": 10
+   "L": 3400,
+   "Wd": 3300,
+   "Th": 100
+  },
+  {
+   "name": "Tuong-phai",
+   "group": "Moi truong",
+   "mat": "wall",
+   "kind": "env",
+   "spec": null,
+   "bbox": [
+    3000,
+    3100,
+    -300,
+    800,
+    0,
+    3300
+   ],
+   "L": 3300,
+   "Wd": 1100,
+   "Th": 100
+  },
+  {
+   "name": "Tuong-trai",
+   "group": "Tuong trai",
+   "mat": "wall",
+   "kind": "env",
+   "spec": null,
+   "bbox": [
+    -100,
+    0,
+    -300,
+    800,
+    0,
+    3300
+   ],
+   "L": 3300,
+   "Wd": 1100,
+   "Th": 100
   }
  ]
 }

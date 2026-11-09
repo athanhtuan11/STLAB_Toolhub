@@ -1,24 +1,26 @@
-"""Ban ve kich thuoc + bang cat van + contact sheet tu parts.json (do build_wardrobe.py xuat).
+"""Ban ve kich thuoc + bang vat tu + contact sheet tu parts.json (build_wardrobe.py xuat).
 
-Chay: python draw_plans.py   (tu thu muc design/)
+Chay: python draw_plans.py  (tu design/)
 """
-import csv, json, os
+import csv, json, math, os
 from collections import Counter
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
+from matplotlib.patches import Rectangle, Circle
 from PIL import Image, ImageDraw, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "renders")
 data = json.load(open(os.path.join(HERE, "parts.json"), encoding="utf-8"))
-meta, parts = data["meta"], data["parts"]
-P = meta["P"]
-W, H, D, T, CL = meta["W_body"], P["H"], P["D"], P["T"], meta["CL"]
-SHEET = (2440, 1220)                    # kho van chuan (TODO: xac nhan kho xuong dung)
-COL = {"carcass": "#D6C3A3", "interior": "#E4D6BC", "back": "#EFE8DA", "drawer": "#FFFFFF",
-       "rod": "#8A9096", "alu": "#B9BEC3", "door": "#8B6A4F", "dark": "#333"}
+m, parts = data["meta"], data["parts"]
+P = m["P"]
+W, D, DW, OV, k, H_TOP = P["W"], P["D"], m["DW"], m["OV"], m["k"], m["H_TOP"]
+XL, YM = m["x_lines"], m["y_mid"]
+C = {"steel": "#2B2D30", "lam": "#8B6A4F", "board": "#D9C7A6", "rod": "#7D8790", "alu": "#B9BEC3"}
+# kg/m tinh tu tiet dien hop (thep 7,85 g/cm3) - do day theo gia dinh, TODO theo hang mua
+KGM = {"40x40": (4 * 40 * 1.4 - 4 * 1.4 ** 2) * 7.85e-3, "40x80": (2 * 120 * 1.4 - 4 * 1.4 ** 2) * 7.85e-3,
+       "20x40": (2 * 60 * 1.2 - 4 * 1.2 ** 2) * 7.85e-3}
 
 
 def dim(ax, x0, y0, x1, y1, txt, off=0, vert=False, fs=8):
@@ -30,122 +32,144 @@ def dim(ax, x0, y0, x1, y1, txt, off=0, vert=False, fs=8):
         ax.text((x0 + x1) / 2, y0 + off + 20, txt, ha="center", va="bottom", fontsize=fs)
 
 
+def proj(pt, plane):
+    x0, x1, y0, y1, z0, z1 = pt["bbox"]
+    return (x0, z0, x1 - x0, z1 - z0) if plane == "xz" else (x0, y0, x1 - x0, y1 - y0) if plane == "xy" else (y0, z0, y1 - y0, z1 - z0)
+
+
 def front_elevation():
-    fig, ax = plt.subplots(figsize=(15, 13))
+    fig, ax = plt.subplots(figsize=(15, 14))
+    ax.add_patch(Rectangle((-120, 0), 120, H_TOP + 150, fc="#ddd", hatch="//", ec="#999"))
+    ax.add_patch(Rectangle((W, 0), 120, H_TOP + 150, fc="#ddd", hatch="//", ec="#999"))
     for pt in parts:
-        x0, x1, y0, y1, z0, z1 = pt["bbox"]
-        g = pt["group"]
-        if g.startswith("Canh") or g in ("Ray", "Moi truong") or "-nk" in pt["name"] and "mat" not in pt["name"]:
-            continue
-        if g == "Op lam song":
-            for xx in ((-CL, 0), (W, W + CL)):
-                ax.add_patch(Rectangle((xx[0], 0), CL, H, fc=COL["door"], ec="k", lw=0.3))
-            continue
-        if pt["mat"] == "back":
-            continue
-        ax.add_patch(Rectangle((x0, z0), x1 - x0, z1 - z0, fc=COL.get(pt["mat"], "#ccc"), ec="k", lw=0.4))
-    # kich thuoc tong
-    dim(ax, -CL, H, W + CL, H, f"Rộng tổng {W + 2 * CL:.0f} (thân {W:.0f} + ốp lam sóng 2×{CL})", off=120)
-    dim(ax, -CL, 0, -CL, H, f"Cao {H}", off=-150, vert=True)
-    dim(ax, -CL, 0, -CL, P["H_low"], f"Module dưới {P['H_low']}", off=-60, vert=True)
-    # tung khoang
-    for b, ((bx0, bx1), spec) in enumerate(zip(meta["bay_x"], meta["BAYS"])):
-        dim(ax, bx0, H, bx1, H, f"lòng {bx1 - bx0:.0f}", off=-260, fs=7)
-        ax.text((bx0 + bx1) / 2, P["H_low"] - 120, spec["name"], ha="center", fontsize=9, weight="bold",
-                bbox=dict(fc="white", ec="none", alpha=0.8))
-        for zt in spec["shelves"]:
-            ax.text(bx0 + 15, zt + 10, f"kệ {zt}", fontsize=6.5, color="#444")
+        if pt["group"] in ("Khung sat", "Van", "Ong treo") and not (pt["kind"] == "steel" and pt["bbox"][2] < 100
+                                                                     and pt["Wd"] == 80):
+            x, z, w, h = proj(pt, "xz")
+            ax.add_patch(Rectangle((x, z), w, h, fc=C.get(pt["mat"], "#ccc"), ec="k", lw=0.3,
+                                   alpha=0.85 if pt["mat"] == "steel" else 1))
+    dim(ax, 0, H_TOP, W, H_TOP, f"Tường – tường {W} (đo lại)", off=150)
+    dim(ax, -120, 0, -120, H_TOP, f"Đỉnh dầm {H_TOP:.0f}", off=-110, vert=True)
+    dim(ax, -120, 0, -120, P["z_shelf"], f"Kệ nóc {P['z_shelf']}", off=-20, vert=True)
+    for b, spec in enumerate(m["BAYS"]):
+        xa, xb = XL[b] + 20, XL[b + 1] - 20
+        dim(ax, xa, 0, xb, 0, f"lọt lòng {xb - xa:.0f}", off=-90, fs=7)
+        ax.text((xa + xb) / 2, 1500, spec["name"], ha="center", fontsize=10, weight="bold",
+                bbox=dict(fc="white", ec="none", alpha=0.85))
         for zr in spec["rods"]:
-            ax.text(bx1 - 15, zr + 25, f"ống Ø{P['rod_d']} @ {zr}", fontsize=6.5, ha="right", color="#1a4d80")
-        z = P["plinth"] + T
-        for k, h in enumerate(spec["drawers"]):
-            ax.text((bx0 + bx1) / 2, z + h / 2, f"ngăn kéo {h}", fontsize=6.5, ha="center", va="center")
-            z += h
-    ax.text(W / 2, P["H_low"] + (H - P["H_low"]) / 2, "Hộp nóc: chăn mền, vali (đồ theo mùa)",
-            ha="center", fontsize=9, style="italic")
-    ax.set_xlim(-450, W + 250)
-    ax.set_ylim(-150, H + 350)
-    ax.set_aspect("equal")
-    ax.axis("off")
-    ax.set_title("MẶT ĐỨNG BỐ TRÍ TRONG (bỏ cánh) – đơn vị mm, cao độ tính từ sàn", fontsize=12)
-    fig.savefig(os.path.join(OUT, "10-ban-ve-mat-dung.png"), dpi=110, bbox_inches="tight")
+            ax.text((xa + xb) / 2, zr + 30, f"ống Ø{P['rod_d']} dài {xb - xa - 2:.0f} @ {zr}", ha="center",
+                    fontsize=7.5, color="#1a4d80")
+    for i, x in enumerate(XL):
+        ax.text(x, -200, f"khung {i}\nx={x:.0f}", ha="center", fontsize=6.5, va="top")
+    ax.text(W / 2, P["z_shelf"] + 330, "Hộp nóc: chăn mền, vali", ha="center", fontsize=9, style="italic")
+    ax.set_xlim(-500, W + 250); ax.set_ylim(-420, H_TOP + 330)
+    ax.set_aspect("equal"); ax.axis("off")
+    ax.set_title("MẶT ĐỨNG KHUNG SẮT (bỏ cánh) – mm, cao độ từ sàn", fontsize=12)
+    fig.savefig(os.path.join(OUT, "10-ban-ve-khung-sat.png"), dpi=105, bbox_inches="tight")
     plt.close(fig)
 
 
-def plan_doors():
-    fig, (a1, a2) = plt.subplots(1, 2, figsize=(15, 6), gridspec_kw=dict(width_ratios=[3, 1.1]))
-    # mat bang canh
-    a1.add_patch(Rectangle((0, 0), W, D, fc="#F6F1E7", ec="k", lw=0.6))
-    a1.add_patch(Rectangle((-CL, 0), CL, D, fc=COL["door"]))
-    a1.add_patch(Rectangle((W, 0), CL, D, fc=COL["door"]))
-    dw = meta["door_w"]
+def door_and_plan():
+    fig = plt.figure(figsize=(16, 9))
+    a0 = fig.add_axes([0.0, 0.05, 0.22, 0.9])
+    a1 = fig.add_axes([0.24, 0.45, 0.55, 0.5])
+    a2 = fig.add_axes([0.80, 0.05, 0.2, 0.9])
+    # 1 canh
+    fw = P["door_frame"][1]
+    for j in range(k):
+        a0.add_patch(Rectangle((j * P["lam_w"], 0), P["lam_w"], m["DH"], fc=C["lam"], ec="k", lw=0.5))
+    for xx in (10, DW - 10 - fw):
+        a0.add_patch(Rectangle((xx, 0), fw, m["DH"], fc="none", ec="#222", ls="--", lw=0.8))
+    for zz in (30, m["DH"] / 2, m["DH"] - 30):
+        a0.add_patch(Rectangle((10 + fw, zz - 10), DW - 20 - 2 * fw, 20, fc="none", ec="#222", ls="--", lw=0.8))
+    dim(a0, 0, m["DH"], DW, m["DH"], f"{DW} = {k} thanh × {P['lam_w']}", off=80)
+    dim(a0, 0, 0, 0, m["DH"], f"{m['DH']} = lam nguyên cây", off=-60, vert=True)
+    a0.text(DW / 2, -150, "Khung hộp 20×40 (nét đứt) sau lam\nbánh xe dưới, dẫn hướng trên", ha="center", fontsize=8)
+    a0.set_xlim(-300, DW + 100); a0.set_ylim(-350, m["DH"] + 250); a0.set_aspect("equal"); a0.axis("off")
+    a0.set_title("1 CÁNH (nhìn trước)", fontsize=11)
+    # mat bang
+    a1.add_patch(Rectangle((-120, -150), 120, D + 270, fc="#ddd", hatch="//", ec="#999"))
+    a1.add_patch(Rectangle((W, -150), 120, D + 270, fc="#ddd", hatch="//", ec="#999"))
+    a1.add_patch(Rectangle((-120, D), W + 240, 120, fc="#ddd", hatch="//", ec="#999"))
+    for pt in parts:
+        if pt["group"] == "Khung sat" and pt["kind"] == "steel" and pt["bbox"][5] - pt["bbox"][4] > 500:
+            x, y, w, h = proj(pt, "xy")
+            a1.add_patch(Rectangle((x, y), w, h, fc=C["steel"]))
     for i in range(P["door_n"]):
         front = i % 2 == 0
-        yc = 30 if front else 72
-        x0 = T + i * (dw - P["door_ov"])
-        a1.add_patch(Rectangle((x0, yc - P["door_t"] / 2), dw, P["door_t"], fc=COL["door"], ec="k", lw=0.5))
-        a1.text(x0 + dw / 2, yc - 45 if front else yc + 30, f"Cánh {i + 1} ({'ray ngoài' if front else 'ray trong'})",
+        yl = 10 if front else 10 + P["lam_t"] + 28
+        x0 = i * (DW - OV)
+        a1.add_patch(Rectangle((x0, yl), DW, P["lam_t"] + 20, fc=C["lam"], ec="k", lw=0.5, alpha=0.9))
+        a1.text(x0 + DW / 2, -40 if front else 150, f"Cánh {i + 1} – ray {'ngoài' if front else 'trong'}",
                 ha="center", fontsize=7)
-    for (bx0, bx1) in meta["bay_x"]:
-        a1.add_patch(Rectangle((bx0, P["DZ"]), bx1 - bx0, D - P["DZ"] - P["T_back"], fc="none", ec="#999", ls="--"))
-    dim(a1, T, D, T + dw, D, f"cánh {dw:.1f}", off=60)
-    dim(a1, T + dw - P["door_ov"], D, T + dw, D, f"chồng {P['door_ov']}", off=160, fs=7)
-    dim(a1, -CL, 0, -CL, D, f"sâu {D}", off=-60, vert=True)
-    dim(a1, W + CL, 0, W + CL, P["DZ"], f"ray {P['DZ']}", off=120, vert=True, fs=7)
-    a1.text(W / 2, D / 2, f"Lòng sâu sử dụng {D - P['DZ'] - P['T_back']} mm", ha="center", fontsize=9)
-    a1.set_xlim(-250, W + 300); a1.set_ylim(-120, D + 330)
-    a1.invert_yaxis(); a1.set_aspect("equal"); a1.axis("off")
-    a1.set_title("MẶT BẰNG – 4 cánh trên 2 ray (mặt trước ở dưới)", fontsize=11)
-    # mat cat canh khoang treo
-    a2.add_patch(Rectangle((0, 0), D, H, fc="#F6F1E7", ec="k", lw=0.6))
-    a2.add_patch(Rectangle((D - P["T_back"], 0), P["T_back"], H, fc=COL["back"], ec="k", lw=0.3))
-    yr = (P["DZ"] + D - P["T_back"]) / 2
-    for zt in (P["plinth"] + T, P["H_low"], P["H_low"] + T, H):
-        a2.add_patch(Rectangle((P["DZ"], zt - T), D - P["DZ"] - P["T_back"], T, fc=COL["carcass"], ec="k", lw=0.3))
+    for b, spec in enumerate(m["BAYS"]):
+        a1.text((XL[b] + XL[b + 1]) / 2, D / 2 + 60, spec["name"], ha="center", fontsize=8)
+    a1.plot([0, W], [YM, YM], ls=":", c="#1a4d80", lw=1)
+    a1.text(W / 2, YM - 30, f"tim ống treo – cách mặt trong khung {YM - P['DZ']:.0f}", ha="center", fontsize=7,
+            color="#1a4d80")
+    dim(a1, 0, -150, DW, -150, f"cánh {DW}", off=0, fs=7)
+    dim(a1, DW - OV, -230, DW, -230, f"chồng mí {OV:.0f}", off=0, fs=7)
+    dim(a1, W, 0, W, P["DZ"], f"ray {P['DZ']}", off=170, vert=True, fs=7)
+    dim(a1, W, 0, W, D, f"sâu {D}", off=280, vert=True, fs=7)
+    a1.set_xlim(-200, W + 350); a1.set_ylim(-300, D + 150); a1.invert_yaxis()
+    a1.set_aspect("equal"); a1.axis("off")
+    a1.set_title("MẶT BẰNG (mặt trước ở trên) – cột giữa đứng sau chỗ chồng mí", fontsize=11)
+    open_end, open_mid = DW - OV, DW - 2 * OV
+    a1.text(0, D + 330, f"Lùa 1 cánh: khoang ngoài mở {open_end:.0f}, khoang giữa mở {open_mid:.0f}", fontsize=9)
+    # mat cat
+    a2.add_patch(Rectangle((D, 0), 100, H_TOP + 100, fc="#ddd", hatch="//", ec="#999"))
+    for pt in parts:
+        if pt["group"] in ("Khung sat", "Van") and abs(pt["bbox"][0] - XL[1] + 20) < 1:
+            y, z, w, h = proj(pt, "yz")
+            a2.add_patch(Rectangle((y, z), w, h, fc=C.get(pt["mat"]), ec="k", lw=0.3))
+    a2.add_patch(Rectangle((P["DZ"], P["z_shelf"]), D - P["DZ"], P["board_t"], fc=C["board"]))
     for zr in (2050, 1030):
-        a2.add_patch(Rectangle((yr - 225, zr - 900), 450, 850, fc="#cfe0f0", ec="#7aa", alpha=0.6))
-        a2.add_patch(plt.Circle((yr, zr), P["rod_d"] / 2 * 2, fc=COL["rod"], ec="k"))
-        a2.text(yr, zr - 470, f"ống Ø{P['rod_d']} @ {zr}\náo dài ≤ 850\nmóc rộng ~450", ha="center", fontsize=7)
-    a2.add_patch(Rectangle((30 - 9, P["plinth"] + T + 15), 18, meta["door_h"], fc=COL["door"]))
-    a2.add_patch(Rectangle((72 - 9, P["plinth"] + T + 15), 18, meta["door_h"], fc=COL["door"], alpha=0.6))
-    dim(a2, P["DZ"], 2050, yr, 2050, f"{yr - P['DZ']:.0f}", off=-90, fs=7)
-    a2.set_xlim(-150, D + 200); a2.set_ylim(-80, H + 100)
-    a2.set_aspect("equal"); a2.axis("off")
-    a2.set_title("MẶT CẮT khoang treo 2 tầng (K1, K4)", fontsize=11)
-    fig.savefig(os.path.join(OUT, "11-mat-bang-va-mat-cat.png"), dpi=110, bbox_inches="tight")
+        a2.add_patch(Rectangle((YM - 225, zr - 900), 450, 850, fc="#cfe0f0", ec="#7aa", alpha=0.6))
+        a2.add_patch(Circle((YM, zr), 27, fc=C["rod"], ec="k"))
+        a2.text(YM, zr - 480, f"ống @ {zr}\náo ≤ 850\nmóc ~450", ha="center", fontsize=7)
+    for yl in (10, 64):
+        a2.add_patch(Rectangle((yl, P["door_z0"]), P["lam_t"] + 20, m["DH"], fc=C["lam"], alpha=0.8))
+    a2.set_xlim(-100, D + 150); a2.set_ylim(-50, H_TOP + 150); a2.set_aspect("equal"); a2.axis("off")
+    a2.set_title("MẶT CẮT khoang 2 tầng", fontsize=11)
+    fig.savefig(os.path.join(OUT, "11-canh-mat-bang-mat-cat.png"), dpi=105, bbox_inches="tight")
     plt.close(fig)
 
 
-def cut_list():
+def bom():
     rows = Counter()
+    kg = 0.0
     for pt in parts:
-        if not pt["cut"]:
-            continue
-        rows[(pt["mat"], pt["L"], pt["Wd"], pt["Th"], pt["name"].split("-")[-1].rstrip("0123456789"))] += 1
-    bad = []
-    path = os.path.join(HERE, "cut-list.csv")
+        if pt["kind"] in ("steel", "dframe"):
+            rows[("Sat hop " + pt["spec"], pt["L"], pt["name"].split("-", 1)[1].rstrip("0123456789-"))] += 1
+            kg += KGM[pt["spec"]] * pt["L"] / 1000
+        elif pt["kind"] == "plate":
+            rows[("Ban de " + pt["spec"], "", "de cot giua bat no san")] += 1
+        elif pt["kind"] == "board":
+            rows[(f"Van ke {P['board_t']}", f"{pt['L']} x {pt['Wd']}", "ke hop noc")] += 1
+        elif pt["kind"] == "rod":
+            rows[(f"Ong inox tron {pt['spec']}", pt["L"], "ong treo")] += 1
+        elif pt["kind"] == "lam":
+            rows[(f"Lam song {P['lam_w']}x{P['lam_L']}x{P['lam_t']}", P["lam_L"], "canh (nguyen cay, khong cat)")] += 1
+        elif pt["kind"] == "track":
+            rows[(pt["spec"], pt["L"], "ray cua lua")] += 1
+    path = os.path.join(HERE, "bom.csv")
     with open(path, "w", newline="", encoding="utf-8-sig") as f:
         w = csv.writer(f)
-        w.writerow(["vat_lieu", "dai_mm", "rong_mm", "day_mm", "loai", "so_luong", "vua_kho_2440x1220"])
-        for (m, L, Wd, Th, kind), q in sorted(rows.items(), key=lambda r: (-r[0][3], -r[0][1])):
-            ok = L <= SHEET[0] and Wd <= SHEET[1]
-            if not ok:
-                bad.append((kind, L, Wd))
-            w.writerow([m, L, Wd, Th, kind, q, "OK" if ok else "VUOT KHO"])
-        rods = [pt for pt in parts if pt["mat"] == "rod" and "ong-treo" in pt["name"]]
+        w.writerow(["vat_tu", "dai_mm", "vi_tri", "so_luong"])
+        for (a, L, v), q in sorted(rows.items(), key=lambda r: (r[0][0], str(r[0][1]))):
+            w.writerow([a, L, v, q])
         w.writerow([])
-        w.writerow(["ong inox tron", "", "", f"Ø{P['rod_d']}", "ong treo", len(rods),
-                    "dai moi ong " + ", ".join(sorted({str(r['L']) for r in rods}))])
-        w.writerow(["lam song", H, "", "", "op 2 vach ngoai (nguyen cay)", "", f"TODO so thanh = {D}/rong thanh x 2"])
-        w.writerow(["lam song", round(meta["door_h"] - 65), "", "", "dan 4 canh (cat tu thanh 2900)", "",
-                    f"TODO so thanh = {meta['door_w'] - 40:.0f}/rong thanh x 4"])
-    area = sum(pt["L"] * pt["Wd"] for pt in parts if pt["cut"] and pt["Th"] >= 15) / 1e6
-    return bad, area
+        w.writerow(["Bo banh xe cua lua (banh do duoi)", "", "4 canh", "4 bo – TODO chon theo can nang canh"])
+        w.writerow(["Khoi luong sat uoc tinh (kg)", round(kg, 1), "do day 1.4/1.2 gia dinh", ""])
+    tube_m = Counter()
+    for pt in parts:
+        if pt["kind"] in ("steel", "dframe"):
+            tube_m[pt["spec"]] += pt["L"] / 1000
+    return kg, tube_m
 
 
 def contact():
     names = ["01-mat-truoc-dong-cua", "03-iso-mo-khoang-1-4", "05-iso-mo-khoang-2-3",
-             "04-iso-khong-cua", "10-ban-ve-mat-dung", "11-mat-bang-va-mat-cat"]
+             "04-iso-khong-cua", "10-ban-ve-khung-sat", "11-canh-mat-bang-mat-cat"]
     tw, th = 800, 640
     sheet = Image.new("RGB", (tw * 3, th * 2 + 40), "white")
     dr = ImageDraw.Draw(sheet)
@@ -159,14 +183,15 @@ def contact():
         x, y = (i % 3) * tw, (i // 3) * th + 40
         sheet.paste(im, (x + (tw - im.width) // 2, y + 25))
         dr.text((x + 10, y + 2), n, fill="black", font=font)
-    dr.text((10, 8), "Tủ áo cửa lùa 4 cánh – lam sóng 2900 – contact sheet", fill="black", font=font)
+    dr.text((10, 8), f"Tủ âm tường cửa lùa 4 cánh – khung sắt + lam sóng {P['lam_w']}x{P['lam_L']}x{P['lam_t']} – "
+            f"W={W}, cánh {DW} ({k} thanh), chồng mí {OV:.0f}", fill="black", font=font)
     sheet.save(os.path.join(OUT, "00-contact-sheet.png"))
 
 
 front_elevation()
-plan_doors()
-bad, area = cut_list()
+door_and_plan()
+kg, tm = bom()
 contact()
-print("VAN >=15mm: %.2f m2 (~%.1f tam 2440x1220 chua tinh hao hut)" % (area, area / 2.977))
-print("VUOT KHO:", bad or "khong")
+print("SAT:", {s: round(v, 1) for s, v in tm.items()}, "m; ~%.0f kg" % kg)
+print("LAM:", 4 * k, "thanh nguyen cay; canh", DW, "chong mi %.1f" % OV)
 print("PLANS OK")
