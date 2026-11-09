@@ -71,3 +71,16 @@ credentials*.json
 **/_stl/
 *-scene.json
 *-export.json
+
+# File sinh/tam trong maker/ (Tuan 2026-11-09: chi dua file quan trong len git; sinh lai tu script + *-params.json)
+/maker/**/backup/
+/maker/**/*.bak
+/maker/**/*.log
+/maker/**/result.json
+/result.json
+/maker/**/out/*.stl
+/maker/**/out/*.3mf
+/maker/**/out/*.sc
+/maker/**/out/asm/
+/maker/*/marketing/stills/raw/
+/maker/*/marketing/stills/assets/
