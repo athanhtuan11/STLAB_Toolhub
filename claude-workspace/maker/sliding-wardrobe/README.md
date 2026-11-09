@@ -76,6 +76,15 @@ khớp nhau. Khi mua, đối chiếu 4 số với model: chiều cao gờ ray d�
 - Video: `blender -b -P build_wardrobe.py -- --out renders --anim` → khung ở `anim-frames/`, ghép
   `ffmpeg -framerate 24 -i anim-frames/f_%04d.png -c:v libx264 -pix_fmt yuv420p renders/20-mo-phong-lua-cua.mp4`.
 
+## Bản vẽ gia công cánh (khung riêng + lam riêng)
+- `renders/15-khung-canh.png`: khung cánh 4 thanh (922) và 3 thanh (702) × 2943 – viền ① ② hộp 20×40 cắt xiên 45°,
+  4 giằng ③ 13×26 ở z = 384 / 1109 / 1834 / 2559 (từ đáy cánh), càng bánh ④ (2 bản mã 3×30×66, lỗ trục ô van ±5,
+  cách mép 80), tấm che chân ⑤, 3 tán rút ren M8 viền trên; bảng lỗ khóa/lỗ chốt từng cánh C1–C4; bảng cắt sắt.
+- `renders/16-lam-song.png`: bố trí lam từng cánh (L1…L4, nguyên cây 2900), vít 4×25 bắt từ sau qua giằng
+  (2 vít/thanh/giằng, bỏ vít ở chỗ thân khóa), lỗ khóa Ø20: C1-L3 (cách mép thanh 168), C3-L1 (52) và C3-L4 (168), z 1109.
+- `renders/17-canh-C2-*`, `18-canh-C1-*`: 3D khung nhìn sau / nhìn trước / lam riêng / nổ.
+- `door-cut-list.csv`: bảng cắt + tọa độ lỗ. Script: `draw_door_shop.py`, `render_door_exploded.py`.
+
 ## Khóa + chốt (Tuan 2026-11-09: chốt bi + khóa chồng mí; bản vẽ `renders/13-khoa-chot.png`)
 - **Chốt bi** (4 cái): vít bi lò xo gắn trên khóa chống nhảy, bi Ø6 bật vào lỗ Ø5 khoan trên lưng máng trên ở đúng vị trí
   đóng của từng cánh → cánh không tự trôi, và lỗ khóa 2 cánh luôn thẳng hàng khi đóng.
