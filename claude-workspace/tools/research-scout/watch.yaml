@@ -60,10 +60,10 @@ topics:
     ten: Quadruped
     keywords: [quadruped, robot dog, legged robot]
     weight: 1.0
-  - id: lerobot
-    ten: LeRobot
-    keywords: [lerobot, so-100, so-101, so100, so101]
-    weight: 1.0
+  - id: steam-kids   # 2026-11-09 thay lerobot: Tuan chi lam du an cho tre, khong train model
+    ten: STEAM cho tre
+    keywords: [educational robot, kids coding, stem toy, steam kit, robot for kids, classroom robot, scratch]
+    weight: 1.5
   - id: voice-assistant
     ten: Voice Assistant
     keywords: [voice assistant, wake word, speech recognition, text-to-speech]
@@ -95,11 +95,10 @@ github_queries:   # topic = chu de gan khi mo ta repo khong chua tu khoa (Claude
   - {q: bambu lab, topic: 3d-print-bambu, min_stars: 50, pushed_days: 90}
   - {q: esp32 camera, topic: esp32-camera, min_stars: 50, pushed_days: 90}
   - {q: quadruped robot, topic: quadruped, min_stars: 50, pushed_days: 90}
-  - {q: lerobot, topic: lerobot, min_stars: 30, pushed_days: 90}
+  - {q: educational robot kids, topic: steam-kids, min_stars: 30, pushed_days: 180}
   - {q: micropython robot, topic: micropython, min_stars: 30, pushed_days: 180}
 repos:   # them 2026-11-04: kiem GitHub API, tat ca push <= 5 ngay
   - {repo: espressif/esp32-camera, topic: esp32-camera}
-  - {repo: huggingface/lerobot, topic: lerobot}
   - {repo: esphome/esphome, topic: home-assistant}
   - {repo: micropython/micropython, topic: micropython}
   - {repo: blender/blender, topic: blender-3d}
