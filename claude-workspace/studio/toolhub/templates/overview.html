@@ -21,10 +21,6 @@
 <h2>Nhân sự AI</h2>
 <h3 class="org-subhead">Hạn mức theo nguồn</h3>
 <section id="org-providers" class="usage"><span class="muted">Đang đọc…</span></section>
-<section id="org-attention-section" hidden>
-  <h3 class="org-subhead">Cần chú ý</h3>
-  <ul id="org-attention-list" class="org-attention"></ul>
-</section>
 <details class="org-chart">
   <summary id="org-summary">Sơ đồ nhân sự</summary>
   <div id="org-tiers" class="org-tiers"></div>
@@ -96,15 +92,6 @@ fetch("/api/org").then(r => r.json()).then(data => {
     if (p.updated) c.append(el("div", "muted u-upd", "Cập nhật " + p.updated));
     providers.append(c);
   });
-  if (data.attention.length) {
-    const section = document.getElementById("org-attention-section"), list = document.getElementById("org-attention-list");
-    section.hidden = false;
-    data.attention.forEach(item => {
-      const li = el("li", "org-alert " + item.level);
-      li.append(el("span", "badge " + item.level, item.level === "bad" ? "Lỗi" : "Cảnh báo"), document.createTextNode(item.text));
-      list.append(li);
-    });
-  }
   const count = data.tiers.reduce((n, tier) => n + tier.agents.length, 0);
   document.getElementById("org-summary").textContent = "Sơ đồ nhân sự (" + count + ")";
   const tiers = document.getElementById("org-tiers");

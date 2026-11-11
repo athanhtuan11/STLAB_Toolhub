@@ -20,6 +20,7 @@ from .workspace import ROOT
 OPENERS = {".fcstd": "freecad", ".blend": "blender", ".3mf": "bambu", ".stl": "bambu", ".fcproj": "filmcraft",
            ".pdf": "system", ".mp4": "system"}
 SKIP = {"backup", "check", "stl", "_log", "node_modules", ".git", "__pycache__"}  # + thu muc "_*" (file sinh)
+SKIP_ENV = {"venv", "env", "site-packages", "build", "dist", "models"}  # moi truong Python, ban build, model AI
 NO_WINDOW = 0x08000000
 
 
@@ -35,9 +36,12 @@ def files(rel):
     d = (ROOT / rel).resolve()
     apps = _apps()
     out = []
-    for p in sorted(d.rglob("*")):
-        if not p.is_file() or any(x in SKIP or x.startswith("_") for x in p.relative_to(d).parts[:-1]):
-            continue
+    found = []
+    # os.walk + cat nhanh ngay tai thu muc: rglob duyet het .venv (english-teacher/server ~75 000 file -> /projects 14 s)
+    for top, dirs, names in os.walk(d):
+        dirs[:] = [x for x in dirs if x not in SKIP and not x.startswith(("_", ".")) and x not in SKIP_ENV]
+        found += [Path(top) / n for n in names]
+    for p in sorted(found):
         app = OPENERS.get(p.suffix.lower())
         if app is None or (app != "system" and app not in apps):
             continue
