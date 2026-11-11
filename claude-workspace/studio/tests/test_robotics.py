@@ -151,6 +151,12 @@ check(r.status_code == 200 and "<h1" in t and "GearsBot" in t and 'href="/roboti
 r = c.get("/robotics/sim/gearsbot/lesson", headers=H)
 check(r.status_code == 200 and "<h1" in r.get_data(as_text=True), "giao an gearsbot render")
 
+# ---- 4b. Nut tat mo phong o trang chinh (Tuan 2026-11-11) ----
+home = c.get("/", headers=H).get_data(as_text=True)
+check(home.count("data-sim-shortcut=") == 2, "trang chinh: 2 nut tat mo phong")
+for ln in MANIFEST["simulations"][0]["links"]:
+    check(ln["url"].replace("&", "&amp;") in home, f"trang chinh thieu nut {ln['label']}")
+
 # ---- 5. Khong ma gia ----
 src = (STUDIO / "toolhub" / "robotics.py").read_text(encoding="utf-8")
 check("pass\n" not in src and "NotImplemented" not in src and "..." not in src.replace('"..."', ""), "robotics.py khong ma gia")

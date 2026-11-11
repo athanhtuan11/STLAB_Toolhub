@@ -79,7 +79,9 @@ def overview():
     for p in projects:
         # du an CAD/in 3D: co print/print.yaml (FreeCAD cu) hoac solidcraft/print/print.yaml
         (active if _print_yaml(p["rel"]) else other).append(p)
-    return render_template("overview.html", apps=apps, active=active, other=other)
+    # nut tat mo phong (Tuan 2026-11-11): doc manifest, khong chay git
+    sims = [s for s in robotics.load().get("simulations", []) if s.get("links")]
+    return render_template("overview.html", apps=apps, active=active, other=other, sims=sims)
 
 
 @bp.get("/api/health")

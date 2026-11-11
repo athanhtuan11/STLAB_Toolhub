@@ -18,6 +18,16 @@
   {% endfor %}
 </section>
 
+<h2>Mô phỏng robotics</h2>
+<section class="sim-shortcuts">
+  {% for s in sims %}
+  <div class="sim-shortcut" data-sim-shortcut="{{ s.id }}">
+    <a class="sim-shortcut-title" href="{{ url_for('hub.robotics_page') }}#sim-{{ s.id }}">{{ s.title.split('–')[0].strip() }}</a>
+    {% for ln in s.links %}<a class="btn" href="{{ ln.url }}" target="_blank" rel="noopener">{{ ln.label }}</a>{% endfor %}
+  </div>
+  {% endfor %}
+</section>
+
 <h2>Nhân sự AI</h2>
 <h3 class="org-subhead">Hạn mức theo nguồn</h3>
 <section id="org-providers" class="usage"><span class="muted">Đang đọc…</span></section>
