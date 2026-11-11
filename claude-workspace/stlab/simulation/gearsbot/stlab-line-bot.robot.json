@@ -1,0 +1,70 @@
+{
+  "name": "stlabLineBot",
+  "shortDescription": "STLab line-bot (ảo) – 2 cảm biến màu + siêu âm",
+  "longDescription": "Bản ảo của maker/line-bot: bao 177 x 170 mm (≤ 180), bánh Ø42 mm (giả định), cảm biến line trước trục 60 mm.",
+  "longerDescription": "<h3>Cổng</h3><ul><li>A: bánh trái</li><li>B: bánh phải</li><li>1: cảm biến màu trái</li><li>2: cảm biến màu phải</li><li>3: siêu âm (giống HC-SR04)</li></ul>",
+  "thumbnail": "images/robots/doubleFollower.jpg",
+  "bodyHeight": 4,
+  "bodyWidth": 13.5,
+  "bodyLength": 17,
+  "wheels": true,
+  "wheelDiameter": 4.2,
+  "wheelWidth": 1.9,
+  "wheelToBodyOffset": 0.2,
+  "bodyEdgeToWheelCenterY": 1,
+  "bodyEdgeToWheelCenterZ": 5,
+  "bodyMass": 1000,
+  "wheelMass": 200,
+  "casterMass": 0,
+  "caster": true,
+  "wheelFriction": 10,
+  "bodyFriction": 0,
+  "casterFriction": 0,
+  "color": "#E8B33A",
+  "imageType": "all",
+  "imageURL": "",
+  "components": [
+    {
+      "type": "ColorSensor",
+      "position": [
+        -2,
+        -0.3,
+        9.5
+      ],
+      "rotation": [
+        1.5707963267948966,
+        0,
+        0
+      ],
+      "options": null
+    },
+    {
+      "type": "ColorSensor",
+      "position": [
+        2,
+        -0.3,
+        9.5
+      ],
+      "rotation": [
+        1.5707963267948966,
+        0,
+        0
+      ],
+      "options": null
+    },
+    {
+      "type": "UltrasonicSensor",
+      "position": [
+        0,
+        2.5,
+        8
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "options": null
+    }
+  ]
+}

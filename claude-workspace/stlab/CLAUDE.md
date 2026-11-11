@@ -5,6 +5,8 @@ Soạn tài liệu giảng dạy và báo cáo cho trung tâm STEAM STLab.
 
 ## Thư mục
 - `lesson-plans/`: giáo án theo khóa/buổi. Tên file gợi ý: `khoa-<ten>-buoi-<nn>.docx`.
+- `simulation/`: mô phỏng cho bài học (2026-11-11) – `gearsbot/` (robot ảo line-bot, sa bàn, lời giải, `check/run_sim.py`),
+  `erebus/` (RCJ Rescue Simulation cho đội thi). Giáo án đi kèm: `lesson-plans/gearsbot-virtual-line-bot.md`.
 - `parent-reports/`: báo cáo theo kỳ. **Chứa dữ liệu cá nhân học viên**:
   không đưa lên GitHub công khai (TODO: quyết định chính sách lưu trữ).
 

@@ -56,11 +56,14 @@ Với đội thi RCJ, dùng **Erebus**. Ngân sách cảm biến dạy được 
 
 **Nói rõ với học sinh và phụ huynh:** mô phỏng không thay được lắp thật. Cảm biến IR thật bị ánh sáng phòng làm nhiễu, motor N20 mỗi con một khác, khe in 3D lệch. Bài nên có bước "so sánh ảo với thật": chạy cùng một chương trình trên robot thật rồi ghi lại khác biệt.
 
-## 6. Việc Tuan cần quyết
+## 6. Đã làm (Tuan 2026-11-11: "làm tất cả")
 
-1. Có đưa mô phỏng vào giáo án không (khác quyết định 2026-11-02, vốn chỉ áp cho demo dự án)?
-2. Nếu có: thử GearsBot trên 1 máy phòng lab (đo FPS, `TODO`) với 1 bài mẫu "xe dò line + cảm biến màu".
-3. Đội RCJ: có muốn thi thêm hạng Rescue Simulation (Erebus) không?
+1. **Đưa vào giáo án:** [stlab/lesson-plans/gearsbot-virtual-line-bot.md](../../stlab/lesson-plans/gearsbot-virtual-line-bot.md), 3 buổi × 90 phút, lớp 6–9.
+2. **Bài mẫu GearsBot:** [stlab/simulation/gearsbot/](../../stlab/simulation/gearsbot/README.md) gồm robot ảo line-bot, 3 sa bàn, lời giải và link mở sẵn.
+   - Đã chạy thử tự động: bài 1 cảm biến, bài 2 cảm biến và bài vật cản đều PASS; bài cua gắt văng ở vòng kẹp tóc (để làm nhiệm vụ mở rộng).
+   - Còn `TODO`: đo FPS trên máy phòng lab.
+3. **Đội RCJ – Erebus:** [stlab/simulation/erebus/](../../stlab/simulation/erebus/README.md) gồm hướng dẫn cài, bảng ngân sách lấy từ mã nguồn, controller khởi đầu và lộ trình đội.
+   - **Chưa chạy thử**, vì máy chưa cài Webots R2023b.
 
 ## Nguồn (truy cập 2026-11-11)
 
