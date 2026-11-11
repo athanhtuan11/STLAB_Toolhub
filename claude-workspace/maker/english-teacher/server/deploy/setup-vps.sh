@@ -1,65 +1,33 @@
 #!/usr/bin/env bash
-# Cai cong VPS cho co giao tieng Anh (Ubuntu/Debian, chay bang root). Chay lai duoc.
-#   PUBLIC_HOST=teacher.example.vn FRP_VERSION=<x.y.z> FRP_AUTH_TOKEN=... bash setup-vps.sh
-# FRP_VERSION: lay ban phat hanh moi nhat (>= 2 tuan tuoi) tai https://github.com/fatedier/frp/releases
-# File can o cung thu muc: Caddyfile, frps.toml.
+# Cai cong VPS cho co giao tieng Anh tren VPS DA CO nginx + certbot (Tino, phuc vu mamnoncaynho.com). Chay lai duoc.
+#   TUNNEL_PUBKEY="$(cat id_ed25519_engtunnel.pub)" bash setup-vps.sh      (chay bang root)
+# Can cung thu muc: nginx-engteacher.conf. KHONG dong toi site khac, KHONG bat tuong lua.
 set -euo pipefail
-: "${PUBLIC_HOST:?thieu PUBLIC_HOST}" "${FRP_VERSION:?thieu FRP_VERSION}" "${FRP_AUTH_TOKEN:?thieu FRP_AUTH_TOKEN}"
-[ "${#FRP_AUTH_TOKEN}" -ge 24 ] || { echo "FRP_AUTH_TOKEN phai >= 24 ky tu"; exit 1; }
+: "${TUNNEL_PUBKEY:?thieu TUNNEL_PUBKEY (khoa cong khai id_ed25519_engtunnel.pub cua may lab)}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
-ARCH=$(dpkg --print-architecture)   # amd64 | arm64
+HOST=$(grep -oP 'server_name\s+\K[^;]+' "$HERE/nginx-engteacher.conf")
 
-# 1) Caddy tu kho chinh thuc
-if ! command -v caddy >/dev/null; then
-  apt-get update -y && apt-get install -y debian-keyring debian-archive-keyring apt-transport-https curl gnupg
-  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' > /etc/apt/sources.list.d/caddy-stable.list
-  apt-get update -y && apt-get install -y caddy
+# 1) nginx: sao luu, them site rieng, kiem cu phap truoc khi nap lai
+BK="/root/backup/nginx-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$BK" && cp -a /etc/nginx "$BK/"
+if [ ! -f /etc/nginx/sites-available/engteacher ]; then   # da co (certbot da them 443) thi giu nguyen
+  install -m 644 "$HERE/nginx-engteacher.conf" /etc/nginx/sites-available/engteacher
 fi
-install -m 644 "$HERE/Caddyfile" /etc/caddy/Caddyfile
-mkdir -p /var/log/caddy && chown caddy:caddy /var/log/caddy
-grep -q '^PUBLIC_HOST=' /etc/default/caddy 2>/dev/null && sed -i "s/^PUBLIC_HOST=.*/PUBLIC_HOST=$PUBLIC_HOST/" /etc/default/caddy \
-  || echo "PUBLIC_HOST=$PUBLIC_HOST" >> /etc/default/caddy
-mkdir -p /etc/systemd/system/caddy.service.d
-printf '[Service]\nEnvironmentFile=/etc/default/caddy\n' > /etc/systemd/system/caddy.service.d/env.conf
+ln -sf /etc/nginx/sites-available/engteacher /etc/nginx/sites-enabled/engteacher
+nginx -t
+systemctl reload nginx
 
-# 2) frps (kiem sha256 theo file checksum cua ban phat hanh)
-if [ "$(/usr/local/bin/frps --version 2>/dev/null || true)" != "$FRP_VERSION" ]; then
-  T=$(mktemp -d); cd "$T"
-  F="frp_${FRP_VERSION}_linux_${ARCH}.tar.gz"
-  curl -fsSLO "https://github.com/fatedier/frp/releases/download/v${FRP_VERSION}/${F}"
-  curl -fsSLO "https://github.com/fatedier/frp/releases/download/v${FRP_VERSION}/frp_sha256_checksums.txt"
-  grep " ${F}\$" frp_sha256_checksums.txt | sha256sum -c -
-  tar xzf "$F" && install -m 755 "frp_${FRP_VERSION}_linux_${ARCH}/frps" /usr/local/bin/frps
-  cd / && rm -rf "$T"
+# 2) User duong ham: khong shell, khoa mat khau, chi duoc mo 127.0.0.1:18000 va :18003 (GatewayPorts no -> chi loopback)
+id engtunnel >/dev/null 2>&1 || useradd --system --create-home --shell /usr/sbin/nologin engtunnel
+passwd -l engtunnel >/dev/null
+install -d -m 700 -o engtunnel -g engtunnel /home/engtunnel/.ssh
+printf 'restrict,port-forwarding,permitlisten="127.0.0.1:18000",permitlisten="127.0.0.1:18003",command="/bin/false" %s\n' \
+  "$TUNNEL_PUBKEY" > /home/engtunnel/.ssh/authorized_keys
+chown engtunnel:engtunnel /home/engtunnel/.ssh/authorized_keys && chmod 600 /home/engtunnel/.ssh/authorized_keys
+
+# 3) Chung chi HTTPS chi cho host nay (certbot da co tai khoan tu mamnoncaynho.com)
+if ! certbot certificates 2>/dev/null | grep -q "Domains: $HOST"; then
+  certbot --nginx -d "$HOST" --non-interactive --redirect
 fi
-install -d -m 750 /etc/frp && install -m 640 "$HERE/frps.toml" /etc/frp/frps.toml
-umask 077; printf 'FRP_AUTH_TOKEN=%s\n' "$FRP_AUTH_TOKEN" > /etc/frp/frps.env
-cat > /etc/systemd/system/frps.service <<'EOF'
-[Unit]
-Description=frps (cong co giao tieng Anh)
-After=network-online.target
-Wants=network-online.target
-[Service]
-EnvironmentFile=/etc/frp/frps.env
-ExecStart=/usr/local/bin/frps -c /etc/frp/frps.toml
-Restart=always
-RestartSec=5
-DynamicUser=yes
-LogsDirectory=frps
-[Install]
-WantedBy=multi-user.target
-EOF
-sed -i 's#^log.to = .*#log.to = "/var/log/frps/frps.log"#' /etc/frp/frps.toml
-chmod 644 /etc/frp/frps.toml; chmod 600 /etc/frp/frps.env
-
-# 3) Tuong lua: chi SSH, HTTP/HTTPS (Caddy), 7000 (frpc tu may lab)
-if command -v ufw >/dev/null; then
-  ufw allow OpenSSH; ufw allow 80/tcp; ufw allow 443/tcp; ufw allow 7000/tcp; ufw --force enable
-fi
-
-systemctl daemon-reload
-systemctl enable --now frps
-systemctl restart caddy
-systemctl --no-pager --lines=3 status frps caddy | grep -E "Active|frps|caddy" || true
-echo "Xong. Kiem: curl -s -o /dev/null -w '%{http_code}' https://$PUBLIC_HOST/  (404 = Caddy chay, chung chi OK)"
+nginx -t && systemctl reload nginx
+echo "Xong. Kiem: curl -s -o /dev/null -w '%{http_code}' https://$HOST/  (404 = nginx + chung chi OK)"
