@@ -23,6 +23,11 @@ python draw_hanging.py     # 12 mặt cắt ray (trên + dưới), 13 mặt bằ
 python draw_plans.py       # 10 khung sắt, 11 cánh + mặt bằng + mặt cắt, bom.csv, 00-contact-sheet
 ```
 
+Ảnh 3D tổng hợp: `design/renders/00-3d-tong-hop.png` (09 = cụm bánh nhấc lên trên U). Xem xoay tự do: mở `design/wardrobe.blend`.
+
+```text
+```
+
 Sửa `P` trong `build_wardrobe.py` (W sau khi đo, `lam_kg` sau khi cân, số đo U/bánh/ray thật) rồi chạy lại.
 Script kiểm 13 điều kiện, tất cả đang PASS.
 
@@ -33,7 +38,7 @@ Cánh khoảng **86 kg, cao 2,94 m**. Tách việc cho hai ray:
 | Việc | Ai làm | Vì sao chắc |
 | --- | --- | --- |
 | Đỡ 86 kg | **4 bánh/cánh lăn trong lòng U chấn** (tải cần 32 kg/bánh) | Tải xuống thẳng sàn. Sàn đỡ suốt chiều dài U nên U không võng, bánh 608 dễ mua và rẻ |
-| Giữ chân cánh không lắc | **Thành U** ôm càng bánh | Càng 30 trong lòng U 35 → chân cánh chỉ lắc ±2,5 mm, 2 cánh cách nhau 8 không cọ |
+| Giữ chân cánh không lắc | **Thành U** ôm càng bánh | Càng 30 trong lòng U 36 → chân cánh chỉ lắc ±3 mm, 2 cánh cách nhau 8 không cọ |
 | Giữ đầu cánh đứng thẳng | **Xe treo trong ray hộp 40 × 40** | Xe treo hở 3 mm trên mép ray nên không gánh tải; loại xe treo nào vừa ray cũng dùng được |
 | Chống nhấc cánh khỏi ray | Xe treo kín trong ray hộp | Nhấc cánh tối đa ~5 mm là xe treo chạm nóc ray; bánh cần nhấc 38 mm mới thoát được U (kiểm `chong_nhay`) |
 
@@ -58,7 +63,7 @@ bánh kêu và cộm.
 
 ## Ray dưới – U chấn 40 × 40 (chịu tải)
 
-- 2 thanh **U chấn 40 × 40 × 2,5** (`TODO` đo độ dày U mua, 2–3 mm) dài 3000, nằm ngửa, mỗi lớp cánh 1 thanh, cách nhau 8.
+- 2 thanh **U chấn 40 × 40 × 2** (Tuan 2026-11-11: thép dày 2) dài 3000, nằm ngửa, mỗi lớp cánh 1 thanh, cách nhau 8.
   Đặt đúng dưới tâm ray trên (dọi dây).
 - Bắt xuống sàn bằng **vít nở đầu bằng, khoan côn** cho đầu vít chìm phẳng lòng U (bánh lăn qua), khoảng 400 mm/vít. Sàn lệch thì
   chêm tôn dưới U cho thẳng và phẳng.
@@ -113,7 +118,7 @@ bánh kêu và cộm.
 
 | # | Phụ kiện | SL | Ghi chú |
 | --- | --- | --- | --- |
-| 1 | **Thép U chấn 40 × 40** (dày 2–3), dài 3 m | 2 | ray dưới chịu tải |
+| 1 | **Thép U chấn 40 × 40 × 2**, dài 3 m | 2 | ray dưới chịu tải |
 | 2 | **Bánh 608 bọc POM Ø32 × 12** (hoặc bánh ổ bi tương đương), bu lông trục M8 | 8 | ≥ 32 kg/bánh – hỏi người bán |
 | 3 | Thép bản 4–5 mm làm càng bánh (tự cắt hàn) | 4 cụm | rộng 30, vít chỉnh cao M8 |
 | 4 | Ray hộp 40 × 40 dài 3 m | 2 | anh đã có |
@@ -134,7 +139,7 @@ Mở `design/wardrobe.blend`, bấm **Space**: C1 lùa phải hết cỡ rồi �
 ## TODO
 
 - W thực tế; **cân 1 thanh lam** (`lam_kg`).
-- Đo U chấn mua (độ dày → lòng U), bánh POM (Ø, bề rộng, tải), ray hộp (độ dày vách, khe đáy), xe treo (cao) → điền vào `P`, chạy lại.
+- Đo bánh POM (Ø, bề rộng, tải), ray hộp (độ dày vách, khe đáy), xe treo (cao) → điền vào `P`, chạy lại.
 - Bản vẽ gia công cánh 7 thanh.
 - Tường sau ẩm thì chừa khe ~20 sau quần áo hoặc ốp tấm chống ẩm.
 

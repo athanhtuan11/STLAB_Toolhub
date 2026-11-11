@@ -20,7 +20,7 @@ Sat hop 40x40,3050.0,cot-truoc,3
 Sat hop 40x40,3050.0,cot-sau,5
 Sat hop 40x40,600,dam-ke,5
 Sat hop 40x40,600,dam-dinh,5
-U chan 40x40x2.5,3000,"ray duoi CHIU TAI, nam ngua, vit dau bang + no xuong san",2
+U chan 40x40x2.0,3000,"ray duoi CHIU TAI, nam ngua, vit dau bang + no xuong san",2
 Van ke 17,720.0 x 680,ke hop noc,2
 Van ke 17,740.0 x 680,ke hop noc,2
 chan cuoi cao su,,trong ray treo,2
@@ -34,4 +34,4 @@ Bat treo (bat vien tren bang tan rut ren M8) + bulong chinh,,2/canh,4
 Khoa an tu cua lua (push lock),,cho chong mi,1
 Ron choi chong bui (mep chong mi),2900,1/canh,2
 LUU Y,,tai moi banh >= (khoi luong canh / 4) x 1.5 = 32 kg (canh ~86 kg voi lam_kg=10.0 – CAN 1 thanh lam),
-Khoi luong sat uoc tinh (kg),141.4,do day 1.4/1.2 gia dinh,
+Khoi luong sat uoc tinh (kg),138.8,do day 1.4/1.2 gia dinh,

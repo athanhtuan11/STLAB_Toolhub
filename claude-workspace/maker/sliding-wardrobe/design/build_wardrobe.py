@@ -27,7 +27,7 @@ P = dict(
     n_rail_back=4,
     lam_gap_side=1, lam_gap_end=1.5,
     # ---- ray DUOI chiu tai (Tuan 2026-11-11): U chan 40x40 nam ngua, bat vit dau bang xuong san
-    U=(40, 40, 2.5),            # (rong = day canh, cao canh, day ton) TODO do U mua (day 2-3)
+    U=(40, 40, 2.0),            # (rong = day canh, cao canh, day ton) - Tuan 2026-11-11: U chan day 2
     wheel_d=32, wheel_w=12,     # banh = bac dan 608 boc POM (TODO theo hang mua)
     wheel_kg=None,              # TODO tai 1 banh cua hang mua -> script so voi tai can
     bogie_in=110,               # tam cum banh cach mep canh
@@ -492,14 +492,17 @@ def shot(c, path, hide=(), move=None):
         COLS[g].hide_render = g in hide
     saved = {}
     for pre, dx in (move or {}).items():
+        dx, dz = dx if isinstance(dx, tuple) else (dx, 0)
         for o in bpy.data.objects:
             if o.name.startswith(pre):
-                saved[o.name] = o.location.x
+                saved[o.name] = (o.location.x, o.location.z)
                 o.location.x += dx * M
+                o.location.z += dz * M
     sc.render.filepath = path
     bpy.ops.render.render(write_still=True)
-    for nm, x in saved.items():
+    for nm, (x, z) in saved.items():
         bpy.data.objects[nm].location.x = x
+        bpy.data.objects[nm].location.z = z
 
 
 
@@ -547,6 +550,10 @@ def main():
     cb = cam("Cam-ray-U", (W - 330, -380, 260), (68, 0, -40), lens=40)
     shot(cb, os.path.join(out, "06-chi-tiet-ray-U-duoi.png"), hide=["Tuong trai", "Ong treo", "Van"],
          move={"C2-": -TRAVEL[1][0]})
+    # nhac C2 len 140 (chi de nhin) -> thay 2 cum banh nam tren long U
+    cw = cam("Cam-banh-U", (W - 330, -330, 300), (66, 0, -18), lens=45)
+    shot(cw, os.path.join(out, "09-chi-tiet-banh-trong-U.png"), hide=["Tuong trai", "Ong treo", "Van", "Khung sat"],
+         move={"C2-": (0, 140)})
     ct = cam("Cam-ray-treo", (W - 420, 520, H_TOP - 330), (108, 0, 205), lens=40)
     shot(ct, os.path.join(out, "07-chi-tiet-ray-treo.png"), hide=inside)
     ch = cam("Cam-tay-nam", (W / 2 - 250, -1100, p["handle_z"] + 250), (78, 0, -12), lens=35)
