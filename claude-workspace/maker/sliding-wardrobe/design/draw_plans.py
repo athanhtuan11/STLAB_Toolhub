@@ -102,7 +102,7 @@ def door_and_plan():
     dim(a0, 0, DHD, DW, DHD, f"{DW} = {k}×{P['lam_w']} + 2×{gs} + viền 2×{FW}", off=80, fs=7)
     dim(a0, 0, 0, 0, DHD, f"{DHD:.0f} = lam {m['DH']} + 2×{ge} + viền 2×{FW}", off=-60, vert=True, fs=7)
     a0.text(DW / 2, -150, f"Viền hộp 20×40 đặt nằm (mặt 20 lộ, sâu 40)\ngiằng sau 13×26 (nét đứt trắng) đỡ lam\n"
-            f"2 cánh giống nhau, {min(KB)} thanh = {min(DWS)}; 2 cụm bánh dưới đáy", ha="center", fontsize=8)
+            f"2 cánh giống nhau, {min(KB)} thanh = {min(DWS)}; gân sắt la dưới đáy", ha="center", fontsize=8)
     a0.set_xlim(-320, DW + 100); a0.set_ylim(-380, DHD + 250); a0.set_aspect("equal"); a0.axis("off")
     a0.set_title(f"CÁNH {k} THANH (nhìn trước)", fontsize=11)
     # mat bang
@@ -133,7 +133,7 @@ def door_and_plan():
     a1.set_xlim(-200, W + 350); a1.set_ylim(-300, D + 150); a1.invert_yaxis()
     a1.set_aspect("equal"); a1.axis("off")
     a1.set_title("MẶT BẰNG (mặt trước ở trên) – cột trước giữa nấp sau chỗ chồng mí; 2 khung lửng không cột trước", fontsize=11)
-    a1.text(0, D + 330, f"Lùa 1 cánh hết cỡ: mở nửa trái {OPEN[0]:.0f} hoặc nửa phải {OPEN[1]:.0f}. Ray dưới: 2 thanh U chấn 40x40 tường–tường", fontsize=9)
+    a1.text(0, D + 330, f"Lùa 1 cánh hết cỡ: mở nửa trái {OPEN[0]:.0f} hoặc nửa phải {OPEN[1]:.0f}. Dẫn hướng: đoạn U {P['guide_L']} ở x = {W / 2:.0f}, luôn khuất dưới cánh", fontsize=9)
     # mat cat
     a2.add_patch(Rectangle((D, 0), 100, H_TOP + 100, fc="#ddd", hatch="//", ec="#999"))
     for pt in parts:
@@ -178,14 +178,13 @@ def bom():
         elif pt["kind"] == "skirt":
             rows[(f"La che chan 3x{pt['Wd']:.0f}", pt["L"], "mat truoc day canh")] += 1
             kg += 3 * pt["Wd"] * 7.85e-3 * pt["L"] / 1000
-        elif pt["kind"] == "utrack":
-            UB, UH, UT = P["U"]
-            rows[(pt["spec"], pt["L"], "ray duoi CHIU TAI, nam ngua, vit dau bang + no xuong san")] += 1
-            kg += (UB + 2 * (UH - UT)) * UT * 7.85e-3 * pt["L"] / 1000
-        elif pt["kind"] == "bogie":
-            rows[("Cang banh (2 ban ma + truc M8, vit chinh cao) han day vien duoi", "", "2 cum/canh")] += 1
-        elif pt["kind"] == "stop-u":
-            rows[("Chan cuoi cao su trong long U", "", "2 dau moi thanh U")] += 1
+        elif pt["kind"] == "fin":
+            rows[(f"Sat la {P['fin_t']}x{m['FIN_H']:.0f} gan dan huong", pt["L"], "han dung duoi tam vien duoi (1/canh)")] += 1
+            kg += P["fin_t"] * m["FIN_H"] * 7.85e-3 * pt["L"] / 1000
+        elif pt["kind"] == "guide":
+            rows[(pt["spec"], P["guide_L"], "dan huong giua tu (1 / lop canh), luon khuat duoi canh")] += 1
+        elif pt["kind"] == "guide-pom":
+            rows[(pt["spec"], P["guide_L"], "lot trong long doan U, bat vit (2 / doan U)")] += 1
         elif pt["kind"] == "rback":
             rows[("Sat hop 13x26", pt["L"], "giang sau lam (canh)")] += 1
             kg += KGM["13x26"] * pt["L"] / 1000
@@ -196,13 +195,11 @@ def bom():
         for (a, L, v), q in sorted(rows.items(), key=lambda r: (r[0][0], str(r[0][1]))):
             w.writerow([a, L, v, q])
         w.writerow([])
-        w.writerow(["Banh 608 boc POM O32x12 (hoac banh o bi tuong duong) + bulong truc M8", "", "4 banh/canh (2 cum x 2)", 4 * P["door_n"]])
-        w.writerow(["Xe treo chay trong ray hop 40x40 - CHI GIU DUNG, khong chiu tai (loai nao vua ray)", "", "2 xe/canh", 2 * P["door_n"]])
-        w.writerow(["Bat treo (bat vien tren bang tan rut ren M8) + bulong chinh", "", "2/canh", 2 * P["door_n"]])
-        w.writerow(["Vit no dau bang (khoan con) bat U xuong san, ~400 mm/vit", "", "2 thanh U", 2 * (P["W"] // 400 + 1)])
+        w.writerow(["Bo ray treo TAI NANG (barn door / ray hop) - xe treo >= %.0f kg/xe, bo >= %.0f kg/canh" % (m["TROLLEY_NEED"], 2 * m["TROLLEY_NEED"]), "", "2 xe/canh", 2 * P["door_n"]])
+        w.writerow(["Bat treo (bat vien tren bang tan rut ren M8)", "", "2/canh", 2 * P["door_n"]])
         w.writerow(["Khoa an tu cua lua (push lock)", "", "cho chong mi", len(m["LOCKS"])])
         w.writerow(["Ron choi chong bui (mep chong mi)", m["DH"], "1/canh", P["door_n"]])
-        w.writerow(["LUU Y", "", f"tai moi banh >= (khoi luong canh / 4) x 1.5 = {m['WHEEL_NEED']:.0f} kg (canh ~{m['DOOR_KG'][0]:.0f} kg voi lam_kg={P['lam_kg']} – CAN 1 thanh lam)", ""])
+        w.writerow(["LUU Y", "", f"tai moi xe treo >= (khoi luong canh / 2) x 1.5 = {m['TROLLEY_NEED']:.0f} kg (canh ~{m['DOOR_KG'][0]:.0f} kg voi lam_kg={P['lam_kg']} – CAN 1 thanh lam)", ""])
         w.writerow(["Khoi luong sat uoc tinh (kg)", round(kg, 1), "do day 1.4/1.2 gia dinh", ""])
     tube_m = Counter()
     for pt in parts:
@@ -213,7 +210,7 @@ def bom():
 
 def contact():
     names = ["01-mat-truoc-dong-cua", "03-iso-mo-nua-trai", "05-iso-mo-nua-phai",
-             "12-mat-cat-ray", "13-mat-bang-hanh-trinh", "10-ban-ve-khung-sat"]
+             "12-mat-cat-treo-dan-huong", "13-mat-bang-hanh-trinh", "10-ban-ve-khung-sat"]
     tw, th = 800, 640
     sheet = Image.new("RGB", (tw * 3, th * 2 + 40), "white")
     dr = ImageDraw.Draw(sheet)
@@ -227,7 +224,7 @@ def contact():
         x, y = (i % 3) * tw, (i // 3) * th + 40
         sheet.paste(im, (x + (tw - im.width) // 2, y + 25))
         dr.text((x + 10, y + 2), n, fill="black", font=font)
-    dr.text((10, 8), f"Tủ âm tường cửa lùa 2 cánh – U chấn 40x40 dưới chịu tải, ray hộp 40x40 trên giữ đứng – khung sắt + lam sóng {P['lam_w']}x{P['lam_L']}x{P['lam_t']} – "
+    dr.text((10, 8), f"Tủ âm tường cửa lùa 2 cánh TREO – sàn trống, dẫn hướng U ngắn giấu giữa – khung sắt + lam sóng {P['lam_w']}x{P['lam_L']}x{P['lam_t']} – "
             f"W={W}, cánh {'-'.join(map(str, KB))} thanh ({'/'.join(map(str, DWS))}), chồng mí {OV:.0f}", fill="black", font=font)
     sheet.save(os.path.join(OUT, "00-contact-sheet.png"))
 

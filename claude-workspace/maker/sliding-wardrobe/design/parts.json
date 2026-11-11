@@ -28,29 +28,26 @@
    "n_rail_back": 4,
    "lam_gap_side": 1,
    "lam_gap_end": 1.5,
-   "U": [
-    40,
-    40,
-    2.0
-   ],
-   "wheel_d": 32,
-   "wheel_w": 12,
-   "wheel_kg": null,
-   "bogie_in": 110,
-   "bogie_pitch": 60,
-   "bogie_w": 30,
-   "u_gap": 6,
    "track": [
     40,
     40
    ],
-   "track_wall": 2,
    "track_slot": 14,
    "hanger_gap": 25,
    "trolley_in": 110,
    "trolley_L": 90,
    "trolley_h": 28,
-   "trolley_play": 3,
+   "trolley_kg": null,
+   "U": [
+    40,
+    40,
+    2.0
+   ],
+   "guide_L": 140,
+   "fin_t": 5,
+   "fin_clear": 1,
+   "fin_bottom": 10,
+   "u_gap": 6,
    "lock_d": 20,
    "plunger_d": 8,
    "plunger_travel": 14,
@@ -72,9 +69,12 @@
    ],
    "header": [
     40,
-    40,
+    80,
     1.4
    ],
+   "steel_E": 200000,
+   "steel_sigma_max": 140,
+   "header_defl_div": 400,
    "z_shelf": 2300,
    "board_t": 17,
    "rod_d": 27,
@@ -137,7 +137,7 @@
   "DHD": 2943.0,
   "FW": 20,
   "FDP": 40,
-  "H_TOP": 3094.0,
+  "H_TOP": 3134.0,
   "LANES": [
    30.0,
    78.0
@@ -150,13 +150,23 @@
    3014.0,
    3054.0
   ],
-  "z_axle": 18.0,
-  "U_IN": 36.0,
-  "DOOR_KG": [
-   85.9039064,
-   85.9039064
+  "X_GUIDE": 1500.0,
+  "GX": [
+   1430.0,
+   1570.0
   ],
-  "WHEEL_NEED": 32.2139649,
+  "FIN_H": 36,
+  "POM_T": 14.5,
+  "DOOR_KG": [
+   87.1392724,
+   87.1392724
+  ],
+  "TROLLEY_NEED": 65.3544543,
+  "HEAD": {
+   "span": 1460.0,
+   "sigma": 44.51672578540872,
+   "defl": 0.9884567987935127
+  },
   "ROD": {
    "span": 700.0,
    "sigma": 67.05774081064702,
@@ -175,21 +185,21 @@
     true,
     "2 ray hop dat canh nhau vua khoang cach 2 lop canh"
    ],
-   "banh_long_U": [
+   "dan_huong": [
     true,
-    "banh 12 + cang 30 lot long U 36 (chan canh lac +-3.0)"
+    "doan U 1430..1570 luon nam duoi ca 2 canh (gan luon an, U khong lo -> khong vap)"
    ],
-   "banh_duoi_mieng": [
+   "gan_trong_U": [
     true,
-    "dinh banh thap hon mieng U (banh nam han trong U)"
+    "gan 5 an 30 vao U, POM day 14.5 moi ben, chan canh lac +-1"
    ],
-   "chong_nhay": [
+   "dam_ung_suat": [
     true,
-    "nhac canh toi da 5 mm (xe treo cham noc ray) < 38 can de banh thoat U"
+    "dam dau cua 40x80 dung, nhip 1460, canh 87 kg giua nhip: 45 MPa <= 140"
    ],
-   "xe_treo_ho": [
+   "dam_vong": [
     true,
-    "xe treo ho tren mep ray -> khong do tai, chi giu dung"
+    "vong dam 1.0 mm <= L/400 = 3.6"
    ],
    "khoa_tren_lam": [
     true,
@@ -277,9 +287,9 @@
     120.0,
     160.0,
     4,
-    3054.0
+    3094.0
    ],
-   "L": 3050.0,
+   "L": 3090.0,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -295,9 +305,9 @@
     760.0,
     800.0,
     4,
-    3054.0
+    3094.0
    ],
-   "L": 3050.0,
+   "L": 3090.0,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -348,8 +358,8 @@
     40.0,
     160,
     760,
-    3054.0,
-    3094.0
+    3094.0,
+    3134.0
    ],
    "L": 600,
    "Wd": 40.0,
@@ -421,9 +431,9 @@
     760.0,
     800.0,
     4,
-    3054.0
+    3094.0
    ],
-   "L": 3050.0,
+   "L": 3090.0,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -474,8 +484,8 @@
     780.0,
     160,
     760,
-    3054.0,
-    3094.0
+    3094.0,
+    3134.0
    ],
    "L": 600,
    "Wd": 40.0,
@@ -529,9 +539,9 @@
     120.0,
     160.0,
     4,
-    3054.0
+    3094.0
    ],
-   "L": 3050.0,
+   "L": 3090.0,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -547,9 +557,9 @@
     760.0,
     800.0,
     4,
-    3054.0
+    3094.0
    ],
-   "L": 3050.0,
+   "L": 3090.0,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -600,8 +610,8 @@
     1520.0,
     160,
     760,
-    3054.0,
-    3094.0
+    3094.0,
+    3134.0
    ],
    "L": 600,
    "Wd": 40.0,
@@ -673,9 +683,9 @@
     760.0,
     800.0,
     4,
-    3054.0
+    3094.0
    ],
-   "L": 3050.0,
+   "L": 3090.0,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -726,8 +736,8 @@
     2260.0,
     160,
     760,
-    3054.0,
-    3094.0
+    3094.0,
+    3134.0
    ],
    "L": 600,
    "Wd": 40.0,
@@ -781,9 +791,9 @@
     120.0,
     160.0,
     4,
-    3054.0
+    3094.0
    ],
-   "L": 3050.0,
+   "L": 3090.0,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -799,9 +809,9 @@
     760.0,
     800.0,
     4,
-    3054.0
+    3094.0
    ],
-   "L": 3050.0,
+   "L": 3090.0,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -852,8 +862,8 @@
     3000.0,
     160,
     760,
-    3054.0,
-    3094.0
+    3094.0,
+    3134.0
    ],
    "L": 600,
    "Wd": 40.0,
@@ -960,8 +970,8 @@
     3000,
     120.0,
     160.0,
-    3054.0,
-    3094.0
+    3094.0,
+    3134.0
    ],
    "L": 3000,
    "Wd": 40.0,
@@ -978,8 +988,8 @@
     3000,
     760.0,
     800.0,
-    3054.0,
-    3094.0
+    3094.0,
+    3134.0
    ],
    "L": 3000,
    "Wd": 40.0,
@@ -990,17 +1000,17 @@
    "group": "Khung sat",
    "mat": "steel",
    "kind": "steel",
-   "spec": "40x40",
+   "spec": "40x80v",
    "bbox": [
     0,
     3000,
     10.0,
     50.0,
     3054.0,
-    3094.0
+    3134.0
    ],
    "L": 3000,
-   "Wd": 40.0,
+   "Wd": 80.0,
    "Th": 40.0
   },
   {
@@ -1008,17 +1018,17 @@
    "group": "Khung sat",
    "mat": "steel",
    "kind": "steel",
-   "spec": "40x40",
+   "spec": "40x80v",
    "bbox": [
     0,
     3000,
     58.0,
     98.0,
     3054.0,
-    3094.0
+    3134.0
    ],
    "L": 3000,
-   "Wd": 40.0,
+   "Wd": 80.0,
    "Th": 40.0
   },
   {
@@ -1033,10 +1043,10 @@
     10.0,
     120,
     3054.0,
-    3094.0
+    3134.0
    ],
    "L": 110.0,
-   "Wd": 40.0,
+   "Wd": 80.0,
    "Th": 40.0
   },
   {
@@ -1051,10 +1061,10 @@
     10.0,
     120,
     3054.0,
-    3094.0
+    3134.0
    ],
    "L": 110.0,
-   "Wd": 40.0,
+   "Wd": 80.0,
    "Th": 40.0
   },
   {
@@ -1069,10 +1079,10 @@
     10.0,
     120,
     3054.0,
-    3094.0
+    3134.0
    ],
    "L": 110.0,
-   "Wd": 40.0,
+   "Wd": 80.0,
    "Th": 40.0
   },
   {
@@ -1544,184 +1554,184 @@
    "Th": 34.0
   },
   {
-   "name": "Ray-U-1-long",
+   "name": "Dan-huong-U-1-day",
    "group": "Ray",
    "mat": "steel",
-   "kind": "utrack",
-   "spec": "U chan 40x40x2.0",
+   "kind": "guide",
+   "spec": "doan U chan 40x40x2.0 dai 140, 2 vit no",
    "bbox": [
-    0,
-    3000,
+    1430.0,
+    1570.0,
     10.0,
     50.0,
     0,
     2.0
    ],
-   "L": 3000,
+   "L": 140.0,
    "Wd": 40.0,
    "Th": 2.0
   },
   {
-   "name": "Ray-U-1-canha",
+   "name": "Dan-huong-U-1-canha",
    "group": "Ray",
    "mat": "steel",
-   "kind": "utrack-side",
-   "spec": "U chan 40x40x2.0",
+   "kind": "guide-side",
+   "spec": "",
    "bbox": [
-    0,
-    3000,
+    1430.0,
+    1570.0,
     10.0,
     12.0,
     2.0,
     40
    ],
-   "L": 3000,
+   "L": 140.0,
    "Wd": 38.0,
    "Th": 2.0
   },
   {
-   "name": "Ray-U-1-canhb",
+   "name": "Dan-huong-U-1-POMa",
+   "group": "Ray",
+   "mat": "nylon",
+   "kind": "guide-pom",
+   "spec": "mieng POM 14.5 x 38 x 140",
+   "bbox": [
+    1430.0,
+    1570.0,
+    12.0,
+    26.5,
+    2.0,
+    40
+   ],
+   "L": 140.0,
+   "Wd": 38.0,
+   "Th": 14.5
+  },
+  {
+   "name": "Dan-huong-U-1-canhb",
    "group": "Ray",
    "mat": "steel",
-   "kind": "utrack-side",
-   "spec": "U chan 40x40x2.0",
+   "kind": "guide-side",
+   "spec": "",
    "bbox": [
-    0,
-    3000,
+    1430.0,
+    1570.0,
     48.0,
     50.0,
     2.0,
     40
    ],
-   "L": 3000,
+   "L": 140.0,
    "Wd": 38.0,
    "Th": 2.0
   },
   {
-   "name": "Chan-U-1-0",
+   "name": "Dan-huong-U-1-POMb",
    "group": "Ray",
-   "mat": "rubber",
-   "kind": "stop-u",
-   "spec": "chan cuoi cao su trong long U",
+   "mat": "nylon",
+   "kind": "guide-pom",
+   "spec": "mieng POM 14.5 x 38 x 140",
    "bbox": [
-    0,
-    63.0,
-    12.0,
+    1430.0,
+    1570.0,
+    33.5,
     48.0,
     2.0,
-    36
+    40
    ],
-   "L": 63.0,
-   "Wd": 36.0,
-   "Th": 34.0
+   "L": 140.0,
+   "Wd": 38.0,
+   "Th": 14.5
   },
   {
-   "name": "Chan-U-1-2937",
-   "group": "Ray",
-   "mat": "rubber",
-   "kind": "stop-u",
-   "spec": "chan cuoi cao su trong long U",
-   "bbox": [
-    2937.0,
-    3000,
-    12.0,
-    48.0,
-    2.0,
-    36
-   ],
-   "L": 63.0,
-   "Wd": 36.0,
-   "Th": 34.0
-  },
-  {
-   "name": "Ray-U-2-long",
+   "name": "Dan-huong-U-2-day",
    "group": "Ray",
    "mat": "steel",
-   "kind": "utrack",
-   "spec": "U chan 40x40x2.0",
+   "kind": "guide",
+   "spec": "doan U chan 40x40x2.0 dai 140, 2 vit no",
    "bbox": [
-    0,
-    3000,
+    1430.0,
+    1570.0,
     58.0,
     98.0,
     0,
     2.0
    ],
-   "L": 3000,
+   "L": 140.0,
    "Wd": 40.0,
    "Th": 2.0
   },
   {
-   "name": "Ray-U-2-canha",
+   "name": "Dan-huong-U-2-canha",
    "group": "Ray",
    "mat": "steel",
-   "kind": "utrack-side",
-   "spec": "U chan 40x40x2.0",
+   "kind": "guide-side",
+   "spec": "",
    "bbox": [
-    0,
-    3000,
+    1430.0,
+    1570.0,
     58.0,
     60.0,
     2.0,
     40
    ],
-   "L": 3000,
+   "L": 140.0,
    "Wd": 38.0,
    "Th": 2.0
   },
   {
-   "name": "Ray-U-2-canhb",
+   "name": "Dan-huong-U-2-POMa",
+   "group": "Ray",
+   "mat": "nylon",
+   "kind": "guide-pom",
+   "spec": "mieng POM 14.5 x 38 x 140",
+   "bbox": [
+    1430.0,
+    1570.0,
+    60.0,
+    74.5,
+    2.0,
+    40
+   ],
+   "L": 140.0,
+   "Wd": 38.0,
+   "Th": 14.5
+  },
+  {
+   "name": "Dan-huong-U-2-canhb",
    "group": "Ray",
    "mat": "steel",
-   "kind": "utrack-side",
-   "spec": "U chan 40x40x2.0",
+   "kind": "guide-side",
+   "spec": "",
    "bbox": [
-    0,
-    3000,
+    1430.0,
+    1570.0,
     96.0,
     98.0,
     2.0,
     40
    ],
-   "L": 3000,
+   "L": 140.0,
    "Wd": 38.0,
    "Th": 2.0
   },
   {
-   "name": "Chan-U-2-0",
+   "name": "Dan-huong-U-2-POMb",
    "group": "Ray",
-   "mat": "rubber",
-   "kind": "stop-u",
-   "spec": "chan cuoi cao su trong long U",
+   "mat": "nylon",
+   "kind": "guide-pom",
+   "spec": "mieng POM 14.5 x 38 x 140",
    "bbox": [
-    0,
-    63.0,
-    60.0,
+    1430.0,
+    1570.0,
+    81.5,
     96.0,
     2.0,
-    36
+    40
    ],
-   "L": 63.0,
-   "Wd": 36.0,
-   "Th": 34.0
-  },
-  {
-   "name": "Chan-U-2-2937",
-   "group": "Ray",
-   "mat": "rubber",
-   "kind": "stop-u",
-   "spec": "chan cuoi cao su trong long U",
-   "bbox": [
-    2937.0,
-    3000,
-    60.0,
-    96.0,
-    2.0,
-    36
-   ],
-   "L": 63.0,
-   "Wd": 36.0,
-   "Th": 34.0
+   "L": 140.0,
+   "Wd": 38.0,
+   "Th": 14.5
   },
   {
    "name": "C1-vien-dung-trai",
@@ -2012,40 +2022,22 @@
    "Th": 27.5
   },
   {
-   "name": "C1-cang-banh-trai",
+   "name": "C1-gan-dan-huong",
    "group": "Canh 1",
    "mat": "steel",
-   "kind": "bogie",
-   "spec": "cang banh han day vien duoi, vit chinh cao",
+   "kind": "fin",
+   "spec": "la 5x36 gan dan huong",
    "bbox": [
-    62.0,
-    158.0,
-    15.0,
-    45.0,
-    22.0,
+    0.0,
+    1582.0,
+    27.5,
+    32.5,
+    10,
     46
    ],
-   "L": 96.0,
-   "Wd": 30.0,
-   "Th": 24.0
-  },
-  {
-   "name": "C1-cang-banh-phai",
-   "group": "Canh 1",
-   "mat": "steel",
-   "kind": "bogie",
-   "spec": "cang banh han day vien duoi, vit chinh cao",
-   "bbox": [
-    1424.0,
-    1520.0,
-    15.0,
-    45.0,
-    22.0,
-    46
-   ],
-   "L": 96.0,
-   "Wd": 30.0,
-   "Th": 24.0
+   "L": 1582.0,
+   "Wd": 36,
+   "Th": 5.0
   },
   {
    "name": "C1-bat-treo-trai",
@@ -2426,40 +2418,22 @@
    "Th": 27.5
   },
   {
-   "name": "C2-cang-banh-trai",
+   "name": "C2-gan-dan-huong",
    "group": "Canh 2",
    "mat": "steel",
-   "kind": "bogie",
-   "spec": "cang banh han day vien duoi, vit chinh cao",
+   "kind": "fin",
+   "spec": "la 5x36 gan dan huong",
    "bbox": [
-    1480.0,
-    1576.0,
-    63.0,
-    93.0,
-    22.0,
+    1418.0,
+    3000.0,
+    75.5,
+    80.5,
+    10,
     46
    ],
-   "L": 96.0,
-   "Wd": 30.0,
-   "Th": 24.0
-  },
-  {
-   "name": "C2-cang-banh-phai",
-   "group": "Canh 2",
-   "mat": "steel",
-   "kind": "bogie",
-   "spec": "cang banh han day vien duoi, vit chinh cao",
-   "bbox": [
-    2842.0,
-    2938.0,
-    63.0,
-    93.0,
-    22.0,
-    46
-   ],
-   "L": 96.0,
-   "Wd": 30.0,
-   "Th": 24.0
+   "L": 1582.0,
+   "Wd": 36,
+   "Th": 5.0
   },
   {
    "name": "C2-bat-treo-trai",

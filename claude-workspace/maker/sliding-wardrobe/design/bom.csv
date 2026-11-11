@@ -1,8 +1,6 @@
 ﻿vat_tu,dai_mm,vi_tri,so_luong
 Ban de 60x60x4,,de cot giua bat no san,13
 Ban de bat noi dam dau cua - cot truoc,,de cot giua bat no san,3
-"Cang banh (2 ban ma + truc M8, vit chinh cao) han day vien duoi",,2 cum/canh,4
-Chan cuoi cao su trong long U,,2 dau moi thanh U,4
 Lam song 220x2900x26,2900,"canh (nguyen cay, khong cat)",14
 Ong inox tron Ø27,698.0,ong treo,8
 Sat hop 13x26,1542.0,giang sau lam (canh),8
@@ -15,23 +13,23 @@ Sat hop 40x40,3000,ke-truoc,1
 Sat hop 40x40,3000,ke-sau,1
 Sat hop 40x40,3000,dinh-truoc,1
 Sat hop 40x40,3000,dinh-sau,1
-Sat hop 40x40,3000,dau-cua,2
-Sat hop 40x40,3050.0,cot-truoc,3
-Sat hop 40x40,3050.0,cot-sau,5
+Sat hop 40x40,3090.0,cot-truoc,3
+Sat hop 40x40,3090.0,cot-sau,5
 Sat hop 40x40,600,dam-ke,5
 Sat hop 40x40,600,dam-dinh,5
-U chan 40x40x2.0,3000,"ray duoi CHIU TAI, nam ngua, vit dau bang + no xuong san",2
+Sat hop 40x80v,3000,dau-cua,2
+Sat la 5x36 gan dan huong,1582.0,han dung duoi tam vien duoi (1/canh),2
 Van ke 17,720.0 x 680,ke hop noc,2
 Van ke 17,740.0 x 680,ke hop noc,2
 chan cuoi cao su,,trong ray treo,2
 chan cuoi co lay giu canh dong,,trong ray treo,2
+"doan U chan 40x40x2.0 dai 140, 2 vit no",140,"dan huong giua tu (1 / lop canh), luon khuat duoi canh",2
+mieng POM 14.5 x 38 x 140,140,"lot trong long doan U, bat vit (2 / doan U)",4
 ray hop 40x40,3000,ray treo (1 ray / lop canh),2
 
-Banh 608 boc POM O32x12 (hoac banh o bi tuong duong) + bulong truc M8,,4 banh/canh (2 cum x 2),8
-"Xe treo chay trong ray hop 40x40 - CHI GIU DUNG, khong chiu tai (loai nao vua ray)",,2 xe/canh,4
-Bat treo (bat vien tren bang tan rut ren M8) + bulong chinh,,2/canh,4
-"Vit no dau bang (khoan con) bat U xuong san, ~400 mm/vit",,2 thanh U,16
+"Bo ray treo TAI NANG (barn door / ray hop) - xe treo >= 65 kg/xe, bo >= 131 kg/canh",,2 xe/canh,4
+Bat treo (bat vien tren bang tan rut ren M8),,2/canh,4
 Khoa an tu cua lua (push lock),,cho chong mi,1
 Ron choi chong bui (mep chong mi),2900,1/canh,2
-LUU Y,,tai moi banh >= (khoi luong canh / 4) x 1.5 = 32 kg (canh ~86 kg voi lam_kg=10.0 – CAN 1 thanh lam),
-Khoi luong sat uoc tinh (kg),138.8,do day 1.4/1.2 gia dinh,
+LUU Y,,tai moi xe treo >= (khoi luong canh / 2) x 1.5 = 65 kg (canh ~87 kg voi lam_kg=10.0 – CAN 1 thanh lam),
+Khoi luong sat uoc tinh (kg),138.2,do day 1.4/1.2 gia dinh,
