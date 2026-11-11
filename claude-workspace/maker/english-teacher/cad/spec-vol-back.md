@@ -8,8 +8,8 @@ Có thay đổi chưa commit cần GIỮ: `cad/out/*` (bản in cũ – chuyển
 gate (chạy trong cwd, phải exit 0):
 ```
 "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b --python-exit-code 1 -P build_owl.py -- out
-python ..\..\..\tools\robotics-cad\scripts\printability.py out
-python ..\..\..\tools\robotics-cad\scripts\slice.py ..\print\print.yaml      (sau khi chép STL mới sang print/stl)
+python ..\..\..\tools\print\scripts\printability.py out
+python ..\..\..\tools\print\scripts\slice.py ..\print\print.yaml      (sau khi chép STL mới sang print/stl)
 "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b --python-exit-code 1 -P gate_owl.py -- out
 python export_cad.py out
 ```

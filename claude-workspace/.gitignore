@@ -13,8 +13,8 @@
 # Moi truong Python (uv tao lai tu uv.lock)
 .venv/
 __pycache__/
-# Thu vien cai rieng cho freecadcmd (pip --target), cai lai theo docs/COMMUNITY.md (manifold3d)
-/tools/robotics-cad/.pylib/
+# Thu vien cai rieng (pip --target) cho printability/fast_collide, cai lai theo docs/COMMUNITY.md (manifold3d)
+/tools/print/.pylib/
 # Du an CAD (maker/<project>/): file FreeCAD chi de tren may (Tuan chon 2026-10-23), ban sao luu + file sinh
 /maker/*/freecad/*.FCStd
 /maker/*/freecad/*.FCBak
@@ -59,8 +59,6 @@ credentials*.json
 /photo-ai/tools/*
 !/photo-ai/tools/SHA256SUMS
 
-# Lop phu RobotCAD (junction toi community/, sinh bang custom/freecad/robotcad_overlay.py)
-/custom/freecad/robotcad-overlay/
 /maker/*/freecad/images/assembly/raw/
 /maker/*/print/stl-*/
 
@@ -84,3 +82,16 @@ credentials*.json
 /maker/**/out/asm/
 /maker/*/marketing/stills/raw/
 /maker/*/marketing/stills/assets/
+
+# Ban cu/loi/da thay (Tuan 2026-11-05: khong xoa, chuyen vao backup/<ngay>-<ly do>/) - chi de tren may, lich su git van giu
+/backup/
+
+# File sinh/nang ngoai maker/ (2026-11-11): log, model luoi/CAD. KHONG ignore *.bin (firmware releases can cho OTA)
+*.log
+*.FCStd
+*.FCBak
+*.stl
+*.3mf
+*.step
+*.stp
+!/community/pin-history.log

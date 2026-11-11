@@ -42,7 +42,7 @@ def case(files, expect_ok, must_say=None):
 case({f"{WS}/tools/x/ok.py": b"import os\nprint(os.name)\n", f"{WS}/docs/a.md": b"# ok\n"}, True)
 case({f"{WS}/community/pins.tsv": b"a\tb\n", f"{WS}/community/links.tsv": b"a\tb\n"}, True)
 case({f"{WS}/maker/du-an/design/concept.svg": b"<svg/>"}, True)            # svg la ma nguon, khong phai media
-case({f"{WS}/tools/robotics-cad/library/img/relay.png": b"x" * 100}, True)  # anh ngoai maker/ duoc phep
+case({f"{WS}/tools/parts-library/img/relay.png": b"x" * 100}, True)  # anh ngoai maker/ duoc phep
 
 # chan: file model, bi mat, ban clone cong dong, media maker, file lon, loi cu phap python, token
 case({f"{WS}/maker/du-an/freecad/a.FCStd": b"PK"}, False, "a.FCStd")

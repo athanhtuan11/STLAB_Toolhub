@@ -1,4 +1,4 @@
-# esp32-s3-cam (SolidCraft) - ban in, doc boi tools/robotics-cad/scripts/slice.py
+# esp32-s3-cam (SolidCraft) - ban in, doc boi tools/print/scripts/slice.py
 data_dir: ..
 machine: Bambu Lab A1 0.4 nozzle
 filament: Bambu PETG Basic @BBL A1

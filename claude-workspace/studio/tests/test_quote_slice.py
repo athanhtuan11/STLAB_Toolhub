@@ -13,7 +13,7 @@ os.environ["STLAB_QUOTES_DB"] = str(TMP / "quotes.db")
 os.environ["STLAB_QUOTES_WORK"] = str(TMP / "work")  # upload + ket qua cat lop (mac dinh %LOCALAPPDATA%\stlab-quotes)
 
 FCPY = Path(r"C:\Program Files\FreeCAD 1.1\bin\python.exe")
-QS = ROOT / "tools" / "robotics-cad" / "scripts" / "quote_slice.py"
+QS = ROOT / "tools" / "print" / "scripts" / "quote_slice.py"
 fails = []
 
 
@@ -52,7 +52,7 @@ def run_qs(*args, timeout=300):
 
 # 0. slice.py import duoc (khong tu chay main khi import)
 r = subprocess.run([str(FCPY), "-c", "import sys; sys.argv=['x']; sys.path.insert(0, r'%s'); import slice; "
-                    "print(hasattr(slice, 'cat'))" % (ROOT / "tools/robotics-cad/scripts")],
+                    "print(hasattr(slice, 'cat'))" % (ROOT / "tools/print/scripts")],
                    capture_output=True, text=True, timeout=60)
 check(r.stdout.strip().endswith("True"), f"slice.py phai co guard __main__ (import khong chay main): {r.stderr[-300:]}")
 

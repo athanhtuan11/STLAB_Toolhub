@@ -17,7 +17,7 @@ def check(cond, msg):
         fails.append(msg)
 
 
-LIB = STUDIO.parent / "tools" / "robotics-cad" / "library" / "components.yaml"
+LIB = STUDIO.parent / "tools" / "parts-library" / "components.yaml"
 comps = yaml.safe_load(LIB.read_text(encoding="utf-8"))["components"]
 ids = [c["id"] for c in comps]
 RID = "relay-module-2ch-srd-05vdc"

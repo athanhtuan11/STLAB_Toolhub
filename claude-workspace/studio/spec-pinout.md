@@ -2,7 +2,7 @@
 task: toolhub-pinout-graph
 cwd: studio
 allow: ["toolhub/pinout.py", "toolhub/workspace.py", "toolhub/templates/library.html"]
-read: ["tools/robotics-cad/library", "studio/design"]
+read: ["tools/parts-library", "studio/design"]
 gate: '.venv\Scripts\python.exe tests\test_pinout.py'
 executor: opencode
 timeout_min: 25
@@ -11,7 +11,7 @@ max_rounds: 2
 
 # Mục tiêu
 Trang Toolhub "Thư viện linh kiện robotics" (`/library`) vẽ **sơ đồ chân** (graph SVG) cho linh kiện có khóa `chan`
-trong `tools/robotics-cad/library/components.yaml`, kèm **sơ đồ đấu theo dự án** (`so_do`). Linh kiện đầu tiên:
+trong `tools/parts-library/components.yaml`, kèm **sơ đồ đấu theo dự án** (`so_do`). Linh kiện đầu tiên:
 `relay-module-2ch-srd-05vdc` (dự án pump-control). Đọc `tests/test_pinout.py` để biết đúng hành vi.
 
 # Dữ liệu (đã có trong YAML – KHÔNG sửa YAML)

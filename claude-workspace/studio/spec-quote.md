@@ -2,7 +2,7 @@
 task: toolhub-quote
 cwd: studio
 allow: ["toolhub/quote.py", "toolhub/views.py", "toolhub/templates/quote.html", "toolhub/templates/quote-print.html", "toolhub/templates/base.html"]
-read: ["tools/robotics-cad/scripts/slice.py", "tools/robotics-cad/scripts/assembly-pdf.py", "community/printcalc/PRICING.md", "studio/design"]
+read: ["tools/print/scripts/slice.py", "tools/print/scripts/assembly-pdf.py", "community/printcalc/PRICING.md", "studio/design"]
 gate: '.venv\Scripts\python.exe tests\test_quote.py && .venv\Scripts\python.exe tests\test_library_pages.py'
 executor: opencode
 timeout_min: 30

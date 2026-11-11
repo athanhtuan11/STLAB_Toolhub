@@ -16,7 +16,7 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 HERE = Path(__file__).resolve().parent.parent
 P = json.loads((HERE / "params.json").read_text(encoding="utf-8"))
 FC_PY = Path(r"C:/Program Files/FreeCAD 1.1/bin/python.exe")  # co yaml cho slice.py
-SLICE = HERE.parents[2] / "tools" / "robotics-cad" / "scripts" / "slice.py"
+SLICE = HERE.parents[2] / "tools" / "print" / "scripts" / "slice.py"
 PRINT_YAML = HERE.parent / "print" / "print.yaml"
 
 PRINT = ["Chassis", "Battery_lid", "Shell", "Top", "Belly", "Eye_L", "Eye_R", "Pupil_L", "Pupil_R",

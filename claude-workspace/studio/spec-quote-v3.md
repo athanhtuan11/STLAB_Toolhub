@@ -1,7 +1,7 @@
 ---
 task: toolhub-quote-v3-autoslice
 cwd: .
-allow: ["tools/robotics-cad/scripts/quote_slice.py", "tools/robotics-cad/scripts/slice.py", "studio/toolhub/quote.py", "studio/toolhub/views.py", "studio/toolhub/templates/quote.html", "studio/toolhub/templates/quote-print.html"]
+allow: ["tools/print/scripts/quote_slice.py", "tools/print/scripts/slice.py", "studio/toolhub/quote.py", "studio/toolhub/views.py", "studio/toolhub/templates/quote.html", "studio/toolhub/templates/quote-print.html"]
 read: ["studio/toolhub/quote_defaults.json", "studio/spec-quote.md", "studio/spec-quote-v2.md", "studio/toolhub/printprep.py"]
 gate: 'studio\.venv\Scripts\python.exe studio\tests\test_quote_slice.py && studio\.venv\Scripts\python.exe studio\tests\test_quote.py && studio\.venv\Scripts\python.exe studio\tests\test_library_pages.py'
 executor: opencode
@@ -20,10 +20,10 @@ STEP → CLI báo "can not be parsed" → phải đổi sang STL bằng FreeCAD 
 "G-code conflicts" (tháp xả) → thử lại support tắt, vẫn ra gam/giờ kèm cảnh báo.
 
 # Yêu cầu
-## `tools/robotics-cad/scripts/slice.py`
+## `tools/print/scripts/slice.py`
 - CHỈ thêm guard: `if __name__ == "__main__": sys.exit(main())` thay dòng gọi cuối. Không đổi gì khác.
 
-## `tools/robotics-cad/scripts/quote_slice.py` (mới, chạy bằng `C:\Program Files\FreeCAD 1.1\bin\python.exe`)
+## `tools/print/scripts/quote_slice.py` (mới, chạy bằng `C:\Program Files\FreeCAD 1.1\bin\python.exe`)
 - `quote_slice.py --list-filaments` → in 1 dòng JSON `{"filaments": [...], "processes": [...]}`: tên profile
   filament/process dùng được cho A1 0.4 (chính hãng có `@BBL A1` – loại `A1M`/A1 mini – và preset riêng của Tuan
   trong `%APPDATA%\BambuStudio\user\*\filament|process` có chữ "A1" và không "A1 mini"/"A1M"), sắp xếp, không trùng.

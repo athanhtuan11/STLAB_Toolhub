@@ -175,7 +175,7 @@
     "model": "stlab maker/pushrod-arm",
     "parts": "Pin_S xuyen Turret_one_piece, Spacer_S, Boom001",
     "method": "stlab-design",
-    "ref": "custom/skills/robotics-cad/SKILL.md muc Chot / truc"
+    "ref": "custom/skills/mechanical-design/SKILL.md muc Chot / truc"
    },
    "print": {
     "printer": "Bambu A1",

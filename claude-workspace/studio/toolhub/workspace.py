@@ -75,7 +75,7 @@ def links():
 def _project_dirs():
     dirs = [ROOT / "stlab", ROOT / "studio"]
     dirs += sorted(d for d in (ROOT / "maker").iterdir() if d.is_dir())
-    dirs += sorted(d for d in (ROOT / "tools").iterdir() if d.is_dir())  # cong cu dung chung (robotics-cad, prompt-library)
+    dirs += sorted(d for d in (ROOT / "tools").iterdir() if d.is_dir())  # cong cu dung chung (print, parts-library, prompt-library)
     return [d for d in dirs if (d / "CLAUDE.md").exists()]
 
 
@@ -148,7 +148,7 @@ def prompts():
     return rows
 
 
-LIBRARY_YAML = ROOT / "tools" / "robotics-cad" / "library" / "components.yaml"
+LIBRARY_YAML = ROOT / "tools" / "parts-library" / "components.yaml"
 LIBRARY_DIR = LIBRARY_YAML.parent
 
 

@@ -25,7 +25,7 @@ Một lệnh in ra phiên bản các công cụ STLab đang cài + dung lượng
   - `freecad`: `C:/Program Files/FreeCAD 1.1/bin/freecadcmd.exe --version` (dòng có `FreeCAD x.y.z`).
   - `bambu-studio`: đọc phiên bản từ thuộc tính file exe `C:/Program Files/Bambu Studio/bambu-studio.exe`
     (PowerShell `(Get-Item ...).VersionInfo.ProductVersion`) – nếu đường dẫn khác, tìm trong `slice.py` /
-    `../robotics-cad/scripts/quote_slice.py` hằng số đường dẫn Bambu và dùng nó.
+    `../print/scripts/quote_slice.py` hằng số đường dẫn Bambu và dùng nó.
   - `esp-idf`: `IDF_PATH` hoặc thư mục `C:/Espressif/frameworks/esp-idf-v*` → file `version.txt` hoặc tên thư mục;
     nhiều bản → liệt kê hết, cách nhau dấu phẩy, `version` = bản mới nhất.
   - `python` (sys.version), `git`, `node`, `uv`, `codex`, `opencode`, `kilo`, `copilot`, `agy` (`<lệnh> --version`, tìm

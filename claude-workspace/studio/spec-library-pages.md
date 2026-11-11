@@ -2,7 +2,7 @@
 task: toolhub-library-list-detail
 cwd: studio
 allow: ["toolhub/views.py", "toolhub/workspace.py", "toolhub/templates/library.html", "toolhub/templates/library-detail.html"]
-read: ["tools/robotics-cad/library", "studio/design"]
+read: ["tools/parts-library", "studio/design"]
 gate: '.venv\Scripts\python.exe tests\test_library_pages.py && .venv\Scripts\python.exe tests\test_pin_diagram.py && .venv\Scripts\python.exe tests\test_pinout.py'
 executor: opencode
 timeout_min: 25

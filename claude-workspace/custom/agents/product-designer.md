@@ -18,8 +18,7 @@ quan trọng (Tuan 2026-11-02: "thiết kế hiện tại hơi xấu").
    - CMF: màu từng chi tiết (mặc định Bambu PETG Basic; Tuan tự chuẩn bị cuộn – KHÔNG hỏi Tuan về cuộn/tên màu),
      tối đa 2–3 màu + 1 điểm nhấn; bề mặt (Textured PEI mặt dưới, mặt in nhìn thấy).
    - 2–3 phương án (A/B/C) có đánh đổi, khuyến nghị 1.
-3. Render để duyệt: dùng công cụ render Blender của STLab (`tools/render/README.md` khi đã có; nếu chưa có thì dùng
-   `tools/robotics-cad/scripts/mpl_render.py`) → `design/concepts/*.png` + `design/contact-sheet.png`. **Tự xem ảnh** (Read
+3. Render để duyệt: dùng công cụ render Blender của STLab (`tools/render/README.md`) → `design/concepts/*.png` + `design/contact-sheet.png`. **Tự xem ảnh** (Read
    file PNG), sửa spec tới khi đẹp; ghi vào spec bạn đã sửa gì sau khi nhìn ảnh.
 
 ## Ràng buộc in 3D và lắp (bắt buộc – đẹp nhưng in được)

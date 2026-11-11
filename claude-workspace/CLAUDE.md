@@ -8,8 +8,9 @@ Quy ước chung đặt ở file này (mẫu shanraisshan/claude-code-best-pract
 - `studio/`: giao diện STLAB Toolhub (Flask) + mở FreeCAD/Blender/LightCraft/PhotoCraft kèm MCP; xem `studio/CLAUDE.md`. Tính năng mới thì thêm trang vào Toolhub.
 - `video-ai/`: tự dựng video ngắn từ clip tự quay (FilmCraft); xem `video-ai/CLAUDE.md`.
 - `stlab/`: giáo án (`lesson-plans/`); `parent-reports/` là dữ liệu cá nhân, không lên git.
-- `maker/`: **chỉ dự án**, mỗi thư mục một dự án (`CLAUDE.md` + `README.md`). CAD: `design/` (bước 0), `freecad/`, `print/`; điện tử: `firmware/`, `hardware/`, `docs/`.
-- `tools/`: công cụ dùng chung: `robotics-cad/` (kiểm model, STL, cắt lớp, workbench STLab, `project-template/`), `prompt-library/`.
+- `maker/`: **chỉ dự án**, mỗi thư mục một dự án (`CLAUDE.md` + `README.md`). CAD: `design/` (bước 0), `solidcraft/` (dự án cũ: `freecad/`), `print/`; điện tử: `firmware/`, `hardware/`, `docs/`.
+- `tools/`: công cụ dùng chung: `print/` (cắt lớp Bambu, kiểm khả năng in, báo giá, PDF lắp ráp), `parts-library/` (danh mục linh kiện + model chính hãng), `model-study/` (fit-library), `prompt-library/`.
+- `backup/<ngày>-<lý do>/`: bản cũ/đã thay, chỉ trên máy (không lên git). Tooling FreeCAD (workbench, check/prepare-print, cad-delegation, skill robotics-cad) ở `backup/20261111-legacy-freecad/`; CAD mặc định là SolidCraft, kiến thức cơ khí ở skill `mechanical-design`.
 - `tools/backup/`: sao lưu .FCStd ra G: + OneDrive (lịch hằng ngày 21:00).
 - `photo-ai/`: LightCraft – **tạm dừng** (chờ bản tạo ảnh AI).
 - `harness-lab/`: sổ lỗi `inbox.md` + lệnh `/lesson`.

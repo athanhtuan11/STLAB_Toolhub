@@ -1,6 +1,6 @@
 # english-teacher - ban in THU cum nut am luong (vol-pod v2 + nap MX) truoc khi in ca bo. 1 mau (khong AMS).
 # Thu: switch MX cam vua o, nap MX vua chu thap, vit M2.5 x 10 tu ren bat tu trong, mat cong pod ap vo.
-# Cat lop: python ../../tools/robotics-cad/scripts/slice.py print/vol-test.yaml
+# Cat lop: python ../../tools/print/scripts/slice.py print/vol-test.yaml
 machine: Bambu Lab A1 0.4 nozzle
 filament: Bambu PETG Basic @BBL A1
 stl: stl

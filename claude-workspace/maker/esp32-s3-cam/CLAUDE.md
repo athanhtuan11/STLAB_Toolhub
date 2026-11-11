@@ -62,7 +62,7 @@ Dự án Tuan bắt đầu 2026-11-03. Mạch **ESP32-S3-CAM N16R8** (16 MB flas
   **TODO đo:** ống kính cao bao nhiêu mm trên mặt mạch (quyết định khoảng mạch – bezel, hiện ước 6).
 - 2026-11-05: **CAD chuyển hẳn sang SolidCraft 0.30.1** (Tuan quyết). Nguồn: `solidcraft/params.json` + `build_cam_d.py`
   (sinh `cam_d.json` → `cam_d.sc` mở bằng SolidCraft, xuất `stl/` hướng in, ~3 ph) + gate `python tests/test_build.py` 6/6 PASS
-  (thể tích ±1 %, bao ±0,05 mm so bản FreeCAD). Cắt lớp: `tools/robotics-cad/scripts/slice.py solidcraft/print/print.yaml`.
+  (thể tích ±1 %, bao ±0,05 mm so bản FreeCAD). Cắt lớp: `tools/print/scripts/slice.py solidcraft/print/print.yaml`.
   Né lỗi nhân truck: lỗ côn `top_radius` −0,3; trụ vít Body join d −0,1 (tiếp tuyến thành). FreeCAD cũ → `backup/20261105-freecad-cu/`.
   Coupon PASS (22 ph, 7,7 g); vỏ vẫn FAIL bezel floating cantilever (TODO), body 4 vùng support 12 × 6 mm ở z 12,5.
 - 2026-11-05: **Tuan đo mạch thật 27 × 40 × 18 mm** (18 = cả đế nạp CH340, chưa tính camera) → params `pcb_h` 40,0, `stack_t` 18,0;

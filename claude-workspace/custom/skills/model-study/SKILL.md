@@ -42,7 +42,7 @@ Công cụ ở `tools/model-study/` – chạy bằng `.venv\Scripts\python.exe`
    `python fit-library/fit_lib.py check`. Confidence < 0,7 hoặc rms lớn → ghi `note`, không dùng làm mặc định.
 5. **Ghi chú nghiên cứu**: `docs/research-notes/<ten>-fits.md` (giao `doc-writer`, đưa gạch đầu dòng số đo).
 5b. **Rút mẫu thiết kế vào skill**: cách làm hay (cơ cấu, kiểu lắp, kiểu in) → thêm gạch đầu dòng vào mục
-   "Mẫu thiết kế đã chạy" của skill `robotics-cad` (kèm số + nguồn). Không có bước này thì lần thiết kế sau không dùng tới.
+   "Mẫu thiết kế đã chạy" của skill `mechanical-design` (kèm số + nguồn). Không có bước này thì lần thiết kế sau không dùng tới.
 6. **Thiết kế bản chuẩn hơn**: trước khi chọn bất kỳ khe/lỗ nào → `fit_lib.py recommend <interface>`.
    - `basis: verified` (STLab in thử A1 + PETG) → dùng luôn.
    - `basis: community` (sản phẩm đã chạy) → dùng làm mặc định, ghi nguồn trong spec. Khác nhựa (PLA→PETG) thì mối ép

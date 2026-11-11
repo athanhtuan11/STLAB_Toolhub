@@ -1,5 +1,5 @@
 # english-teacher (Cu Bong) - ban in. STL sinh bang cad/build_owl.py (Blender), chep sang print/stl/ (part doi: -l/-r giong nhau).
-# Cat lop: python ../../tools/robotics-cad/scripts/slice.py print/print.yaml   (STL da dung huong in)
+# Cat lop: python ../../tools/print/scripts/slice.py print/print.yaml   (STL da dung huong in)
 # 2026-11-08: du bo than cu, xep ban THEO MAU (han che AMS, moi ban 1 mau; mau theo cad/README.md).
 machine: Bambu Lab A1 0.4 nozzle
 filament: Bambu PETG Basic @BBL A1

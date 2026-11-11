@@ -17,7 +17,6 @@ from . import opener
 from . import ops
 from . import research
 from .ops import events
-from . import printprep
 from . import products
 from . import quote as quote_lib
 from . import usage
@@ -66,6 +65,11 @@ def library_item(cid):
     return render_template("library-detail.html", c=c, labels=ws.LABELS)
 
 
+def _print_yaml(rel):
+    goc = ws.ROOT / rel
+    return any((goc / d / "print.yaml").exists() for d in ("print", "solidcraft/print"))
+
+
 # ---------- Trang ----------
 @bp.get("/")
 def overview():
@@ -74,16 +78,8 @@ def overview():
     projects = ws.projects()
     active, other = [], []
     for p in projects:
-        st = printprep.trang_thai(p["rel"])
-        if st is None:
-            other.append(p)
-            continue
-        kq = st["ket_qua"] or {}
-        tt = [t["ket_luan"] for t in kq.get("tang", [])]
-        p["print"] = {"chay": st["chay"], "luc": kq.get("thoi_gian"),
-                      "ket_luan": "FAIL" if "FAIL" in tt else "WARN" if "WARN" in tt else "PASS" if tt else None,
-                      "tom_tat": next((t["chi_tiet"] for t in kq.get("tang", []) if t["ten"].startswith("Tang 2")), "")}
-        active.append(p)
+        # du an CAD/in 3D: co print/print.yaml (FreeCAD cu) hoac solidcraft/print/print.yaml
+        (active if _print_yaml(p["rel"]) else other).append(p)
     return render_template("overview.html", apps=apps, active=active, other=other, ops_summary=ops.summary())
 
 
@@ -264,7 +260,7 @@ def project_detail(slug):
     record = products.get(slug)
     return render_template("project-detail.html", p=p, product_stage=record.get("stage") if record else None,
                            product_labels=products.LABELS, product_stages=products.STAGES,
-                           in3d=printprep.cau_hinh(p["rel"]) is not None, files=opener.files(p["rel"]))
+                           files=opener.files(p["rel"]))
 
 
 @bp.post("/api/products/<slug>/stage/<stage>")
@@ -276,35 +272,6 @@ def api_product_stage(slug, stage):
         return jsonify({"ok": False, "msg": "Kh\u00f4ng c\u00f3 d\u1ef1 \u00e1n n\u00e0y"}), 404
     products.set_stage(slug, stage)
     return jsonify({"ok": True, "msg": f"\u0110\u00e3 chuy\u1ec3n {p['title']} sang {products.LABELS[stage]}"})
-
-
-# ---------- Chuan bi in (tools/robotics-cad/scripts/prepare-print.py) ----------
-def _rel(slug):
-    p = ws.project(slug)
-    if p is None or printprep.cau_hinh(p["rel"]) is None:
-        abort(404)
-    return p["rel"]
-
-
-@bp.get("/api/print/<slug>")
-def api_in(slug):
-    return jsonify(printprep.trang_thai(_rel(slug)))
-
-
-@bp.post("/api/print/<slug>/<kieu>/<lenh>")
-def api_in_lenh(slug, kieu, lenh):
-    rel = _rel(slug)
-    if kieu not in printprep.KIEU or lenh not in ("on", "off"):
-        abort(404)
-    return jsonify(printprep.bat(rel, kieu) if lenh == "on" else printprep.tat(rel, kieu))
-
-
-@bp.get("/projects/<slug>/print-image/<int:i>")
-def project_print_image(slug, i):
-    p = printprep.anh(_rel(slug), i)
-    if p is None:
-        abort(404)
-    return send_file(p, max_age=0)
 
 
 @bp.get("/prompt")

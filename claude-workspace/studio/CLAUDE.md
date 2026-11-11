@@ -24,11 +24,10 @@ qua cả 5 MCP server trong `.mcp.json`.
     Gemini = ảnh chụp `%LOCALAPPDATA%/stlab-usage/agy.json` do `custom/statusline/agy_statusline.py` ghi khi mở TUI agy;
     Claude = `%LOCALAPPDATA%/stlab-usage/claude.json` do `custom/statusline/claude_statusline.py` ghi khi chạy `claude` trong terminal.
   - `toolhub/workspace.py`: đọc pins/links/reports/CLAUDE.md (chỉ đọc). `toolhub/views.py`: trang + API.
-  - `toolhub/printprep.py` (trang Dự án, dự án có `print/print.yaml`): nút **Chuẩn bị in** và **Tự chạy khi Lưu**
-    gọi `tools/robotics-cad/scripts/prepare-print.py` / `watch.py` bằng Python của FreeCAD, chạy nền (PID ở
-    `print/_*.pid`). Chỉ đọc file FreeCAD đã lưu; ảnh chỉ trả `.png` mà `_prepare-print-result.json` trỏ tới. POST cần `X-Studio`.
+  - Trang chính "Đang làm" = dự án có `print/print.yaml` hoặc `solidcraft/print/print.yaml`. Nút **Chuẩn bị in**
+    (printprep, chạy prepare-print trên .FCStd) đã gỡ 2026-11-11 → `backup/20261111-legacy-freecad/studio/toolhub/`.
   - Trang **Báo giá** `/quote` (menu "Thêm ▾", 2026-10-28): kéo `.stl/.obj/.step/.3mf` → Toolhub tự cắt lớp bằng Bambu CLI
-    (`tools/robotics-cad/scripts/quote_slice.py`, Python FreeCAD, profile A1 + profile cắt lớp của nhựa chọn; STEP đổi
+    (`tools/print/scripts/quote_slice.py`, Python FreeCAD, profile A1 + profile cắt lớp của nhựa chọn; STEP đổi
     STL bằng freecadcmd; 3MF nhiều màu lỗi support → cắt lại không support + cảnh báo) → chọn nhựa → giá cuối.
     Thời giá mặc định có nguồn: `toolhub/quote_defaults.json`. Upload/kết quả cắt: `%LOCALAPPDATA%\stlab-quotes` (env
     `STLAB_QUOTES_WORK`). Test thêm `tests/test_quote_slice.py`. File `.gcode.3mf` đã cắt thì đọc thẳng → giá vốn
@@ -36,15 +35,13 @@ qua cả 5 MCP server trong `.mcp.json`.
     `/quote/<id>` + PDF (Edge headless). Bảng giá + báo giá lưu SQLite `%LOCALAPPDATA%\stlab-quotes\quotes.db` (env
     `STLAB_QUOTES_DB`), KHÔNG trong repo vì có tên/SĐT khách – nhớ sao lưu file này. Tuan tự nhập giá trên trang.
     Mã: `toolhub/quote.py`; spec `spec-quote.md`; test `tests/test_quote.py`. Công thức tham chiếu `community/printcalc/PRICING.md`.
-- **Hệ thiết kế** (2026-10-24): `design/tokens.json` là nguồn màu/chữ duy nhất cho Toolhub + workbench FreeCAD + trang ESP32; `python design/build_tokens.py` sinh `toolhub/static/tokens.css` và kiểm tương phản. Font Be Vietnam Pro (OFL) lưu tại `toolhub/static/fonts/`. Không đặt hex trong `style.css`/template. Xem `design/DESIGN.md`.
+- **Hệ thiết kế** (2026-10-24): `design/tokens.json` là nguồn màu/chữ duy nhất cho Toolhub + trang ESP32 (workbench FreeCAD cũ đã vào backup); `python design/build_tokens.py` sinh `toolhub/static/tokens.css` và kiểm tương phản. Font Be Vietnam Pro (OFL) lưu tại `toolhub/static/fonts/`. Không đặt hex trong `style.css`/template. Xem `design/DESIGN.md`.
 - `bat/`: nhấp đúp để chạy (`open-toolhub`, `open-freecad`, `open-blender`, `open-lightcraft`, `open-photocraft`,
   `open-all`, `open-claude`, `check-mcp`, `sync-claude-desktop`). Chưa có `open-filmcraft.bat`.
 - `scripts/freecad_start_rpc.py`: bật RPC server cho phiên FreeCAD do launcher mở.
 - MCP `freecad` chạy với `--freecadcmd "C:/Program Files/FreeCAD 1.1/bin/freecadcmd.exe"` (`freecadcmd` không có trong
-  PATH → thiếu cờ này thì `execute_code_headless` không chạy). Việc nặng phải ra headless, xem skill `robotics-cad`
-  mục "Chống treo FreeCAD". Sửa `.mcp.json` xong: chạy lại `bat/sync-claude-desktop.bat` cho Claude Desktop.
-- `scripts/fc_job.py`: chạy script FreeCAD nặng trong `freecadcmd` riêng, chạy nền (giao việc + hỏi tiến độ, mỗi lệnh
-  < 0,1 s). Dùng khi Claude web/app điều khiển máy từ xa (giới hạn 60 s/lệnh). Job lưu ở `%LOCALAPPDATA%\stlab-fc-jobs\`.
+  PATH → thiếu cờ này thì `execute_code_headless` không chạy). Việc nặng phải ra headless (ghi chú cũ: skill robotics-cad
+  mục "Chống treo FreeCAD" trong `backup/20261111-legacy-freecad/`). Sửa `.mcp.json` xong: chạy lại `bat/sync-claude-desktop.bat` cho Claude Desktop.
 
 ## Ứng dụng + Claude Desktop cạnh nhau
 - `launcher.py start <id>` mở app, chờ cổng MCP, rồi `winlayout.py` xếp app một bên và Claude Desktop

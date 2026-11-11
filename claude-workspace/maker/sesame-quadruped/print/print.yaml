@@ -1,6 +1,6 @@
 # sesame-quadruped - in THU bo Sesame goc (dorianborian/sesame-robot @ bb87021, Apache-2.0), STL giu nguyen cua tac gia
 # (da in + chay that -> dung lam chuan thong so, khong ve lai). Tac gia thiet ke cho PLA; o day PETG theo mac dinh STLab.
-# Cat lop: python ../../tools/robotics-cad/scripts/slice.py print/print.yaml
+# Cat lop: python ../../tools/print/scripts/slice.py print/print.yaml
 machine: Bambu Lab A1 0.4 nozzle
 filament: Bambu PETG Basic @BBL A1
 stl: stl

@@ -11,7 +11,7 @@ executor: codex
 # Mục tiêu
 `study_3mf.py` đọc thêm CẤU HÌNH IN theo object mà tác giả đặt trong `Metadata/model_settings.config` của 3MF Bambu
 (bật support, kiểu support, extruder, số tường, infill…) để Claude biết tác giả cho chi tiết nào cần support và so với
-`tools/robotics-cad/scripts/printability.py`. Học ý từ `docs/reports/cad-mesh-libs-study.md` mục 4 (KHÔNG chép mã OrcaSlicer).
+`tools/print/scripts/printability.py`. Học ý từ `docs/reports/cad-mesh-libs-study.md` mục 4 (KHÔNG chép mã OrcaSlicer).
 
 # Yêu cầu
 - Mỗi `<object id>` trong `model_settings.config`: mọi `<metadata key=... value=...>` cấp object (không lấy của `<part>`).

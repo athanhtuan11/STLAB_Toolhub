@@ -26,7 +26,7 @@ def valid_xml(s, what):
         return False
 
 
-LIB = STUDIO.parent / "tools" / "robotics-cad" / "library" / "components.yaml"
+LIB = STUDIO.parent / "tools" / "parts-library" / "components.yaml"
 comps = {c["id"]: c for c in yaml.safe_load(LIB.read_text(encoding="utf-8"))["components"]}
 relay = comps["relay-module-2ch-srd-05vdc"]
 IMG_URL = "/library/img/images/relay-module-2ch-srd-05vdc.png"

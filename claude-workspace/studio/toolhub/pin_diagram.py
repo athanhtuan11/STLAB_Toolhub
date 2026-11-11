@@ -1,6 +1,6 @@
 """Pin diagram on a real board photo + project wiring diagram (WireViz).
 
-photo_svg: draws tools/robotics-cad/library/<anh_chan.file> and a coloured
+photo_svg: draws tools/parts-library/<anh_chan.file> and a coloured
 label per pin, using pinout.core primitives (Group/Rect/Text/Circle/Path/Image).
 wiring_svg: builds a WireViz dict and renders it to inline SVG.
 
@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 
 STUDIO = Path(__file__).resolve().parent.parent
 ROOT = STUDIO.parent
-LIBRARY_DIR = ROOT / "tools" / "robotics-cad" / "library"
+LIBRARY_DIR = ROOT / "tools" / "parts-library"
 LIBRARY_YAML = LIBRARY_DIR / "components.yaml"
 IMG_ROUTE = "/library/img/"
 GRAPHVIZ_BIN = r"C:\Program Files\Graphviz\bin"

@@ -6,8 +6,10 @@ Các dự án con tự nạp file này. Phần riêng nằm trong CLAUDE.md củ
 - Đơn vị: mm cho cơ khí; luôn ghi V/A/W/Ω/°C. Sơ đồ chân ghi rõ GPIO và mức logic (3.3 V hay 5 V).
 - Thông số linh kiện phải lấy từ datasheet (ghi nguồn); chưa có thì ghi `TODO`, không đoán.
 - Mỗi dự án có `CLAUDE.md` (quy ước riêng cho Claude) + `README.md` (trạng thái, an toàn, BOM, lịch sử sửa/in).
-- Thư mục chuẩn: `design/` (bước 0: dáng + mockup), `freecad/` + `print/` (CAD, theo `tools/robotics-cad/project-template/`),
+- Thư mục chuẩn: `design/` (bước 0: dáng + mockup), `solidcraft/` + `print/` (CAD, mẫu: `card-coding-robot/`, `esp32-s3-cam/solidcraft/`),
   `firmware/`, `hardware/` (sơ đồ, PCB), `docs/`. Công cụ dùng chung ở `tools/`, không đặt trong `maker/`.
+- Dự án FreeCAD cũ (pushrod-arm, cyberbrick-car, cyberbrick-arm, line-bot): tooling ở `backup/20261111-legacy-freecad/`
+  (2026-11-11). Làm tiếp thì dựng lại bằng SolidCraft, không khôi phục workbench.
 
 ## An toàn (nhắc trước khi hướng dẫn)
 - Pin Li-ion/LiPo/LiFePO4: có mạch bảo vệ (BMS), cầu chì, không sạc khi không có người trông.

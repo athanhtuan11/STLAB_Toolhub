@@ -2,7 +2,7 @@
 task: toolhub-pin-diagram-photo
 cwd: studio
 allow: ["toolhub/pin_diagram.py", "toolhub/workspace.py", "toolhub/views.py", "toolhub/templates/library.html"]
-read: ["tools/robotics-cad/library", "studio/design", "community/j0ono0-pinout", "community/wireviz"]
+read: ["tools/parts-library", "studio/design", "community/j0ono0-pinout", "community/wireviz"]
 gate: '.venv\Scripts\python.exe tests\test_pin_diagram.py && .venv\Scripts\python.exe tests\test_pinout.py'
 executor: opencode
 timeout_min: 30
@@ -13,7 +13,7 @@ max_rounds: 2
 Trang `/library` của Toolhub thay "hộp chữ" bằng **sơ đồ chân trên ảnh bo thật** (thư viện `pinout` – j0ono0, đã cài
 trong `.venv`, mã ở `community/j0ono0-pinout`) và **sơ đồ đấu theo dự án** bằng **WireViz** (đã cài, mã ở
 `community/wireviz`; Graphviz `dot` cài ở `C:\Program Files\Graphviz\bin`). Đọc `tests/test_pin_diagram.py` để biết
-đúng hành vi. Linh kiện mẫu: `relay-module-2ch-srd-05vdc` trong `tools/robotics-cad/library/components.yaml`.
+đúng hành vi. Linh kiện mẫu: `relay-module-2ch-srd-05vdc` trong `tools/parts-library/components.yaml`.
 
 # Dữ liệu (đã có – KHÔNG sửa YAML)
 - `anh_chan: {file, w, h}`: ảnh tương đối theo thư mục `library/` (vd `images/relay-module-2ch-srd-05vdc.png`), kích thước px.
@@ -43,7 +43,7 @@ trong `.venv`, mã ở `community/j0ono0-pinout`) và **sơ đồ đấu theo d�
 - Cache kết quả trong bộ nhớ theo (id, mtime components.yaml, mtime ảnh) – WireViz chạy `dot` chậm.
 
 ## `views.py`
-- Route `GET /library/img/<path:rel>`: chỉ phục vụ file **nằm trong** `tools/robotics-cad/library/images/` (resolve + kiểm
+- Route `GET /library/img/<path:rel>`: chỉ phục vụ file **nằm trong** `tools/parts-library/images/` (resolve + kiểm
   tiền tố; `..`/ngoài thư mục → 404), chỉ đuôi png/jpg/jpeg/svg/webp.
 
 ## `workspace.py` + `library.html`

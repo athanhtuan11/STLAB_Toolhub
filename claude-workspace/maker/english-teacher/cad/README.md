@@ -70,7 +70,7 @@ Sửa hình học (giữ ngoại hình + các khe lắp loa / ngàm xoay / ron /
 5. Đế `base-plate`: in lật. Vòng mắt: mặt trước phẳng. Nắp nút đầu: vành vát 45°.
 6. Chốt định vị Ø2 dời (±56, 92) → (±34, 130) (chỗ cũ trùng cụm nút âm lượng; giữ nguyên chỗ mới).
 7. 2026-11-08 (sau): bỏ đệm + lỗ nút âm lượng hai bên đầu (commit 25accf3); nút âm lượng về **lưng** bằng cụm rời `vol-pod` (mục dưới). Cắt lớp lại: A 171 ph / 60,6 g, B 251 ph / 126,5 g, C 311 ph / 155,7 g, D 96 ph / 48,8 g, E 50 ph / 26,9 g, F 8 ph / 3,4 g – **tổng 14 h 51, 423,2 g, 6 bàn PASS, không support** (v2: C 312 ph / 157,0 g).
-Lưu ý: hai nửa vỏ có khối đặc dày (mái chữ A) – hộp bo vẫn lọt, nhưng **dây loa / LED phải đi qua đường hầm loa + giếng mắt** (chưa vẽ rãnh đi dây riêng – TODO nếu cần). Công cụ kiểm nhanh: `tools/robotics-cad/scripts/printability.py out`; build nhanh bỏ ảnh: đặt biến môi trường `OWL_FAST=1`.
+Lưu ý: hai nửa vỏ có khối đặc dày (mái chữ A) – hộp bo vẫn lọt, nhưng **dây loa / LED phải đi qua đường hầm loa + giếng mắt** (chưa vẽ rãnh đi dây riêng – TODO nếu cần). Công cụ kiểm nhanh: `tools/print/scripts/printability.py out`; build nhanh bỏ ảnh: đặt biến môi trường `OWL_FAST=1`.
 
 ## 3 nút MX (2026-11-08, ý tưởng clicker – thay công tắc 6 × 6)
 Số lắp ghép **lấy từ fit-library** (`tools/model-study/fit-library/fits.json`): `catpaw/mx-socket` (lỗ vuông 14,00 press, sâu 8,58 từ miệng, rãnh V 45°: 1,94 → 3,44 dưới miệng, sâu nhất 2,69, rộng 15,44) và `catpaw/mx-keycap-cross` (lỗ chữ thập 4,19 × 1,25). Ghi vào `out/owl-params.json` mục `mx`; file lắp ráp: `out/asm/mx-switch-<talk|vol_up|vol_down>.stl` (khối giả switch), `mx-cap-vol-up/-down.stl`, `button-cap.stl`.

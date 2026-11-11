@@ -35,23 +35,14 @@
 <section class="grid wide">
   {% for p in active %}
   <article class="card">
-    <div class="row">
-      <h3 class="grow"><a href="{{ url_for('hub.project_detail', slug=p.slug) }}">{{ p.rel.split('/')[-1] }}</a></h3>
-      {% if p.print.chay %}<span class="badge">đang chạy…</span>
-      {% elif p.print.ket_luan %}<span class="badge {{ {'PASS': 'ok', 'FAIL': 'bad'}.get(p.print.ket_luan, 'warn') }}">{{ p.print.ket_luan }}</span>{% endif %}
-    </div>
+    <h3><a href="{{ url_for('hub.project_detail', slug=p.slug) }}">{{ p.rel.split('/')[-1] }}</a></h3>
     <div class="muted">{{ p.title.split('–', 1)[-1].strip() }}</div>
-    <div class="muted">
-      {% if p.print.luc %}Chuẩn bị in {{ p.print.luc }}{% if p.print.tom_tat %} · {{ p.print.tom_tat }}{% endif %}
-      {% else %}Chưa chuẩn bị in{% endif %}
-    </div>
     <div class="actions" style="margin-top:auto">
-      <button class="primary" data-post="/api/print/{{ p.slug }}/run/on">Chuẩn bị in</button>
       <a class="btn" href="{{ url_for('hub.project_detail', slug=p.slug) }}">Chi tiết</a>
     </div>
   </article>
   {% else %}
-  <p class="muted">Chưa có dự án in 3D (cần <code>print/print.yaml</code>). Tạo trong FreeCAD: workbench STLab › Tạo dự án mới.</p>
+  <p class="muted">Chưa có dự án in 3D (cần <code>print/print.yaml</code>). Dựng CAD bằng SolidCraft, cắt lớp bằng <code>tools/print/scripts/slice.py</code>.</p>
   {% endfor %}
 </section>
 

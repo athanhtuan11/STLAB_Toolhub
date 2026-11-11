@@ -88,13 +88,13 @@ Các trường trong `result.json`: `verdict` (PASS/WARN/FAIL/ESCALATE), `passed
 - `ESCALATE: <việc cần làm và lý do>` là dòng cuối của executor khi thiếu quyền hoặc việc nằm ngoài spec: dừng, không giao lại.
 - Kết quả: `verdict` = ESCALATE, exit 2, có `handoff.md` trong run_dir. Claude quyết bước tiếp.
 
-Gate nhiều bước: `gate.py` của `cad-delegation` luôn exit 0, nên phải nối thêm `json_ok.py`:
+Gate nhiều bước: `gate.py` của `cad-delegation` (nay ở `backup/20261111-legacy-freecad/tools/`) luôn exit 0, nên phải nối thêm `json_ok.py`:
 
 ```yaml
 gate: '"C:/Program Files/FreeCAD 1.1/bin/freecadcmd.exe" ../../gate.py . && python ../../../delegate/json_ok.py gate.json passed'
 ```
 
-Xem `tools/cad-delegation/pilot-opencode/knuckle/task.md` làm mẫu.
+Mẫu: `backup/20261111-legacy-freecad/tools/cad-delegation/pilot-opencode/knuckle/task.md`.
 
 ## An toàn
 
@@ -146,4 +146,4 @@ Hạn mức Zen free: TODO (chưa rõ).
 - 2026-10-27, giả lập Codex hết hạn mức: auto chuyển sang OpenCode đúng.
 - 2026-10-27, pilot CAD Knuckle_L qua OpenCode: gate 26/26 PASS vòng 1, 147 s, `compare.py` lệch 0,00 % so với mẫu.
 
-Xem thêm: `docs/model-routing.md` (mục Phân quyền 3 tầng) và `tools/cad-delegation/README.md`.
+Xem thêm: `docs/model-routing.md` (mục Phân quyền 3 tầng) và `backup/20261111-legacy-freecad/tools/cad-delegation/README.md`.
