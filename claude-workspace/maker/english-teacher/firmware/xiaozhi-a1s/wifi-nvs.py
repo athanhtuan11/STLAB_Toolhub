@@ -17,6 +17,7 @@ spec.loader.exec_module(ws)  # dung lai current_ssid() / profile_key() (netsh)
 ap = argparse.ArgumentParser()
 ap.add_argument("--port", default="COM5")
 ap.add_argument("--ssid")
+ap.add_argument("--ota-url", help="URL OTA day du, vd https://teacher.<domain>/xiaozhi/ota/ (qua VPS, bo dung moi noi)")
 ap.add_argument("--server", help="IP may chu lab (mac dinh: STLAB_XIAOZHI_SERVER hoac IPv4 LAN may nay)")
 a = ap.parse_args()
 
@@ -32,7 +33,7 @@ def lan_ip():
 
 
 server = a.server or os.environ.get("STLAB_XIAOZHI_SERVER") or lan_ip()
-ota_url = f"http://{server}:8003/xiaozhi/ota/"  # ota.cc doc khoa "ota_url" (namespace wifi) truoc CONFIG_OTA_URL
+ota_url = a.ota_url or f"http://{server}:8003/xiaozhi/ota/"  # ota.cc doc khoa "ota_url" (namespace wifi) truoc CONFIG_OTA_URL
 ssid = a.ssid or ws.current_ssid()
 if not ssid:
     sys.exit("Khong thay Wi-Fi dang ket noi - dung --ssid")

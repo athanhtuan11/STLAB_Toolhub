@@ -26,10 +26,21 @@ $env:PYTHONIOENCODING = "utf-8"; $env:PYTHONUTF8 = "1"
 Write-Host "GEMINI LIVE - CHI NGUOI LON THU NOI BO, KHONG CHO BE DUNG (dieu khoan Gemini API)"
 Write-Host "Cau noi: ws://${ip}:${WsPort}/xiaozhi/v1/  OTA: http://${ip}:${HttpPort}/xiaozhi/ota/"
 $ErrorActionPreference = "Continue"
+# 2026-11-11: truy cap tu internet qua VPS (deploy/README.md). Co FRP_SERVER_ADDR thi bat frpc an (tu noi lai khi mat mang).
+$frpc = Join-Path $H "deploy\bin\frpc.exe"
+function Start-Frpc {
+  if (-not $env:FRP_SERVER_ADDR) { return }
+  if (-not (Test-Path $frpc)) { Note "co FRP_SERVER_ADDR nhung chua co deploy\bin\frpc.exe (chay deploy\get-frpc.ps1)"; return }
+  if (Get-Process frpc -ErrorAction SilentlyContinue) { return }
+  Start-Process $frpc -ArgumentList "-c", (Join-Path $H "deploy\frpc.toml") -WindowStyle Hidden `
+    -RedirectStandardOutput (Join-Path $RT "frpc.log") -RedirectStandardError (Join-Path $RT "frpc.err.log")
+  Note "bat frpc -> $($env:FRP_SERVER_ADDR):7000 (domain $($env:STLAB_PUBLIC_HOST))"
+}
 # 2026-11-08: task luc dang nhap tung thoat 0xC000013A ma log bi ghi de -> ghi NOI log + bridge thoat thi tu chay lai sau 10 s
 # (Ctrl+C khi chay tay van tat ca script). Log qua 5 MB thi doi ten thanh live.old.log.
 while ($true) {
   if ((Test-Path $LOG) -and (Get-Item $LOG).Length -gt 5MB) { Move-Item $LOG (Join-Path $RT "live.old.log") -Force }
+  Start-Frpc
   Note "khoi dong bridge (ip $ip, pid $PID)"
   & $py (Join-Path $H "live\bridge.py") 2>&1 | ForEach-Object { "$_" } | Tee-Object -FilePath $LOG -Append
   Note "bridge thoat, ma $LASTEXITCODE - chay lai sau 10 s"

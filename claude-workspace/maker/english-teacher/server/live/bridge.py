@@ -54,6 +54,49 @@ def log(msg):
     print(time.strftime("%H:%M:%S ") + msg, flush=True)
 
 
+# ---- Truy cap tu internet qua VPS (Tuan 2026-11-11): domain -> Caddy (VPS) -> frp -> may lab ----
+# STLAB_PUBLIC_HOST   : vd teacher.example.vn -> OTA tra wss://<host>/xiaozhi/v1/ (rong = LAN nhu cu)
+# STLAB_DEVICE_TOKEN  : bi mat dung chung (bien moi truong, KHONG ghi file); bat buoc khi co PUBLIC_HOST
+# STLAB_ALLOWED_DEVICES: MAC cac bo duoc phep, cach nhau dau phay (vd e0:8c:fe:64:20:a4)
+import hmac  # noqa: E402
+
+
+def _allowed_devices():
+    return {x.strip().lower() for x in os.environ.get("STLAB_ALLOWED_DEVICES", "").split(",") if x.strip()}
+
+
+def check_public_config():
+    """Bat domain ma thieu token/danh sach bo -> dung han (khong chay cong khai khong khoa)."""
+    if os.environ.get("STLAB_PUBLIC_HOST", "").strip():
+        if len(os.environ.get("STLAB_DEVICE_TOKEN", "").strip()) < 24 or not _allowed_devices():
+            raise SystemExit("STLAB_PUBLIC_HOST da dat nhung thieu STLAB_DEVICE_TOKEN (>= 24 ky tu) "
+                             "hoac STLAB_ALLOWED_DEVICES -> khong chay.")
+
+
+def device_allowed(device_id):
+    allow = _allowed_devices()
+    return not allow or (device_id or "").strip().lower() in allow
+
+
+def authorize(headers):
+    """WebSocket: co token thi bat buoc 'Authorization: Bearer <token>' + device-id trong danh sach."""
+    token = os.environ.get("STLAB_DEVICE_TOKEN", "").strip()
+    dev = headers.get("device-id") or headers.get("Device-Id") or ""
+    if not device_allowed(dev):
+        return False
+    if not token:
+        return True
+    got = (headers.get("authorization") or headers.get("Authorization") or "").strip()
+    if got.lower().startswith("bearer "):
+        got = got[7:].strip()
+    return hmac.compare_digest(got.encode(), token.encode())
+
+
+def public_ws_url():
+    host = os.environ.get("STLAB_PUBLIC_HOST", "").strip()
+    return f"wss://{host}/xiaozhi/v1/" if host else f"ws://{lan_ip()}:{WS_PORT}/xiaozhi/v1/"
+
+
 def lan_ip():
     ip = os.environ.get("STLAB_XIAOZHI_SERVER", "").strip()
     if ip:
@@ -222,10 +265,14 @@ async def ota_handler(request):
     except Exception:
         pass
     ver = request.headers.get("device-version", ver) or ver or "0.0.0"
+    dev = request.headers.get("device-id") or request.headers.get("Device-Id") or ""
+    if not device_allowed(dev):
+        log(f"OTA tu choi thiet bi la {dev[:20]!r}")
+        return web.json_response({"error": "device not allowed"}, status=403)
     body = {
         "server_time": {"timestamp": int(round(time.time() * 1000)), "timezone_offset": 7 * 60},
         "firmware": {"version": ver, "url": ""},
-        "websocket": {"url": f"ws://{lan_ip()}:{WS_PORT}/xiaozhi/v1/", "token": ""},
+        "websocket": {"url": public_ws_url(), "token": os.environ.get("STLAB_DEVICE_TOKEN", "").strip()},
     }
     return web.json_response(body)
 
@@ -1079,6 +1126,11 @@ def ws_device_id(ws):
 async def ws_handler(ws, pool):
     log("thiet bi ket noi")
     t_conn, ses = time.time(), None
+    h = getattr(getattr(ws, "request", None), "headers", None) or getattr(ws, "request_headers", None) or {}
+    if not authorize(h):
+        log("tu choi ket noi: sai token hoac thiet bi la")
+        await ws.close(code=4401, reason="unauthorized")
+        return
     try:
         ses = Session(ws, pool)
         ses.device_id = ws_device_id(ws)
@@ -1114,6 +1166,9 @@ async def main():
     key = os.environ.get("GOOGLE_API_KEY")
     if not key:
         sys.exit("Thieu GOOGLE_API_KEY")
+    check_public_config()
+    if os.environ.get("STLAB_PUBLIC_HOST", "").strip():
+        log(f"[PUBLIC] OTA tra {public_ws_url()} ; {len(_allowed_devices())} bo duoc phep, co token")
     if VAD_GATE:
         try:
             from vad_gate import VadGate
