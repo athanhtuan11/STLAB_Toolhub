@@ -61,7 +61,10 @@ Ngoại lệ: việc ≲ 30 dòng (nhỏ hơn viết spec) Claude tự sửa.
    xoay + `bambu-studio.exe --info <file>` exit 0 trước khi đưa đường dẫn.
 6. **Hướng dẫn lắp luôn kèm PDF** (Tuan 2026-11-05): sửa `ASSEMBLY.md` xong → `python tools/print/scripts/assembly-pdf.py
    maker/<du-an>/ASSEMBLY.md` → đưa link `ASSEMBLY.pdf`. Ảnh lắp ráp dự án SolidCraft: `solidcraft/render_assembly.py`.
-7. Báo Tuan: làm gì, kiểm gì (PASS/FAIL thật), còn gì chưa kiểm, commit hash.
+7. **Cập nhật web Toolhub cùng commit** (Tuan 2026-11-11: "cập nhật web không chuẩn chỉnh"): dự án robotics đổi trạng
+   thái / bước tiếp / thêm dự án hay mô phỏng mới → sửa `studio/toolhub/robotics.json` (ảnh, bàn in, PDF, ngày tự đọc);
+   tính năng mới có trang → chạy Toolhub, chụp ảnh trang cho Tuan. Chạy `studio/tests/test_robotics.py` trước commit.
+8. Báo Tuan: làm gì, kiểm gì (PASS/FAIL thật), còn gì chưa kiểm, commit hash.
 
 ## 4. Lưu quy trình thành skill
 - Skill tự viết ở `custom/skills/<ten-kebab>/SKILL.md` (front matter `name`, `description` ghi rõ KHI NÀO dùng).

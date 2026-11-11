@@ -1,0 +1,92 @@
+{
+  "_note": "Trang /robotics. Chi ghi phan nguoi quyet (trang thai, buoc tiep, mo ta ngan). Anh, so ban in, PDF, ngay cap nhat: Toolhub tu doc tu thu muc du an. Doi trang thai du an -> sua file nay trong cung commit.",
+  "statuses": {
+    "dang-lam": "Đang làm",
+    "san-sang-in": "Sẵn sàng in",
+    "tam-dung": "Tạm dừng",
+    "y-tuong": "Ý tưởng",
+    "xong": "Xong",
+    "chua-ro": "Chưa rõ"
+  },
+  "projects": [
+    {
+      "rel": "maker/line-bot",
+      "summary": "Xe dò line + tránh vật cản chuẩn RCJ Rescue Line, Arduino Mega 2560.",
+      "audience": "Lớp 6",
+      "status": "tam-dung",
+      "next": "Chờ ảnh linh kiện thật để thay số rồi in thử 2 bàn (114 g).",
+      "simulation": "gearsbot"
+    },
+    {
+      "rel": "maker/pushrod-arm",
+      "summary": "Cánh tay 4 bậc xi-lanh đẩy, điều khiển CyberBrick.",
+      "audience": "",
+      "status": "san-sang-in",
+      "next": "Bộ in lại (sửa lỗ trục Worm) đã sẵn sàng: in và lắp thử."
+    },
+    {
+      "rel": "maker/cyberbrick-car",
+      "summary": "Xe coupé RC cầu sau 2 động cơ, lái servo, CyberBrick.",
+      "audience": "",
+      "status": "chua-ro",
+      "next": "TODO: Tuan xác nhận trạng thái (cập nhật cuối 2026-10-26)."
+    },
+    {
+      "rel": "maker/cyberbrick-arm",
+      "summary": "Tay máy 3 khớp + kẹp 3 ngón, CyberBrick, dáng B.",
+      "audience": "Lớp 6",
+      "status": "tam-dung",
+      "next": "Còn dấu lắp, khe theo fit-library, print.yaml."
+    },
+    {
+      "rel": "maker/card-coding-robot",
+      "summary": "Robot lập trình bằng thẻ lệnh, không màn hình, ESP32 + RC522.",
+      "audience": "4–7 tuổi",
+      "status": "tam-dung",
+      "next": "Spec + gate CAD v1 xong; chờ Tuan báo để dựng CAD."
+    },
+    {
+      "rel": "maker/sesame-quadruped",
+      "summary": "In thử robot 4 chân Sesame (nguồn cộng đồng, Apache-2.0).",
+      "audience": "",
+      "status": "san-sang-in",
+      "next": "In bàn p1-body rồi lắp thử."
+    },
+    {
+      "rel": "maker/uwb-drone-positioning",
+      "summary": "Định vị drone trong nhà bằng UWB.",
+      "audience": "",
+      "status": "y-tuong",
+      "next": "Chưa bắt đầu: bước 0 dáng sản phẩm + mockup."
+    }
+  ],
+  "simulations": [
+    {
+      "id": "gearsbot",
+      "title": "GearsBot – robot dò line ảo",
+      "status": "dang-lam",
+      "note": "Chạy trên trình duyệt, không cài đặt. Đã chạy thử 3/4 bài PASS (cua gắt: văng ở khúc kẹp tóc, bài mở rộng).",
+      "readme": "stlab/simulation/gearsbot/README.md",
+      "lesson": "stlab/lesson-plans/gearsbot-virtual-line-bot.md",
+      "cover": "stlab/simulation/gearsbot/review/contact-sheet.png",
+      "links": [
+        {"label": "Line đơn giản", "url": "https://gears.aposteriori.com.sg/index.html?worldJSON=https%3A%2F%2Fraw.githubusercontent.com%2Fathanhtuan11%2FSTLAB_Toolhub%2Fmain%2Fclaude-workspace%2Fstlab%2Fsimulation%2Fgearsbot%2Fline-simple.world.json&robotJSON=https%3A%2F%2Fraw.githubusercontent.com%2Fathanhtuan11%2FSTLAB_Toolhub%2Fmain%2Fclaude-workspace%2Fstlab%2Fsimulation%2Fgearsbot%2Fstlab-line-bot.robot.json"},
+        {"label": "Cua gắt", "url": "https://gears.aposteriori.com.sg/index.html?worldJSON=https%3A%2F%2Fraw.githubusercontent.com%2Fathanhtuan11%2FSTLAB_Toolhub%2Fmain%2Fclaude-workspace%2Fstlab%2Fsimulation%2Fgearsbot%2Fline-sharp.world.json&robotJSON=https%3A%2F%2Fraw.githubusercontent.com%2Fathanhtuan11%2FSTLAB_Toolhub%2Fmain%2Fclaude-workspace%2Fstlab%2Fsimulation%2Fgearsbot%2Fstlab-line-bot.robot.json"},
+        {"label": "Vật cản", "url": "https://gears.aposteriori.com.sg/index.html?worldJSON=https%3A%2F%2Fraw.githubusercontent.com%2Fathanhtuan11%2FSTLAB_Toolhub%2Fmain%2Fclaude-workspace%2Fstlab%2Fsimulation%2Fgearsbot%2Fline-obstacles.world.json&robotJSON=https%3A%2F%2Fraw.githubusercontent.com%2Fathanhtuan11%2FSTLAB_Toolhub%2Fmain%2Fclaude-workspace%2Fstlab%2Fsimulation%2Fgearsbot%2Fstlab-line-bot.robot.json"}
+      ]
+    },
+    {
+      "id": "erebus",
+      "title": "Erebus – RCJ Rescue Maze (Webots)",
+      "status": "chua-ro",
+      "note": "Chưa cài Webots R2023b trên máy STLab nên chưa chạy thử controller.",
+      "readme": "stlab/simulation/erebus/README.md",
+      "lesson": "",
+      "cover": "",
+      "links": [
+        {"label": "Trang Erebus", "url": "https://erebus.rcj.cloud/"},
+        {"label": "Lắp robot (3000 điểm)", "url": "https://robot.erebus.rcj.cloud"}
+      ]
+    }
+  ]
+}

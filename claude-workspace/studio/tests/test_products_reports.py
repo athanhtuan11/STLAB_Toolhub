@@ -100,9 +100,6 @@ check("javascript:" not in out, "mdrender khong tao link javascript:")
 check("<h1" in out and "<td>1</td>" in out, "mdrender: heading + bang")
 
 # ---- 3. Bao loi ro (khong nuot loi) ----
-ops_js = (STUDIO / "toolhub" / "static" / "ops.js").read_text(encoding="utf-8")
-check("catch{}" not in ops_js.replace(" ", ""), "ops.js khong duoc catch{} rong")
-check("Không tải được" in ops_js, "ops.js phai hien 'Không tải được ...' khi loi")
 res_js = (STUDIO / "toolhub" / "static" / "research.js").read_text(encoding="utf-8")
 scan = res_js[res_js.find("#research-scan"):]
 check(".ok" in scan, "nut quet research phai kiem response.ok")

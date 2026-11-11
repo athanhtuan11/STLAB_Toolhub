@@ -16,6 +16,11 @@ qua cả 5 MCP server trong `.mcp.json`.
   apply/rollback chỉ hiện lệnh –, Skills & agents, Prompt library). Trang chính chỉ có: dòng "Cần chú ý" (chỉ hiện lỗi,
   nạp sau qua `/api/health`), hàng ứng dụng (đèn + Mở), thẻ dự án in 3D (kết quả Chuẩn bị in + nút), dự án khác thu gọn.
   Thêm trang mới: đặt vào "Thêm" trừ khi dùng hằng ngày. Trang chính phải hiện ngay – việc chậm (git, tasklist) nạp bằng JS.
+  - Trang **Robotics** `/robotics` (menu chính, 2026-11-11): thẻ dự án robotics + khu Mô phỏng (GearsBot, Erebus).
+    Chỉ trạng thái/mô tả/bước tiếp ở `toolhub/robotics.json`; ảnh bìa, số bàn in, ASSEMBLY.pdf, ngày cập nhật tự đọc từ
+    thư mục dự án. Đổi trạng thái dự án → sửa manifest cùng commit. Mã `toolhub/robotics.py`, test `tests/test_robotics.py`.
+  - Trang **Điều hành** `/ops` đã gỡ 2026-11-11 (Tuan: dư thừa) → `backup/20261111-remove-ops-page/`. Kho sự kiện
+    `tools/org/events` + hook `event_log.py` vẫn giữ.
   - Trang **Sửa ảnh** (photolab, LUT/preset) đã gỡ 2026-10-25 – Tuan: tập trung CAD + Blender, ảnh/video mảng robotics.
   - Ô **Nhân sự AI** ở trang chính (thay ô Hạn mức AI), nạp sau qua `/api/org` (`toolhub/usage.py`, đọc
     `org/agents.yaml` và file local, không gọi mạng): mục Hạn mức theo nguồn, Cần chú ý và sơ đồ nhân sự (gập sẵn).

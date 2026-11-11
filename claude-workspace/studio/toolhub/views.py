@@ -14,9 +14,8 @@ import launcher
 
 from . import catalog
 from . import opener
-from . import ops
 from . import research
-from .ops import events
+from . import robotics
 from . import products
 from . import quote as quote_lib
 from . import usage
@@ -28,8 +27,8 @@ bp = Blueprint("hub", __name__)
 @bp.app_context_processor
 def nav():
     # Menu gon: viec hang ngay o ngoai, trang he thong gom vao "Them"
-    main = [("hub.overview", "Trang chính"), ("hub.projects", "Dự án"), ("hub.library", "Linh kiện")]
-    main.append(("hub.ops_page", "Điều hành"))
+    main = [("hub.overview", "Trang chính"), ("hub.projects", "Dự án"), ("hub.library", "Linh kiện"),
+            ("hub.robotics_page", "Robotics")]
     main.append(("hub.research_page", "Nghiên cứu"))
     more = [("hub.apps", "Ứng dụng & MCP"), ("hub.quote", "Báo giá"), ("hub.reports", "Báo cáo nghiên cứu"), ("hub.community", "Nguồn cộng đồng"),
             ("hub.skills", "Skills & agents"), ("hub.prompt", "Prompt library")]
@@ -80,7 +79,7 @@ def overview():
     for p in projects:
         # du an CAD/in 3D: co print/print.yaml (FreeCAD cu) hoac solidcraft/print/print.yaml
         (active if _print_yaml(p["rel"]) else other).append(p)
-    return render_template("overview.html", apps=apps, active=active, other=other, ops_summary=ops.summary())
+    return render_template("overview.html", apps=apps, active=active, other=other)
 
 
 @bp.get("/api/health")
@@ -93,11 +92,6 @@ def api_health():
     if n := sum(not x["ok"] for x in ws.links()):
         issues.append((f"{n} skill/agent liên kết lỗi", "hub.skills"))
     return jsonify([{"text": t, "url": url_for(ep)} for t, ep in issues])
-
-
-@bp.get("/ops")
-def ops_page():
-    return render_template("ops.html", org=usage.org_board())
 
 
 @bp.get("/research")
@@ -130,38 +124,6 @@ def api_research_status(item_id):
 def api_research_scan():
     research.scan()
     return jsonify({"started": True}), 202
-
-
-@bp.get("/api/ops")
-def api_ops():
-    return jsonify(ops.data())
-
-
-@bp.get("/api/ops/timeline")
-def api_ops_timeline():
-    return jsonify({"timeline": ops.timeline_after(request.args.get("after", "0"))})
-
-
-@bp.post("/api/ops/approvals/<int:approval_id>")
-def api_ops_approval(approval_id):
-    data = request.get_json(silent=True) or {}
-    state = data.get("state")
-    if state not in ("da-duyet", "tu-choi"):
-        return jsonify({"error": "Tr\u1ea1ng th\u00e1i kh\u00f4ng h\u1ee3p l\u1ec7"}), 400
-    if not any(a.get("id") == approval_id for a in events.list_approvals()):
-        abort(404)
-    events.resolve(approval_id, state, "tuan", data.get("note"))
-    return jsonify({"ok": True})
-
-
-@bp.get("/api/ops/run/<run>/handoff")
-def api_ops_handoff(run):
-    if not ops.RUN_RE.fullmatch(run):
-        return jsonify({"error": "M\u00e3 phi\u00ean kh\u00f4ng h\u1ee3p l\u1ec7"}), 400
-    path = ops.RUNS_DIR / run / "handoff.md"
-    if not path.is_file():
-        abort(404)
-    return path.read_text(encoding="utf-8"), 200, {"Content-Type": "text/plain; charset=utf-8"}
 
 
 @bp.get("/api/org")
@@ -216,6 +178,66 @@ def reports_doc(name):
     text = path.read_text(encoding="utf-8")
     title = next((line[2:].strip() for line in text.splitlines() if line.startswith("# ")), name)
     return render_template("report-doc.html", name=name, title=title, content=mdrender.render(text))
+
+
+@bp.get("/robotics")
+def robotics_page():
+    try:
+        d = robotics.data()
+    except ValueError as e:
+        return render_template("robotics.html", error=str(e), doc=None), 500
+    ps = d["projects"]
+    return render_template("robotics.html", error="", projects=ps, sims=d["simulations"], doc=None,
+                           total=len(ps), ready=sum(p["status"] == "san-sang-in" for p in ps),
+                           paused=sum(p["status"] == "tam-dung" for p in ps))
+
+
+@bp.get("/robotics/img/<slug>/<path:rel>")
+def robotics_page_img(slug, rel):
+    try:
+        base = robotics.project_dir(slug)
+    except ValueError:
+        abort(404)
+    if base is None:
+        abort(404)
+    target = (base / rel).resolve()
+    if base not in target.parents or target.suffix.lower() not in IMG_EXT or not target.is_file():
+        abort(404)
+    return send_file(target, max_age=0)
+
+
+@bp.get("/robotics/file/<slug>/<name>")
+def robotics_page_file(slug, name):
+    if name != "ASSEMBLY.pdf":
+        abort(404)
+    try:
+        base = robotics.project_dir(slug)
+    except ValueError:
+        abort(404)
+    if base is None or not (base / name).is_file():
+        abort(404)
+    return send_file(base / name, mimetype="application/pdf", max_age=0)
+
+
+@bp.get("/robotics/sim/<sim_id>/<what>")
+def robotics_page_sim(sim_id, what):
+    if what not in ("cover", "readme", "lesson"):
+        abort(404)
+    try:
+        sim = robotics.sim_by_id(sim_id)
+    except ValueError:
+        abort(404)
+    f = robotics.sim_file(sim, what) if sim else None
+    if f is None:
+        abort(404)
+    if what == "cover":
+        if f.suffix.lower() not in IMG_EXT:
+            abort(404)
+        return send_file(f, max_age=0)
+    from . import mdrender
+    text = f.read_text(encoding="utf-8")
+    title = next((ln[2:].strip() for ln in text.splitlines() if ln.startswith("# ")), sim_id)
+    return render_template("robotics.html", error="", doc={"title": title, "content": mdrender.render(text)})
 
 
 @bp.get("/community/report/<name>")
