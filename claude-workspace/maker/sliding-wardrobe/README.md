@@ -1,138 +1,146 @@
-# sliding-wardrobe – Tủ âm tường cửa lùa 4 cánh, khung sắt + lam sóng nguyên cây
+# sliding-wardrobe – Tủ âm tường 2 cánh lùa TREO, khung sắt + lam sóng nguyên cây
 
 Tủ treo đồ nằm giữa 3 bức tường (trái, sau, phải). Không có vách ván: phần chịu lực là **khung sắt hộp**,
-mặt trước là **4 cánh lùa** ghép từ thanh **lam sóng ngoài trời 220 × 2900 × 26 mm, dùng nguyên cây, không cắt**.
-Bên trong chỉ treo đồ bằng **ống tròn Ø27** (Tuan 2026-11-09). Bản v1 (thân ván MFC) nằm ở `backup/2026-11-09-v1-than-van-mfc/`.
+mặt trước là **2 cánh lùa treo** trên ray hộp 40 × 40, **không có ray dưới**. Mỗi cánh ghép từ **7 thanh lam sóng ngoài trời
+220 × 2900 × 26, nguyên cây, không cắt** (tổng 14 thanh, đúng số đã tính). Bên trong chỉ treo đồ bằng **ống tròn Ø27**.
+
+- **2026-11-11 (Tuan):** "chỉ có ray cửa lùa 40×40, chỉ muốn 2 cánh" → đổi từ 4 cánh bánh đỡ dưới sang 2 cánh treo.
+  Bản 4 cánh: `backup/2026-11-11-truoc-2-canh-treo/`. Bản v1 thân ván MFC: `backup/2026-11-09-v1-than-van-mfc/`.
+- Giả định: "ray 40×40" là **ray hộp 40 × 40 mm** (xe treo chạy bên trong, bu lông treo thò qua khe đáy). `TODO` đo ray thật.
 
 ## Lệnh
+
 ```text
 cd design
 "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b -P build_wardrobe.py -- --out renders
-python draw_plans.py
+python draw_hanging.py     # 12 mặt cắt ray treo + dẫn hướng, 13 mặt bằng hành trình
+python draw_plans.py       # 10 khung sắt, 11 cánh + mặt bằng + mặt cắt, bom.csv, 00-contact-sheet
 ```
-Sửa `P["W"]` (tường – tường) sau khi đo rồi chạy lại. Script tính lại chồng mí, báo FAIL nếu ngoài 40–150.
-Kết quả: `wardrobe.blend`, `renders/00-contact-sheet.png`, `bom.csv` (vật tư).
+
+Sửa `P` trong `build_wardrobe.py` (W sau khi đo, `lam_kg` sau khi cân, số ray và xe treo thật) rồi chạy lại.
+Script in PASS/FAIL cho 14 điều kiện, tất cả đang PASS.
+
+## Nghiên cứu: không có ray dưới thì cánh có rung lắc không? (2026-11-11)
+
+**Có, nếu không có gì giữ chân cánh.** Cánh treo chỉ được giữ ở mép trên, nên chân cánh lắc như con lắc mỗi khi đẩy
+hoặc có gió ([Pinky's Iron Doors](https://pinkysirondoors.com/blogs/specialty-doors/bottom-track-for-sliding-barn-doors-a-must-have-or-a-nice-to-have)).
+Với tủ này còn nguy hiểm hơn, vì **2 cánh chỉ cách nhau 8 mm**: lắc vài mm là 2 cánh cọ và đập vào nhau.
+
+**Nhưng không cần ray dưới chạy suốt chiều ngang.** Mọi bộ cửa treo đều chỉ dùng **dẫn hướng sàn nhỏ**:
+- Hager hướng dẫn cửa lùa 2 cánh vượt nhau (bypass): *"đặt dẫn hướng dưới chỗ chồng mí của 2 cánh và bắt xuống sàn"*,
+  tức là **1 cục ở giữa** ([Hager 9613RS/9614RS](https://www.hagerco.com/Files/Images/Images/Instructions/9613RS%20&%209614RS%20[60lb%20By-Pass%20Sliding%20Door%20Hardware%20Set%20Installation%20Instructions]%20[4].pdf)).
+- Bộ treo 100 kg của Häfele (EKU Porta) có kèm 1 dẫn hướng sàn, và chỉ cho **cánh cao tối đa 2,7 m**
+  ([Häfele 941.00.005](https://www.build.com/hafele-941-00-005/s387211)). Cánh tủ này cao **2,94 m**, cao hơn mức hãng
+  công bố, nên càng phải có dẫn hướng.
+
+**Áp dụng cho tủ** (bản vẽ `renders/12-mat-cat-treo-dan-huong.png`, `13-mat-bang-hanh-trinh.png`):
+- **1 dẫn hướng sàn ở giữa tủ (x = 1500).** Cánh rộng 1582 > nửa tủ 1500, nên ở **mọi vị trí** (đóng, lùa hết trái, lùa hết phải)
+  điểm giữa luôn nằm dưới cả 2 cánh, cách đầu rãnh ≥ 60 (script kiểm `dan_huong`). Sàn chỉ có 1 cục đế 3 × 60 × 84 bắt 2 vít nở,
+  không vấp chân, dễ lau.
+- **Rãnh dưới đáy mỗi cánh:** 2 sắt la 3 × 15 hàn dưới viền dưới, lòng 12, chạy suốt chiều rộng cánh.
+- **Chốt nylon Ø10** (hoặc bạc đạn nhỏ) trên đế, ăn 10 mm vào rãnh → **chân cánh chỉ lắc ±1 mm**. Đáy rãnh cách sàn 8.
+- Cánh treo không chịu tải ở chân → không cần bánh dưới, không cần cân chỉnh sàn phẳng tuyệt đối.
+- Điều kiện để chạy êm: **ray trên phải thẳng và cân bằng**. Ray lệch thì dẫn hướng dưới phải "cãi" lại, gây kẹt.
+  Lắp ray trước, dọi dây kiểm thẳng, rồi mới đặt dẫn hướng sàn đúng dưới tâm 2 ray.
 
 ## Kích thước chính (W = 3000)
-- Cánh **3-4-4-3 thanh**: 2 cánh ngoài 702 (3 thanh), 2 cánh giữa 922 (4 thanh), cao **2943**; chồng mí **83**.
-  W từ ~2800 đến ~3130 vẫn giữ cách chia này, chỉ đổi chồng mí. Lam nguyên cây 2900, **14 thanh, không cắt**.
-- Lùa 1 cánh (hành trình thật, cánh cùng ray không đè nhau): khoang ngoài mở trọn khoang, khoang giữa mở ~674
-  (sửa 2026-11-09: số 757 trước đây sai do chưa tính cánh cùng ray chặn hành trình).
-- Đỉnh dầm đầu cửa **3102** (đáy cánh 74 = ray Ø21 + bánh Ø48 + bát; cánh 2943; khe 5; máng sắt la 40; dầm 40). TODO đo hàng thật.
-- Vùng ray phía trước sâu 120 (cánh dày 40 × 2 ray + khe).
 
-## Cánh tự hàn (Tuan 2026-11-09)
-- **Viền = sắt hộp 20×40×1,2 đặt nằm**: mặt 20 lộ ra trước, sâu 40 = dày cánh. Viền bao kín 4 cạnh lam, là nẹp chỉ
-  + tay nắm luôn, sơn đen cùng khung. Không dùng sắt V (cán nóng hay lệch góc, tiết diện hở dễ xoắn khi hàn).
-- Lam lọt trong viền, khe 1 mỗi bên, 1,5 mỗi đầu (giãn nở WPC – TODO theo hãng). Mặt lam lùi sau mép viền ~1.
-- 4 thanh giằng **hộp 13×26** hàn phía sau đỡ lam; **bắt vít từ sau** (khoan mồi, vít ngắn hơn chiều dày lam).
-- Hộp bánh dưới khoét lắp vào ống viền dưới; bánh trên + khóa chống nhảy bắt trên ống viền trên.
-- Sắt/cánh (tính từ tiết diện): cánh 4 thanh ~10,4 kg, cánh 3 thanh ~9,4 kg. **Khối lượng cánh = sắt + số thanh × (1 thanh lam).**
-- Chống vênh: hàn trên mặt phẳng, kẹp chặt, đính chéo các góc, **2 đường chéo lệch ≤ 2** mới hàn chết; hàn so le 2 mặt.
+- **2 cánh × 7 thanh**, mỗi cánh rộng **1582**, cao **2943**; **chồng mí 164** (W từ ~2965 đến ~3125 vẫn giữ cách chia này).
+- Lùa 1 cánh hết cỡ: **mở nửa trái 1418** hoặc **mở nửa phải 1418**. Không còn cột trước nào chắn lối lấy đồ.
+- Cao độ từ sàn: đáy rãnh 8 · đáy cánh 23 · đỉnh cánh 2966 · đáy ray 2991 · đỉnh ray = đáy dầm 3031 · **đỉnh dầm 3111**.
+  Khe đỉnh cánh – ray 25 là phần bát treo + bu lông chỉnh cao (`TODO` theo xe treo mua).
+- Vùng ray phía trước sâu 120 (2 lớp cánh dày 40, khe giữa 8).
+
+## Hệ treo
+
+- **2 ray hộp 40 × 40**, mỗi lớp cánh 1 ray, dài 3000 (tường – tường). Mỗi ray bắt **dưới 1 dầm 40 × 80 đặt đứng**
+  (cạnh 80 theo phương đứng là phương cứng). 2 dầm đặt cạnh nhau, cách 8.
+- Dầm tựa vào **cột trước ở 2 tường + cột trước giữa** (bát nối) → nhịp 1460. Kiểm với cánh 86 kg treo giữa nhịp:
+  ứng suất 44 MPa, võng 1,0 mm (giới hạn L/400 = 3,6) → PASS. Nếu đặt dầm nằm như bản cũ thì cứng kém khoảng 3 lần.
+- **2 xe treo/cánh**, tâm cách mép cánh 110, bu lông treo M8 xuống **bát treo** bắt trên viền trên bằng tán rút ren M8.
+- Xe treo nằm kín trong ray hộp → **không nhảy ray**. Bỏ khóa chống nhảy của bản cũ.
+- **Chặn cuối trong ray:** đầu cánh đóng (C1 ở tường trái, C2 ở tường phải) dùng **chặn có lẫy giữ** (giữ cánh đóng, thay chốt bi);
+  đầu kia chặn cao su.
+- **Lắp:** bắt dầm + ray → luồn xe treo vào từ đầu ray → treo cánh → chỉnh bu lông cho cánh thẳng đứng, đáy rãnh cách sàn 8
+  → đặt dẫn hướng sàn đúng dưới tâm 2 ray, bắt vít → lắp chặn cuối.
+
+### Tải và chọn xe treo
+
+- Khối lượng cánh ≈ sắt ~14,5 kg + 7 × (1 thanh lam) + ~1,5 kg phụ kiện. Đang giả định **10 kg/thanh lam** (WPC rỗng 2,9 m,
+  `TODO` **cân 1 thanh thật**) → **~86 kg/cánh**.
+- **Tải mỗi xe treo ≥ (khối lượng cánh ÷ 2) × 1,5 = ~65 kg/xe**, tức bộ 2 xe phải được hãng ghi ≥ 130 kg/cánh.
+- Các bộ bánh treo cửa lùa phổ thông trên thị trường ghi 30–100 kg ([Chiaki](https://chiaki.vn/banh-xe-lua-treo-hammered-4-banh-8-banh-tai-trong-40kg-70kg)),
+  **không đủ**. Cần loại cửa kho / cổng treo / barn door tải ≥ 130 kg/bộ, đúng cỡ ray 40 × 40 anh có.
+  Khi mua, hỏi 3 số: tải/bộ, khe đáy ray (bu lông đi qua), chiều cao từ đáy ray tới mặt bát treo.
+  Có số thì điền `trolley_kg`, `track_slot`, `hanger_gap` vào `P`, script sẽ kiểm `xe_treo`.
+
+## Cánh tự hàn
+
+- **Viền = sắt hộp 20 × 40 × 1,2 đặt nằm** (mặt 20 lộ ra trước, sâu 40 = dày cánh), bao kín 4 cạnh 7 thanh lam, sơn đen.
+- 4 thanh giằng **hộp 13 × 26** hàn phía sau đỡ lam, bắt vít từ sau (vít ngắn hơn chiều dày lam).
+- **Mới:** dưới viền dưới hàn 2 sắt la 3 × 15 tạo rãnh dẫn hướng lòng 12, suốt chiều rộng cánh. Trên viền trên bắt 2 bát treo.
+- Chống vênh: hàn trên mặt phẳng, kẹp chặt, đính chéo góc, **2 đường chéo lệch ≤ 2** mới hàn chết. Cánh treo **phải phẳng**:
+  cánh vặn thì đáy cánh lệch khỏi rãnh, cọ cánh kia.
 - Sơn: mài mối hàn → lót chống gỉ → đen mờ; sơn xong mới bắt lam.
+- Bản vẽ gia công chi tiết (bảng cắt, tọa độ lỗ) của bản 4 cánh nằm trong backup. `TODO` vẽ lại cho cánh 7 thanh sau khi anh duyệt dáng
+  và có số xe treo thật.
 
-| Khoang | Lọt lòng | Ống Ø27 (cao từ sàn) | Dùng cho |
+## Khóa + tay nắm
+
+- **1 khóa ấn** ở chỗ chồng mí: mặt khóa trên lam số 7 của C1 (x = 1428), cao 1132; chốt Ø8 bắn ra sau qua khe 8 vào lỗ Ø10 trên viền
+  C2. Hai cánh đóng kín tường – tường và tì chặn cuối, nên khóa 1 điểm là không lùa được cánh nào.
+- **Khe nắm xuyên lam 30 × 200**, tâm **cao 950** (hạ từ 1000 để tránh giằng sau), đối xứng: C1 ở lam 2 (cách tường trái 351),
+  C2 ở lam 6 (cách tường phải 351). Script kiểm `tay_nam_thay`: C2 lùa hết sang trái vẫn còn chỗ móc tay kéo về.
+- Không dùng tay nắm lồi: 2 cánh chỉ cách 8 mm.
+
+## Khung sắt (hộp 40 × 40 × 1,4, dầm đầu cửa 40 × 80 đặt đứng)
+
+- **3 khung đầy đủ** (cột trước + cột sau suốt sàn → đỉnh, cột giữa đỡ ống treo, dầm kệ, dầm đỉnh) ở 2 tường và giữa tủ.
+  Cột trước giữa nấp sau chỗ chồng mí, khi mở nửa nào cũng không chắn.
+- **2 khung lửng** (không cột trước) ở x = 760 và 2240: cột sau + cột giữa + dầm kệ/đỉnh gác lên thanh ngang trước.
+  Nhờ vậy ống treo vẫn chỉ nhịp 700 (tải 40 kg/ống: 67 MPa, võng 1,3 mm, PASS).
+- 4 thanh ngang tường – tường (kệ trước/sau, đỉnh trước/sau), bản đế 60 × 60 × 4 mỗi chân cột, bắt nở vào 3 tường.
+- Vật tư (`design/bom.csv`): hộp 40 × 40 ~53,8 m, 40 × 80 6,0 m (2 dầm), 20 × 40 17,9 m + 13 × 26 12,3 m (2 cánh), sắt ~136 kg
+  (theo độ dày giả định, `TODO` theo hàng mua).
+
+| Khoang | Lọt lòng | Ống Ø27 (cao từ sàn) |
+| --- | --- | --- |
+| K1–K4 | ~700 mỗi khoang | 2050 + 1030 (treo 2 tầng) |
+| Hộp nóc | kệ ván 17 ở cao 2300 | chăn mền, vali |
+
+## Danh sách mua phụ kiện (bản 2 cánh treo)
+
+| # | Phụ kiện | SL | Ghi chú |
 | --- | --- | --- | --- |
-| K1 (trái) | 733 | 2050 + 1030 | treo 2 tầng: áo sơ mi, áo ngắn, quần vắt |
-| K2 | 667 | 2050 + 1030 | treo 2 tầng |
-| K3 | 667 | 2050 + 1030 | treo 2 tầng |
-| K4 (phải) | 733 | 2050 + 1030 | treo 2 tầng |
-| Hộp nóc | 4 ô, kệ ván 17 ở cao 2300 | – | chăn mền, vali |
+| 1 | Ray hộp 40 × 40 dài 3 m | 2 | anh đã có – đo lại khe đáy, độ dày |
+| 2 | Xe treo đúng ray 40 × 40, **≥ 65 kg/xe** (≥ 130 kg/bộ 2 xe) + bu lông treo chỉnh cao | 4 | `TODO` hãng; phổ thông 30–100 kg/bộ là không đủ |
+| 3 | Chặn cuối trong ray: 2 loại có lẫy giữ + 2 cao su | 4 | thường đi kèm bộ ray |
+| 4 | Dẫn hướng sàn: đế thép 3 × 60 × 84 + 2 chốt nylon Ø10 (tự làm, hoặc mua "floor guide" cửa bypass loại chốt) | 1 | bắt 2 vít nở |
+| 5 | Sắt la 3 × 15 (rãnh đáy cánh) | 2 × 2 × 1,6 m | hàn dưới viền dưới |
+| 6 | Khóa ấn tủ cửa lùa (push lock), hành trình chốt ≥ 13 | 1 | |
+| 7 | Tán rút ren thép M8 (bát treo) + M5, kìm rút | ~20 | |
+| 8 | Ron chổi chống bụi mép chồng mí | 2 × 2,9 m | |
+| 9 | Ống inox Ø27 dày 1,2 + tai đỡ hàn | 8 ống | |
+| 10 | Nở sắt M8 + bát L bắt khung vào tường | ~16 | 2 tường bên + tường sau |
 
-## Khung sắt (hộp 40×40×1,4 sơn tĩnh điện, dầm đầu cửa 40×80)
-- 5 khung đứng: 2 khung áp tường trái/phải + 3 khung ở chỗ chồng mí cánh, nên cột không cản lối lấy đồ.
-- Mỗi khung là **khung chữ nhật kín** (sửa 2026-11-09, Tuan thấy ngang kệ trước không có chống):
-  cột trước + cột sau **suốt sàn → đỉnh**, cột giữa (sàn → 2260, hàn tai đỡ ống treo), dầm kệ + dầm đỉnh.
-  Ngang kệ trước/sau tựa thẳng lên cột → tải hộp nóc xuống sàn, không còn công-xôn.
-  Cột trước cách tim ống ~300: móc áo rộng 450 không chạm.
-- 4 thanh ngang tường – tường (kệ trước/sau, đỉnh trước/sau) + dầm đầu cửa 40×80 bắt ray trên.
-- Mỗi chân cột có bản đế 60×60×4 (tì sàn, bắt nở tùy chọn). Bắt vào tường bằng bát + nở ở 2 tường bên và tường sau
-  (tường nhà Tuan – chọn bắt nở 2026-11-09).
-- **Ống treo** Ø27 × 1,0 inox, nhịp lớn nhất 799: treo 40 kg/ống → ứng suất 77 MPa, võng 2,0 mm (PASS).
-  Giới hạn ~52 kg/ống với dày 1,0; dày 1,2 → ~61 kg/ống. Ống bắt vào tai hàn trên cột giữa (không bắt vít vào hộp 1,4).
-- Vật tư (`bom.csv`): ~59,4 m hộp 40×40, 3 m hộp 40×80, 29,7 m hộp 20×40 + 12,4 m hộp 13×26 (cánh), tổng ~148 kg
-  (tính theo độ dày giả định, TODO theo hàng mua).
-
-## Cửa lùa – bánh đỡ dưới + bánh dẫn hướng trên (bản vẽ `renders/12-chi-tiet-ray.png`)
-- **Ray dưới** (nhôm, bắt vít xuống sàn): đế dày 5 + 2 gờ 6×8, 2 lằn cách 54. **Chịu toàn bộ tải cánh.**
-- **Bánh đỡ dưới** Ø40 ổ bi, rãnh U/V ôm gờ, 2 bánh/cánh cách mép 70, hộp bánh có vít chỉnh cao (cân cánh thẳng đứng).
-- **Ray trên**: 2 máng chữ U lòng 27 × sâu 45, treo dưới dầm đầu cửa 40×80. **Không chịu tải**, chỉ giữ cánh đứng.
-- **Bánh dẫn hướng trên** Ø25 trục đứng, 2 bánh/cánh cách mép 60, ăn vào máng 20.
-- **Lắp**: nâng cánh 25 đẩy bánh trên vào máng → hạ bánh dưới lên gờ → vặn **khóa chống nhảy** lên (khe còn 5 < 8 = độ nâng
-  để bánh dưới thoát gờ) → không nhấc cánh ra được. Script tự kiểm 4 điều kiện (`PASS lap_dat/an_khop/chong_nhay/vung_ray`).
-- Chặn cuối cao su 2 đầu mỗi máng; ron chổi ở mép chồng mí. Tay nắm: xem mục **Tay nắm** bên dưới.
-- Mép dưới cánh cách gờ 7, mép trên cách miệng máng 5 → đỉnh dầm 3055.
-
-**Chọn mua (tiết kiệm):** mua **bộ cửa lùa đỡ dưới** (bánh dưới + bánh trên + ray dưới/trên cùng hãng) – rẻ hơn mua lẻ và
-khớp nhau. Khi mua, đối chiếu 4 số với model: chiều cao gờ ray dưới, lòng + độ sâu máng trên, đường kính bánh, tải/bánh.
-- **Tải mỗi bánh ≥ (khối lượng cánh ÷ 2) × 1,5.** Khối lượng cánh ≈ 4 × (1 thanh lam) + ~10,4 kg sắt → **cân 1 thanh trước**.
-- Tham khảo giá: ray âm T309 ~95.000 đ/3 m, <50 kg/cánh (Phú Hải); Garis GR67 bánh 156.000 đ/cánh, ray 140.000 đ/3 m
-  (chưa công bố tải). Cánh nặng hơn ~40 kg → bộ bánh đỡ dưới tải 80–100 kg (cửa lùa nhôm/kho), giá TODO.
-- Có số thật thì sửa `P` (trk_base, ridge_h, wheel_d, roller_d, ch_depth…) → chạy lại, script báo FAIL nếu không lắp được.
+Không còn dùng: bánh đỡ dưới, ray U dưới, máng trên 2 sắt la, bánh dẫn hướng 608, khóa chống nhảy, chốt bi.
 
 ## Mô phỏng trượt (Blender)
-- Mở `design/wardrobe.blend`, bấm **Space**: lần lượt C1 → C2 → C3 → C4 lùa mở rồi đóng, đúng hành trình thật
-  (dừng khi chạm cánh cùng ray/chặn cuối), bánh dưới quay theo quãng đường lăn. Mỗi cánh gắn vào 1 Empty `CanhN-goc`.
-- Video: `blender -b -P build_wardrobe.py -- --out renders --anim` → khung ở `anim-frames/`, ghép
-  `ffmpeg -framerate 24 -i anim-frames/f_%04d.png -c:v libx264 -pix_fmt yuv420p renders/20-mo-phong-lua-cua.mp4`.
 
-## Bản vẽ gia công cánh (khung riêng + lam riêng)
-- `renders/15-khung-canh.png`: khung cánh 4 thanh (922) và 3 thanh (702) × 2943 – viền ① ② hộp 20×40 cắt xiên 45°,
-  4 giằng ③ 13×26 ở z = 384 / 1109 / 1834 / 2559 (từ đáy cánh), càng bánh ④ (2 bản mã 3×30×66, lỗ trục ô van ±5,
-  cách mép 80), tấm che chân ⑤, 3 tán rút ren M8 viền trên; bảng lỗ khóa/lỗ chốt từng cánh C1–C4; bảng cắt sắt.
-- `renders/16-lam-song.png`: bố trí lam từng cánh (L1…L4, nguyên cây 2900), vít 4×25 bắt từ sau qua giằng
-  (2 vít/thanh/giằng, bỏ vít ở chỗ thân khóa), lỗ khóa Ø20: C1-L3 (cách mép thanh 168), C3-L1 (52) và C3-L4 (168), z 1109.
-- `renders/17-canh-C2-*`, `18-canh-C1-*`: 3D khung nhìn sau / nhìn trước / lam riêng / nổ.
-- `door-cut-list.csv`: bảng cắt + tọa độ lỗ. Script: `draw_door_shop.py`, `render_door_exploded.py`.
-
-## Khóa + chốt (Tuan 2026-11-09: chốt bi + khóa chồng mí; bản vẽ `renders/13-khoa-chot.png`)
-- **Chốt bi** (4 cái): vít bi lò xo gắn trên khóa chống nhảy, bi Ø6 bật vào lỗ Ø5 khoan trên lưng máng trên ở đúng vị trí
-  đóng của từng cánh → cánh không tự trôi, và lỗ khóa 2 cánh luôn thẳng hàng khi đóng.
-- **Khóa chồng mí** (3 khóa ấn **đồng chìa**) ở 3 chỗ chồng mí, cao 1129: mặt khóa xuyên lam cánh ngoài (C1, C3), thân bắt
-  vào giằng sau 13×26; chốt Ø8 bắn ra sau qua khe 8 vào lỗ Ø10 khoan trên **viền sắt** cánh trong (C2, C4) – không bắn vào lam.
-  Vị trí khóa x = 629 / 1531 / 2308 (tâm viền cánh trong). Viền 2 cánh lệch nhau ~60 nên khóa phải nằm trên lam cánh ngoài.
-- 4 cánh đóng kín tường–tường, C1/C4 tì chặn cuối → khóa 3 điểm là cả hàng không lùa được.
-- Chặn cuối đã sửa: mặt chặn cách tường 46,5 (bánh trên cách mép 60, Ø25) → mép cánh dừng sát tường.
-- Script kiểm thêm: `khoa_tren_lam` (lỗ khóa không cắt viền), `khoa_an_vien` (hành trình chốt ≥ khe + 5), `chot_bi`.
-- TODO theo khóa mua: đường kính mặt khóa, hành trình chốt (đang giả định 14), chiều dài thân.
-
-## Tay nắm (Tuan 2026-11-09 "thiếu tay nắm"; ảnh `renders/08-chi-tiet-tay-nam.png`, tờ `16-lam-song.png` khung cam)
-- **Khe nắm xuyên lam 30 × 200** bo tròn 2 đầu, mỗi cánh 1 khe, tâm cao **1000 từ sàn** (TODO chỉnh theo người dùng).
-  Gia công: khoan 2 lỗ Ø30 cách tâm 170 + cưa lọng nối, chà nhám vê mép ~R2. Khoét **trước** khi lắp lam. Không tốn phụ kiện.
-- Lý do không dùng tay nắm lồi: 2 cánh lùa qua nhau chỉ cách 8 → tay nắm lồi trên cánh ray trong sẽ cào cánh ray ngoài.
-  Tay nắm âm mua sẵn (chén âm) cũng khó: mặt lam có sóng, mép chén không áp phẳng.
-- Vị trí (đối xứng mặt tiền, x từ tường trái): C1 giữa L3 (571), C2 giữa L4 (1410), C3 giữa L1 (1590), C4 giữa L1 (2429).
-- Script kiểm: `tay_nam_ne` (khe cách giằng sau + lỗ khóa ≥ 30, sau khe trống để móc tay) và `tay_nam_thay`
-  (cánh ray trong: đóng cửa thấy tay nắm; lùa hết vẫn có cách kéo về – C4 lùa trái bị C3 che kín, phải lùa C3 sang phải trước).
-- TODO nếu muốn đẹp hơn: ốp viền nhựa/nhôm lòng khe theo hàng mua.
-
-## Danh sách mua phụ kiện (giữ thiết kế bánh đỡ dưới + dẫn hướng trên, cánh ước 50–70 kg)
-Tải mỗi bánh dưới ≥ (khối lượng cánh ÷ 2) × 1,5 → cánh 50 kg: 38 kg/bánh · 60 kg: 45 · 70 kg: 53. **Cân 1 thanh lam để chốt.**
-
-| # | Phụ kiện | SL | Chọn | Giá tham khảo |
-| --- | --- | --- | --- | --- |
-| 1 | Bánh đỡ dưới cửa lùa sắt, ray U, **loại hàn** (hoặc bắt vít), bánh nylon ổ bi | 8 | hàn vào mặt sau (mặt trong) ống viền dưới → mặt trước sạch | 95.000 đ/bánh (vít 110.000) [vattunganhcua](https://www.vattunganhcua.vn/phu-kien-cua-cong?view=list) |
-| 2 | Ray dưới U đúng cặp với bánh, 3 m | 2 | bắt vít/dán sàn, dóng thẳng dưới máng trên | TODO |
-| 3 | Bánh bạc đạn 608 bọc nylon + bu lông M8 (dẫn hướng trên) | 8 | bắt lên ống viền trên bằng tán rút ren M8 | TODO |
-| 4 | Máng trên: thép U (hoặc 2 sắt la hàn) lòng = Ø bánh trên + 2, sâu ≥ 45 | 2 × 3 m | hàn dưới dầm đầu cửa, sơn đen | TODO |
-| 5 | Khóa chống nhảy tự làm: bu lông M8 + ê-cu hãm + đầu cao su trên ống viền trên | 4 | vặn lên còn khe 5 | vài nghìn đ |
-| 6 | Vít bi lò xo M8 (chốt bi) | 4 | vặn vào đầu khóa chống nhảy | TODO |
-| 7 | Khóa ấn tủ cửa lùa (push lock) **đồng chìa**, hành trình chốt ≥ 13 | 3 | thân bắt giằng sau 13×26 | TODO |
-| 8 | Tán rút ren thép M5 + M8, kìm rút | ~40 | mọi chỗ bắt vít vào hộp 1,2–1,4 | TODO |
-| 9 | Chặn cuối cao su (hoặc tự cắt cao su đặc) | 4 | 2 đầu mỗi máng, mặt chặn cách tường 46,5 | TODO |
-| 10 | Ron chổi chống bụi dán mép chồng mí | 4 × 2,94 m | | TODO |
-| 11 | Ống inox Ø27 **dày 1,2** + tai đỡ hàn | 8 ống | treo nặng: ~61 kg/ống | TODO |
-| 12 | Nở sắt M8 + bát L bắt khung vào tường | ~20 | 2 tường bên + tường sau | TODO |
-
-- Không dùng bộ bánh tủ áo thông dụng (vd Cariny CWA-204 40–50 kg/cánh): cánh 2,94 m nặng 50–70 kg vượt mức; catalogue QUITTE giới hạn bộ 50 kg ở cánh cao 2,5 m.
-- Mua xong gửi số thật (Ø bánh dưới, cao từ đáy bánh tới mặt hàn, gờ ray, Ø bánh trên) → sửa `P` → script kiểm lại lắp đặt/chống nhảy.
+Mở `design/wardrobe.blend`, bấm **Space**: C1 lùa phải hết cỡ rồi đóng, sau đó C2 lùa trái hết cỡ rồi đóng.
+Video: `blender -b -P build_wardrobe.py -- --out renders --anim` → ghép bằng ffmpeg như bản cũ (`TODO` chạy lại cho bản 2 cánh).
 
 ## TODO
-- W thực tế; số sóng, khối lượng 1 thanh lam; bộ ray (khe dưới, cao ray trên, sâu ray đôi); độ dày hộp sắt.
-- Tường sau ẩm thì chừa khe ~20 sau quần áo hoặc ốp tấm chống ẩm (chưa có trong model).
+
+- W thực tế; **cân 1 thanh lam** (`lam_kg`); số sóng lam.
+- Đo ray 40 × 40: khe đáy, độ dày; chọn xe treo ≥ 65 kg/xe → điền `trolley_kg`, `track_slot`, `hanger_gap`.
+- Vẽ lại bản vẽ gia công cánh 7 thanh (bảng cắt, lỗ bát treo, rãnh, khóa) sau khi duyệt.
+- Tường sau ẩm thì chừa khe ~20 sau quần áo hoặc ốp tấm chống ẩm.
 
 ## An toàn
-- Khung sắt **phải bắt nở vào tường** ở cả 3 phía + sàn. Không để khung tự đứng.
-- Cánh cao 2,9 m, nặng: 2 người lắp, có chặn chống nhảy ray và chặn cuối ray. Trẻ nhỏ dễ kẹt tay ở chỗ chồng mí.
-- Khoan tường: dò đường điện âm trước khi khoan.
-- Khe tay nắm cánh ngoài: trẻ thò ngón tay sâu qua khe có thể chạm cánh trong khi lùa → dặn không thò tay khi đang lùa; vê mép khe.
+
+- Cánh **~86 kg, cao 2,94 m** treo trên ray: **2–3 người** nâng và treo cánh. Siết đủ bu lông treo, lắp **chặn cuối 2 đầu ray**
+  trước khi buông tay, không để cánh chạy tuột khỏi đầu ray.
+- Dầm đầu cửa + ray chịu toàn bộ tải 2 cánh: bắt dầm vào tường bằng nở thép (không dùng nở nhựa), hàn/bát chắc vào cột trước giữa.
+- Khung sắt **phải bắt nở vào tường** ở cả 3 phía + sàn. Khoan tường: dò đường điện âm trước.
+- Trẻ nhỏ dễ kẹt tay ở chỗ chồng mí và ở mép cánh khi cánh chạy về tường; dặn không thò tay qua khe nắm khi đang lùa.
