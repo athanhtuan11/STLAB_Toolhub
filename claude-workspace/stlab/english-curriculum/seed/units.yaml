@@ -1,0 +1,277 @@
+# Chặng Seed (mẫu giáo 3–6 tuổi) – NGUỒN DUY NHẤT về nội dung từng chủ đề.
+# Sửa ở đây rồi chạy: python check_seed.py --write   (kiểm số từ + sinh lại scope-and-sequence.md)
+# core = từ mọi bé học (mức Core, bám Thông tư 50/2020: khoảng 35 / 70 / 100 từ, đếm tới 3 / 5 / 10).
+# plus = từ mở rộng (mức Plus) cho bé đã vững và cho thiết bị english-teacher ở nhà.
+# Mỗi cấp tự đứng được (bé vào học ở tuổi nào cũng bắt đầu được), nên từ của cấp trước được ôn lại, không tính lại.
+stage: seed
+session_minutes: 30
+sessions_per_week: 2
+weeks_per_year: 35
+levels:
+  - id: s1
+    name: Seed 1
+    age: "3–4 tuổi"
+    count_to: 3
+    core_target: 35
+    plus_target: 16
+    units:
+      - id: s1-u1
+        theme: Hello!
+        theme_vi: Chào bạn
+        core: [hello, bye-bye, yes, "no", thank you]
+        plus: [happy, sad]
+        patterns: ["Hello! / Bye-bye!", "What's your name? – I'm Nam."]
+        song: "Chant tự soạn 'Hello, hello, what's your name?'"
+        make: "Thẻ tên có hình mặt cười – bé dán sticker mắt, miệng lên thẻ giáo viên cắt sẵn"
+        tell: "Giơ thẻ, nói: Hello! I'm …"
+        can_do: ["Chào và tạm biệt bằng tiếng Anh", "Nói tên mình khi được hỏi"]
+      - id: s1-u2
+        theme: My family
+        theme_vi: Gia đình của con
+        core: [mummy, daddy, baby, grandma]
+        plus: [grandpa, family]
+        patterns: ["This is mummy.", "I love you."]
+        song: "The Finger Family (dân gian)"
+        make: "Rối ngón tay gia đình bằng giấy"
+        tell: "Đeo rối, giới thiệu: This is mummy. This is daddy."
+        can_do: ["Gọi tên 3 người trong gia đình", "Nói 'I love you' với người thân"]
+      - id: s1-u3
+        theme: Colours
+        theme_vi: Màu sắc
+        core: [red, blue, yellow, green]
+        plus: [circle, star]
+        patterns: ["It's red.", "Red, please."]
+        song: "Chant tự soạn 'Red, red, touch something red'"
+        make: "Phân loại khối in 3D cỡ lớn theo 4 màu vào 4 khay"
+        tell: "Cầm một khối, nói: It's blue."
+        can_do: ["Chỉ đúng 4 màu khi nghe tên", "Nói tên màu của một đồ vật"]
+      - id: s1-u4
+        theme: Toys and numbers
+        theme_vi: Đồ chơi và số đếm
+        core: [ball, car, doll, one, two, three]
+        plus: [teddy, robot]
+        patterns: ["One, two, three!", "A ball."]
+        song: "One, Two, Buckle My Shoe (dân gian, hát tới three)"
+        make: "Xếp tháp 1–2–3 khối in 3D cỡ lớn"
+        tell: "Đếm tháp của mình: One, two, three!"
+        can_do: ["Đếm 1–3 đồ vật", "Gọi tên 3 đồ chơi"]
+      - id: s1-u5
+        theme: Animals
+        theme_vi: Con vật
+        core: [cat, dog, bird, fish]
+        plus: [duck, cow]
+        patterns: ["It's a cat.", "Meow! / Woof!"]
+        song: "Old MacDonald Had a Farm (dân gian)"
+        make: "Mặt nạ con vật – bé tô màu, giáo viên cắt và xỏ dây"
+        tell: "Đeo mặt nạ, nói: It's a dog. Woof!"
+        can_do: ["Chỉ đúng con vật khi nghe tên", "Nói tên và bắt chước tiếng kêu 2 con vật"]
+      - id: s1-u6
+        theme: My body
+        theme_vi: Cơ thể của con
+        core: [eyes, nose, mouth, hands]
+        plus: [ears, feet]
+        patterns: ["Touch your nose.", "Clap your hands."]
+        song: "If You're Happy and You Know It (dân gian)"
+        make: "Ghép mặt: gắn mắt, mũi, miệng in 3D cỡ lớn lên khuôn mặt nỉ"
+        tell: "Chỉ lên mặt đã ghép: eyes, nose, mouth"
+        can_do: ["Chạm đúng bộ phận khi nghe lệnh", "Nói tên 3 bộ phận trên mặt"]
+      - id: s1-u7
+        theme: Food
+        theme_vi: Đồ ăn
+        core: [milk, apple, banana, rice]
+        plus: [water, cake]
+        patterns: ["I like milk.", "Yummy!"]
+        song: "Apples and Bananas (dân gian)"
+        make: "Nặn táo và chuối bằng đất nặn an toàn cho trẻ"
+        tell: "Giơ món đã nặn: Banana. I like banana."
+        can_do: ["Gọi tên 3 món ăn", "Nói 'I like …' về món mình thích"]
+      - id: s1-u8
+        theme: Outside
+        theme_vi: Ngoài trời
+        core: [sun, rain, tree, flower]
+        plus: [sky, hot]
+        patterns: ["Look! The sun.", "Look! Rain."]
+        song: "Rain, Rain, Go Away (dân gian)"
+        make: "Bức tranh ngoài trời – dán mặt trời, cây, hoa cắt sẵn"
+        tell: "Chỉ vào tranh: sun, tree, flower"
+        can_do: ["Chỉ đúng 4 thứ ngoài trời khi nghe tên", "Nói tên 2 thứ mình thấy ngoài cửa sổ"]
+
+  - id: s2
+    name: Seed 2
+    age: "4–5 tuổi"
+    count_to: 5
+    core_target: 70
+    plus_target: 30
+    units:
+      - id: s2-u1
+        theme: How are you?
+        theme_vi: Bạn thế nào?
+        core: [good morning, goodbye, please, happy, sad, angry, tired, boy, girl]
+        plus: [scared, excited, teacher, name]
+        patterns: ["How are you? – I'm happy.", "Good morning, teacher."]
+        song: "If You're Happy and You Know It (dân gian, thêm câu sad / angry / tired)"
+        make: "Que cảm xúc 2 mặt (happy / sad) từ đĩa giấy"
+        tell: "Giơ que trả lời: I'm happy."
+        can_do: ["Hỏi và trả lời 'How are you?'", "Nói được 3 cảm xúc"]
+      - id: s2-u2
+        theme: My home
+        theme_vi: Nhà của con
+        core: [brother, sister, grandpa, family, house, bed, table, chair, door]
+        plus: [window, bathroom, kitchen, sofa]
+        patterns: ["Who's this? – This is my brother.", "This is my house."]
+        song: "Chant tự soạn 'Knock, knock, who's this?'"
+        make: "Ngôi nhà hộp giấy có cửa mở được, dán hình người thân bên trong"
+        tell: "Mở cửa nhà: This is my family. This is my sister."
+        can_do: ["Giới thiệu người thân bằng 'This is my …'", "Gọi tên 4 đồ vật trong nhà"]
+      - id: s2-u3
+        theme: Colours and shapes
+        theme_vi: Màu và hình
+        core: [orange, pink, purple, black, white, circle, square, triangle, star]
+        plus: [brown, grey, heart, rectangle]
+        patterns: ["What colour is it? – It's pink.", "It's a circle."]
+        song: "Twinkle, Twinkle, Little Star (dân gian)"
+        make: "Ghép robot từ các hình in 3D cỡ lớn (tròn, vuông, tam giác)"
+        tell: "Chỉ vào robot: It's a square. It's orange."
+        can_do: ["Hỏi và trả lời về màu", "Gọi tên 4 hình"]
+      - id: s2-u4
+        theme: Toys and numbers
+        theme_vi: Đồ chơi và số đếm
+        core: [four, five, teddy, robot, kite, bike, train, big, small]
+        plus: [puzzle, blocks, drum, balloon]
+        patterns: ["How many? – Five.", "I have a kite.", "It's big."]
+        song: "Five Little Ducks (dân gian)"
+        make: "Đường ray giấy cho tàu in 3D; đếm toa tàu 1–5"
+        tell: "Đếm toa: One … five! It's a big train."
+        can_do: ["Đếm 1–5 và trả lời 'How many?'", "Nói đồ chơi mình có bằng 'I have …'"]
+      - id: s2-u5
+        theme: Farm animals
+        theme_vi: Con vật ở trang trại
+        core: [duck, cow, pig, chicken, horse, rabbit, monkey, elephant]
+        plus: [sheep, goat, frog, tiger]
+        patterns: ["What is it? – It's a cow.", "It's big. / It's small."]
+        song: "Old MacDonald Had a Farm (dân gian, thêm con vật mới)"
+        make: "Trang trại trong khay: hàng rào que kem + con vật in 3D cỡ lớn"
+        tell: "Giới thiệu trang trại: It's a pig. It's small."
+        can_do: ["Hỏi và trả lời 'What is it?'", "Tả con vật to hay nhỏ"]
+      - id: s2-u6
+        theme: Move your body
+        theme_vi: Vận động
+        core: [head, ears, arms, legs, feet, run, jump, clap]
+        plus: [fingers, toes, walk, dance]
+        patterns: ["Touch your head.", "I can jump."]
+        song: "Head, Shoulders, Knees and Toes (dân gian)"
+        make: "Người que khớp động bằng bìa và đinh ghim giấy (giáo viên bấm ghim)"
+        tell: "Cho người que cử động: Arms. Legs. I can jump!"
+        can_do: ["Làm theo 4 lệnh vận động", "Nói 'I can …' với 2 động tác"]
+      - id: s2-u7
+        theme: Food and drink
+        theme_vi: Ăn và uống
+        core: [water, juice, bread, egg, cake, noodles, mango, hungry, thirsty]
+        plus: [cheese, soup, yummy]
+        patterns: ["I like mango. / I don't like egg.", "I'm hungry."]
+        song: "Pat-a-cake (dân gian)"
+        make: "Khay cơm trưa: dán hình món ăn vào khay giấy"
+        tell: "Giới thiệu khay: I like noodles. I don't like egg."
+        can_do: ["Nói món mình thích và không thích", "Nói 'I'm hungry / thirsty'"]
+      - id: s2-u8
+        theme: Weather and transport
+        theme_vi: Thời tiết và xe cộ
+        core: [bus, boat, plane, sunny, rainy, windy, hot, cold, cloud]
+        plus: [truck, motorbike, foggy]
+        patterns: ["What's the weather like? – It's rainy.", "It's a bus."]
+        song: "The Wheels on the Bus (dân gian)"
+        make: "Vòng quay thời tiết bằng đĩa giấy, kim quay gắn bằng đinh ghim giấy (giáo viên gắn)"
+        tell: "Quay kim, nói: It's sunny. It's hot."
+        can_do: ["Hỏi và trả lời về thời tiết hôm nay", "Gọi tên 3 phương tiện"]
+
+  - id: s3
+    name: Seed 3
+    age: "5–6 tuổi"
+    count_to: 10
+    core_target: 100
+    plus_target: 50
+    units:
+      - id: s3-u1
+        theme: My day
+        theme_vi: Một ngày của con
+        core: [morning, afternoon, night, get up, wash, brush, eat, drink, sleep, play, school, bag, book]
+        plus: [evening, toothbrush, pencil, crayon, desk, classroom]
+        patterns: ["I get up in the morning.", "I brush my teeth.", "Good night!"]
+        song: "This Is the Way (Here We Go Round the Mulberry Bush – dân gian)"
+        make: "Sách gấp 4 trang 'My day' – bé vẽ 4 việc trong ngày"
+        tell: "Lật sách kể: I get up. I eat. I play. I sleep."
+        can_do: ["Kể 3 việc mình làm trong ngày", "Nói buổi sáng, chiều, tối"]
+      - id: s3-u2
+        theme: People and jobs
+        theme_vi: Mọi người và nghề nghiệp
+        core: [mother, father, uncle, aunt, doctor, teacher, farmer, driver, cook, police officer, tall, young]
+        plus: [nurse, firefighter, pilot, engineer, grandparents, strong]
+        patterns: ["What does he do? – He's a doctor.", "She's tall."]
+        song: "Chant tự soạn 'Doctor, doctor, what do you do?'"
+        make: "Mũ nghề nghiệp bằng giấy (bác sĩ, đầu bếp, cảnh sát)"
+        tell: "Đội mũ đóng vai: I'm a cook."
+        can_do: ["Hỏi và trả lời về nghề của một người", "Nói 4 nghề"]
+      - id: s3-u3
+        theme: Shapes and sizes
+        theme_vi: Hình và kích cỡ
+        core: [rectangle, heart, diamond, oval, light, dark, long, short, same, different, brown, grey]
+        plus: [pattern, stripe, dot, bigger, smaller, corner]
+        patterns: ["Is it long? – Yes, it is. / No, it isn't.", "They're the same."]
+        song: "Chant tự soạn 'Long and short, same and different'"
+        make: "So và xếp thanh in 3D dài – ngắn; tạo dãy hình theo quy luật"
+        tell: "Giơ 2 thanh: It's long. It's short. They're different."
+        can_do: ["Trả lời câu hỏi Yes / No về hình, cỡ", "Nói 2 vật giống hay khác"]
+      - id: s3-u4
+        theme: Robots and numbers
+        theme_vi: Robot và số đếm
+        core: [six, seven, eight, nine, ten, robot, go, stop, turn, left, right, button, fast, slow]
+        plus: [eleven, twelve, forward, backward, program, card, battery]
+        patterns: ["Go! Stop! Turn left. Turn right.", "How many? – Ten."]
+        song: "Ten in the Bed (dân gian)"
+        make: "Lập trình robot thẻ lệnh đi tới đích bằng thẻ go / turn / stop"
+        make_needs: card-coding-robot
+        make_fallback: "Trò 'robot người': một bé làm robot, bạn ra lệnh bằng thẻ"
+        tell: "Đọc chương trình của mình: Go, go, turn left, stop."
+        can_do: ["Ra 4 lệnh điều khiển bằng tiếng Anh", "Đếm 1–10"]
+      - id: s3-u5
+        theme: Animals and where they live
+        theme_vi: Con vật và nơi sống
+        core: [tiger, lion, bear, snake, frog, bee, butterfly, farm, zoo, sea, forest, fly, swim]
+        plus: [whale, shark, turtle, crocodile, jungle, crawl]
+        patterns: ["Where does it live? – It lives in the sea.", "It can fly."]
+        song: "Incy Wincy Spider (dân gian)"
+        make: "Hộp nơi sống (biển / rừng / trang trại) bằng hộp giày, đặt con vật vào đúng nơi"
+        tell: "Giới thiệu hộp: It's a frog. It lives in the forest. It can swim."
+        can_do: ["Nói nơi sống của 3 con vật", "Nói con vật làm được gì bằng 'It can …'"]
+      - id: s3-u6
+        theme: Clothes and what I can do
+        theme_vi: Quần áo và việc con làm được
+        core: [shirt, dress, shoes, hat, jacket, socks, hair, teeth, shoulders, knees, climb, sing, draw]
+        plus: [trousers, skirt, boots, scarf, elbow, skip]
+        patterns: ["Can you climb? – Yes, I can. / No, I can't.", "I'm wearing a hat."]
+        song: "Head, Shoulders, Knees and Toes (dân gian, hát nhanh dần)"
+        make: "Búp bê giấy và bộ quần áo thay được"
+        tell: "Mặc đồ cho búp bê: She's wearing a dress and a hat."
+        can_do: ["Hỏi và trả lời 'Can you …?'", "Tả mình đang mặc gì"]
+      - id: s3-u7
+        theme: Healthy food
+        theme_vi: Ăn uống lành mạnh
+        core: [breakfast, lunch, dinner, vegetables, fruit, meat, carrot, tomato, grapes, sweet, sour]
+        plus: [potato, cucumber, pineapple, salty, healthy, snack]
+        patterns: ["Do you like carrots? – Yes, I do. / No, I don't.", "It's sweet."]
+        song: "Hot Cross Buns (dân gian)"
+        make: "Biểu đồ dán hình 'Lớp mình thích quả gì?' – mỗi bé dán 1 hình vào cột"
+        tell: "Đọc biểu đồ: Six friends like grapes."
+        can_do: ["Hỏi bạn 'Do you like …?' và trả lời", "Đếm và đọc số trên biểu đồ lớp"]
+      - id: s3-u8
+        theme: My town
+        theme_vi: Thị trấn của con
+        core: [park, market, shop, hospital, road, bridge, river, mountain, rainy season, dry season, near, far]
+        plus: [library, restaurant, bus stop, street, map, cool, warm]
+        patterns: ["Where is the park? – It's near the river.", "It's the rainy season."]
+        song: "Row, Row, Row Your Boat (dân gian)"
+        make: "Bản đồ thị trấn trên thảm lớn; robot thẻ lệnh chở 'khách' từ chợ tới công viên"
+        make_needs: card-coding-robot
+        make_fallback: "Đẩy xe in 3D bằng tay theo lệnh của bạn"
+        tell: "Chỉ đường trên bản đồ: Go. Turn right. Stop. It's the park!"
+        can_do: ["Hỏi và trả lời nơi chốn bằng near / far", "Chỉ đường bằng 3 lệnh"]

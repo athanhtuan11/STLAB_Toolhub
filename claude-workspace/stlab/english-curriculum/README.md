@@ -1,6 +1,6 @@
 # Giáo trình tiếng Anh STLab – khung tổng thể (mẫu giáo → lớp 12)
 
-**Trạng thái:** bản nháp 1 (2026-11-11), chờ Tuan duyệt. Chưa soạn bài chi tiết.
+**Trạng thái:** khung đã được Tuan duyệt hướng đi (2026-11-11). Đang soạn chặng [Seed](seed/README.md): bảng nội dung 3 năm xong, giáo án mẫu 1 chủ đề chờ duyệt.
 **Dùng cho:** lớp tại trung tâm STLab · thiết bị `maker/english-teacher` (cô giáo AI) · trường mầm non Cây Nhỏ.
 **Căn cứ:** [báo cáo nghiên cứu 2026-11](../../docs/research-notes/education/english-curriculum-research-2026-11.md) (có nguồn từng số liệu).
 Số nào trong file này ghi "Bộ" là lấy từ văn bản; ghi "STLab" là đề xuất của mình, Tuan sửa được.
@@ -110,10 +110,10 @@ Từ vựng mức Plus lấy theo danh sách từ của kỳ thi Cambridge tươ
 3. Đếm danh sách từ Cambridge cho mức Plus; lấy bảng IELTS ↔ CEFR chính thức.
 4. Danh mục tài liệu mầm non được Bộ duyệt, để chọn bộ đi cùng Seed ở Cây Nhỏ.
 
-## 10. Tuan cần quyết
+## 10. Quyết định của Tuan (2026-11-11)
 
-1. **Hai mức Core + Plus trên một xương sống:** đồng ý không, hay chỉ làm một mức?
-2. **Thời lượng ở STLab** (bảng mục 3): 2 buổi/tuần, 30 / 60 / 90 phút theo chặng có hợp thực tế lớp không?
-3. **Soạn chi tiết chặng nào trước?** Mình đề nghị **Seed**: thiết bị english-teacher và Cây Nhỏ đều đang cần, và là chặng ngắn nhất (3 năm × 8 chủ đề).
-4. **Cây Nhỏ:** trường đang dùng bộ tài liệu tiếng Anh nào (nếu có)? Seed sẽ soạn để đi cùng bộ đó.
-5. **Giáo viên:** ai dạy (Tuan, giáo viên Anh văn thuê, hay dạy cặp)? Việc này quyết định kế hoạch bài dạy viết chi tiết tới đâu.
+1. Làm **cả hai mức** Core + Plus trên một xương sống.
+2. Buổi học **30 phút** (áp dụng cho Seed; thời lượng các chặng từ lớp 1 trở lên ở mục 3 vẫn là đề xuất, chưa chốt).
+3. Soạn **Seed (mẫu giáo) trước**.
+4. Cây Nhỏ chưa có bộ tài liệu nào: **soạn mới từ đầu**.
+5. **Tuan dạy trước, sau này có giáo viên khác** → giáo án ghi sẵn câu giáo viên nói, đủ để người khác dạy theo.
