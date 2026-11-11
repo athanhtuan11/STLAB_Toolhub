@@ -7,6 +7,9 @@ Soạn tài liệu giảng dạy và báo cáo cho trung tâm STEAM STLab.
 - `lesson-plans/`: giáo án theo khóa/buổi. Tên file gợi ý: `khoa-<ten>-buoi-<nn>.docx`.
 - `simulation/`: mô phỏng cho bài học (2026-11-11) – `gearsbot/` (robot ảo line-bot, sa bàn, lời giải, `check/run_sim.py`),
   `erebus/` (RCJ Rescue Simulation cho đội thi). Giáo án đi kèm: `lesson-plans/gearsbot-virtual-line-bot.md`.
+- `english-curriculum/`: giáo trình tiếng Anh mẫu giáo → lớp 12 (2026-11-11). `README.md` = khung tổng thể 6 chặng
+  (Seed → Innovator), 2 mức Core (chuẩn Bộ) + Plus (hướng IELTS), mỗi chủ đề có sản phẩm Make & Tell. Bản nháp chờ Tuan duyệt;
+  nghiên cứu nguồn: `docs/research-notes/education/english-curriculum-research-2026-11.md`.
 - `parent-reports/`: báo cáo theo kỳ. **Chứa dữ liệu cá nhân học viên**:
   không đưa lên GitHub công khai (TODO: quyết định chính sách lưu trữ).
 
