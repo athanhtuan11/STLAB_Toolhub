@@ -1,8 +1,8 @@
 """Ban ve he cua treo 2 canh (doc parts.json do build_wardrobe.py sinh ra).
 
 Chay (tu design/, sau khi build):  python draw_hanging.py
-Ra: renders/12-mat-cat-treo-dan-huong.png (mat cat dung tai x = W/2: ray treo + ranh/chot dan huong san)
-    renders/13-mat-bang-hanh-trinh.png (mat bang: 3 vi tri cua 2 canh, chot dan huong luon nam duoi ca 2 canh)
+Ra: renders/12-mat-cat-ray.png (mat cat dung qua cum banh: ray tren giu dung + U chan duoi chiu tai)
+    renders/13-mat-bang-hanh-trinh.png (mat bang: 3 vi tri cua 2 canh)
 """
 import json
 import os
@@ -39,8 +39,9 @@ def section():
     tw, th = P["track"]
     hh = P["header"][1]
     fig, (a_top, a_bot) = plt.subplots(2, 1, figsize=(8.5, 11))
-    for ax, (zlo, zhi), title in ((a_top, (dz1 - 120, zt1 + hh + 30), "TREN: dam 40x80 dung + ray hop 40x40 + xe treo"),
-                                  (a_bot, (-25, dz0 + 110), "DUOI: ranh day canh + chot nylon bat san (o giua, x = W/2)")):
+    UB, UH, UT = P["U"]
+    for ax, (zlo, zhi), title in ((a_top, (dz1 - 120, zt1 + hh + 30), "TREN: dam 40x40 + ray hop 40x40 + xe treo (CHI GIU DUNG, ho 3)"),
+                                  (a_bot, (-25, dz0 + 110), "DUOI: U chan 40x40 nam ngua + cum banh 608 POM (CHIU TAI)")):
         for li, yc in enumerate((L0, L1)):
             yf0 = yc - FDP / 2
             # canh: vien hop 20x40 (mat cat: 40 sau x 20 cao), lam phia sau mat truoc ~1
@@ -57,13 +58,17 @@ def section():
             ax.add_patch(Circle((yc, zt0 + 14), 7, fc=NYL, ec="black", lw=0.6, zorder=5))
             rect(ax, yc - 4, dz1 + 6, 8, zt0 + 8 - dz1 - 6, "#DADDE0", z=4)
             rect(ax, yc - 15, dz1, 30, 6, STEEL, z=4)
-            # ranh + chot
-            for s in (-1, 1):
-                ya = yc + s * P["slot_w"] / 2
-                rect(ax, min(ya, ya + 3 * s), P["floor_gap"], 3, P["slot_d"], STEEL, z=3)
-            hp = P["floor_gap"] + P["pin_engage"] - 3
-            rect(ax, yc - P["pin_d"] / 2, 3, P["pin_d"], hp, NYL, z=4)
-        rect(ax, L0 - 18, 0, L1 - L0 + 36, 3, STEEL, z=3)                      # de dan huong
+            # U chan nam ngua + cang banh + banh (mat cat qua truc banh: banh thay rong wheel_w, cao wheel_d)
+            rect(ax, yc - UB / 2, 0, UB, UT, STEEL, z=3)
+            rect(ax, yc - UB / 2, 0, UT, UH, STEEL, z=3)
+            rect(ax, yc + UB / 2 - UT, 0, UT, UH, STEEL, z=3)
+            za = meta["z_axle"]
+            bw = P["bogie_w"]
+            rect(ax, yc - bw / 2, za + 4, bw, dz0 - za - 4, "#555", z=4)
+            rect(ax, yc - bw / 2, za - 3, (bw - P["wheel_w"]) / 2 - 1, 7, "#555", z=4)
+            rect(ax, yc + P["wheel_w"] / 2 + 1, za - 3, (bw - P["wheel_w"]) / 2 - 1, 7, "#555", z=4)
+            rect(ax, yc - P["wheel_w"] / 2, UT, P["wheel_w"], P["wheel_d"], NYL, z=5)
+            rect(ax, yc - 4, za - 4, 8, 8, "#DADDE0", z=6)
         rect(ax, -10, -25, 140, 25, "#CFC8BC", ec="none", z=0, hatch="..")    # san
         ax.set_xlim(-10, 130)
         ax.set_ylim(zlo, zhi)
@@ -76,15 +81,16 @@ def section():
     dim(a_top, 112, zt0, 112, zt1, f"ray {th}", 2)
     dim(a_top, 112, zt1, 112, zt1 + hh, f"dam {hh}", 2)
     a_top.text(0, zt1 + hh + 15, f"dinh dam {meta['H_TOP']:.0f} tu san", fontsize=8)
-    dim(a_bot, 112, 0, 112, P["floor_gap"], f"{P['floor_gap']} ho san", 2)
-    dim(a_bot, 112, P["floor_gap"], 112, dz0, f"{P['slot_d']} ranh (la 3x{P['slot_d']})", 2)
-    dim(a_bot, L0 - P["slot_w"] / 2, dz0 + 60, L0 + P["slot_w"] / 2, dz0 + 60, f"ranh {P['slot_w']}", 2, "h")
-    a_bot.text(-5, dz0 + 90, f"chot O{P['pin_d']} an {P['pin_engage']} vao ranh -> chan canh chi lac +-{(P['slot_w'] - P['pin_d']) / 2:g} mm",
+    dim(a_bot, 112, 0, 112, UH, f"U cao {UH}", 2)
+    dim(a_bot, 112, UH, 112, dz0, f"{P['u_gap']} ho", 2)
+    dim(a_bot, L1 - UB / 2, -12, L1 + UB / 2, -12, f"U {UB} = day canh", 2, "h")
+    a_bot.text(-5, dz0 + 90, f"banh 608 POM O{P['wheel_d']}x{P['wheel_w']}, 2 cum x 2 banh / canh, can >= {meta['WHEEL_NEED']:.0f} kg/banh\n"
+               f"cang {P['bogie_w']} trong long U {meta['U_IN']:.0f} -> chan canh lac +-{(meta['U_IN'] - P['bogie_w']) / 2:g} mm",
                fontsize=8)
-    fig.suptitle(f"Mat cat cua treo tai x = {meta['X_GUIDE']:.0f}  |  khe giua 2 canh {meta['GAP_DOOR']:.0f}  |  "
-                 f"canh ~{meta['DOOR_KG'][0]:.0f} kg (lam_kg TODO)", fontsize=10)
+    fig.suptitle(f"Mat cat qua cum banh  |  khe giua 2 canh {meta['GAP_DOOR']:.0f}  |  canh ~{meta['DOOR_KG'][0]:.0f} kg (lam_kg TODO)",
+                 fontsize=10)
     fig.tight_layout()
-    fig.savefig(os.path.join(OUT, "12-mat-cat-treo-dan-huong.png"), dpi=150)
+    fig.savefig(os.path.join(OUT, "12-mat-cat-ray.png"), dpi=150)
 
 
 def plan():
@@ -101,7 +107,11 @@ def plan():
             x0 = DX0[i] + dx[i]
             rect(ax, x0, yc - 20, DWS[i], 40, [LAM, "#7A5538"][i], z=3)
             ax.text(x0 + DWS[i] / 2, yc, f"C{i + 1}", color="white", ha="center", va="center", fontsize=8, zorder=4)
-        ax.add_patch(Circle((meta["X_GUIDE"], (L0 + L1) / 2), 22, fc="#1565C0", ec="none", zorder=5))
+        for yc in (L0, L1):
+            rect(ax, 0, yc - P["U"][0] / 2, W, P["U"][0], "none", ec="#1565C0", lw=0.8, z=4)
+        for i, yc in enumerate((L0, L1)):
+            for xb in (DX0[i] + dx[i] + P["bogie_in"], DX0[i] + dx[i] + DWS[i] - P["bogie_in"]):
+                ax.add_patch(Circle((xb, yc), 14, fc="#F2F2EE", ec="black", lw=0.6, zorder=5))
         for xl in meta["X_FULL"]:
             rect(ax, xl - 20, 120, 40, 40, STEEL, z=2)
         ax.set_xlim(-80, W + 80)
@@ -109,7 +119,7 @@ def plan():
         ax.set_aspect("equal")
         ax.set_title(title, fontsize=9)
         ax.set_yticks([])
-    axs[-1].set_xlabel("tuong trai -> tuong phai (mm).  Cham xanh = chot dan huong san (x = W/2).  O vuong den = cot truoc")
+    axs[-1].set_xlabel("tuong trai -> tuong phai (mm).  Vien xanh = 2 thanh U chan duoi.  Tron trang = cum banh.  O vuong den = cot truoc")
     fig.suptitle(f"Mat bang: canh {DWS[0]:.0f}, chong mi {meta['OV']:.0f}, mo moi nua {meta['OPEN'][0]:.0f}", fontsize=10)
     fig.tight_layout()
     fig.savefig(os.path.join(OUT, "13-mat-bang-hanh-trinh.png"), dpi=150)
@@ -118,4 +128,4 @@ def plan():
 if __name__ == "__main__":
     section()
     plan()
-    print("OK 12-mat-cat-treo-dan-huong.png, 13-mat-bang-hanh-trinh.png")
+    print("OK 12-mat-cat-ray.png, 13-mat-bang-hanh-trinh.png")
