@@ -18,7 +18,7 @@ P = dict(
     # lam song ngoai troi (Tuan 2026-11-09): 220 x 2900 x 26
     lam_w=220, lam_L=2900, lam_t=26,
     lam_waves=4,       # TODO so song that cua thanh mua
-    lam_kg=10.0,       # TODO CAN 1 THANH THAT. Uoc WPC rong ~8-12 kg/thanh 2,9 m -> chi de tinh tai
+    lam_kg=3.0,        # Tuan 2026-11-11: ~3 kg/thanh (uoc cua Tuan)
     door_n=2, ov_min=40, ov_max=200,   # chong mi cho phep
     door_bars=[7, 7],           # Tuan 2026-11-11: 2 canh, moi canh 7 thanh (14 thanh nguyen cay nhu cu)
     # canh tu han: vien hop 20x40x1.2 dat nam (mat 20 lo ra, sau 40), lam lot trong vien
@@ -32,7 +32,7 @@ P = dict(
     hanger_gap=25,              # mep tren canh -> day ray (bat treo + bulong chinh cao, TODO theo xe treo)
     trolley_in=110,             # tam xe treo cach mep canh
     trolley_L=90, trolley_h=28, # than xe treo trong ray (ve minh hoa)
-    trolley_kg=None,            # TODO tai 1 xe treo cua hang mua (kg) -> script so voi tai can
+    trolley_kg=None,            # Tuan tu mua banh/xe treo phu hop (2026-11-11); dien so neu muon script kiem
     # ---- dan huong san (chong lac): doan U chan 40x40x2 o giua + 2 mieng POM trong long U + gan sat la duoi canh
     U=(40, 40, 2.0),            # U chan (rong, cao, day) - Tuan: day 2
     guide_L=140,                # dai doan U (phai nam gon trong vung luon bi ca 2 canh che)
@@ -47,7 +47,7 @@ P = dict(
     handle_finger=15,
     DZ=120,                     # vung 2 ray phia truoc
     tube=(40, 40, 1.4),         # khung chiu luc hop sat 40x40x1.4
-    header=(40, 80, 1.4),       # dam dau cua 40x80 DAT DUNG (80 theo phuong dung), 1 dam / 1 ray
+    header=(40, 40, 1.4),       # dam do ray tren: hop 40x40, 1 dam / 1 ray (canh ~38 kg -> du, xem dam_vong)
     steel_E=200000, steel_sigma_max=140,   # MPa (thep CT3 chay ~235 -> he so ~1,7)
     header_defl_div=400,        # vong cho phep L/400
     z_shelf=2300, board_t=17,
@@ -140,7 +140,7 @@ def _header_check():
 
 HEAD = _header_check()
 CHECK["dam_ung_suat"] = (HEAD["sigma"] <= p["steel_sigma_max"],
-                         f"dam dau cua 40x80 dung, nhip {HEAD['span']:.0f}, canh {max(DOOR_KG):.0f} kg giua nhip: {HEAD['sigma']:.0f} MPa <= {p['steel_sigma_max']}")
+                         f"dam dau cua 40x40, nhip {HEAD['span']:.0f}, canh {max(DOOR_KG):.0f} kg giua nhip: {HEAD['sigma']:.0f} MPa <= {p['steel_sigma_max']}")
 CHECK["dam_vong"] = (HEAD["defl"] <= HEAD["span"] / p["header_defl_div"],
                      f"vong dam {HEAD['defl']:.1f} mm <= L/{p['header_defl_div']} = {HEAD['span'] / p['header_defl_div']:.1f}")
 if p["trolley_kg"]:
@@ -352,7 +352,7 @@ def build():
         steel(f"Ngang-{nm}", "x", 0, W, yc, zc)
     # ---- 2 dam dau cua 40x80 DAT DUNG, moi dam tren 1 ray; tai xuong cot truoc 2 tuong + cot giua
     for li, yc in enumerate(LANES):
-        steel(f"Dam-dau-cua-{li + 1}", "x", 0, W, yc, z_tr1 + H_HEAD / 2, "40x80v")
+        steel(f"Dam-dau-cua-{li + 1}", "x", 0, W, yc, z_tr1 + H_HEAD / 2, "40x40")
         # cot truoc khung day du dung tu san len do dam (o vung ray, sat tuong / cho chong mi)
     for xl in X_FULL:
         box(f"Bat-dam-{int(xl)}", "Khung sat", xl - 20, xl + 20, LANES[0] - 20, y0i, z_tr1, z_tr1 + H_HEAD,
@@ -581,7 +581,7 @@ def main():
               ensure_ascii=False, indent=1)
     for kk, (ok, why) in CHECK.items():
         print(("PASS " if ok else "FAIL ") + kk + ": " + why)
-    print(f"INFO canh {[round(x, 1) for x in DOOR_KG]} kg (lam_kg={p['lam_kg']} TODO can) -> xe treo can >= {TROLLEY_NEED:.0f} kg/xe")
+    print(f"INFO canh {[round(x, 1) for x in DOOR_KG]} kg (lam_kg={p['lam_kg']}) -> xe treo nen >= {TROLLEY_NEED:.0f} kg/xe (Tuan tu chon)")
     if "--anim" in argv:
         sc = bpy.context.scene
         sc.camera = bpy.data.objects["Cam-iso"]

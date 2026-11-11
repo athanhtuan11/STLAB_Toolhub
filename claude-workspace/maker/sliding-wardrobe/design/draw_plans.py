@@ -195,11 +195,11 @@ def bom():
         for (a, L, v), q in sorted(rows.items(), key=lambda r: (r[0][0], str(r[0][1]))):
             w.writerow([a, L, v, q])
         w.writerow([])
-        w.writerow(["Bo ray treo TAI NANG (barn door / ray hop) - xe treo >= %.0f kg/xe, bo >= %.0f kg/canh" % (m["TROLLEY_NEED"], 2 * m["TROLLEY_NEED"]), "", "2 xe/canh", 2 * P["door_n"]])
+        w.writerow(["Bo ray treo + xe treo (Tuan tu chon) - nen >= %.0f kg/xe, bo >= %.0f kg/canh" % (m["TROLLEY_NEED"], 2 * m["TROLLEY_NEED"]), "", "2 xe/canh", 2 * P["door_n"]])
         w.writerow(["Bat treo (bat vien tren bang tan rut ren M8)", "", "2/canh", 2 * P["door_n"]])
         w.writerow(["Khoa an tu cua lua (push lock)", "", "cho chong mi", len(m["LOCKS"])])
         w.writerow(["Ron choi chong bui (mep chong mi)", m["DH"], "1/canh", P["door_n"]])
-        w.writerow(["LUU Y", "", f"tai moi xe treo >= (khoi luong canh / 2) x 1.5 = {m['TROLLEY_NEED']:.0f} kg (canh ~{m['DOOR_KG'][0]:.0f} kg voi lam_kg={P['lam_kg']} – CAN 1 thanh lam)", ""])
+        w.writerow(["LUU Y", "", f"tai moi xe treo >= (khoi luong canh / 2) x 1.5 = {m['TROLLEY_NEED']:.0f} kg (canh ~{m['DOOR_KG'][0]:.0f} kg voi lam_kg={P['lam_kg']})", ""])
         w.writerow(["Khoi luong sat uoc tinh (kg)", round(kg, 1), "do day 1.4/1.2 gia dinh", ""])
     tube_m = Counter()
     for pt in parts:

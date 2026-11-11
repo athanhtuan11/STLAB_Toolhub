@@ -39,7 +39,7 @@ def section():
     tw, th = P["track"]
     hh = P["header"][1]
     fig, (a_top, a_bot) = plt.subplots(2, 1, figsize=(8.5, 11))
-    for ax, (zlo, zhi), title in ((a_top, (dz1 - 120, zt1 + hh + 30), "TREN: dam 40x80 dung + ray treo TAI NANG (ve theo hop 40x40) + xe treo >= 65 kg"),
+    for ax, (zlo, zhi), title in ((a_top, (dz1 - 120, zt1 + hh + 30), "TREN: dam 40x40 + ray treo (ve theo hop 40x40) + xe treo"),
                                   (a_bot, (-25, dz0 + 110), "DUOI: doan U chan 40x40x2 + 2 mieng POM (giua tu) + gan sat la duoi canh")):
         for li, yc in enumerate((L0, L1)):
             yf0 = yc - FDP / 2
@@ -83,7 +83,7 @@ def section():
     a_bot.text(-5, dz0 + 90, f"gan la {P['fin_t']} an {meta['FIN_H'] - P['u_gap']:.0f} vao khe POM -> chan canh lac +-{P['fin_clear']} mm\n"
                f"doan U {meta['GX'][0]:.0f}..{meta['GX'][1]:.0f} luon nam duoi ca 2 canh (khong lo, khong vap)", fontsize=8)
     fig.suptitle(f"Mat cat cua treo tai x = {meta['X_GUIDE']:.0f}  |  khe giua 2 canh {meta['GAP_DOOR']:.0f}  |  "
-                 f"canh ~{meta['DOOR_KG'][0]:.0f} kg (lam_kg TODO)", fontsize=10)
+                 f"canh ~{meta['DOOR_KG'][0]:.0f} kg (lam ~3 kg/thanh)", fontsize=10)
     fig.tight_layout()
     fig.savefig(os.path.join(OUT, "12-mat-cat-treo-dan-huong.png"), dpi=150)
 

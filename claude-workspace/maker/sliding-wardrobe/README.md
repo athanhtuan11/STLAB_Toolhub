@@ -8,8 +8,7 @@ mặt trước là **2 cánh lùa treo hoàn toàn ở trên**, **sàn để tr�
   Bản 4 cánh: `backup/2026-11-11-truoc-2-canh-treo/`. Bản v1 thân ván MFC: `backup/2026-11-09-v1-than-van-mfc/`.
 - Cùng ngày, Tuan thử phương án U chấn 40 × 40 dưới chịu tải (`backup/2026-11-11-truoc-u-chim-giua/`) nhưng thấy **đi lại dễ vấp**
   → chốt **treo hoàn toàn + 1 đoạn U ngắn giấu giữa** (bản này).
-- Ray trên **phải là bộ ray treo tải nặng** (xe treo ≥ 65 kg/xe). Model đang vẽ theo hộp 40 × 40; ray 40 × 40 anh có dùng được
-  nếu bộ xe treo của nó đạt tải, không thì mua bộ barn door / ray treo cửa kho rồi đổi số trong `P`.
+- Ray trên + xe treo: **Tuan tự mua loại phù hợp** (cánh ~38 kg → nên ≥ 29 kg/xe). Model đang vẽ theo hộp 40 × 40; ray 40 × 40 anh có dùng được
 
 ## Lệnh
 
@@ -20,7 +19,7 @@ python draw_hanging.py     # 12 mặt cắt ray treo + dẫn hướng U, 13 mặ
 python draw_plans.py       # 10 khung sắt, 11 cánh + mặt bằng + mặt cắt, bom.csv, 00-contact-sheet
 ```
 
-Sửa `P` trong `build_wardrobe.py` (W sau khi đo, `lam_kg` sau khi cân, số ray và xe treo thật) rồi chạy lại.
+Sửa `P` trong `build_wardrobe.py` (W sau khi đo, số ray và xe treo thật) rồi chạy lại.
 Script in PASS/FAIL cho 13 điều kiện, tất cả đang PASS. Ảnh 3D tổng hợp: `design/renders/00-3d-tong-hop.png`.
 
 ## Nghiên cứu: không có ray dưới thì cánh có rung lắc không? (2026-11-11)
@@ -50,17 +49,16 @@ Với tủ này còn nguy hiểm hơn, vì **2 cánh chỉ cách nhau 8 mm**: l�
 
 - **2 cánh × 7 thanh**, mỗi cánh rộng **1582**, cao **2943**; **chồng mí 164** (W từ ~2965 đến ~3125 vẫn giữ cách chia này).
 - Lùa 1 cánh hết cỡ: **mở nửa trái 1418** hoặc **mở nửa phải 1418**. Không còn cột trước nào chắn lối lấy đồ.
-- Cao độ từ sàn: mép dưới gân 10 · miệng đoạn U 40 · đáy cánh 46 · đỉnh cánh 2989 · đáy ray 3014 · đỉnh ray = đáy dầm 3054 · **đỉnh dầm 3134**.
+- Cao độ từ sàn: mép dưới gân 10 · miệng đoạn U 40 · đáy cánh 46 · đỉnh cánh 2989 · đáy ray 3014 · đỉnh ray = đáy dầm 3054 · **đỉnh dầm 3094**.
   Khe dưới cánh 46 (gân che bớt còn 10) – chỗ này chỉ có ở mặt trước tủ.
   Khe đỉnh cánh – ray 25 là phần bát treo + bu lông chỉnh cao (`TODO` theo xe treo mua).
 - Vùng ray phía trước sâu 120 (2 lớp cánh dày 40, khe giữa 8).
 
 ## Hệ treo
 
-- **2 ray hộp 40 × 40**, mỗi lớp cánh 1 ray, dài 3000 (tường – tường). Mỗi ray bắt **dưới 1 dầm 40 × 80 đặt đứng**
-  (cạnh 80 theo phương đứng là phương cứng). 2 dầm đặt cạnh nhau, cách 8.
-- Dầm tựa vào **cột trước ở 2 tường + cột trước giữa** (bát nối) → nhịp 1460. Kiểm với cánh 86 kg treo giữa nhịp:
-  ứng suất 44 MPa, võng 1,0 mm (giới hạn L/400 = 3,6) → PASS. Nếu đặt dầm nằm như bản cũ thì cứng kém khoảng 3 lần.
+- **2 ray hộp 40 × 40**, mỗi lớp cánh 1 ray, dài 3000 (tường – tường). Mỗi ray bắt **dưới 1 dầm hộp 40 × 40** (2 dầm đặt cạnh nhau, cách 8).
+- Dầm tựa vào **cột trước ở 2 tường + cột trước giữa** (bát nối) → nhịp 1460. Kiểm với cánh 38 kg treo giữa nhịp:
+  ứng suất 51 MPa, võng 2,3 mm (giới hạn L/400 = 3,6) → PASS.
 - **2 xe treo/cánh**, tâm cách mép cánh 110, bu lông treo M8 xuống **bát treo** bắt trên viền trên bằng tán rút ren M8.
 - Xe treo nằm kín trong ray hộp → **không nhảy ray**. Bỏ khóa chống nhảy của bản cũ.
 - **Chặn cuối trong ray:** đầu cánh đóng (C1 ở tường trái, C2 ở tường phải) dùng **chặn có lẫy giữ** (giữ cánh đóng, thay chốt bi);
@@ -68,15 +66,11 @@ Với tủ này còn nguy hiểm hơn, vì **2 cánh chỉ cách nhau 8 mm**: l�
 - **Lắp:** bắt dầm + ray → luồn xe treo vào từ đầu ray → treo cánh → chỉnh bu lông cho cánh thẳng đứng, đáy cánh cách sàn 46
   → đẩy 2 cánh về giữa, đặt 2 đoạn U (đã bắt POM) cho gân lọt vào khe, đánh dấu, bắt vít nở → lắp chặn cuối.
 
-### Tải và chọn xe treo
+### Tải
 
-- Khối lượng cánh ≈ sắt ~15,6 kg (gồm gân) + 7 × (1 thanh lam) + ~1,5 kg phụ kiện. Đang giả định **10 kg/thanh lam** (WPC rỗng 2,9 m,
-  `TODO` **cân 1 thanh thật**) → **~87 kg/cánh**.
-- **Tải mỗi xe treo ≥ (khối lượng cánh ÷ 2) × 1,5 = ~65 kg/xe**, tức bộ 2 xe phải được hãng ghi ≥ 130 kg/cánh.
-- Các bộ bánh treo cửa lùa phổ thông trên thị trường ghi 30–100 kg ([Chiaki](https://chiaki.vn/banh-xe-lua-treo-hammered-4-banh-8-banh-tai-trong-40kg-70kg)),
-  **không đủ**. Cần loại cửa kho / cổng treo / barn door tải ≥ 130 kg/bộ (dùng ray 40 × 40 anh có nếu xe treo của nó đạt tải).
-  Khi mua, hỏi 3 số: tải/bộ, khe đáy ray (bu lông đi qua), chiều cao từ đáy ray tới mặt bát treo.
-  Có số thì điền `trolley_kg`, `track_slot`, `hanger_gap` vào `P`, script sẽ kiểm `xe_treo`.
+- Khối lượng cánh ≈ sắt ~15,6 kg (gồm gân) + 7 × **3 kg/thanh lam** (Tuan 2026-11-11) + ~1,5 kg phụ kiện → **~38 kg/cánh**.
+- Xe treo nên chịu **≥ (38 ÷ 2) × 1,5 ≈ 29 kg/xe** (bộ 2 xe ≥ ~57 kg/cánh). **Tuan tự chọn bánh/xe treo phù hợp.**
+  Mua xong muốn script kiểm thì điền `trolley_kg`, `track_slot`, `hanger_gap` vào `P`.
 
 ## Cánh tự hàn
 
@@ -97,14 +91,14 @@ Với tủ này còn nguy hiểm hơn, vì **2 cánh chỉ cách nhau 8 mm**: l�
   C2 ở lam 6 (cách tường phải 351). Script kiểm `tay_nam_thay`: C2 lùa hết sang trái vẫn còn chỗ móc tay kéo về.
 - Không dùng tay nắm lồi: 2 cánh chỉ cách 8 mm.
 
-## Khung sắt (hộp 40 × 40 × 1,4, dầm đầu cửa 40 × 80 đặt đứng)
+## Khung sắt (hộp 40 × 40 × 1,4, cả dầm đỡ ray)
 
 - **3 khung đầy đủ** (cột trước + cột sau suốt sàn → đỉnh, cột giữa đỡ ống treo, dầm kệ, dầm đỉnh) ở 2 tường và giữa tủ.
   Cột trước giữa nấp sau chỗ chồng mí, khi mở nửa nào cũng không chắn.
 - **2 khung lửng** (không cột trước) ở x = 760 và 2240: cột sau + cột giữa + dầm kệ/đỉnh gác lên thanh ngang trước.
   Nhờ vậy ống treo vẫn chỉ nhịp 700 (tải 40 kg/ống: 67 MPa, võng 1,3 mm, PASS).
 - 4 thanh ngang tường – tường (kệ trước/sau, đỉnh trước/sau), bản đế 60 × 60 × 4 mỗi chân cột, bắt nở vào 3 tường.
-- Vật tư (`design/bom.csv`): hộp 40 × 40 ~53,8 m, 40 × 80 6,0 m (2 dầm), 20 × 40 17,9 m + 13 × 26 12,3 m (2 cánh), sắt ~136 kg
+- Vật tư (`design/bom.csv`): hộp 40 × 40 ~59,7 m (gồm 2 dầm đỡ ray), 20 × 40 17,9 m + 13 × 26 12,3 m (2 cánh), sắt ~132 kg
   (theo độ dày giả định, `TODO` theo hàng mua).
 
 | Khoang | Lọt lòng | Ống Ø27 (cao từ sàn) |
@@ -117,7 +111,7 @@ Với tủ này còn nguy hiểm hơn, vì **2 cánh chỉ cách nhau 8 mm**: l�
 | # | Phụ kiện | SL | Ghi chú |
 | --- | --- | --- | --- |
 | 1 | Ray hộp 40 × 40 dài 3 m | 2 | anh đã có – đo lại khe đáy, độ dày |
-| 2 | Xe treo đúng ray 40 × 40, **≥ 65 kg/xe** (≥ 130 kg/bộ 2 xe) + bu lông treo chỉnh cao | 4 | `TODO` hãng; phổ thông 30–100 kg/bộ là không đủ |
+| 2 | Xe treo đúng ray 40 × 40 + bu lông treo chỉnh cao | 4 | Tuan tự chọn, nên ≥ 29 kg/xe |
 | 3 | Chặn cuối trong ray: 2 loại có lẫy giữ + 2 cao su | 4 | thường đi kèm bộ ray |
 | 4 | **U chấn 40 × 40 × 2** – 2 đoạn dài 140 (cắt từ 1 cây) + 4 vít nở | 2 đoạn | dẫn hướng giữa tủ |
 | 5 | Tấm POM (hoặc nylon) dày ~15 – cắt 4 miếng 14,5 × 38 × 140 + vít | 4 miếng | lót trong đoạn U, chừa khe 7 |
@@ -137,14 +131,14 @@ Video: `blender -b -P build_wardrobe.py -- --out renders --anim` → ghép bằn
 
 ## TODO
 
-- W thực tế; **cân 1 thanh lam** (`lam_kg`); số sóng lam.
-- Đo ray 40 × 40: khe đáy, độ dày; chọn xe treo ≥ 65 kg/xe → điền `trolley_kg`, `track_slot`, `hanger_gap`.
+- W thực tế; số sóng lam.
+- Đo ray 40 × 40: khe đáy, độ dày; xe treo đã mua → điền `trolley_kg`, `track_slot`, `hanger_gap`.
 - Vẽ lại bản vẽ gia công cánh 7 thanh (bảng cắt, lỗ bát treo, gân, khóa) sau khi duyệt.
 - Tường sau ẩm thì chừa khe ~20 sau quần áo hoặc ốp tấm chống ẩm.
 
 ## An toàn
 
-- Cánh **~86 kg, cao 2,94 m** treo trên ray: **2–3 người** nâng và treo cánh. Siết đủ bu lông treo, lắp **chặn cuối 2 đầu ray**
+- Cánh **~38 kg, cao 2,94 m** treo trên ray: **2–3 người** nâng và treo cánh. Siết đủ bu lông treo, lắp **chặn cuối 2 đầu ray**
   trước khi buông tay, không để cánh chạy tuột khỏi đầu ray.
 - Dầm đầu cửa + ray chịu toàn bộ tải 2 cánh: bắt dầm vào tường bằng nở thép (không dùng nở nhựa), hàn/bát chắc vào cột trước giữa.
 - Khung sắt **phải bắt nở vào tường** ở cả 3 phía + sàn. Khoan tường: dò đường điện âm trước.
