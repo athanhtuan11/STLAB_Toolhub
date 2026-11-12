@@ -27,10 +27,11 @@ Phân vùng `partitions/v2/16m.csv`: `nvs` ở **0x9000**, dài 0x4000 – giố
 |---|---|
 | INMP441 WS / SCK / SD | 4 / 5 / 6 (chân L/R nối GND → kênh trái; VDD 3,3 V) |
 | MAX98357A DIN / BCLK / LRC | 7 / 15 / 16 (VIN 5 V hoặc 3,3 V theo module; SD để hở/nối VIN) |
-| Nút nói (BOOT) | 0 |
+| Nút nói NGOÀI (switch MX 2 chân: GPIO1 ↔ GND, pull-up nội) | 1 |
+| Nút BOOT (chìm trong vỏ, chỉ để thử trên bàn, cùng hành vi) | 0 |
 | Vol + / Vol − | 40 / 39 |
 | LED trạng thái (WS2812 trên bo, nếu có) | 48 |
-GPIO35–37 bị PSRAM octal (N16R8) chiếm – không dùng. Nút: chạm = mở/đóng phiên, chạm lúc cô nói = ngắt, giữ 3 s = ngủ; vol+ giữ = cấu hình Wi-Fi.
+GPIO35–37 bị PSRAM octal (N16R8) chiếm – không dùng. Nút: chạm = mở/đóng phiên, chạm lúc cô nói = ngắt, giữ lâu = ngủ (chạm lúc ngủ = nói ngay); vol+ giữ lâu không làm gì (đã bỏ cấu hình Wi-Fi qua điện thoại). GPIO1 là RTC GPIO nên dùng được làm chân đánh thức deep sleep nếu bật sau này.
 
 ## AEC phần mềm (`boards/stlab-s3/stlab_loopback_codec.*`)
 - `Write()`: áp âm lượng, ghi ra MAX98357A **và** chép mẫu (thang 16 bit) vào vòng đệm PSRAM 16384 mẫu.

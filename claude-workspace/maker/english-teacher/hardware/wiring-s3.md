@@ -11,7 +11,7 @@ Mic **INMP441** (I2S) + ampli **MAX98357A** (I2S) + loa 52 mm. Sơ đồ chân g
 - **Tụ hóa có cực**: chân dài (+) vào VIN, chân ngắn / vạch trắng (−) vào GND. Cắm ngược tụ có thể phồng, nổ.
 - Rút USB khi hàn. Mỏ hàn khoảng 330–350 °C, hàn xong để nguội, không chạm đầu mỏ.
 - Nguồn: cục sạc 5 V ≥ 2 A. Đang dùng nguồn ngoài vào chân 5V thì không cắm thêm cáp máy tính.
-- Âm lượng thử ≤ 70. Ω / W của loa: `TODO` (đọc nhãn sau loa).
+- Âm lượng thử ≤ 70. Loa 4 Ω 3 W (nhãn loa) – hợp MAX98357A ở 5 V; nghe rè thì hạ âm lượng.
 
 ## 2. Chuẩn bị
 

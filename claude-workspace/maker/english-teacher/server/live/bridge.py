@@ -120,6 +120,7 @@ def load_prompt():
 from curriculum import Curriculum, ALLOWED_NICKNAMES, live_tools, find_nickname, _fold, wants_switch  # noqa: E402
 import voiceid  # noqa: E402
 from duplex import BargeGate  # noqa: E402
+import music  # noqa: E402
 
 
 def _voice_enabled():
@@ -197,7 +198,17 @@ VOLUME_TOOLS = [
      "parameters": {"type": "OBJECT", "properties": {"delta": {"type": "INTEGER", "description": "-50..50"}},
                     "required": ["delta"]}},
 ]
+MUSIC_TOOLS = [
+    dict(name="play_music",
+         description=("Play a song/music file stored on the server for the child. query = song name or words from it "
+                      "(empty string = any song). The song plays by itself; stay silent until it ends."),
+         parameters={"type": "OBJECT", "properties": {"query": {"type": "STRING", "description": "song name, may be empty"}}}),
+    dict(name="stop_music", description="Stop the music that is playing.", parameters={"type": "OBJECT", "properties": {}}),
+    dict(name="list_music", description="List the song titles that can be played.", parameters={"type": "OBJECT", "properties": {}}),
+]
 MCP_TIMEOUT_S = 4.0
+FORCE_SWITCH = os.environ.get("STLAB_FORCE_SWITCH", "0").strip() == "1"
+LOCK_DEVICE_NICK = os.environ.get("STLAB_LOCK_DEVICE_NICK", "1").strip() != "0"   # bo da co biet danh trong devices.json -> khoa
 
 
 # 2026-11-06 Tuan: co khong hieu "da", giong vung mien/con nit. Gemini Live transcription co language_codes + custom_vocabulary
@@ -237,7 +248,7 @@ def live_config():
         system_instruction=PROMPT,
         input_audio_transcription=in_transcription(),
         output_audio_transcription=types.AudioTranscriptionConfig(),
-        tools=[types.Tool(function_declarations=live_tools() + VOLUME_TOOLS)],
+        tools=[types.Tool(function_declarations=live_tools() + VOLUME_TOOLS + MUSIC_TOOLS)],
         realtime_input_config=types.RealtimeInputConfig(
             automatic_activity_detection=types.AutomaticActivityDetection(
                 start_of_speech_sensitivity=(types.StartSensitivity.START_SENSITIVITY_HIGH if START_SENS == "high"
@@ -520,6 +531,7 @@ class Session:
         self.m_replies = []                # loi co theo luot (chi de dem chi so, khong ghi ra log)
         self.m_silence = 0                 # so lan nhac be im
         self.ending = False                # be bam KEY4 xin ket thuc (abort luc co khong noi)
+        self.music_task = None             # tac vu phat nhac (play_music); None = khong phat
 
     async def handle_tool_call(self, tc):
         resps = []
@@ -539,6 +551,12 @@ class Session:
                     log(f"[LIVE-TOOL] doi chu de '{str(a.get('topic', ''))[:40]}' -> {res.get('words')}")
                 elif fc.name in ("set_volume", "volume_change"):
                     res = await self.do_volume(fc.name, a)
+                elif fc.name == "play_music":
+                    res = await self.do_play_music(str(a.get("query") or ""))
+                elif fc.name == "stop_music":
+                    res = {"ok": True, "was_playing": self.stop_music("gemini stop_music")}
+                elif fc.name == "list_music":
+                    res = {"songs": music.list_tracks()[:50]}
                 else:
                     res = {"error": "unknown tool"}
             except Exception as e:
@@ -601,6 +619,70 @@ class Session:
                 self.out_q.get_nowait()
             except asyncio.QueueEmpty:
                 break
+
+    # ---- Phat nhac tu thu muc may chu (play_music): dung lai out_q/pacer nhu tieng co ----
+    async def do_play_music(self, query):
+        path = music.find_track(query)
+        if path is None:
+            titles = music.list_tracks()
+            log(f"[MUSIC] khong thay '{query[:40]}' ({len(titles)} bai)")
+            return {"ok": False, "error": "no such song" if titles else "no music files on the server",
+                    "available": titles[:30]}
+        self.stop_music("bai moi")
+        self.music_task = asyncio.create_task(self.music_run(path))
+        return {"ok": True, "title": path.stem, "note": "Say at most one very short sentence, then stay silent while it plays."}
+
+    def stop_music(self, reason):
+        """Dung nhac dang phat (neu co). Tra True neu co dang phat."""
+        t, self.music_task = self.music_task, None
+        if t is None or t.done():
+            return False
+        t.cancel()
+        log(f"[MUSIC] stop {reason}")
+        self.clear_out()
+        self.fast_stop = True
+        self.out_q.put_nowait("STOP")
+        return True
+
+    async def music_run(self, path):
+        me = asyncio.current_task()
+        try:
+            # cho Gemini noi xong cau bao ('Dang mo bai ...') roi moi phat
+            await asyncio.sleep(1.0)
+            for _ in range(80):
+                if not (self.gen_open or not self.out_q.empty()):
+                    break
+                await asyncio.sleep(0.1)
+            pcm = await asyncio.to_thread(music.decode_pcm, path, OUT_RATE)
+            log(f"[MUSIC] play {path.stem} ({len(pcm) / (OUT_RATE * 2):.0f} s)")
+            self.tts_on = True
+            self.out_q.put_nowait("START")
+            step = OUT_FRAME * 2
+            for i in range(0, len(pcm), step):
+                chunk = pcm[i:i + step]
+                if len(chunk) < step:
+                    chunk += b"\x00" * (step - len(chunk))
+                self.out_q.put_nowait(self.enc.encode(chunk, OUT_FRAME))
+                while self.out_q.qsize() > 40:
+                    await asyncio.sleep(0.1)
+            self.out_q.put_nowait("STOP")
+            while not self.out_q.empty() or self.dev_on:
+                await asyncio.sleep(0.2)
+            if self.music_task is not me or self.closed:
+                return
+            self.music_task = None
+            log("[MUSIC] end")
+            if self.live is not None:
+                await self.live.send_client_content(
+                    turns=types.Content(role="user", parts=[types.Part(
+                        text="[music ended] The song finished. Talk briefly about it, then return to the lesson.")]),
+                    turn_complete=True)
+        except asyncio.CancelledError:
+            raise
+        except Exception as e:
+            log(f"[MUSIC] loi {type(e).__name__}: {str(e)[:120]}")
+            if self.music_task is me:
+                self.music_task = None
 
     async def pacer(self):
         """Gui Opus xuong thiet bi: PRE_BUFFER khung dau gui ngay, sau do giu nhip 60 ms/khung."""
@@ -802,6 +884,8 @@ class Session:
         """Be nhan biet danh: cau noi tu goi Curriculum.start va nho Gemini bat dau bai."""
         if self.pending_lesson:
             return
+        if LOCK_DEVICE_NICK and self.nick and self.device_id and DEVICE_NICK.get(self.device_id):
+            return                          # bo da gan biet danh (devices.json): khong doi khi nghe ten con vat khac
         if self.nick:
             if not (self.prefilled and self.child_turns < 3):
                 return
@@ -920,6 +1004,7 @@ class Session:
                     self.in_buf += sc.input_transcription.text
                     self.check_nick()
                 if sc.interrupted:
+                    self.stop_music("Gemini bao be noi chen")
                     self.clear_out()
                     self.aborted = False
                     self.in_buf = ""
@@ -949,7 +1034,9 @@ class Session:
                         self.aborted = False
                         if not self.dev_on and self.out_q.empty():
                             self.user_txt, self.reply_txt, self.t_user_end = "", "", None
-                    if (self.in_buf.strip() and (self.nick or self.dev_mode) and not self.ending
+                    # DETOUR (2026-11-12): che do lo trinh KHONG con tu CUR.switch khi be xin doi/viec khac -
+                    # Gemini lam theo yeu cau theo muc DETOUR cua prompt roi quay lai bai. Chi ep lai khi STLAB_FORCE_SWITCH=1.
+                    if (FORCE_SWITCH and self.in_buf.strip() and (self.nick or self.dev_mode) and not self.ending
                             and wants_switch(self.in_buf)):
                         try:
                             sw = CUR.switch(self.nick, device=self.device_id or None)
@@ -983,6 +1070,7 @@ class Session:
 
     def interrupt_now(self):
         """Be ngat loi (nut abort hoac giong qua BargeGate): dung phat ngay, bo phan Gemini con sinh, cho be noi tiep."""
+        self.stop_music("be cham/noi chen")
         self.clear_out()
         if self.gen_open or self.dev_on or self.tts_on:
             self.fast_stop = True
@@ -1083,6 +1171,8 @@ class Session:
                     log(f"loi phien: {type(d.exception()).__name__}: {str(d.exception())[:200]}")
         finally:
             self.closed = True
+            if self.music_task is not None:
+                self.music_task.cancel()
             if self.vad is not None and self.vad.n:
                 av, mx, n = self.vad.stats()
                 log(f"[LIVE-VAD] {n} khung, TB {av:.2f} ms, max {mx:.2f} ms / khung")

@@ -59,3 +59,8 @@ Mạng nhà phải được đặt là "Private". Gỡ: `Remove-NetFirewallRule 
   - `exit_commands`: viết LIỀN không khoảng trắng, phân biệt hoa thường. Máy chủ so khớp chính xác sau khi bỏ dấu câu và khoảng trắng.
 - Gate độ trễ LLM: `runtime\.venv\Scripts\python.exe -X utf8 test_llm_latency.py`
 - Tự bật khi đăng nhập Windows: `install-autostart.ps1` (gỡ: `-Remove`).
+
+## Rẽ ngang khi học Seed + mở nhạc (2026-11-12)
+- Seed vẫn là xương sống nhưng bé xin việc khác (kể chuyện, hát, trò chơi, mở nhạc) thì cô làm theo rồi quay lại bài (mục `## DETOUR` trong `prompt-teacher.md`); bridge không còn tự `CUR.switch` (bật lại: `STLAB_FORCE_SWITCH=1`).
+- Nhạc: chép file vào `server/music/` (hoặc `STLAB_MUSIC_DIR`), công cụ Gemini `play_music/stop_music/list_music`, module `live/music.py`. Gate: `test_detour.py`.
+- Khóa biệt danh theo bo: bo đã có trong `data/devices.json` thì bridge không đổi biệt danh khi nghe tên con vật khác (mặc định bật; `STLAB_LOCK_DEVICE_NICK=0` = hành vi cũ).

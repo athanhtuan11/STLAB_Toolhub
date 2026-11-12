@@ -28,7 +28,7 @@ Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\
 - xiaozhi v2.5.2: có `partitions/v2/4m.csv` (factory 0x2F0000 + assets 1 MB, không OTA), `sdkconfig.defaults.esp32` dùng WakeNet9
   "nihao xiaozhi"; có driver `main/audio/codecs/es8388_audio_codec.cc`; không có cấu hình bo A1S → tự viết.
 
-- **Cơ khí** (2026-11-06): loa **Ø52 × cao 26 mm** (Tuan đo). Bo Audio Kit V2.2 **82 × 73 mm** theo hình kích thước trong datasheet
+- **Cơ khí** (2026-11-06): loa **Ø52 × cao 26 mm** (Tuan đo), **4 Ω 3 W** (nhãn loa, Tuan đọc 2026-11-12). **Bản S3: 1 loa duy nhất** (Tuan chốt 2026-11-12, thay 2 loa trái + phải) → vỏ S3 sau này: 1 loa, khay bo S3 N16R8, mic xa loa. Không ghép 2 loa vào 1 MAX98357A (song song 2 Ω quá tải). Bo Audio Kit V2.2 **82 × 73 mm** theo hình kích thước trong datasheet
   Ai-Thinker (https://manuals.plus/m/733d5ba2d731002bae35fd49d2f607f00a214056ed9d35b7bb477eecc9a2aa24.pdf – bảng thông số cùng file ghi
   82 × 37, mâu thuẫn, bỏ). Độ dày, lỗ vít, chiều cao linh kiện, vị trí USB/jack/micro: không có nguồn → khay đỡ rãnh trượt khe rộng.
 

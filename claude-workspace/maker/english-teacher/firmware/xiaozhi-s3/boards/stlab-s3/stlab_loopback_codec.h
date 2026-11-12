@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <mutex>
 #include <vector>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
 // INMP441 + MAX98357A khong co codec tra tham chieu loa -> thay bang THAM CHIEU PHAN MEM:
 // Write() chep mau PCM sau khi ap am luong (dung mau dua ra MAX98357A) vao vong dem PSRAM;
@@ -27,8 +29,12 @@ protected:
     virtual int Read(int16_t* dest, int samples) override;
 
 private:
+    std::vector<int32_t> raw_buf_;
     void PushRef(const int16_t* data, int samples);
     void FetchRef(int16_t* out, int n);
+    void HistPush(const int16_t* mic, const int16_t* ref, int n);
+    void LagLoop();
+    static void LagTask(void* arg);
 
     int16_t* ring_ = nullptr;          // vong dem tham chieu (PSRAM)
     size_t ring_cap_ = 0;              // so mau (luy thua cua 2)
@@ -39,6 +45,17 @@ private:
     std::mutex ring_mutex_;
     std::vector<int16_t> mic_buf_;
     std::vector<int16_t> ref_buf_;
+
+    // Uoc luong tre (AEC-LAG): lich su mic + ref (da qua tre hien tai) ha mau 4:1 (4 kHz) ~1 s, tuong quan cheo o task thap.
+    static constexpr int kHistN = 4000;                 // 1 s o 4 kHz
+    int16_t* hist_mic_ = nullptr;                       // vong, PSRAM
+    int16_t* hist_ref_ = nullptr;
+    uint64_t hist_n_ = 0;                               // so mau ha mau da ghi
+    int acc_m_ = 0, acc_r_ = 0, acc_k_ = 0;             // bo cong ha mau
+    size_t hist_delay_ = 0;                             // tre (mau 16 kHz) ung voi lich su; doi tre -> xoa lich su
+    std::mutex hist_mutex_;
+    TaskHandle_t lag_task_ = nullptr;
+    volatile bool lag_stop_ = false;
 };
 
 // Thong ke RMS cho log [AEC] (mic / ref / sau AFE); AFE goi stlab_afe_out_hook (patch 0002).
@@ -48,6 +65,8 @@ struct StlabAecStats {
     std::atomic<uint64_t> out_sq{0}, out_n{0};
     std::atomic<int64_t> last_play_us{0};
     std::atomic<int64_t> last_log_us{0};
+    std::atomic<uint64_t> clip_n{0};      // so mau mic |x| >= 32000 trong cua so log
+    std::atomic<int> delay_ms{0};         // tre ref hien tai (auto co the doi)
 };
 StlabAecStats& GetStlabAecStats();
 

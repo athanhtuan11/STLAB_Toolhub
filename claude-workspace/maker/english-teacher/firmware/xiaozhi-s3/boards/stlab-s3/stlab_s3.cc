@@ -38,13 +38,14 @@ extern "C" void stlab_afe_out_hook(const int16_t* data, size_t samples) {
         return;   // loa im: khong can log
     }
     auto rms = [](uint64_t s, uint64_t n) { return n ? (int)std::sqrt((double)s / (double)n) : 0; };
-    ESP_LOGI("AEC", "[AEC] delay=%d ms rms mic=%d ref=%d afe_out=%d", STLAB_AEC_REF_DELAY_MS,
-             rms(msq, mn), rms(rsq, rn), rms(osq, on));
+    ESP_LOGI("AEC", "[AEC] delay=%d ms rms mic=%d ref=%d afe_out=%d clip=%u", st.delay_ms.load(),
+             rms(msq, mn), rms(rsq, rn), rms(osq, on), (unsigned)st.clip_n.exchange(0));
 }
 
 class StlabS3Board : public WifiBoard {
 private:
-    Button talk_button_;
+    Button talk_button_;   // GPIO1: switch MX ngoai vo (2 chan GPIO-GND, pull-up noi)
+    Button boot_button_;   // GPIO0: nut BOOT tren devkit, chi de thu tren ban
     Button volume_up_button_;
     Button volume_down_button_;
     SingleLed* led_ = nullptr;
@@ -137,7 +138,7 @@ private:
     void InitializeButtons() {
         // Giu hanh vi nut nhu A1S: cham = mo/dong phien; cham luc co noi = ngat loi; giu 3 s = ngu.
         // Ban realtime van ngat loi bang giong (AEC + BargeGate may chu), nut chi la phuong an du phong.
-        talk_button_.OnClick([this]() {
+        auto on_talk_click = [this]() {
             auto& app = Application::GetInstance();
             sleeping_ = false;
             power_save_timer_->WakeUp();
@@ -161,16 +162,19 @@ private:
                 return;
             }
             app.ToggleChatState();
-        });
-
-        talk_button_.OnLongPress([this]() {
+        };
+        auto on_talk_long = [this]() {
             ESP_LOGI(TAG, "Nut noi giu %d ms -> ngu", STLAB_TALK_LONG_MS);
             xTaskCreate(SleepTask, "stlab_sleep", 4096, this, 3, nullptr);
-        });
+        };
+        // Nut ngoai GPIO1 (switch MX) va nut BOOT GPIO0 (thu tren ban) cung hanh vi
+        talk_button_.OnClick(on_talk_click);
+        talk_button_.OnLongPress(on_talk_long);
+        boot_button_.OnClick(on_talk_click);
+        boot_button_.OnLongPress(on_talk_long);
 
-        // vol+ / vol-: +/- 10; giu vol+ de vao cau hinh Wi-Fi
+        // vol+ / vol-: +/- 10; giu lau khong lam gi (Tuan khong dung cau hinh Wi-Fi qua dien thoai)
         volume_up_button_.OnClick([this]() { ChangeVolume(STLAB_VOLUME_STEP); });
-        volume_up_button_.OnLongPress([this]() { EnterWifiConfigMode(); });
         volume_down_button_.OnClick([this]() { ChangeVolume(-STLAB_VOLUME_STEP); });
     }
 
@@ -178,6 +182,7 @@ public:
     StlabS3Board()
         : WifiBoard(),
           talk_button_(TALK_BUTTON_GPIO, false, STLAB_TALK_LONG_MS),
+          boot_button_(BOOT_BUTTON_GPIO, false, STLAB_TALK_LONG_MS),
           volume_up_button_(VOLUME_UP_BUTTON_GPIO),
           volume_down_button_(VOLUME_DOWN_BUTTON_GPIO) {
         InitializeButtons();
