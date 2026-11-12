@@ -1,0 +1,13 @@
+# servo-horn-sg90 - ban in, doc boi tools/print/scripts/slice.py
+# Cau hinh theo tac gia khop con SG90 (Print2Drive): A1 0.4, Bambu PETG Basic, 0,16 mm, 3 tuong, 20 %
+data_dir: ..
+machine: Bambu Lab A1 0.4 nozzle
+filament: Bambu PETG Basic @BBL A1
+stl: stl
+plates_dir: plates
+common: {sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
+plates:
+  p1-servo-horns:
+    process: 0.16mm Optimal @BBL A1
+    overrides: {wall_loops: "3", sparse_infill_density: "20%"}
+    stl: ["half.stl", "line.stl", "cross.stl"]

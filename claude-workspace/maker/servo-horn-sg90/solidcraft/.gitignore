@@ -1,0 +1,5 @@
+build/
+stl/
+plates/
+servo-horn.sc
+build-report.json

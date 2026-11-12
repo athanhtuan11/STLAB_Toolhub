@@ -449,6 +449,122 @@
    "confidence": 0.6,
    "verified": false,
    "note": "Hoc mach 40,2 x 27,2 mm (goc R1), mach tua go z+4,9 tu day trong, khong gian tren mach toi nap 7,7 mm. Hoc NHO hon 40,5 datasheet -> mach thuc co the ~40,0; khong dung lam mac dinh. Vo chi cho ESP32-CAM KHONG co de nap (duoi mach chi ~4 mm). Lo ong kinh nap O8,3 tai 9,4 mm tu canh ngan, giua chieu rong."
+  },
+  {
+   "id": "sg90-horn/spline-taper-bore",
+   "interface": "servo-9g-spline-horn-bore",
+   "fit": "press",
+   "hole_mm": 4.64,
+   "shaft_mm": null,
+   "clearance_mm": null,
+   "nominal_mm": null,
+   "source": {
+    "model": "makerworld-servo-arm-sg90",
+    "parts": "servo arm_1 (arm don) - cac arm 2..5 cung hub",
+    "method": "stl-slice",
+    "ref": "docs/research-notes/servo-horn-sg90-cyberbrick-fits.md"
+   },
+   "print": {
+    "printer": "Bambu Lab A1 0.4, lop 0.16, 3 tuong, 20 %",
+    "material": "Bambu PETG Basic @BBL A1",
+    "xy_hole_compensation": 0,
+    "proven": "san pham hoan thien, tac gia in + chay that (MakerWorld 'Servo Arm Universal Set - MG90 SG90 PG001 PG002')"
+   },
+   "confidence": 0.9,
+   "verified": false,
+   "note": "Lo tron KHONG ve rang: mieng D5,00 sau 0,49 roi con thang toi D4,64 o day (sau 2,70 = cao hub, do doc 0,0815/ben). Rang truc khia servo tu an vao nhua khi ep. Hub OD 7,00. Tac gia ghi vua MG90/SG90/PG001/PG002. D ngoai truc khia SG90: TODO (datasheet)."
+  },
+  {
+   "id": "sg90-horn/screw-countersink",
+   "interface": "servo-9g-horn-screw",
+   "fit": "clearance",
+   "hole_mm": 2.7,
+   "shaft_mm": null,
+   "clearance_mm": null,
+   "nominal_mm": null,
+   "source": {
+    "model": "makerworld-servo-arm-sg90",
+    "parts": "servo arm_1 (arm don) - cac arm 2..5 cung hub",
+    "method": "stl-slice",
+    "ref": "docs/research-notes/servo-horn-sg90-cyberbrick-fits.md"
+   },
+   "print": {
+    "printer": "Bambu Lab A1 0.4, lop 0.16, 3 tuong, 20 %",
+    "material": "Bambu PETG Basic @BBL A1",
+    "xy_hole_compensation": 0,
+    "proven": "san pham hoan thien, tac gia in + chay that (MakerWorld 'Servo Arm Universal Set - MG90 SG90 PG001 PG002')"
+   },
+   "confidence": 0.9,
+   "verified": false,
+   "note": "Lo vit xuyen D2,70 (vach 0,575 giua day lo con va loe), loe 90 do tu D2,70 len D5,00, hoc dau vit D5,00 sau 0,445 tren mat arm. Arm day 2,17, tong cao 4,87."
+  },
+  {
+   "id": "sg90-horn/link-hole",
+   "interface": "servo-horn-link-hole",
+   "fit": "clearance",
+   "hole_mm": 1.5,
+   "shaft_mm": null,
+   "clearance_mm": null,
+   "nominal_mm": null,
+   "source": {
+    "model": "makerworld-servo-arm-sg90",
+    "parts": "servo arm_1 (arm don) - cac arm 2..5 cung hub",
+    "method": "stl-slice",
+    "ref": "docs/research-notes/servo-horn-sg90-cyberbrick-fits.md"
+   },
+   "print": {
+    "printer": "Bambu Lab A1 0.4, lop 0.16, 3 tuong, 20 %",
+    "material": "Bambu PETG Basic @BBL A1",
+    "xy_hole_compensation": 0,
+    "proven": "san pham hoan thien, tac gia in + chay that (MakerWorld 'Servo Arm Universal Set - MG90 SG90 PG001 PG002')"
+   },
+   "confidence": 0.9,
+   "verified": false,
+   "note": "Lo arm in D1,50, buoc 2,375, arm don 5 lo tu 5,60 toi 15,10 tinh tu tam truc; arm rong 7,00 thang, dau R3,50, dai 17,60 tu tam."
+  },
+  {
+   "id": "cyberbrick-horn/link-hole",
+   "interface": "servo-horn-link-hole",
+   "fit": "clearance",
+   "hole_mm": 1.0,
+   "shaft_mm": null,
+   "clearance_mm": null,
+   "nominal_mm": null,
+   "source": {
+    "model": "cyberbrick-official (CyberBrick Module CAD Models / 9g Servo PG001-PG002 half/line/cross arm .stp)",
+    "parts": "half arm1, line arm, cross arm",
+    "method": "step-slice",
+    "ref": "docs/research-notes/servo-horn-sg90-cyberbrick-fits.md"
+   },
+   "print": {
+    "printer": "dap khuon (hang)",
+    "material": "TODO"
+   },
+   "confidence": 0.95,
+   "verified": false,
+   "note": "Lo arm CyberBrick D1,00 (lo 10,75 la D1,10) buoc 2,0 tu 4,75 toi 14,75 (cross +X toi 16,75; tay +-Y 4,75 + 6,75). DANG ARM (fit sai so <=0,001): hub R3,63; canh y=+-(3,08-0,083x) tiep tuyen dau R1,90 tai x=14,14 (dai 16,05 tu tam); cross: +X y=+-(3,75-0,1058x) dau R2,00 tai 16,46 (dai 18,46), +-Y rong 3,80 dau R1,90 tai 6,45 (dai 8,35). Arm day 1,85, tong 4,15. Ban in thi lo 1,0 de bit -> STLab dung 1,2."
+  },
+  {
+   "id": "cyberbrick-horn/hub",
+   "interface": "servo-9g-spline-horn-bore",
+   "fit": "unknown",
+   "hole_mm": 4.3,
+   "shaft_mm": null,
+   "clearance_mm": null,
+   "nominal_mm": null,
+   "source": {
+    "model": "cyberbrick-official (CyberBrick Module CAD Models / 9g Servo PG001-PG002 half/line/cross arm .stp)",
+    "parts": "half arm1, line arm, cross arm",
+    "method": "step-slice",
+    "ref": "docs/research-notes/servo-horn-sg90-cyberbrick-fits.md"
+   },
+   "print": {
+    "printer": "dap khuon (hang)",
+    "material": "TODO"
+   },
+   "confidence": 0.5,
+   "verified": false,
+   "note": "STEP hang don gian hoa: lo hub tron D4,30 sau 2,30, KHONG co rang -> khong dung lam so ep cho ban in (dung sg90-horn/spline-taper-bore). Lo vit D2,50, hoc dau D4,90 sau 1,10, hub OD 7,26."
   }
  ]
 }
