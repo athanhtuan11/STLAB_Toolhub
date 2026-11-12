@@ -1,0 +1,13 @@
+# cyberbrick-arm gripper-v2 – ban in, doc boi tools/print/scripts/slice.py
+# Chi tiet nho chiu luc (vit me, chot) -> 100 % infill (skill mechanical-design). Chot in NAM (mat D xuong ban).
+data_dir: ..
+machine: Bambu Lab A1 0.4 nozzle
+filament: Bambu PETG Basic @BBL A1
+stl: out
+plates_dir: plates
+common: {sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
+plates:
+  p1-gripper-v2:
+    process: 0.16mm Optimal @BBL A1
+    overrides: {wall_loops: "3", sparse_infill_density: "100%", sparse_infill_pattern: zig-zag}
+    stl: ["worm-v2.stl", "pin-v2-a.stl", "pin-v2-b.stl", "pin-v2-c.stl", "washer-a.stl", "washer-b.stl", "washer-c.stl"]

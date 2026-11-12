@@ -1,0 +1,27 @@
+{
+ "_note": "mm. So do tu luoi goc tipflow (tools/model-study/_out/arm/parts, cat lat doc truc 2026-11-12). Khe theo skill mechanical-design + fit-library.",
+ "worm": {
+  "_src": "02: lo khia servo r2,10-2,58 tu z~29,0 toi dau 31,28 (sau 2,28); vanh: goc r4,17 tai z~26,55, vat 45 do len dinh r4,85; truc servo CyberBrick ~2,3 (fit-library cyberbrick-horn/hub sau 2,30)",
+  "spline_bottom_z": 29.0,
+  "socket_extra_d": 5.2,
+  "socket_extra_depth": 1.0,
+  "collar_r_root": 4.17,
+  "collar_chamfer_z0": 26.55,
+  "collar_r_peak": 4.85,
+  "collar_relief": 0.3
+ },
+ "pin": {
+  "_src": "goc 24: dau O6,10 dai 2,5 / than O5,07 toi z 11,0 / go ma sat toi 16,0; than trong ngon O5,47 (khe 0,40 = fit-library tipflow-arm/tilted-pin-5mm); lo vach ngoai O4,4; dau chot goc nho 0,25 khoi mat ngoai -> rut ngan 0,65 de lui 0,4",
+  "head_d": 6.1,
+  "head_len": 2.5,
+  "body_d": 5.07,
+  "body_end": 11.0,
+  "tip_d": 4.2,
+  "length": 15.35,
+  "chamfer": 0.3,
+  "screw_hole_d": 2.2,
+  "screw_hole_depth": 6.2,
+  "flat_y": 2.1
+ },
+ "washer": {"od": 7.0, "id": 2.8, "t": 1.0}
+}
