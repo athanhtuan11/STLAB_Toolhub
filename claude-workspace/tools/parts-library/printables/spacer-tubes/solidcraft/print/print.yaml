@@ -1,0 +1,12 @@
+# spacer-tubes - ban in, doc boi tools/print/scripts/slice.py
+data_dir: ..
+machine: Bambu Lab A1 0.4 nozzle
+filament: Bambu PETG Basic @BBL A1
+stl: stl
+plates_dir: plates
+common: {sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
+plates:
+  p1-spacer-tubes:
+    process: 0.16mm Optimal @BBL A1
+    overrides: {wall_loops: "3", sparse_infill_density: "20%", brim_type: outer_only, brim_width: "4"}
+    stl: ["tube-od5-id2.2-h20.stl", "tube-od10-id2.2-h20.stl", "tube-od10-id2.4-h20.stl"]

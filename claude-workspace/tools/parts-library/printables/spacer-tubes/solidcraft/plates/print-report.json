@@ -1,0 +1,26 @@
+{
+ "yaml": "D:\\04_Stlab\\04_STLAB_Toolhub\\claude-workspace\\tools\\parts-library\\printables\\spacer-tubes\\solidcraft\\print\\print.yaml",
+ "thoi_gian": "2026-11-12 19:53",
+ "ket_luan": "PASS",
+ "tong_thoi_gian_in": "0h28",
+ "tong_gam": 3.2,
+ "stl_chua_xep": [],
+ "stl_xep_2_lan": [],
+ "xu_ly_lo_lung": {},
+ "brim": {},
+ "ban": [
+  {
+   "ban": "p1-spacer-tubes",
+   "anh": "D:\\04_Stlab\\04_STLAB_Toolhub\\claude-workspace\\tools\\parts-library\\printables\\spacer-tubes\\solidcraft\\plates\\p1-spacer-tubes\\preview.png",
+   "thoi_gian_s": 1728,
+   "gam": 3.2,
+   "so_chi_tiet": 3,
+   "co_canh_bao_cat": false,
+   "support": false,
+   "loi": [],
+   "canh_bao": [],
+   "trang_thai": "PASS"
+  }
+ ],
+ "thoi_gian_chay_s": 28.1
+}

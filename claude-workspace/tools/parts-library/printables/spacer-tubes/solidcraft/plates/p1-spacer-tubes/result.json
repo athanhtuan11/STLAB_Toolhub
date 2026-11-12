@@ -1,0 +1,118 @@
+{
+    "error_string": "Success.",
+    "layer_height": 0.1599999964237213,
+    "peak_rss_mb": 146.25,
+    "plate_index": 0,
+    "return_code": 0,
+    "sliced_plates": [
+        {
+            "feature_type_times": {
+                "Bottom surface": 5.698720932006836,
+                "Brim": 15.76657485961914,
+                "Custom": 34.45389175415039,
+                "Gap infill": 60.397464752197266,
+                "Inner wall": 704.8809204101563,
+                "Internal solid infill": 36.19270706176758,
+                "Outer wall": 481.3015441894531,
+                "Sparse infill": 195.77542114257813,
+                "Top surface": 7.972710132598877,
+                "Travel": 201.2861785888672,
+                "Undefined": 185.9064178466797
+            },
+            "filament_change_times": 0,
+            "filaments": [
+                {
+                    "filament_id": "GFG00",
+                    "id": 1,
+                    "main_used_g": 3.2156031131744385,
+                    "total_used_g": 3.2156031131744385
+                }
+            ],
+            "id": 1,
+            "layer_filament_change": 0,
+            "main_predication": 1709.3218994140625,
+            "obj_cached_cnt": 0,
+            "objects": [
+                {
+                    "bbox": {
+                        "depth": 13.892212867736816,
+                        "height": 20.0,
+                        "width": 13.892183303833008,
+                        "x": 123.48670959472656,
+                        "y": 127.0532455444336,
+                        "z": 0.0
+                    },
+                    "id": 57,
+                    "name": "tube-od10-id2.2-h20.stl",
+                    "triangle_count": 17016
+                },
+                {
+                    "bbox": {
+                        "depth": 13.892212867736816,
+                        "height": 20.0,
+                        "width": 13.892183303833008,
+                        "x": 123.48670959472656,
+                        "y": 115.05453491210938,
+                        "z": 0.0
+                    },
+                    "id": 68,
+                    "name": "tube-od10-id2.4-h20.stl",
+                    "triangle_count": 17216
+                },
+                {
+                    "bbox": {
+                        "depth": 6.667958736419678,
+                        "height": 20.0,
+                        "width": 6.6683220863342285,
+                        "x": 119.7334976196289,
+                        "y": 124.66532135009766,
+                        "z": 0.0
+                    },
+                    "id": 79,
+                    "name": "tube-od5-id2.2-h20.stl",
+                    "triangle_count": 14216
+                }
+            ],
+            "times": {
+                "conflict_check_time": 8,
+                "detect_overhangs_time": 5,
+                "export_gcode_time": 942,
+                "flush_plan_time": 0,
+                "generate_support_material_time": 41,
+                "infill_generate_time": 19,
+                "infill_time": 80,
+                "ironing_time": 0,
+                "make_perimeters_time": 273,
+                "multifilament_segment_2d_time": 0,
+                "other_slice_time": 9,
+                "prepare_infill_time": 61,
+                "region_split_time": 0,
+                "skirt_brim_time": 13,
+                "slice_layers_time": 90,
+                "sliced_time": 1434,
+                "sliced_time_with_cache": 955,
+                "support_detect_time": 0,
+                "support_interface_time": 0,
+                "support_normal_generate_time": 0,
+                "support_toolpath_time": 0,
+                "support_tree_generate_time": 0,
+                "toolpath_time": 54,
+                "wall_time": 183,
+                "wipe_tower_time": 5
+            },
+            "total_predication": 1728.365478515625,
+            "triangle_count": 48448,
+            "warning_message": ""
+        }
+    ],
+    "sparse_infill_density": 20.0,
+    "times": {
+        "export_3mf_time": 148,
+        "export_slicedata_time": 0,
+        "export_time": 1169,
+        "import_time": 52,
+        "load_slicedata_time": 0,
+        "prepare_time": 205
+    },
+    "wall_loops": 3
+}

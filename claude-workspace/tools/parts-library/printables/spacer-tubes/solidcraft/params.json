@@ -1,0 +1,8 @@
+{
+  "_note": "Ong tru (spacer) - Tuan 2026-11-12. Don vi mm. id = duong kinh lo, od = duong kinh ngoai, h = cao.",
+  "tubes": {
+    "tube-od5-id2.2-h20":  {"od": 5.0,  "id": 2.2, "h": 20.0},
+    "tube-od10-id2.2-h20": {"od": 10.0, "id": 2.2, "h": 20.0},
+    "tube-od10-id2.4-h20": {"od": 10.0, "id": 2.4, "h": 20.0}
+  }
+}
