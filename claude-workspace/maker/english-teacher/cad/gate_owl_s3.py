@@ -10,7 +10,8 @@ from mathutils.bvhtree import BVHTree
 OUT = Path(sys.argv[sys.argv.index("--") + 1]).resolve()
 fails = []
 PARTS = ["shell-front", "shell-back", "belly", "beak", "button-cap", "eye-diffuser", "speaker-bezel", "speaker-ring",
-         "mx-cap-vol-up", "mx-cap-vol-down", "mic-clamp", "amp-tray"]
+         "mic-clamp", "amp-tray"]
+# 2026-11-12 Tuan: "chi can 1 SW khoi dong, tinh chinh dung voice" -> bo 2 nut am luong + vol-pod
 BED = 250.0
 
 
@@ -84,7 +85,7 @@ for name in PARTS:
         fails.append(f"{name}: qua ban in {BED}")
     base = sum(f.calc_area() for f in bm.faces if all(v.co.z < 0.3 for v in f.verts) and f.normal.z < -0.9)
     print(f"{name}: {max(xs)-min(xs):.1f} x {max(ys)-min(ys):.1f} x {max(zs)-min(zs):.1f}, mat day {base:.0f} mm2")
-    if base < (40 if name in ("mic-clamp", "mx-cap-vol-up", "mx-cap-vol-down") else 150):
+    if base < (40 if name in ("mic-clamp",) else 150):
         fails.append(f"{name}: mat day in {base:.0f} mm2 qua nho – dat lai huong in")
 for old in ("speaker-bezel-L", "speaker-bezel-R", "speaker-ring-L", "speaker-ring-R"):
     if (OUT / f"{old}.stl").exists():
@@ -150,14 +151,20 @@ if bm:
             fails.append(f"mic.box phai >= 17 x 17 x 8, dang {mb}")
         elif tree.overlap(dummy("box", mc, mb)):
             fails.append("o mic cham vo tai mic.center")
-        if mc[1] > Y0 - 20 or mc[2] < 100:
-            fails.append(f"mic phai o tran (phia truoc, z >= 100): {mc}")
+        if mc[1] > Y0 - 20 or mc[2] < 100 or abs(float(mc[0])) > 1.0:
+            fails.append(f"mic phai o MAT TRUOC, chinh giua (|x| <= 1), tran z >= 100: {mc}")
+        if mic.get("axis", "y") != "y":
+            fails.append("mic phai huong ra truoc (axis y)")
         if sps and (Vector(mc) - Vector(sps[0]["center"])).length < 60:
             fails.append("mic cach tam loa < 60 mm (vong nhieu)")
         if int(mic.get("holes", 0)) < 3:
             fails.append("tran can >= 3 lo mic O2")
-        if float(mic.get("gasket_t", 0)) < 1.0:
-            fails.append("mic can ron EVA ep quanh lo (gasket_t >= 1,0) de tieng loa trong vo khong lot vao")
+        seal = mic.get("seal") or {}
+        if seal.get("type") == "labyrinth":   # PETG: dau ong dan am cam vao go lom tren vach tran
+            if float(seal.get("depth", 0)) < 0.8 or not 0.05 <= float(seal.get("clearance", 9)) <= 0.2:
+                fails.append(f"mic khop me cung: go lom sau >= 0,8, khe 0,05-0,2 mm/ben: {seal}")
+        elif float(mic.get("gasket_t", 0)) < 1.0:
+            fails.append("mic can ron (gasket_t >= 1,0) hoac seal.type 'labyrinth' de tieng loa trong vo khong lot vao")
     if amp and sps and (Vector(amp) - Vector(sps[0]["center"])).length > 70:
         fails.append("ampli cach loa > 70 mm (day loa dai)")
 
@@ -167,7 +174,13 @@ if not sc_:
     fails.append("params can speaker_clamp")
 else:
     if abs(sc_["flange_t"] - 5.0) > 0.01: fails.append("flange_t phai 5,0 (Tuan do)")
-    if not 1.0 <= sc_["gasket_t"] <= 1.8: fails.append("ron ep 1,0-1,8 (EVA 2 mm)")
+    spr = sc_.get("petg_spring")   # 2026-11-12: chua co TPU -> lay lo xo PETG ep mep loa; ranh ron giu nguyen cho TPU sau nay
+    if spr:
+        if int(spr.get("n", 0)) < 3: fails.append("lay lo xo PETG >= 3")
+        if not 1.0 <= float(spr.get("t", 0)) <= 1.6: fails.append("lay lo xo day 1,0-1,6 mm (PETG uon duoc, khong gay)")
+        if not 0.5 <= float(spr.get("preload", 0)) <= 1.5: fails.append("lay lo xo ep truoc 0,5-1,5 mm khi khoa")
+        if float(spr.get("len", 0)) < 8: fails.append("lay lo xo dai >= 8 mm (du mem)")
+    elif not 1.0 <= sc_["gasket_t"] <= 1.8: fails.append("ron ep 1,0-1,8 (EVA/TPU 2 mm) hoac petg_spring")
     bay = sc_.get("bayonet")
     if not bay:
         fails.append("speaker_clamp can bayonet (vong ep ngam xoay, khong vit)")
@@ -178,7 +191,8 @@ else:
         if bay["pin_h"] < 0.8: fails.append("chot nho ra >= 0,8 mm")
         if not 20 <= bay["twist"] <= 45: fails.append("goc xoay khoa 20-45 do")
         if bay["groove_clr"] < 0.2: fails.append("ranh ngang can khe doc truc >= 0,2")
-    if not 0.8 <= sc_.get("gasket_locked", 0) <= 1.4: fails.append("ron EVA 2 mm khi khoa con 0,8-1,4 mm")
+    if not sc_.get("petg_spring") and not 0.8 <= sc_.get("gasket_locked", 0) <= 1.4: fails.append("ron 2 mm khi khoa con 0,8-1,4 mm")
+    if sc_.get("gasket_slot_kept") is not True: fails.append("giu ranh ron (gasket_slot_kept: true) de sau nay lap ron TPU khong ve lai")
     if sc_["ring_id"] <= sc_["body_d_max"]: fails.append("lo vong ep phai lon hon than loa")
     if sc_["ring_id"] >= 52.0 - 2 * 2.0: fails.append("vong ep phai de len mep loa >= 2 mm moi ben")
 
@@ -220,31 +234,32 @@ else:
     if abs(float(mx.get("stem_cross_l", 0)) - 4.19) > 0.01 or abs(float(mx.get("stem_cross_w", 0)) - 1.25) > 0.01:
         fails.append("lo chu thap nap nut 4,19 x 1,25")
     keys = {k.get("name"): k for k in mx.get("keys", [])}
-    for nm, gp in (("talk", 1), ("vol_up", 40), ("vol_down", 39)):
-        k = keys.get(nm)
-        if not k or k.get("gpio") != gp:
-            fails.append(f"mx.keys can {nm} gpio {gp} (ban S3)")
-        elif float(k.get("flange_over", 0)) < 1.5:
-            fails.append(f"nap nut {nm}: vanh trong rong hon lo vo >= 1,5 mm/ben")
-    t = keys.get("talk")
-    if t and (t.get("axis") != "z" or float(t["pos"][2]) < 125):
-        fails.append(f"nut noi phai o dinh dau (axis z, z >= 125): {t}")
-    vks = [keys.get("vol_up"), keys.get("vol_down")]
-    if all(vks):
-        for k in vks:
-            pos = [float(c) for c in k.get("pos", [0, 0, 0])]
-            if k.get("axis") != "y" or pos[1] < Y0 + 30:
-                fails.append(f"nut {k.get('name')} phai o LUNG: {pos}")
-            if 2 * float(k.get("flange_r", 99)) > 13.8:
-                fails.append(f"nap {k.get('name')}: vanh > 13,8 khong luon qua lo 14,00")
-        a_, b_ = ([float(c) for c in k["pos"]] for k in vks)
-        if ((a_[0] - b_[0]) ** 2 + (a_[2] - b_[2]) ** 2) ** 0.5 < 25:
-            fails.append("2 nut am luong cach nhau < 25 mm")
-# khe cap USB-C o chan lung (bo S3 cap dien + nap qua USB)
+    if "vol_up" in keys or "vol_down" in keys:
+        fails.append("ban S3 chi 1 nut (talk) - bo vol_up/vol_down (Tuan 2026-11-12)")
+    k = keys.get("talk")
+    if not k or k.get("gpio") != 1:
+        fails.append("mx.keys can talk gpio 1")
+    elif float(k.get("flange_over", 0)) < 1.5:
+        fails.append("nap nut talk: vanh trong rong hon lo vo >= 1,5 mm/ben")
+    if k and (k.get("axis") != "z" or float(k["pos"][2]) < 125):
+        fails.append(f"nut noi phai o dinh dau (axis z, z >= 125): {k}")
+for f in ("vol-pod-up.stl", "vol-pod-down.stl", "mx-cap-vol-up.stl", "mx-cap-vol-down.stl"):
+    if (OUT / f).exists():
+        fails.append(f"{f} con trong out-s3 (da bo nut am luong)")
+# cap USB-C THANG (Tuan 2026-11-12: cap be goc 90 do hau nhu khong co): cong USB cua bo quay ra LUNG, cach mat trong vach lung <= 4 mm,
+# lo cap tren vo sau thang hang voi cong (lech x/z <= 3 mm), lo >= 14 x 9 (dau cam USB-C)
 cs = p.get("cable_slot") or {}
-if float(cs.get("w", 0)) < 14 or float(cs.get("h", 0)) < 9 or cs.get("side") != "back":
-    fails.append(f"cable_slot can o lung, >= 14 x 9 (dau USB-C): {cs}")
-
+usb = p.get("pcb_usb") or {}
+if cs.get("side") != "back" or float(cs.get("w", 0)) < 14 or float(cs.get("h", 0)) < 9 or not cs.get("center"):
+    fails.append(f"cable_slot can o lung, >= 14 x 9, co center: {cs}")
+elif not usb.get("center") or usb.get("dir") != "+y":
+    fails.append(f"params can pcb_usb {{center, dir: '+y'}} (cong USB quay ra lung): {usb}")
+else:
+    uc, sc2 = [float(v) for v in usb["center"]], [float(v) for v in cs["center"]]
+    if abs(uc[0] - sc2[0]) > 3 or abs(uc[2] - sc2[2]) > 3:
+        fails.append(f"lo cap khong thang hang cong USB (lech x {uc[0]-sc2[0]:.1f}, z {uc[2]-sc2[2]:.1f})")
+    if not 0 <= sc2[1] - uc[1] <= float(cs.get("wall_t", 2.4)) + 4.0:
+        fails.append(f"cong USB cach lo cap {sc2[1]-uc[1]:.1f} mm (can mat cong <= 4 mm sau vach) - cap thang cam khong toi")
 # ---- ban in
 rep = OUT.parent.parent / "print" / "plates-s3" / "print-report.json"
 if rep.exists():

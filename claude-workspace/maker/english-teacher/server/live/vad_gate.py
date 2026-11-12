@@ -40,6 +40,7 @@ class VadGate:
         self.thr = threshold
         self.pre_frames = max(1, pre_ms // FRAME_MS)
         self.hang_s = hang_ms / 1000.0
+        self.simple = False   # 2026-11-12: bo S3 've goc' -> chi Silero, khong cong muc gan mic, khong ep dong 8 s
         self.reset()
 
     def reset(self):
@@ -114,7 +115,7 @@ class VadGate:
                 vv = [x for x in self.voiced if x is not None]
                 if len(vv) >= VOICED_FRAC * len(self.levels) and tw - self.v_last <= 0.5 and self.v_last - self.v_start >= VOICED_RUN_S:
                     self.base_db = max(self.base_db, float(np.median(vv)))
-            gate = max(self.base_db + NEAR_MARGIN_DB, ABS_MIN_DBFS)
+            gate = -90.0 if self.simple else max(self.base_db + NEAR_MARGIN_DB, ABS_MIN_DBFS)
             if p >= self.thr:
                 if lv >= gate:
                     hot = True
@@ -137,7 +138,7 @@ class VadGate:
         speaking = self.t <= self.hot_until
         if speaking and self.t < self.force_until:
             speaking = False
-        if speaking and self.open_since is not None and self.t - self.open_since > MAX_TURN_S:
+        if not self.simple and speaking and self.open_since is not None and self.t - self.open_since > MAX_TURN_S:
             speaking = False                # tran luot: ep dong, tra khung 0 de Gemini chot luot
             self.force_until = self.t + FORCE_CLOSE_S
             self.hot_until = -1.0

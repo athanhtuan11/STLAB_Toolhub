@@ -160,6 +160,31 @@ VAD_THRESHOLD = float(os.environ.get("STLAB_VAD_THRESHOLD", "0.5"))
 TUNING = Tuning()
 TECH_PHRASE = "che do ky thuat"       # nguoi lon noi "che do ky thuat" -> mo tech_mode
 TECH_MODE_S = 600.0
+DUMP_WAV = os.environ.get("STLAB_DUMP_WAV", "1") != "0"   # 2026-11-12 Tuan dong y: thu am chan doan (am thanh tho may chu nhan), luu runtime/dump, tu xoa sau 1 ngay
+DUMP_DIR = RUNTIME / "dump"
+DUMP_MAX_S = 90
+
+
+def write_dump(pcm, tag):
+    """Ghi PCM 16 kHz mono ra runtime/dump/<gio>-<tag>.wav; xoa file > 1 ngay. Khong gui di dau."""
+    import wave
+    try:
+        DUMP_DIR.mkdir(parents=True, exist_ok=True)
+        for f in DUMP_DIR.glob("*.wav"):
+            if time.time() - f.stat().st_mtime > 86400:
+                f.unlink()
+        if len(pcm) < RATE_BYTES:      # < 1 s: bo
+            return None
+        p = DUMP_DIR / f"{time.strftime('%Y%m%d-%H%M%S')}-{tag}.wav"
+        with wave.open(str(p), "wb") as w:
+            w.setnchannels(1); w.setsampwidth(2); w.setframerate(IN_RATE); w.writeframes(bytes(pcm))
+        return p
+    except Exception as e:
+        log(f"[DUMP] loi {type(e).__name__}: {e}")
+        return None
+
+
+S3_SIMPLE = os.environ.get("STLAB_S3_SIMPLE", "1") != "0"   # 2026-11-12 Tuan "dua ve goc": bo S3 chi Silero VAD + BargeGate, bo cong muc/AGC/tu hoc
 BARGE_CHECK_S = 6.0                   # sau [BARGE] cho bay nhieu giay de phan loai ngat nham (2026-11-12: 3 -> 6 s vi chu Gemini den tre)
 
 CUR = Curriculum(os.environ.get("STLAB_LEARNERS_PATH") or (SERVER / "data" / "learners.json"),
@@ -514,6 +539,7 @@ class Session:
         self.tts_on = False
         self.full_duplex = False           # bo S3 realtime (listen mode "realtime"): luc co noi van nghe mic; A1S = False
         self.barge = BargeGate(TUNING.get("barge_threshold"), TUNING.get("barge_ms"), 60)
+        self.dump_pcm = bytearray()        # am thanh tho may chu nhan (STLAB_DUMP_WAV)
         self.agc = Agc(TUNING.get("agc_target_dbfs"), TUNING.get("agc_max_gain_db"))
         self.tech_until = 0.0              # che do ky thuat (nguoi lon): het han luc nay
         self.barge_pending = None          # {"t", "reply", "acc"} sau [BARGE], cho phan loai false
@@ -681,11 +707,11 @@ class Session:
             self.tune_outcome_false()          # khong ai noi that sau khi ngat (hoac chi la vong) -> ngat nham
 
     def tune_outcome_false(self):
-        if TUNING.on_barge_outcome("false"):
+        if (not S3_SIMPLE and TUNING.on_barge_outcome("false")):
             log(f"[TUNE] barge false -> barge_threshold {TUNING.get('barge_threshold')} barge_ms {TUNING.get('barge_ms')}")
 
     def tune_outcome_missed(self):
-        if TUNING.on_barge_outcome("missed"):
+        if (not S3_SIMPLE and TUNING.on_barge_outcome("missed")):
             log(f"[TUNE] barge missed -> barge_threshold {TUNING.get('barge_threshold')} barge_ms {TUNING.get('barge_ms')}")
 
     async def mcp_call(self, method, params=None):
@@ -1228,6 +1254,10 @@ class Session:
                     pcm = self.dec.decode(m, IN_FRAME)
                 except Exception:
                     continue
+                if DUMP_WAV:
+                    self.dump_pcm += pcm
+                    if len(self.dump_pcm) > RATE_BYTES * DUMP_MAX_S:
+                        del self.dump_pcm[:len(self.dump_pcm) - RATE_BYTES * DUMP_MAX_S]
                 barged = False
                 self.apply_tuning()
                 if self.full_duplex and self.tts_on:
@@ -1261,7 +1291,8 @@ class Session:
                         self.turn_pcm += pcm
                         if len(self.turn_pcm) > RATE_BYTES * 20:
                             del self.turn_pcm[:-RATE_BYTES * 20]
-                    pcm = self.agc.process(pcm)        # AGC mic (sau VadGate/BargeGate, truoc Gemini); khung so 0 khong bi keo len
+                    if not (self.full_duplex and S3_SIMPLE):
+                        pcm = self.agc.process(pcm)    # AGC mic (A1S); bo S3 've goc' khong AGC
                     if self.live is None:              # phien chua san sang -> dem
                         self.mic_buf.append(pcm)
                         if len(self.mic_buf) > MIC_BUF_MAX:
@@ -1277,6 +1308,8 @@ class Session:
             if t == "listen" and j.get("state") == "start":
                 self.last_active = time.time()
                 self.full_duplex = j.get("mode") == "realtime"     # S3 realtime; A1S gui "auto" -> giu hanh vi cu
+                if self.vad is not None:
+                    self.vad.simple = self.full_duplex and S3_SIMPLE
                 self.barge.reset()
             elif t == "mcp":
                 pl = j.get("payload") or {}
@@ -1318,6 +1351,10 @@ class Session:
                     log(f"loi phien: {type(d.exception()).__name__}: {str(d.exception())[:200]}")
         finally:
             self.closed = True
+            if DUMP_WAV:
+                dp = write_dump(self.dump_pcm, 'full' if self.full_duplex else 'auto')
+                if dp:
+                    log(f"[DUMP] {dp.name} ({len(self.dump_pcm) / RATE_BYTES:.0f} s am thanh tho tu bo)")
             if self.music_task is not None:
                 self.music_task.cancel()
             if self.vad is not None and self.vad.n:
