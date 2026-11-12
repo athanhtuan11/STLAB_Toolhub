@@ -57,3 +57,4 @@ maker/oss-toolkit/.claude/skills/pr	community/mattpocock-skills/skills/engineeri
 ~/.claude/skills/hyperframes-registry	community/heygen-com-hyperframes/skills/hyperframes-registry
 ~/.claude/skills/media-use	community/heygen-com-hyperframes/skills/media-use
 ~/.claude/skills/slideshow	community/heygen-com-hyperframes/skills/slideshow
+~/.claude/agents/voice-tuner.md	custom/agents/voice-tuner.md

@@ -1,4 +1,4 @@
-﻿#ifndef _BOARD_CONFIG_H_
+#ifndef _BOARD_CONFIG_H_
 #define _BOARD_CONFIG_H_
 
 #include <driver/gpio.h>
