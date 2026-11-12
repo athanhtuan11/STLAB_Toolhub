@@ -37,6 +37,9 @@ components:
       - https://towerpro.com.tw/product/sg90-analog/
       - "Hình A–F: community/datasheets/towerpro-servo-dim-a-f.jpg"
     todo: [góc quay thực tế, dòng stall (A), khoảng cách + Ø lỗ tai và spline (TowerPro không công bố)]
+    in_3d:   # phu kien in 3D tu thiet ke cho linh kien nay (Tuan 2026-11-12): thu muc tinh tu tools/parts-library/
+      - ten: "Arm servo in 3D – khớp trục SG90, dáng/độ dài CyberBrick (half / line / cross)"
+        thu_muc: printables/servo-horn-sg90
 
   - id: nema17-17hs4401
     ten: Động cơ bước NEMA 17 (17HS4401, thân 40 mm)
@@ -248,6 +251,9 @@ components:
       - "Datasheet B-PG002 (pdf/9g Servo Motor 360° - PG002.pdf)"
       - https://wiki.bambulab.com/en/makerworld/cyberbrick/component-list
     todo: [mốc của số 8,56 trên bản vẽ PG001]
+    in_3d:   # phu kien in 3D tu thiet ke cho linh kien nay (Tuan 2026-11-12): thu muc tinh tu tools/parts-library/
+      - ten: "Arm servo in 3D – khớp trục SG90, dáng/độ dài CyberBrick (half / line / cross)"
+        thu_muc: printables/servo-horn-sg90
 
   - id: cb-la024-motor-030
     ten: CyberBrick – Động cơ DC 030 có SH1.0 (LA024) + hộp giảm tốc

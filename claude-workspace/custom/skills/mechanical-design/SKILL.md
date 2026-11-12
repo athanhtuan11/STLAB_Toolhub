@@ -62,7 +62,7 @@ thay vì tự nghĩ cách mới:
 - **Vỏ trên không vít:** 4 trụ Ø7,5 (đầu Ø4,0 / vai Ø6,5) đẩy vào lỗ vỏ dưới rồi trượt ra sau để khóa + nam châm 4×2
   (ổ Ø4,1 sâu 2,1–2,2, nhỏ keo, đúng cực) → mở vỏ nhanh, hợp học sinh.
 - **Vít:** M2.5×6 BHCS (lục giác 1,5) cho mọi mối ghép; tự ren Ø2,2–2,4, xuyên Ø2,7–2,8. Servo 9g: 2 lỗ cách 27,8, Ø1,8–2,0.
-- **Arm servo 9g in 3D (2026-11-12, `maker/servo-horn-sg90`):** lỗ trục **tròn, không vẽ răng** – miệng Ø5,00 sâu 0,49
+- **Arm servo 9g in 3D (2026-11-12, `tools/parts-library/printables/servo-horn-sg90`):** lỗ trục **tròn, không vẽ răng** – miệng Ø5,00 sâu 0,49
   rồi côn tới Ø4,64 ở sâu 2,70, ép thẳng lên trục khía (Print2Drive, A1 + PETG, vừa SG90/MG90/PG001/PG002). Vít Ø2,70 +
   loe 90° lên Ø5,00. Lỗ arm in ≥ Ø1,2 (Ø1,0 đúc của CyberBrick in ra bít). Dáng tương thích CyberBrick: fit-library
   `cyberbrick-horn/link-hole`. Cần arm servo → copy `params.json` dự án này, đừng vẽ lại hub.
