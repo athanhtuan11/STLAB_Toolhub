@@ -9,4 +9,4 @@ plates:
   p1-spacer-tubes:
     process: 0.16mm Optimal @BBL A1
     overrides: {wall_loops: "3", sparse_infill_density: "20%", brim_type: outer_only, brim_width: "4"}
-    stl: ["tube-od5-id2.2-h20.stl", "tube-od10-id2.2-h20.stl", "tube-od10-id2.4-h20.stl"]
+    stl: ["tube-od5-id2.2-h20.stl", "tube-od10-id2.2-h20.stl", "tube-od10-id2.4-h20.stl", "tube-od10-id3.4-h20.stl", "tube-od10-id4.4-h20.stl"]
