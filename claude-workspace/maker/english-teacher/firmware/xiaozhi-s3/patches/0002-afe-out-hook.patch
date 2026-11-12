@@ -1,0 +1,24 @@
+diff --git a/main/audio/engines/afe_audio_engine.cc b/main/audio/engines/afe_audio_engine.cc
+index 3823d10..69b9a47 100644
+--- a/main/audio/engines/afe_audio_engine.cc
++++ b/main/audio/engines/afe_audio_engine.cc
+@@ -13,6 +13,9 @@
+ #include "audio_service.h"
+ #include "wake_words/custom_wake_word.h"
+ 
++// STLab: optional hook (defined by board stlab-s3 to log RMS after AFE)
++extern "C" void stlab_afe_out_hook(const int16_t* data, size_t samples) __attribute__((weak));
++
+ #define TAG "AfeAudioEngine"
+ 
+ #if CONFIG_USE_AUDIO_PROCESSOR
+@@ -489,6 +492,9 @@ void AfeAudioEngine::HandleVoiceResult(const afe_fetch_result_t* result) {
+ 
+     size_t samples = result->data_size / sizeof(int16_t);
+     output_buffer_.insert(output_buffer_.end(), result->data, result->data + samples);
++    if (stlab_afe_out_hook != nullptr) {
++        stlab_afe_out_hook(result->data, samples);
++    }
+     while (output_buffer_.size() >= static_cast<size_t>(frame_samples_)) {
+         if (output_buffer_.size() == static_cast<size_t>(frame_samples_)) {
+             output_callback_(std::move(output_buffer_));

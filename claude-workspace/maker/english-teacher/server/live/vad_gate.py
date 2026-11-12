@@ -51,6 +51,7 @@ class VadGate:
         self.hot_until = -1.0
         self.open = False
         self.prob = 0.0
+        self.max_prob = 0.0             # xac suat Silero lon nhat trong lan process() gan nhat (cho BargeGate)
         self.n = 0
         self.tot_ms = 0.0
         self.max_ms = 0.0
@@ -92,12 +93,14 @@ class VadGate:
         buf = np.concatenate([self.rest, a])
         hot = False
         hot_lv = []
+        self.max_prob = 0.0
         tw = self.t
         while len(buf) >= WIN:
             w = buf[:WIN]
             tw += WIN / 16000.0
             p = self._prob(w)
             self.prob = p
+            self.max_prob = max(self.max_prob, p)
             lv = self._db(w)
             self.levels.append(lv)
             self.voiced.append(lv if p >= self.thr else None)

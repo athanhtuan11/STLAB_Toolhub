@@ -119,6 +119,7 @@ def load_prompt():
 
 from curriculum import Curriculum, ALLOWED_NICKNAMES, live_tools, find_nickname, _fold, wants_switch  # noqa: E402
 import voiceid  # noqa: E402
+from duplex import BargeGate  # noqa: E402
 
 
 def _voice_enabled():
@@ -152,6 +153,8 @@ START_SENS = os.environ.get("STLAB_LIVE_START_SENS", "low").strip().lower()   # 
 PREFIX_PAD_MS = int(os.environ.get("STLAB_LIVE_PREFIX_MS", "300"))
 VAD_GATE = os.environ.get("STLAB_VAD_GATE", "1") != "0"           # cong loc giong nguoi (Silero) truoc Gemini
 VAD_THRESHOLD = float(os.environ.get("STLAB_VAD_THRESHOLD", "0.5"))
+BARGE_THRESHOLD = float(os.environ.get("STLAB_BARGE_THRESHOLD", "0.7"))   # bo S3 realtime: xac suat Silero toi thieu de coi la be ngat loi
+BARGE_MS = int(os.environ.get("STLAB_BARGE_MS", "240"))                  # ...va phai keo dai lien tuc ngan nay (ms)
 
 CUR = Curriculum(os.environ.get("STLAB_LEARNERS_PATH") or (SERVER / "data" / "learners.json"),
                  Path(os.environ["STLAB_LESSONS_DIR"]) if os.environ.get("STLAB_LESSONS_DIR") else (SERVER.parent / "lessons-seed"))
@@ -481,6 +484,8 @@ class Session:
         self.out_q = asyncio.Queue()       # bytes Opus | "STOP" marker
         self.pcm_buf = b""
         self.tts_on = False
+        self.full_duplex = False           # bo S3 realtime (listen mode "realtime"): luc co noi van nghe mic; A1S = False
+        self.barge = BargeGate(BARGE_THRESHOLD, BARGE_MS, 60)
         self.aborted = False               # bo am thanh toi het luot hien tai
         self.last_active = time.time()
         self.t_user_end = None
@@ -976,19 +981,47 @@ class Session:
                     self.in_buf = ""
                     await self.flush_lesson()
 
+    def interrupt_now(self):
+        """Be ngat loi (nut abort hoac giong qua BargeGate): dung phat ngay, bo phan Gemini con sinh, cho be noi tiep."""
+        self.clear_out()
+        if self.gen_open or self.dev_on or self.tts_on:
+            self.fast_stop = True
+            self.aborted = True
+            self.gen_open = False
+            self.out_q.put_nowait("STOP")
+            if self.live is not None:
+                asyncio.create_task(self.tell_interrupted())
+
     async def mic_rx(self):
         async for m in self.ws:
             if isinstance(m, bytes):
-                if self.tts_on:
+                if self.tts_on and not self.full_duplex:
                     continue
                 try:
                     pcm = self.dec.decode(m, IN_FRAME)
                 except Exception:
                     continue
-                if self.vad is not None:
-                    chunks, hot = self.vad.process(pcm)       # chi giong nguoi qua cong; nhac/nen -> so 0
+                barged = False
+                if self.full_duplex and self.tts_on:
+                    # Bo S3 (AEC tren bo): luc co noi van giai ma mic, lay xac suat giong nguoi Silero, qua BargeGate:
+                    # so 0 cho toi khi giong lien tuc >= STLAB_BARGE_MS; luc do tra cac khung da giu + bao ngat loi
+                    if self.vad is not None:
+                        self.vad.process(pcm)
+                        prob = self.vad.max_prob
+                    else:
+                        prob = 1.0 if audioop.rms(pcm, 2) > 1500 else 0.0
+                    out, barged = self.barge.feed(pcm, prob, True)
+                    chunks, hot = [out], barged
                 else:
-                    chunks, hot = [pcm], audioop.rms(pcm, 2) > 400
+                    if self.full_duplex:
+                        self.barge.reset()
+                    if self.vad is not None:
+                        chunks, hot = self.vad.process(pcm)       # chi giong nguoi qua cong; nhac/nen -> so 0
+                    else:
+                        chunks, hot = [pcm], audioop.rms(pcm, 2) > 400
+                if barged:
+                    log(f"[BARGE] be ngat loi bang giong (prob>={BARGE_THRESHOLD} lien tuc {BARGE_MS} ms) -> dung phat")
+                    self.interrupt_now()
                 if hot:  # tieng noi gan nhat -> moc do do tre
                     self.t_user_end = self.last_speech = time.time()
                     self.silent_n = 0
@@ -1011,6 +1044,8 @@ class Session:
             t = j.get("type")
             if t == "listen" and j.get("state") == "start":
                 self.last_active = time.time()
+                self.full_duplex = j.get("mode") == "realtime"     # S3 realtime; A1S gui "auto" -> giu hanh vi cu
+                self.barge.reset()
             elif t == "mcp":
                 pl = j.get("payload") or {}
                 fut = self.mcp_wait.get(pl.get("id")) if isinstance(pl, dict) else None
@@ -1021,14 +1056,7 @@ class Session:
                     asyncio.create_task(self.end_request())
                     continue
                 # abort khong reason = be ngat loi: dung phat, bo phan Gemini con sinh, cho be noi tiep
-                self.clear_out()
-                if self.gen_open or self.dev_on or self.tts_on:
-                    self.fast_stop = True
-                    self.aborted = True
-                    self.gen_open = False
-                    self.out_q.put_nowait("STOP")
-                    if self.live is not None:
-                        asyncio.create_task(self.tell_interrupted())
+                self.interrupt_now()
             # hello trung / mcp / listen stop: bo qua
 
     async def idle_watch(self):

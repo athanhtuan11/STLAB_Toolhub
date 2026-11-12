@@ -6,9 +6,12 @@ Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\
 - Bé 2–5 tuổi. **Từ 2026-11-08: Gemini tự lên bài theo độ tuổi, không ràng buộc, không giới hạn buổi** (bài tự do `server/free-lesson.on`);
   luôn có phụ huynh ngồi cạnh → không làm bộ lọc an toàn tự động. (Trước: bài theo chủ đề + AI chỉ nói trong phạm vi bài.)
 - Bản 1: **ESP32-A1S Audio Kit** (có sẵn) – thử ý tưởng + nội dung; không khử vọng → bé **bấm KEY4** để ngắt lời cô.
-- Bản 2 (khi linh kiện về): ESP32-S3 **trò chuyện trực tiếp, bé ngắt lời cô bằng giọng** (Tuan 2026-11-08) → cần **AEC trên bo** →
-  phải là bo S3 có **codec trả tham chiếu loa** (kiểu ES8311 + ES7210 như S3-BOX/Lichuang-S3 trong danh sách `USE_DEVICE_AEC` của xiaozhi v2.5.2).
-  INMP441 + MAX98357A (`bread-compact-wifi`) KHÔNG có AEC trên bo → chỉ ngắt bằng nút. Mã bo mua được ở VN: TODO. Chi tiết: `docs/review-2026-11-08.md`.
+- Bản 2: ESP32-S3 **trò chuyện trực tiếp, bé ngắt lời cô bằng giọng**. **2026-11-12 Tuan: mạch INMP441 + MAX98357A đã về,
+  làm bản S3 realtime thay A1S** (thay quyết định 11-08 "phải bo có codec"). Không codec → AEC trên bo bằng **tham chiếu phần mềm**
+  (mẫu PCM ra loa chép vào vòng đệm, trễ `STLAB_AEC_REF_DELAY_MS`, AFE "MR" + `USE_DEVICE_AEC` mở khóa bằng patch) + cầu nối lọc
+  ngắt lời (`server/live/duplex.py` BargeGate: Silero ≥ 0,7 liên tục ≥ 240 ms mới tính là bé ngắt). Kém hơn tham chiếu phần cứng –
+  phải đo thật; nếu vọng còn nhiều → cách âm mic/loa, chỉnh trễ, nâng ngưỡng; cuối cùng mới quay lại bo có codec.
+  Spec: `firmware/xiaozhi-s3/spec-s3-realtime.md`, gate `firmware/xiaozhi-s3/check_s3.py` + `server/test_full_duplex.py`.
 - Nền: 78/xiaozhi-esp32 **v2.5.2** (ESP-IDF 6.1) + máy chủ xinnan-tech/xiaozhi-esp32-server **tự chạy trên máy lab**.
 
 ## Đã biết (có nguồn)

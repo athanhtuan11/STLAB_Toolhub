@@ -1,0 +1,20 @@
+# Them vao cuoi sdkconfig.defaults cua build-src (sync.ps1 thay token OTA_URL ben duoi bang may chu trong lab)
+CONFIG_BOARD_TYPE_STLAB_S3=y
+CONFIG_OTA_URL="@OTA_URL@"
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions/v2/16m.csv"
+CONFIG_SPIRAM=y
+CONFIG_SPIRAM_MODE_OCT=y
+# AEC tren bo bang tham chieu phan mem (boards/stlab-s3); xiaozhi tu vao che do realtime khi co USE_DEVICE_AEC
+CONFIG_USE_AUDIO_PROCESSOR=y
+CONFIG_USE_DEVICE_AEC=y
+# CONFIG_USE_SERVER_AEC is not set
+# nut "noi" la chinh, khong wake word
+CONFIG_WAKE_WORD_DISABLED=y
+CONFIG_LANGUAGE_VI_VN=y
+# CONFIG_LANGUAGE_ZH_CN is not set
+
+# Bo khong man hinh: LVGL chua lv_init -> cap phat TLSF builtin crash khi Assets nap font (2026-11-12). Dung malloc thuong nhu A1S.
+CONFIG_LV_USE_CLIB_MALLOC=y
+# CONFIG_LV_USE_BUILTIN_MALLOC is not set
