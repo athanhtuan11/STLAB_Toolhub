@@ -318,13 +318,13 @@ class Curriculum:
                 L["nw_n"] = int(L.get("nw_n", 0)) + 1
 
     def _next_new(self, L, age):
-        """Tu moi: tu dau trong word_sequence chua day, theo han muc buoi + tuan."""
+        """Tu moi: tu dau trong word_sequence chua day; moi dot 1 tu (2-3 tuoi) / 2 tu (4+).
+        2026-11-12 Tuan 'bo han muc, moi be hoc it nhieu tuy thoi gian': KHONG con han muc tuan; hoc xong dot nay thi
+        mark() dua dot ke tiep ngay trong buoi."""
         self._migrate(L, age)
         self._roll_week(L)
-        per_session, per_week = (1, 2) if age <= 3 else (2, 4)
-        room = min(per_session, per_week - int(L.get("nw_n", 0)))
         rest = [w for w in self.word_sequence(age) if w not in L["taught"]]
-        return rest[:max(room, 0)]
+        return rest[:1 if age <= 3 else 2]
 
     def _pick_review(self, L, new):
         """Toi da 2 tu on: failed chua passed -> tu day gan nhat -> 1 tu cu hon (cach quang)."""
@@ -401,6 +401,7 @@ class Curriculum:
         else:
             week, lid = rm[0]["week"], rm[0]["lesson_id"]
         L["cur_new"] = list(new)
+        L["cur_from_mark"] = False
         L["week"], L["lesson"] = week, lid
         if "number" in lid:
             # 2026-11-08 Tuan: "hoc 1 toi 5 sao hoc so 3 truoc" -> bai so: on dem tu one theo thu tu roi moi toi so moi
@@ -448,6 +449,7 @@ class Curriculum:
             new = self._next_new(L, age) if n == 1 else []
             review = self._pick_review(L, new)
             L["cur_new"] = list(new)
+            L["cur_from_mark"] = False
             last = list(L.get("last_activities", []))
             pool = [a for a in ACTIVITIES if a not in last] or list(ACTIVITIES)
             act = random.choice(pool)
@@ -571,10 +573,26 @@ class Curriculum:
             else:
                 if w not in L["passed"] and w not in L["failed"]:
                     L["failed"].append(w)
+            out = {"ok": True}
             if w in L.get("cur_new", []):
                 self._teach(L, [w])       # dung hay sai deu tinh la da day (sai thi van o failed de on)
+                age = self._age(L)
+                if (not self._free() and self.roadmap(age)
+                        and all(x in L["taught"] for x in L["cur_new"])):
+                    # 2026-11-12: hoc xong dot tu moi -> dua dot ke tiep ngay (be hoc lau thi duoc nhieu tu)
+                    nxt = self._next_new(L, age)
+                    L["cur_new"] = list(nxt)
+                    L["cur_from_mark"] = True   # dot dua giua buoi: chi tinh da day khi co mark_word (khong tinh luc ket thuc)
+                    if nxt:
+                        L["week"], L["lesson"] = self._word_row(age, nxt[0])
+                        out["next_words"] = list(nxt)
+                        out["instructions"] = (
+                            f"Well done. When the child is ready, the NEXT new word(s): {', '.join(nxt)} "
+                            f"(lesson: {self.lessons[L['lesson']].get('title', L['lesson'])}). Teach them one at a time "
+                            "the same way, mix in a quick review of earlier words, then call mark_word. If the child seems "
+                            "tired, just play and review instead.")
             self._save(d)
-            return {"ok": True}
+            return out
 
     def last_words(self, nickname):
         """Vai tu be dat gan nhat (chi tu vung) - de nhac lai dau buoi sau."""
@@ -605,7 +623,7 @@ class Curriculum:
             ok = self._meaningful(seconds, turns)
             if ok:
                 self._count(L)
-                if self.roadmap(self._age(L)):
+                if self.roadmap(self._age(L)) and not L.get("cur_from_mark"):
                     self._teach(L, L.get("cur_new", []))
                 self._save(d)
             return {"counted": ok}
@@ -620,7 +638,7 @@ class Curriculum:
             age = self._age(L)
             if self._meaningful(seconds, turns):
                 self._count(L)
-                if self.roadmap(age):
+                if self.roadmap(age) and not L.get("cur_from_mark"):
                     self._teach(L, L.get("cur_new", []))
             if self.roadmap(age):
                 self._migrate(L, age)

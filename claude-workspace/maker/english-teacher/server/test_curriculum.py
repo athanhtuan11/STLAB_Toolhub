@@ -66,7 +66,9 @@ cur.finish(nick)
 
 # luu file: chi biet danh + tien do, khong ghi am / ten / chu hoi thoai
 cur2 = Curriculum(data, LESSONS, now=lambda: clock[0])
-ok(cur2.start(nick)["lesson_id"] == w1["lesson_id"], "tien do giu sau khi khoi dong lai")
+taught_before = json.loads(data.read_text(encoding="utf-8"))["learners"][nick].get("taught", [])
+r2 = cur2.start(nick)   # 2026-11-12 bo han muc tuan: be hoc xong thi sang bai sau -> kiem con tro tu giu, khong day lai
+ok(bool(taught_before) and not set(r2.get("new") or []) & set(taught_before), f"tien do giu sau khi khoi dong lai ({r2.get('new')})")
 txt = data.read_text(encoding="utf-8")
 j = json.loads(txt)
 ok(set(j.keys()) <= {"version", "learners"} and nick in j["learners"], "learners.json chi co version + learners")
