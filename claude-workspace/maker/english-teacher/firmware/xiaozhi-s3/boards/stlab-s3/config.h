@@ -1,4 +1,4 @@
-#ifndef _BOARD_CONFIG_H_
+﻿#ifndef _BOARD_CONFIG_H_
 #define _BOARD_CONFIG_H_
 
 #include <driver/gpio.h>
@@ -10,7 +10,7 @@
 #define AUDIO_INPUT_SAMPLE_RATE     16000
 #define AUDIO_OUTPUT_SAMPLE_RATE    16000
 
-#define AUDIO_DEFAULT_OUTPUT_VOLUME 70   // 0..100 (Tuan bo tran 2026-11-06)
+#define AUDIO_DEFAULT_OUTPUT_VOLUME 100  // Tuan 2026-11-12: loa 3 W qua nho, luon de 100
 #define STLAB_VOLUME_STEP           10
 
 // INMP441 (3,3 V): chan L/R noi GND -> kenh trai
@@ -32,7 +32,7 @@
 // 1 = tu do tre bang tuong quan cheo (log [AEC-LAG]) va chinh delay luc chay (0..300 ms); STLAB_AEC_REF_DELAY_MS chi la gia tri khoi dau.
 #define STLAB_AEC_AUTO_DELAY 1
 // Do loi mic INMP441: du lieu 32 bit >> STLAB_MIC_SHIFT. xiaozhi goc 12; 2026-11-12 do clip ~38 % khi loa gan -> 14 (-12 dB)
-#define STLAB_MIC_SHIFT 14
+#define STLAB_MIC_SHIFT 13   // 2026-11-12: 14 lam giong cach 20 cm qua nho (Tuan: khong nghe ro) -> 13
 
 // Nut noi NGOAI = switch MX 2 chan GPIO1 <-> GND (active-low, pull-up noi); nut BOOT GPIO0 chay song song de thu tren ban (BOOT chim trong vo).
 // Deep sleep (neu bat sau nay): GPIO1 la RTC GPIO, dung lam chan danh thuc. Nut: vol+ / vol-; LED WS2812 tren bo (neu devkit khong co thi khong sang, khong sao)

@@ -66,6 +66,7 @@ Sổ nhân sự (sinh tự động – sửa `org/agents.yaml` rồi chạy `pyt
 | 1 – Quản lý | Lập trình viên (tầng giữa) | `coder` | sonnet | claude-quota | code, firmware, sua-loi | claude-main | thu-viec |
 | 1 – Quản lý | Thiết kế dáng sản phẩm | `product-designer` | sonnet | claude-quota | thiet-ke-dang, cmf, render, duyet-anh | claude-main | thu-viec |
 | 1 – Quản lý | Nghiên cứu giáo dục (mầm non – đại học) | `edu-researcher` | haiku | claude-quota | nghien-cuu, giao-duc, chuong-trinh, cuoc-thi, soan-bai | claude-main | thu-viec |
+| 1 – Quản lý | Phân tích & tối ưu giọng nói (Cú Bông) | `voice-tuner` | haiku | claude-quota | doc-log, phan-tich, toi-uu-am-thanh | claude-main | thu-viec |
 | 1 – Quản lý | Quản lý git | `git-scribe` | haiku | claude-quota | commit, push | claude-main | chinh-thuc |
 | 2 – Nhân viên | Nhân viên lập trình (chính) | `codex` | codex-chatgpt-free | free | code, cad-script, doc-ma, bao-cao | claude-main | chinh-thuc |
 | 2 – Nhân viên | Nhân viên lập trình | `opencode` | opencode/deepseek-v4.1-flash-free | free | code, cad-script | claude-main | chinh-thuc |

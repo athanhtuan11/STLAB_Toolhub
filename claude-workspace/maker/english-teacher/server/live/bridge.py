@@ -121,6 +121,7 @@ from curriculum import Curriculum, ALLOWED_NICKNAMES, live_tools, find_nickname,
 import voiceid  # noqa: E402
 from duplex import BargeGate  # noqa: E402
 import music  # noqa: E402
+from tuning import Tuning, Agc, BOUNDS  # noqa: E402
 
 
 def _voice_enabled():
@@ -154,8 +155,12 @@ START_SENS = os.environ.get("STLAB_LIVE_START_SENS", "low").strip().lower()   # 
 PREFIX_PAD_MS = int(os.environ.get("STLAB_LIVE_PREFIX_MS", "300"))
 VAD_GATE = os.environ.get("STLAB_VAD_GATE", "1") != "0"           # cong loc giong nguoi (Silero) truoc Gemini
 VAD_THRESHOLD = float(os.environ.get("STLAB_VAD_THRESHOLD", "0.5"))
-BARGE_THRESHOLD = float(os.environ.get("STLAB_BARGE_THRESHOLD", "0.7"))   # bo S3 realtime: xac suat Silero toi thieu de coi la be ngat loi
-BARGE_MS = int(os.environ.get("STLAB_BARGE_MS", "240"))                  # ...va phai keo dai lien tuc ngan nay (ms)
+# Nguong ngat loi (barge_threshold/barge_ms) + AGC nam o tuning.py (data/tuning.json, tu chinh khi dung that + chinh bang giong);
+# STLAB_BARGE_THRESHOLD/STLAB_BARGE_MS chi la gia tri khoi dau khi chua co file. Mac dinh 0.85/600 ms (2026-11-12, tieng vong cua co).
+TUNING = Tuning()
+TECH_PHRASE = "che do ky thuat"       # nguoi lon noi "che do ky thuat" -> mo tech_mode
+TECH_MODE_S = 600.0
+BARGE_CHECK_S = 6.0                   # sau [BARGE] cho bay nhieu giay de phan loai ngat nham (2026-11-12: 3 -> 6 s vi chu Gemini den tre)
 
 CUR = Curriculum(os.environ.get("STLAB_LEARNERS_PATH") or (SERVER / "data" / "learners.json"),
                  Path(os.environ["STLAB_LESSONS_DIR"]) if os.environ.get("STLAB_LESSONS_DIR") else (SERVER.parent / "lessons-seed"))
@@ -206,6 +211,18 @@ MUSIC_TOOLS = [
     dict(name="stop_music", description="Stop the music that is playing.", parameters={"type": "OBJECT", "properties": {}}),
     dict(name="list_music", description="List the song titles that can be played.", parameters={"type": "OBJECT", "properties": {}}),
 ]
+TECH_TOOLS = [
+    dict(name="tech_tune",
+         description=("TECH MODE only (an adult opened it). Adjust a setting. param: 'mic' (microphone loudness target), "
+                      "'barge' (how hard it is for the voice to interrupt you), 'gain' (max mic boost). "
+                      "action: 'up', 'down' or a number. Returns the new values."),
+         parameters={"type": "OBJECT", "properties": {"param": {"type": "STRING", "description": "mic | barge | gain"},
+                                                      "action": {"type": "STRING", "description": "up | down | number"}},
+                     "required": ["param", "action"]}),
+    dict(name="tech_report",
+         description="TECH MODE only. Read the current tuning values and the last 3 changes.",
+         parameters={"type": "OBJECT", "properties": {}}),
+]
 MCP_TIMEOUT_S = 4.0
 FORCE_SWITCH = os.environ.get("STLAB_FORCE_SWITCH", "0").strip() == "1"
 LOCK_DEVICE_NICK = os.environ.get("STLAB_LOCK_DEVICE_NICK", "1").strip() != "0"   # bo da co biet danh trong devices.json -> khoa
@@ -248,7 +265,7 @@ def live_config():
         system_instruction=PROMPT,
         input_audio_transcription=in_transcription(),
         output_audio_transcription=types.AudioTranscriptionConfig(),
-        tools=[types.Tool(function_declarations=live_tools() + VOLUME_TOOLS + MUSIC_TOOLS)],
+        tools=[types.Tool(function_declarations=live_tools() + VOLUME_TOOLS + MUSIC_TOOLS + TECH_TOOLS)],
         realtime_input_config=types.RealtimeInputConfig(
             automatic_activity_detection=types.AutomaticActivityDetection(
                 start_of_speech_sensitivity=(types.StartSensitivity.START_SENSITIVITY_HIGH if START_SENS == "high"
@@ -496,7 +513,11 @@ class Session:
         self.pcm_buf = b""
         self.tts_on = False
         self.full_duplex = False           # bo S3 realtime (listen mode "realtime"): luc co noi van nghe mic; A1S = False
-        self.barge = BargeGate(BARGE_THRESHOLD, BARGE_MS, 60)
+        self.barge = BargeGate(TUNING.get("barge_threshold"), TUNING.get("barge_ms"), 60)
+        self.agc = Agc(TUNING.get("agc_target_dbfs"), TUNING.get("agc_max_gain_db"))
+        self.tech_until = 0.0              # che do ky thuat (nguoi lon): het han luc nay
+        self.barge_pending = None          # {"t", "reply", "acc"} sau [BARGE], cho phan loai false
+        self.voice_seen_t = 0.0            # lan cuoi VadGate thay giong nguoi luc co dang noi (phat hien 'missed')
         self.aborted = False               # bo am thanh toi het luot hien tai
         self.last_active = time.time()
         self.t_user_end = None
@@ -557,6 +578,10 @@ class Session:
                     res = {"ok": True, "was_playing": self.stop_music("gemini stop_music")}
                 elif fc.name == "list_music":
                     res = {"songs": music.list_tracks()[:50]}
+                elif fc.name == "tech_tune":
+                    res = self.do_tech_tune(str(a.get("param") or ""), str(a.get("action") or ""))
+                elif fc.name == "tech_report":
+                    res = self.do_tech_report()
                 else:
                     res = {"error": "unknown tool"}
             except Exception as e:
@@ -564,6 +589,104 @@ class Session:
             resps.append(types.FunctionResponse(id=fc.id, name=fc.name, response=res))
         if resps:
             await self.live.send_tool_response(function_responses=resps)
+
+    # ---- Tu chinh nguong: chinh bang giong (tech_mode) + phan loai ngat nham/bo sot ----
+    @property
+    def tech_mode(self):
+        return time.time() < self.tech_until
+
+    def tech_values(self):
+        return {k: TUNING.get(k) for k in BOUNDS}
+
+    def do_tech_tune(self, param, action):
+        if not self.tech_mode:
+            return {"error": "chua mo che do ky thuat"}
+        param, action = param.strip().lower(), action.strip().lower()
+        try:
+            num = float(action.replace(",", "."))
+        except ValueError:
+            num = None
+        if action not in ("up", "down") and num is None:
+            return {"error": "action phai la up/down/so"}
+        sign = 1 if action == "up" else -1
+        reason = "voice"
+        if param == "mic":
+            TUNING.set("agc_target_dbfs", TUNING.get("agc_target_dbfs") + 2 * sign if num is None else num, reason)
+        elif param == "gain":
+            TUNING.set("agc_max_gain_db", TUNING.get("agc_max_gain_db") + 3 * sign if num is None else num, reason)
+        elif param == "barge":
+            if num is None:
+                TUNING.set("barge_threshold", TUNING.get("barge_threshold") + 0.03 * sign, reason)
+                TUNING.set("barge_ms", TUNING.get("barge_ms") + 80 * sign, reason)
+            elif num <= 1.0:
+                TUNING.set("barge_threshold", num, reason)
+            else:
+                TUNING.set("barge_ms", num, reason)
+        else:
+            return {"error": "param phai la mic/barge/gain"}
+        self.apply_tuning()
+        vals = self.tech_values()
+        log(f"[TUNE] voice {param} {action} -> {vals}")
+        return {"ok": True, "values": vals}
+
+    def do_tech_report(self):
+        if not self.tech_mode:
+            return {"error": "chua mo che do ky thuat"}
+        return {"values": self.tech_values(),
+                "last_changes": [{k: h.get(k) for k in ("param", "old", "new", "reason")} for h in TUNING.recent(3)]}
+
+    def apply_tuning(self):
+        """Nap gia tri Tuning moi nhat vao BargeGate + Agc cua phien nay (goi moi khung mic, re)."""
+        self.barge.threshold = float(TUNING.get("barge_threshold"))
+        self.barge.hold_ms = float(TUNING.get("barge_ms"))
+        self.agc.configure(TUNING.get("agc_target_dbfs"), TUNING.get("agc_max_gain_db"))
+
+    @staticmethod
+    def _norm_txt(s):
+        s = unicodedata.normalize("NFD", (s or "").lower().replace("đ", "d"))
+        s = "".join(c for c in s if unicodedata.category(c) != "Mn")
+        return re.sub(r"[^a-z0-9 ]+", " ", s).split()
+
+    def echo_like(self, heard, reply):
+        """Loi 'nghe duoc' sau barge giong cau co vua noi (>= 0,6) -> tieng vong bi nhan thanh loi."""
+        import difflib
+        a, b = " ".join(self._norm_txt(heard)), " ".join(self._norm_txt(reply))
+        if not a or not b:
+            return False
+        sm = difflib.SequenceMatcher(None, a, b, autojunk=False)
+        matched = sum(m.size for m in sm.get_matching_blocks())
+        return matched / len(a) >= 0.6
+
+    def barge_started(self, reply):
+        self.barge_pending = p = {"t": time.time(), "reply": reply, "acc": ""}
+        asyncio.create_task(self.barge_judge(p))
+
+    def barge_heard(self, text):
+        p = self.barge_pending
+        if p is None:
+            return
+        if time.time() - p["t"] > BARGE_CHECK_S:
+            return
+        p["acc"] += text
+        if self.echo_like(p["acc"], p["reply"]):
+            self.barge_pending = None
+            self.tune_outcome_false()
+
+    async def barge_judge(self, p):
+        await asyncio.sleep(BARGE_CHECK_S)
+        if self.barge_pending is not p:
+            return
+        self.barge_pending = None
+        if not p["acc"].strip() or self.echo_like(p["acc"], p["reply"]):
+            self.tune_outcome_false()          # khong ai noi that sau khi ngat (hoac chi la vong) -> ngat nham
+
+    def tune_outcome_false(self):
+        if TUNING.on_barge_outcome("false"):
+            log(f"[TUNE] barge false -> barge_threshold {TUNING.get('barge_threshold')} barge_ms {TUNING.get('barge_ms')}")
+
+    def tune_outcome_missed(self):
+        if TUNING.on_barge_outcome("missed"):
+            log(f"[TUNE] barge missed -> barge_threshold {TUNING.get('barge_threshold')} barge_ms {TUNING.get('barge_ms')}")
 
     async def mcp_call(self, method, params=None):
         """JSON-RPC toi thiet bi qua {"type":"mcp","payload":...}; doi phan hoi MCP_TIMEOUT_S giay."""
@@ -655,6 +778,9 @@ class Session:
                 await asyncio.sleep(0.1)
             pcm = await asyncio.to_thread(music.decode_pcm, path, OUT_RATE)
             log(f"[MUSIC] play {path.stem} ({len(pcm) / (OUT_RATE * 2):.0f} s)")
+            # 2026-11-12: lan ngat loi truoc do (be noi 'mo nhac') de lai aborted/fast_stop -> nhac + loi co bi bo
+            self.aborted = False
+            self.fast_stop = False
             self.tts_on = True
             self.out_q.put_nowait("START")
             step = OUT_FRAME * 2
@@ -672,6 +798,11 @@ class Session:
                 return
             self.music_task = None
             log("[MUSIC] end")
+            # tra trang thai ve 'dang nghe' de loi be sau nhac khong bi chan, cau co noi sau nhac khong bi bo
+            self.aborted = False
+            self.gen_open = False
+            self.tts_on = False
+            self.last_active = time.time()
             if self.live is not None:
                 await self.live.send_client_content(
                     turns=types.Content(role="user", parts=[types.Part(
@@ -1002,6 +1133,14 @@ class Session:
                     self.heard_at = time.time()
                     self.silent_n = 0
                     self.in_buf += sc.input_transcription.text
+                    self.barge_heard(sc.input_transcription.text)
+                    if not self.tech_mode and TECH_PHRASE in " ".join(self._norm_txt(self.in_buf)):
+                        self.tech_until = time.time() + TECH_MODE_S
+                        log("[TUNE] che do ky thuat BAT (10 phut)")
+                        msg = ("[tech mode on] An adult opened TECH MODE for 10 minutes. You may call tech_tune / tech_report when they ask "
+                               "to change or read mic, barge or gain settings. Answer in one short sentence with the new number, "
+                               "then go back to the lesson.")
+                        self.pending_lesson = (self.pending_lesson + "\n" + msg) if self.pending_lesson else msg
                     self.check_nick()
                 if sc.interrupted:
                     self.stop_music("Gemini bao be noi chen")
@@ -1090,6 +1229,7 @@ class Session:
                 except Exception:
                     continue
                 barged = False
+                self.apply_tuning()
                 if self.full_duplex and self.tts_on:
                     # Bo S3 (AEC tren bo): luc co noi van giai ma mic, lay xac suat giong nguoi Silero, qua BargeGate:
                     # so 0 cho toi khi giong lien tuc >= STLAB_BARGE_MS; luc do tra cac khung da giu + bao ngat loi
@@ -1098,6 +1238,8 @@ class Session:
                         prob = self.vad.max_prob
                     else:
                         prob = 1.0 if audioop.rms(pcm, 2) > 1500 else 0.0
+                    if prob >= 0.5:
+                        self.voice_seen_t = time.time()
                     out, barged = self.barge.feed(pcm, prob, True)
                     chunks, hot = [out], barged
                 else:
@@ -1108,7 +1250,8 @@ class Session:
                     else:
                         chunks, hot = [pcm], audioop.rms(pcm, 2) > 400
                 if barged:
-                    log(f"[BARGE] be ngat loi bang giong (prob>={BARGE_THRESHOLD} lien tuc {BARGE_MS} ms) -> dung phat")
+                    log(f"[BARGE] be ngat loi bang giong (prob>={self.barge.threshold:g} lien tuc {self.barge.hold_ms:g} ms) -> dung phat")
+                    self.barge_started(self.reply_txt)
                     self.interrupt_now()
                 if hot:  # tieng noi gan nhat -> moc do do tre
                     self.t_user_end = self.last_speech = time.time()
@@ -1118,6 +1261,7 @@ class Session:
                         self.turn_pcm += pcm
                         if len(self.turn_pcm) > RATE_BYTES * 20:
                             del self.turn_pcm[:-RATE_BYTES * 20]
+                    pcm = self.agc.process(pcm)        # AGC mic (sau VadGate/BargeGate, truoc Gemini); khung so 0 khong bi keo len
                     if self.live is None:              # phien chua san sang -> dem
                         self.mic_buf.append(pcm)
                         if len(self.mic_buf) > MIC_BUF_MAX:
@@ -1144,6 +1288,9 @@ class Session:
                     asyncio.create_task(self.end_request())
                     continue
                 # abort khong reason = be ngat loi: dung phat, bo phan Gemini con sinh, cho be noi tiep
+                if (self.full_duplex and self.tts_on and not self.barge.barged
+                        and time.time() - self.voice_seen_t <= 2.0):
+                    self.tune_outcome_missed()      # be da noi (VadGate thay giong) ma BargeGate chua ngat -> be phai cham nut
                 self.interrupt_now()
             # hello trung / mcp / listen stop: bo qua
 

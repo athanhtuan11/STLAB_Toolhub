@@ -110,6 +110,24 @@ agents:
     trang_thai: thu-viec
     tu_ngay: 2026-11-02
 
+  - id: voice-tuner
+    chuc_danh: Phân tích & tối ưu giọng nói (Cú Bông)
+    tang: 1
+    bao_cao_cho: claude-main
+    loai: claude-subagent
+    model: haiku
+    chi_phi: claude-quota
+    ky_nang: [doc-log, phan-tich, toi-uu-am-thanh]
+    tool: [Bash, Read, Grep, Glob]
+    ghi_chu: "Tuan 2026-11-12: agent chuyen phan tich log thu that (live.log, log serial bo S3) de toi uu nguong ngat loi/AGC/AEC; chi chinh server/data/tuning.json trong BOUNDS; log co loi be -> chi doc tai may, khong gui ra ngoai"
+    mang: none
+    muc_du_lieu: internal
+    nguoi_duyet: claude-main
+    gate: khong
+    khi_het_han_muc: claude-main
+    trang_thai: thu-viec
+    tu_ngay: 2026-11-12
+
   - id: git-scribe
     chuc_danh: Quản lý git
     tang: 1
