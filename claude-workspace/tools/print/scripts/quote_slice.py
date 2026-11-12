@@ -20,6 +20,7 @@ import sys
 import time
 import xml.etree.ElementTree as ET
 import zipfile
+from copy import deepcopy
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -132,10 +133,10 @@ def _step_to_stl(src, out_dir, i):
 
 
 def _parse_args(argv):
-    a = {"out": None, "filament": None, "process": None, "infill": None, "support": "auto", "files": []}
+    a = {"out": None, "filament": None, "process": None, "infill": None, "support": "auto", "overrides": None, "files": []}
     for t in argv:
         k, eq, v = t.partition("=")
-        if eq and k in ("filament", "process", "infill", "support"):
+        if eq and k in ("filament", "process", "infill", "support", "overrides"):
             a[k] = v
         elif a["out"] is None:
             a["out"] = t
@@ -194,6 +195,17 @@ def main(argv=None):
     process_name = (a["process"] or PROCESS_DEFAULT).strip()
 
     t0 = time.time()
+    overrides = {"process": {}, "filament": {}}
+    if a.get("overrides"):
+        try:
+            ov_raw = json.loads(Path(a["overrides"]).read_text(encoding="utf-8"))
+            if isinstance(ov_raw, dict):
+                overrides["process"] = ov_raw.get("process") or {}
+                overrides["filament"] = ov_raw.get("filament") or {}
+        except (OSError, ValueError) as e:
+            result["errors"].append("Không đọc được overrides: " + str(e))
+            return finish(result)
+
     try:
         idx = sl.chi_muc_profile()
         may = sl.phang(idx, "machine", MACHINE)
@@ -205,6 +217,8 @@ def main(argv=None):
         fil.setdefault("from", "system")
         fil.setdefault("type", "filament")
         fil.setdefault("instantiation", "true")
+        if overrides.get("filament"):
+            fil.update(overrides["filament"])
         p_fil = sl.ghi(fil, prof / "filament.json")
     except SystemExit as e:
         result["errors"].append(str(e))
@@ -221,6 +235,8 @@ def main(argv=None):
             proc["sparse_infill_density"] = f"{infill}%"
         if support_on:
             proc.update(sl.SUPPORT)
+        if overrides.get("process"):
+            proc.update(overrides["process"])
         return sl.ghi(proc, prof / ("process_support.json" if support_on else "process.json"))
 
     models, orient = [], True
@@ -301,6 +317,16 @@ def main(argv=None):
         result["errors"].append(str(e))
         return finish(result)
 
+    # copy 3mf ra thu muc goc de de truy cap
+    try:
+        gp = res.get("gcode_3mf")
+        if gp and Path(gp).exists():
+            dst = out / "quote.3mf"
+            if Path(gp).resolve() != dst.resolve():
+                import shutil
+                shutil.copy2(gp, dst)
+    except Exception:
+        pass
     res["slice_seconds"] = round(time.time() - t0, 1)
     return finish(res)
 

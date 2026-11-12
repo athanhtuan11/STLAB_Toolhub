@@ -18,6 +18,7 @@ from . import research
 from . import robotics
 from . import products
 from . import quote as quote_lib
+from . import quote_tune
 from . import usage
 from . import workspace as ws
 
@@ -555,6 +556,13 @@ def _font_css():
 
 @bp.get("/quote")
 def quote():
+    if request.args.get("mode") == "tune":
+        conn = quote_lib.connect()
+        try:
+            pricing = quote_lib.get_pricing(conn)
+        finally:
+            conn.close()
+        return render_template("quote-tune.html", pricing=pricing)
     conn = quote_lib.connect()
     try:
         history = quote_lib.list_quotes(conn, 20)
@@ -895,3 +903,24 @@ def _ctx_pdf(ctx):
 @bp.get("/api/quote/projects")
 def api_quote_projects():
     return jsonify([f.relative_to(ws.ROOT).as_posix() for f in quote_lib.project_3mf_files()])
+
+
+# ---------- Toi uu in (quote_tune.py) ----------
+@bp.post("/api/quote/tune/analyze")
+def api_quote_tune_analyze():
+    return quote_tune.api_analyze()
+
+
+@bp.post("/api/quote/tune/slice")
+def api_quote_tune_slice():
+    return quote_tune.api_slice()
+
+
+@bp.get("/api/quote/tune/image/<token>/<variant>")
+def api_quote_tune_image(token, variant):
+    return quote_tune.serve_image(token, variant)
+
+
+@bp.get("/api/quote/tune/download/<token>/<variant>")
+def api_quote_tune_download(token, variant):
+    return quote_tune.serve_download(token, variant)

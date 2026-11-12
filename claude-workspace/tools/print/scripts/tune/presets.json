@@ -1,0 +1,169 @@
+{
+  "support_easy": {
+    "process": {
+      "support_style": "tree_slim",
+      "support_top_z_distance": "0.25",
+      "support_bottom_z_distance": "0.25",
+      "support_interface_top_layers": "1",
+      "support_interface_bottom_layers": "0",
+      "support_interface_spacing": "0.5",
+      "support_interface_pattern": "concentric",
+      "support_object_xy_distance": "0.4",
+      "tree_support_tip_diameter": "0.6",
+      "tree_support_branch_distance": "6",
+      "support_base_pattern_spacing": "3"
+    },
+    "filament": {}
+  },
+  "support_pretty": {
+    "process": {
+      "support_type": "normal(auto)",
+      "support_style": "snug",
+      "support_on_build_plate_only": "1",
+      "support_top_z_distance": "0.2",
+      "support_interface_top_layers": "3",
+      "support_interface_spacing": "0",
+      "enable_support_ironing": "1",
+      "support_interface_speed": [
+        "50"
+      ],
+      "support_angle": "45"
+    },
+    "filament": {
+      "ironing_fan_speed": [
+        "30"
+      ]
+    }
+  },
+  "brim_easy": {
+    "process": {
+      "brim_type": "outer_only",
+      "brim_width": "4",
+      "brim_object_gap": "0.15"
+    },
+    "filament": {}
+  },
+  "surface_pretty": {
+    "process": {
+      "layer_height": "0.16",
+      "precise_outer_wall": "1",
+      "outer_wall_speed": [
+        "120"
+      ],
+      "outer_wall_acceleration": [
+        "3000"
+      ],
+      "top_surface_speed": [
+        "120"
+      ],
+      "top_surface_acceleration": [
+        "1500"
+      ],
+      "top_solid_infill_flow_ratio": [
+        "0.98"
+      ],
+      "ironing_type": "topmost",
+      "seam_placement_away_from_overhangs": "1",
+      "override_filament_scarf_seam_setting": "1",
+      "seam_slope_type": "external",
+      "bridge_flow": "0.95"
+    },
+    "filament": {
+      "cooling_slowdown_logic": [
+        "consistent_surface"
+      ],
+      "no_slow_down_for_cooling_on_outwalls": [
+        "1"
+      ],
+      "overhang_fan_speed": [
+        "70"
+      ]
+    }
+  },
+  "petg_stringing": {
+    "process": {
+      "reduce_crossing_wall": "1",
+      "max_travel_detour_distance": "50%"
+    },
+    "filament": {
+      "nozzle_temperature": [
+        "240"
+      ],
+      "filament_retraction_length": [
+        "0.6"
+      ],
+      "filament_wipe_distance": [
+        "2"
+      ],
+      "filament_z_hop": [
+        "0.2"
+      ]
+    }
+  },
+  "small_parts": {
+    "process": {
+      "wall_generator": "arachne",
+      "small_perimeter_threshold": [
+        "6"
+      ],
+      "small_perimeter_speed": [
+        "50%"
+      ],
+      "initial_layer_speed": [
+        "30"
+      ],
+      "outer_wall_speed": [
+        "100"
+      ],
+      "inner_wall_speed": [
+        "150"
+      ],
+      "brim_type": "outer_only",
+      "brim_width": "5",
+      "brim_object_gap": "0.1",
+      "only_one_wall_first_layer": "1",
+      "reduce_crossing_wall": "1",
+      "detect_thin_wall": "1"
+    },
+    "filament": {
+      "slow_down_layer_time": [
+        "15"
+      ],
+      "filament_max_volumetric_speed": [
+        "10"
+      ]
+    }
+  },
+  "tall_thin": {
+    "process": {
+      "brim_type": "outer_only",
+      "brim_width": "8",
+      "brim_object_gap": "0.1",
+      "initial_layer_speed": [
+        "30"
+      ],
+      "outer_wall_speed": [
+        "100"
+      ],
+      "inner_wall_speed": [
+        "150"
+      ],
+      "default_acceleration": [
+        "3000"
+      ],
+      "outer_wall_acceleration": [
+        "2000"
+      ],
+      "inner_wall_acceleration": [
+        "3000"
+      ],
+      "travel_acceleration": [
+        "5000"
+      ],
+      "enable_height_slowdown": [
+        "1"
+      ]
+    },
+    "filament": {}
+  }
+}

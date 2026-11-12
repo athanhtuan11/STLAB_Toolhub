@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+{% block title %}Tối ưu in{% endblock %}
+{% block content %}
+<style>
+#tune-page .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 18px; align-items: start; }
+@media (max-width: 900px) { #tune-page .grid { grid-template-columns: 1fr; } }
+#tune-page .card h2 { margin: 0 0 10px; font-size: 15px; }
+#tune-page .drop { border: 2px dashed var(--line); border-radius: var(--r-card); padding: 22px 16px; text-align: center; background: var(--bg); color: var(--muted); }
+#tune-page .drop.over { border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+#tune-page input, #tune-page select { font: inherit; font-size: 14px; padding: 6px 9px; border: 1px solid var(--line); border-radius: var(--r-control); background: var(--bg); color: var(--text); }
+#tune-page .goals { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; margin-top: 10px; }
+#tune-page .goals label { display: flex; gap: 6px; align-items: center; font-size: 13.5px; color: var(--text); }
+#tune-page table.items { width: 100%; font-size: 13px; border-collapse: collapse; }
+#tune-page table.items th, #tune-page table.items td { padding: 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+#tune-page table.items th { text-align: left; color: var(--muted); font-size: 12.5px; }
+#tune-page table.items input { width: 100%; }
+#tune-page .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+@media (max-width: 800px) { #tune-page .compare { grid-template-columns: 1fr; } }
+#tune-page .pane { border: 1px solid var(--line); border-radius: var(--r-card); padding: 10px; background: var(--bg); }
+#tune-page .pane h3 { margin: 0 0 6px; font-size: 14px; }
+#tune-page .pane img { width: 100%; max-height: 320px; object-fit: contain; background: var(--card); border-radius: 6px; }
+#tune-page .meta { font-size: 13px; color: var(--muted); margin-top: 6px; }
+#tune-page .warn { color: var(--warn); font-size: 13px; margin-top: 6px; }
+#tune-page .err { color: var(--err); font-size: 13.5px; margin-top: 8px; }
+#tune-page .busy { color: var(--accent); font-size: 13.5px; margin-top: 8px; }
+#tune-page .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+#tune-page .muted { color: var(--muted); font-size: 13px; }
+#tune-page .dl { margin-top: 8px; display: inline-block; }
+#tune-page [hidden] { display: none !important; }
+</style>
+
+<div id="tune-page">
+  <div class="head">
+    <div>
+      <h1>Tối ưu in</h1>
+      <p class="sub">Phân tích hình học → đề xuất thông số theo luật → chỉnh → cắt lớp 2 phương án (mặc định hãng / tối ưu) → so sánh ảnh và tải <code>.3mf</code>. <a href="/quote">Quay lại Báo giá</a></p>
+    </div>
+  </div>
+
+  <div class="grid">
+    <section class="card">
+      <h2>1. File in</h2>
+      <div class="drop" id="t-drop">
+        <strong>Kéo thả file vào đây</strong>
+        <div>hoặc chọn file: .stl .obj .step (.3mf không hỗ trợ ở bước này)</div>
+        <input id="t-file" type="file" accept=".stl,.obj,.step,.stp,.3mf">
+      </div>
+      <div id="t-file-info" class="muted" style="margin-top:8px"></div>
+
+      <h2 style="margin-top:16px">2. Mục tiêu</h2>
+      <label class="field">Nhựa
+        <select id="t-material"></select>
+      </label>
+      <div class="goals" id="t-goals">
+        <label><input type="checkbox" value="support_pretty"> support_pretty (mặt tiếp xúc đẹp)</label>
+        <label><input type="checkbox" value="surface_pretty"> surface_pretty (bề mặt đẹp)</label>
+        <label><input type="checkbox" value="pretty_edge"> pretty_edge (mép đẹp)</label>
+        <label><input type="checkbox" value="plate_only"> plate_only (chỉ đỡ từ bàn)</label>
+      </div>
+      <div class="row">
+        <button type="button" id="t-analyze">Phân tích &amp; đề xuất</button>
+      </div>
+      <div class="busy" id="t-busy-an" hidden>Đang phân tích…</div>
+      <div class="err" id="t-err-an" hidden></div>
+      <div id="t-features" class="muted" style="margin-top:10px"></div>
+    </section>
+
+    <section class="card">
+      <h2>3. Thông số đề xuất (có thể sửa)</h2>
+      <div class="muted">Mỗi dòng có lý do và mức nguồn S/P (S: có nguồn chính thức, P: đề xuất cần in thử).</div>
+      <table class="items" id="t-items" style="margin-top:10px">
+        <thead><tr><th>Gói</th><th>Thông số</th><th>Giá trị (sửa được)</th><th>Lý do</th><th>S/P</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="row">
+        <button class="primary" type="button" id="t-slice">Cắt lớp so sánh</button>
+      </div>
+      <div class="busy" id="t-busy-sl" hidden>Đang cắt lớp 2 phương án bằng Bambu Studio…</div>
+      <div class="err" id="t-err-sl" hidden></div>
+
+      <div class="compare" id="t-compare" hidden>
+        <div class="pane">
+          <h3>Mặc định hãng</h3>
+          <img id="img-default" alt="Mặc định hãng">
+          <div class="meta" id="meta-default"></div>
+          <div class="warn" id="warn-default"></div>
+          <a id="dl-default" class="btn dl" href="#" download>Tải .3mf</a>
+        </div>
+        <div class="pane">
+          <h3>Tối ưu</h3>
+          <img id="img-tuned" alt="Tối ưu">
+          <div class="meta" id="meta-tuned"></div>
+          <div class="warn" id="warn-tuned"></div>
+          <a id="dl-tuned" class="btn primary dl" href="#" download>Tải .3mf tối ưu</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const HJ = { "X-Studio": "1", "Content-Type": "application/json" };
+  const H = { "X-Studio": "1" };
+  let token = null;
+  let pricing = {{ pricing|tojson }};
+  let items = [];
+
+  function showErr(id, msg) {
+    const el = $(id);
+    if (!msg) { el.hidden = true; el.textContent = ""; return; }
+    el.hidden = false;
+    el.textContent = msg;
+  }
+
+  function viNum(n, nd = 2) {
+    const s = Number(n || 0).toFixed(nd);
+    return s.replace(/\.0+$/, "").replace(/(\.\d*?)0+$/, "$1").replace(".", ",");
+  }
+
+  function renderMaterials() {
+    const sel = $("#t-material");
+    sel.innerHTML = "";
+    const entries = Object.entries((pricing && pricing.materials) || {}).sort((a,b)=>a[0].localeCompare(b[0]));
+    entries.forEach(([n]) => {
+      const o = document.createElement("option"); o.value = n; o.textContent = n; sel.appendChild(o);
+    });
+    if (entries.find(([n]) => n.toUpperCase() === "PETG")) sel.value = "PETG";
+  }
+
+  function goals() {
+    return Array.from(document.querySelectorAll("#t-goals input:checked")).map(i => i.value);
+  }
+
+  async function uploadFiles(fileList) {
+    const list = Array.from(fileList || []);
+    if (!list.length) return;
+    const fd = new FormData();
+    list.forEach(f => fd.append("file", f));
+    const r = await fetch("/api/quote/upload", { method: "POST", headers: H, body: fd });
+    const j = await r.json();
+    if (!r.ok) { showErr("#t-err-an", j.error || "Không đọc được file"); return; }
+    token = j.token;
+    $("#t-file-info").textContent = (j.names || []).join(", ") + (j.kind === "sliced" ? " (đã cắt lớp)" : "");
+    showErr("#t-err-an", null);
+  }
+
+  const drop = $("#t-drop");
+  ["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+  drop.addEventListener("drop", e => { if (e.dataTransfer.files && e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files); });
+  $("#t-file").addEventListener("change", e => { if (e.target.files && e.target.files.length) uploadFiles(e.target.files); });
+
+  function renderFeatures(f) {
+    if (!f) { $("#t-features").textContent = ""; return; }
+    const b = (f.bbox_mm || []).map(x => viNum(x,1)).join(" × ");
+    $("#t-features").textContent = `BBox ${b} mm · cao ${viNum(f.height_mm,1)} mm · chân ${viNum(f.contact_mm2,0)} mm² · aspect ${viNum(f.aspect,2)} · nhô lớn nhất ${viNum(f.max_overhang_mm2,1)} mm² · lỗ ${f.holes||0} · cong ${viNum((f.curved_frac||0)*100,1)}%`;
+  }
+
+  function renderItems(arr) {
+    items = (arr || []).map(it => Object.assign({}, it));
+    const tb = $("#t-items tbody");
+    tb.innerHTML = "";
+    items.forEach((it, idx) => {
+      const tr = document.createElement("tr");
+      function tdText(t) { const d=document.createElement("td"); d.textContent = t==null?"":String(t); return d; }
+      tr.appendChild(tdText(it.pack || ""));
+      tr.appendChild(tdText(it.key || ""));
+      const tdv = document.createElement("td");
+      const inp = document.createElement("input");
+      inp.value = typeof it.value === "string" ? it.value : JSON.stringify(it.value);
+      inp.addEventListener("input", () => { items[idx].value = inp.value; });
+      tdv.appendChild(inp);
+      tr.appendChild(tdv);
+      tr.appendChild(tdText(it.reason || ""));
+      tr.appendChild(tdText(it.level || ""));
+      tb.appendChild(tr);
+    });
+  }
+
+  function collectOverrides() {
+    const process = {}, filament = {};
+    for (const it of items) {
+      let v = it.value;
+      if (typeof v === "string") {
+        const s = v.trim();
+        if (s.startsWith("[") || s.startsWith("{")) {
+          try { v = JSON.parse(s); } catch(e) { v = s; }
+        } else {
+          v = s;
+        }
+      }
+      if (it.pack === "filament") filament[it.key] = v; else process[it.key] = v;
+    }
+    return { process, filament };
+  }
+
+  $("#t-analyze").addEventListener("click", async () => {
+    if (!token) { showErr("#t-err-an", "Chưa có file in."); return; }
+    showErr("#t-err-an", null);
+    $("#t-busy-an").hidden = false;
+    try {
+      const r = await fetch("/api/quote/tune/analyze", { method: "POST", headers: HJ, body: JSON.stringify({ token, goals: goals() }) });
+      const j = await r.json();
+      if (!r.ok) { showErr("#t-err-an", j.error || "Không phân tích được"); return; }
+      renderFeatures(j.features);
+      renderItems(j.items);
+    } catch (e) {
+      showErr("#t-err-an", "Không gọi được máy chủ");
+    } finally {
+      $("#t-busy-an").hidden = true;
+    }
+  });
+
+  function setPane(which, d) {
+    const img = $("#img-" + which);
+    const meta = $("#meta-" + which);
+    const warn = $("#warn-" + which);
+    const dl = $("#dl-" + which);
+    if (!d) { img.removeAttribute("src"); meta.textContent = ""; warn.textContent = ""; dl.href = "#"; return; }
+    img.src = d.image_url + "?v=" + Date.now();
+    meta.textContent = `${viNum(d.hours, 2)} giờ · ${viNum(d.grams, 1)} g`;
+    warn.textContent = (d.warnings || []).join(" · ");
+    dl.href = d.download_url || "#";
+  }
+
+  $("#t-slice").addEventListener("click", async () => {
+    if (!token) { showErr("#t-err-sl", "Chưa có file in."); return; }
+    showErr("#t-err-sl", null);
+    $("#t-busy-sl").hidden = false;
+    $("#t-compare").hidden = true;
+    try {
+      const ov = collectOverrides();
+      const body = { token, material: $("#t-material").value, process: ov.process, filament: ov.filament };
+      const r = await fetch("/api/quote/tune/slice", { method: "POST", headers: HJ, body: JSON.stringify(body) });
+      const j = await r.json();
+      if (!r.ok) { showErr("#t-err-sl", j.error || "Không cắt lớp được"); return; }
+      setPane("default", j.default);
+      setPane("tuned", j.tuned);
+      $("#t-compare").hidden = false;
+    } catch (e) {
+      showErr("#t-err-sl", "Không gọi được máy chủ");
+    } finally {
+      $("#t-busy-sl").hidden = true;
+    }
+  });
+
+  renderMaterials();
+})();
+</script>
+{% endblock %}
