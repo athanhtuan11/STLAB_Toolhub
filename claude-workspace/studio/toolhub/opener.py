@@ -17,7 +17,7 @@ import launcher
 from .workspace import ROOT
 
 # duoi file -> (id ung dung, ten hien thi). id trong apps.json "apps" hoac "openers"; "system" = mac dinh Windows
-OPENERS = {".fcstd": "freecad", ".blend": "blender", ".3mf": "bambu", ".stl": "bambu", ".fcproj": "filmcraft",
+OPENERS = {".fcstd": "freecad", ".sc": "solidcraft", ".blend": "blender", ".3mf": "bambu", ".stl": "bambu", ".fcproj": "filmcraft",
            ".pdf": "system", ".mp4": "system"}
 SKIP = {"backup", "check", "stl", "_log", "node_modules", ".git", "__pycache__"}  # + thu muc "_*" (file sinh)
 SKIP_ENV = {"venv", "env", "site-packages", "build", "dist", "models"}  # moi truong Python, ban build, model AI
@@ -85,6 +85,26 @@ def open_file(rel, i):
     if "port" in a and not launcher.port_open(a["port"]):  # co MCP, chua chay: launcher (bat cong + xep canh Claude)
         r = launcher.start(app, extra_args=[str(p)])
         return {"ok": r["ok"], "msg": f"{p.name}: {r['msg']}"}
+    _popen([a["exe"], str(p)], a)
+    return {"ok": True, "msg": f"Đã mở {p.name} bằng {a['name']}"}
+
+
+def open_print_file(path):
+    """Open a trusted path resolved by the print catalog."""
+    p = Path(path).resolve()
+    app = OPENERS.get(p.suffix.lower())
+    if app is None or app == "system":
+        return {"ok": False, "msg": f"Không có ứng dụng mở {p.suffix}"}
+    a = _apps().get(app)
+    if a is None:
+        return {"ok": False, "msg": f"Chưa cấu hình ứng dụng {app}"}
+    if app == "freecad":
+        return _freecad(a, p)
+    if not Path(a["exe"]).exists():
+        return {"ok": False, "msg": f"{a['name']}: chưa cài ({a['exe']})"}
+    if app == "blender" and launcher.process_running(a["image"]):
+        _popen([a["exe"], str(p)], a)
+        return {"ok": True, "msg": f"Đã mở {p.name} trong cửa sổ Blender mới"}
     _popen([a["exe"], str(p)], a)
     return {"ok": True, "msg": f"Đã mở {p.name} bằng {a['name']}"}
 

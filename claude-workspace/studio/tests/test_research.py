@@ -79,7 +79,8 @@ assert marker.exists(), "lenh quet khong chay"
 assert c.post("/api/research/scan", headers=H).status_code == 403
 
 # 5) menu + DB rong khong loi
-assert 'href="/research"' in c.get("/", headers=H).get_data(as_text=True)
+# 2026-11-12 Tuan: bo muc Nghien cuu khoi menu (route /research van chay)
+assert 'href="/research"' not in c.get("/", headers=H).get_data(as_text=True)
 os.environ["STLAB_RESEARCH_DB"] = str(TMP / "rong.db")
 assert c.get("/research", headers=H).status_code == 200
 assert c.get("/api/research", headers=H).get_json()["items"] == []

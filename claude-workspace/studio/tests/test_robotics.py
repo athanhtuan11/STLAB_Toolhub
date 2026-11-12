@@ -151,9 +151,9 @@ check(r.status_code == 200 and "<h1" in t and "GearsBot" in t and 'href="/roboti
 r = c.get("/robotics/sim/gearsbot/lesson", headers=H)
 check(r.status_code == 200 and "<h1" in r.get_data(as_text=True), "giao an gearsbot render")
 
-# ---- 4b. Nut tat mo phong o trang chinh (Tuan 2026-11-11) ----
-home = c.get("/", headers=H).get_data(as_text=True)
-check(home.count("data-sim-shortcut=") == 2, "trang chinh: 2 nut tat mo phong")
+# ---- 4b. Nut tat mo phong (Tuan 2026-11-11) - 2026-11-12 chuyen tu trang chinh sang trang Cong cu /tools ----
+home = c.get("/tools", headers=H).get_data(as_text=True)
+check(home.count("data-sim-shortcut=") == 2, "trang Cong cu: 2 nut tat mo phong")
 for ln in MANIFEST["simulations"][0]["links"]:
     check(ln["url"].replace("&", "&amp;") in home, f"trang chinh thieu nut {ln['label']}")
 

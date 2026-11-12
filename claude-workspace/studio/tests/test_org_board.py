@@ -68,11 +68,11 @@ assert any("codex" in x["text"] for x in att), att
 assert not any("viec-xong" in x["text"] for x in att)
 
 # 4) Trang chinh + /api/usage cu van chay; khong ma hex moi trong giao dien
-r = c.get("/", headers=H)
+r = c.get("/tools", headers=H)   # 2026-11-12 Tuan: trang chinh = In 3D; Nhan su AI chuyen sang trang Cong cu
 html = r.get_data(as_text=True)
 assert r.status_code == 200 and "Nhân sự AI" in html and "/api/org" in html
 assert c.get("/api/usage", headers=H).status_code == 200
-tpl = (STUDIO / "toolhub" / "templates" / "overview.html").read_text(encoding="utf-8")
+tpl = (STUDIO / "toolhub" / "templates" / "tools.html").read_text(encoding="utf-8")
 assert not re.search(r"#[0-9a-fA-F]{3,8}\b", re.sub(r"&#\d+;", "", tpl)), "khong dat ma hex trong template"
 css = (STUDIO / "toolhub" / "static" / "style.css").read_text(encoding="utf-8")
 assert not re.search(r":\s*#[0-9a-fA-F]{3,8}\b", css), "style.css chi dung var(--...)"

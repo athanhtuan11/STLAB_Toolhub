@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "print-card.html" import card %}
+{% block title %}In 3D{% endblock %}
+{% block content %}
+<div id="health" class="health-line" aria-live="polite"></div>
+<div class="head print-head">
+  <div>
+    <h1>In 3D</h1>
+    <p class="sub">Tìm bàn in, mở nhanh file 3MF hoặc CAD.</p>
+  </div>
+  <label class="print-search-wrap">
+    <span class="sr-only">Tìm dự án, tiêu đề hoặc bàn in</span>
+    <input type="search" id="print-search" placeholder="Tìm dự án, tiêu đề, bàn in…" autocomplete="off">
+  </label>
+</div>
+<div id="print-count" class="muted" aria-live="polite"></div>
+<section id="print-grid" class="grid print-grid" data-src="/api/prints" aria-live="polite">
+  <p class="muted">Đang tải bàn in…</p>
+</section>
+{% endblock %}

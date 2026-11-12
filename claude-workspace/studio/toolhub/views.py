@@ -21,17 +21,16 @@ from . import quote as quote_lib
 from . import quote_tune
 from . import usage
 from . import workspace as ws
+from . import prints as print_lib
 
 bp = Blueprint("hub", __name__)
 
 
 @bp.app_context_processor
 def nav():
-    # Menu gon: viec hang ngay o ngoai, trang he thong gom vao "Them"
-    main = [("hub.overview", "Trang chính"), ("hub.projects", "Dự án"), ("hub.library", "Linh kiện"),
-            ("hub.robotics_page", "Robotics")]
-    main.append(("hub.research_page", "Nghiên cứu"))
-    more = [("hub.apps", "Ứng dụng & MCP"), ("hub.quote", "Báo giá"), ("hub.reports", "Báo cáo nghiên cứu"), ("hub.community", "Nguồn cộng đồng"),
+    main = [("hub.overview", "In 3D"), ("hub.projects", "Dự án"), ("hub.quote", "Báo giá")]
+    more = [("hub.tools", "Công cụ"), ("hub.robotics_page", "Robotics"), ("hub.library", "Linh kiện"),
+            ("hub.apps", "Ứng dụng & MCP"), ("hub.community", "Nguồn cộng đồng"),
             ("hub.skills", "Skills & agents"), ("hub.prompt", "Prompt library")]
     ep = request.endpoint or ""
     on = next((e for e, _ in main + more if ep == e or ep.startswith(e + "_")), None)
@@ -62,7 +61,12 @@ def library_item(cid):
     c = ws.library_item(cid)
     if c is None:
         abort(404)
-    return render_template("library-detail.html", c=c, labels=ws.LABELS)
+    available = [row for row in print_lib.list_prints() if row["source"] == "linh-kien"]
+    associated = []
+    for item in c.get("in_3d", []):
+        folder = (Path("tools/parts-library") / item.get("thu_muc", "")).as_posix()
+        associated.extend(row for row in available if row["folder"] == folder)
+    return render_template("library-detail.html", c=c, labels=ws.LABELS, printables=associated)
 
 
 def _print_yaml(rel):
@@ -73,7 +77,12 @@ def _print_yaml(rel):
 # ---------- Trang ----------
 @bp.get("/")
 def overview():
-    # Trang chinh phai hien ngay: trang thai app (den) va "Can chu y" (git 21 repo ~2 s) nap sau bang JS
+    return render_template("prints.html")
+
+
+@bp.get("/tools")
+def tools():
+    # Keep the existing, slower workspace dashboard off the print-first homepage.
     apps = [a for a in launcher.load_config()["apps"] if Path(a["exe"]).exists()]
     projects = ws.projects()
     active, other = [], []
@@ -82,7 +91,7 @@ def overview():
         (active if _print_yaml(p["rel"]) else other).append(p)
     # nut tat mo phong (Tuan 2026-11-11): doc manifest, khong chay git
     sims = [s for s in robotics.load().get("simulations", []) if s.get("links")]
-    return render_template("overview.html", apps=apps, active=active, other=other, sims=sims)
+    return render_template("tools.html", apps=apps, active=active, other=other, sims=sims)
 
 
 @bp.get("/api/health")
@@ -95,6 +104,43 @@ def api_health():
     if n := sum(not x["ok"] for x in ws.links()):
         issues.append((f"{n} skill/agent liên kết lỗi", "hub.skills"))
     return jsonify([{"text": t, "url": url_for(ep)} for t, ep in issues])
+
+
+@bp.get("/api/prints")
+def api_prints():
+    return jsonify({"prints": print_lib.list_prints()})
+
+
+@bp.get("/prints/img/<project>/<plate>")
+def print_image(project, plate):
+    path = print_lib.image_path(project, plate)
+    if path is None:
+        abort(404)
+    return send_file(path, max_age=0)
+
+
+@bp.post("/api/prints/open")
+def api_print_open():
+    body = request.get_json(silent=True)
+    if not isinstance(body, dict):
+        return jsonify({"ok": False, "msg": "Dữ liệu không hợp lệ"}), 400
+    project, plate, what = body.get("project"), body.get("plate"), body.get("what")
+    if not all(isinstance(value, str) and value for value in (project, plate, what)):
+        return jsonify({"ok": False, "msg": "Thiếu project, plate hoặc what"}), 400
+    if what not in ("3mf", "cad", "folder"):
+        return jsonify({"ok": False, "msg": "Loại file không hợp lệ"}), 400
+    try:
+        path = print_lib.resolve(project, plate, what)
+    except ValueError:
+        return jsonify({"ok": False, "msg": "Loại file không hợp lệ"}), 400
+    if path is None:
+        return jsonify({"ok": False, "msg": "Không tìm thấy bàn in hoặc file CAD"}), 404
+    if os.environ.get("STLAB_DRY_OPEN") == "1":
+        return jsonify({"ok": True, "dry": True, "path": str(path)})
+    if what == "folder":
+        subprocess.Popen(["explorer", str(path)])
+        return jsonify({"ok": True, "msg": f"Đã mở thư mục {path.name}"})
+    return jsonify(opener.open_print_file(path))
 
 
 @bp.get("/research")
@@ -283,9 +329,12 @@ def project_detail(slug):
     if p is None:
         abort(404)
     record = products.get(slug)
+    project_name = Path(p["rel"]).name
+    print_rows = [row for row in print_lib.list_prints()
+                  if row["source"] == "du-an" and row["project"] == project_name]
     return render_template("project-detail.html", p=p, product_stage=record.get("stage") if record else None,
                            product_labels=products.LABELS, product_stages=products.STAGES,
-                           files=opener.files(p["rel"]))
+                           files=opener.files(p["rel"]), print_rows=print_rows)
 
 
 @bp.post("/api/products/<slug>/stage/<stage>")

@@ -33,7 +33,7 @@
 <section class="grid" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr))">
   {% for c in lib.components %}
   <a class="card lib-card" href="/library/{{ c.id }}" data-type="{{ c.loai }}"
-     data-id="{{ c.id }}" data-name="{{ c.ten|lower }}">
+     data-id="{{ c.id }}" data-name="{{ c.ten|lower }}" data-printables="{{ c.in_3d|length }}">
     <div class="row">
       <span class="dot {{ 'ok' if c.model_ok else 'bad' }}" title="{{ 'Có model STEP trong thư viện' if c.model_ok else 'Không tìm thấy file model' }}"></span>
       <h3 class="grow">{{ c.ten }}</h3><span class="badge plain">{{ c.loai }}</span>
@@ -44,6 +44,7 @@
       {% if c.stl_ok %}<span class="badge ok">STL</span>{% endif %}
       {% if not c.model_ok %}<span class="badge bad">chưa có model</span>{% endif %}
       {% if c.has_pinout %}<span class="badge">Sơ đồ chân</span>{% endif %}
+      {% if c.in_3d %}<span class="badge plain">Có CAD in</span>{% endif %}
     </div>
     {% if c.key_specs %}
     <div class="specs">

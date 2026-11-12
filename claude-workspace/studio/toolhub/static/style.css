@@ -171,3 +171,28 @@ details.others summary { cursor: pointer; color: var(--muted); font-size: 14px; 
 .sim-shortcuts { display: flex; flex-direction: column; gap: 8px; }
 .sim-shortcut { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .sim-shortcut-title { min-width: 90px; font-weight: 600; color: var(--text); }
+
+/* Print-first home and reusable print cards */
+.print-head { align-items: center; }
+.print-search-wrap { display: block; width: min(440px, 100%); }
+#print-search { width: 100%; font: inherit; font-size: 17px; padding: 11px 14px; border: 1px solid var(--line);
+  border-radius: var(--r-control); background: var(--card); color: var(--text); }
+.health-line:empty { display: none; }
+.print-grid { grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); margin-top: 10px; }
+.print-card { min-width: 0; gap: 7px; }
+.print-image { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: contain; background: var(--bg);
+  border-radius: var(--r-control); }
+.print-placeholder { display: grid; place-items: center; color: var(--muted); font-size: 18px; }
+.print-name { font-size: 17px; font-weight: 700; overflow-wrap: anywhere; }
+.print-title { overflow-wrap: anywhere; }
+.print-source { align-self: flex-start; }
+.print-plate { margin: 5px 0 0; font-size: 18px; overflow-wrap: anywhere; }
+.print-metrics { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; min-height: 26px; }
+.print-actions { margin-top: auto; padding-top: 5px; }
+.print-actions button { flex: 1; padding-inline: 8px; }
+.cad-list { margin: 12px 0; }
+.cad-list .row { min-width: 0; }
+.technical-notes { margin-top: 18px; }
+.technical-notes summary { cursor: pointer; color: var(--text); font-weight: 600; }
+.technical-notes .doc { margin-top: 10px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }

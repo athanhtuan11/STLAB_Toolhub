@@ -83,7 +83,7 @@ check(r.status_code == 200, f"/reports status {r.status_code}")
 for n in names:
     check(f'href="/reports/{n}"' in html, f"/reports thieu link {n}")
 check(".spec.md" not in html, "/reports KHONG liet ke file .spec.md")
-check('href="/reports"' in c.get("/", headers=H).get_data(as_text=True), "menu phai co link /reports")
+check('href="/reports"' not in c.get("/", headers=H).get_data(as_text=True), "2026-11-12 Tuan: bo Bao cao nghien cuu khoi menu")
 
 r = c.get("/reports/print-products-market-research.md", headers=H)
 html = r.get_data(as_text=True)

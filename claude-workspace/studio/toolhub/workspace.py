@@ -177,6 +177,7 @@ def _enrich(c, roots, lib_root):
     c["thong_so"] = c.get("thong_so") or {}
     c["todo"] = c.get("todo") or []
     c["nguon"] = c.get("nguon") or []
+    c["in_3d"] = c.get("in_3d") or []
     return c
 
 

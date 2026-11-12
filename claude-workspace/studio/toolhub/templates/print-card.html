@@ -1,0 +1,27 @@
+{% macro card(p) -%}
+<article class="card print-card">
+  {% if p.image_url %}
+  <img class="print-image" src="{{ p.image_url }}" alt="Bản xem trước {{ p.plate }}" loading="lazy">
+  {% else %}
+  <div class="print-image print-placeholder" aria-hidden="true">In 3D</div>
+  {% endif %}
+  <div class="print-name">{{ p.project }}</div>
+  {% if p.title %}<div class="muted print-title">{{ p.title }}</div>{% endif %}
+  {% if p.source == "linh-kien" %}<span class="badge plain print-source">Linh kiện</span>{% endif %}
+  <h2 class="print-plate">{{ p.plate }}</h2>
+  <div class="print-metrics">
+    {% if p.minutes is not none %}
+      {% if p.minutes >= 60 %}{{ (p.minutes // 60) }} g {{ (p.minutes % 60) }} ph{% else %}{{ p.minutes }} ph{% endif %}
+    {% endif %}
+    {% if p.minutes is not none and p.grams is not none %}<span> · </span>{% endif %}
+    {% if p.grams is not none %}{{ "%.1f"|format(p.grams)|replace(".", ",") }} g{% endif %}
+  </div>
+  <div class="actions print-actions">
+    <button class="primary" data-print-open data-project="{{ p.project }}" data-plate="{{ p.plate }}" data-what="3mf">In</button>
+    <button data-print-open data-project="{{ p.project }}" data-plate="{{ p.plate }}" data-what="cad"
+      {% if not p.cad %}disabled title="Chưa có file CAD"{% else %}title="{{ p.cad[0] }}"{% endif %}>CAD</button>
+    {% if p.cad %}<div class="muted print-cad mono">{{ p.cad[0].split('/')[-1] }}</div>{% endif %}
+    <button data-print-open data-project="{{ p.project }}" data-plate="{{ p.plate }}" data-what="folder">Thư mục</button>
+  </div>
+</article>
+{%- endmacro %}

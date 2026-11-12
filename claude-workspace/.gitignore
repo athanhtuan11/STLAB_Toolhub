@@ -97,3 +97,6 @@ credentials*.json
 !/community/pin-history.log
 /maker/cyberbrick-arm/gripper-v2/out/
 /maker/cyberbrick-arm/gripper-v2/plates/
+
+# SolidCraft tu sinh khi ghi de .sc
+*.sc.bak

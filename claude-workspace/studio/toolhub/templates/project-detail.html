@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "print-card.html" import card %}
 {% block title %}{{ p.rel }}{% endblock %}
 {% block content %}
 <p><a href="{{ url_for('hub.projects') }}">← Dự án</a></p>
@@ -13,6 +14,25 @@
     <button {% if not files %}class="primary" {% endif %}data-post="/api/open/{{ p.slug }}">Mở trong VS Code</button>
   </div>
 </div>
+
+<h2>Bàn in</h2>
+{% if print_rows %}
+<section class="grid print-grid">
+  {% for row in print_rows %}{{ card(row) }}{% endfor %}
+</section>
+{% else %}
+<p class="muted">Dự án chưa có bàn in đã cắt lớp.</p>
+{% endif %}
+
+{% set cad_files = files|selectattr("app", "in", ["solidcraft", "freecad"])|list %}
+{% if cad_files %}
+<section class="card cad-list">
+  <h3>File CAD</h3>
+  {% for f in cad_files %}
+  <div class="row"><code class="grow">{{ f.rel }}</code><button data-post="/api/open-file/{{ p.slug }}/{{ f.i }}">Mở</button></div>
+  {% endfor %}
+</section>
+{% endif %}
 
 <section class="card" style="margin-bottom:14px">
   <h2>Vòng đời mẫu in</h2>
@@ -41,5 +61,8 @@
 </div>
 {% endif %}
 
-<pre class="doc">{{ p.claude_md }}</pre>
+<details class="technical-notes">
+  <summary>Ghi chú kỹ thuật</summary>
+  <pre class="doc">{{ p.claude_md }}</pre>
+</details>
 {% endblock %}
