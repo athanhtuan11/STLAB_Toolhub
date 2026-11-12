@@ -31,6 +31,8 @@ for lv in data["levels"]:
         if len(u.get("patterns", [])) < 2 or len(u.get("can_do", [])) != 2:
             fails.append(f"{u['id']}: can >= 2 mau cau va dung 2 muc can_do")
         for w in list(u.get("core", [])) + list(u.get("plus", [])):
+            if not isinstance(w, str):   # YAML doc yes/no/on/off thanh True/False neu khong dat trong ngoac kep
+                fails.append(f"{u['id']}: tu {w!r} khong phai chuoi - dat trong ngoac kep")
             key = str(w).lower()
             if key in seen:
                 fails.append(f"{u['id']}: tu '{w}' da co o {seen[key]}")

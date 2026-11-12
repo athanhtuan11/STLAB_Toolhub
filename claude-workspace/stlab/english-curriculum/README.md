@@ -35,16 +35,22 @@ Số nào trong file này ghi "Bộ" là lấy từ văn bản; ghi "STLab" là 
 
 ## 3. Thời lượng
 
-| Chặng | Ở trường (Bộ) | Ở STLab (đề xuất STLab) | Giờ STLab / năm |
-|---|---|---|---|
-| Seed | tối thiểu 2 hoạt động/tuần × 25–35 phút, 35 tuần | 2 buổi/tuần × 30 phút | 35 |
-| Sprout | 2 tiết/tuần, 70 tiết/năm | 2 buổi/tuần × 60 phút | 70 |
-| Explorer | 4 tiết/tuần, 140 tiết/năm | 2 buổi/tuần × 90 phút | 105 |
-| Builder, Maker | 3 tiết/tuần, 105 tiết/năm | 2 buổi/tuần × 90 phút | 105 |
-| Innovator | 3 tiết/tuần, 105 tiết/năm | 2 buổi/tuần × 90 phút (+ 1 buổi luyện đề ở lớp 11–12) | 105–155 |
+Tuan quyết 2026-11-11: **mọi lớp, mọi chặng học 30 phút liên tục mỗi buổi** (30 phút tập trung là đủ nhiều).
 
-Kiểm tính khả thi của mức Plus: Cambridge ước khoảng 200 giờ học có hướng dẫn cho mỗi bậc CEFR. STLab cho 315 giờ ở
-Explorer (3 năm), 420 giờ ở Builder + Maker (4 năm), 315 giờ trở lên ở Innovator. Mỗi cấp đủ để đi trước chuẩn Bộ một bậc.
+| Chặng | Ở trường (Bộ) | Ở STLab – mức Core | Ở STLab – mức Plus (đề xuất) |
+|---|---|---|---|
+| Seed | tối thiểu 2 hoạt động/tuần × 25–35 phút, 35 tuần | 2 buổi/tuần × 30 phút = 35 giờ/năm | như Core, thêm từ Plus trong buổi và trên thiết bị |
+| Sprout | 2 tiết/tuần, 70 tiết/năm | 2 buổi/tuần × 30 phút = 35 giờ/năm | như Core, thêm từ Plus |
+| Explorer | 4 tiết/tuần, 140 tiết/năm | 2 buổi/tuần = 35 giờ/năm | 4 buổi/tuần = 70 giờ/năm |
+| Builder, Maker | 3 tiết/tuần, 105 tiết/năm | 2 buổi/tuần = 35 giờ/năm | 4 buổi/tuần = 70 giờ/năm |
+| Innovator | 3 tiết/tuần, 105 tiết/năm | 2 buổi/tuần = 35 giờ/năm | 4 buổi/tuần = 70 giờ/năm (lớp 11–12 thêm thi thử IELTS) |
+
+- Mức Core chỉ cần củng cố chương trình ở trường nên 2 buổi 30 phút mỗi tuần là đủ.
+- Mức Plus phải đi trước chuẩn Bộ một bậc. Cambridge ước khoảng 200 giờ học có hướng dẫn cho mỗi bậc CEFR. Với buổi
+  30 phút, 2 buổi/tuần chỉ cho 105 giờ trong 3 năm tiểu học, chưa đủ. **4 buổi/tuần** cho 210 giờ ở Explorer (3 năm),
+  280 giờ ở Builder + Maker (4 năm), 210 giờ ở Innovator (3 năm): vừa đủ một bậc mỗi cấp.
+- Hai trong bốn buổi Plus có thể là buổi luyện có hướng dẫn trên thiết bị english-teacher hoặc bài luyện ở nhà, nếu
+  Tuan không muốn học sinh tới lớp 4 lần mỗi tuần. Số buổi mỗi tuần của mức Plus: Tuan chưa chốt.
 
 ## 4. Cấu trúc một năm và một chủ đề
 
@@ -113,7 +119,7 @@ Từ vựng mức Plus lấy theo danh sách từ của kỳ thi Cambridge tươ
 ## 10. Quyết định của Tuan (2026-11-11)
 
 1. Làm **cả hai mức** Core + Plus trên một xương sống.
-2. Buổi học **30 phút** (áp dụng cho Seed; thời lượng các chặng từ lớp 1 trở lên ở mục 3 vẫn là đề xuất, chưa chốt).
+2. Buổi học **30 phút cho mọi lớp, mọi chặng** (số buổi mỗi tuần của mức Plus: xem mục 3, chưa chốt).
 3. Soạn **Seed (mẫu giáo) trước**.
 4. Cây Nhỏ chưa có bộ tài liệu nào: **soạn mới từ đầu**.
 5. **Tuan dạy trước, sau này có giáo viên khác** → giáo án ghi sẵn câu giáo viên nói, đủ để người khác dạy theo.

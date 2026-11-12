@@ -8,7 +8,8 @@ soạn mới từ đầu, Tuan dạy trước, sau này có giáo viên khác. V
 | `units.yaml` | Nguồn duy nhất: 3 cấp × 8 chủ đề (từ, mẫu câu, bài hát, sản phẩm, "bé làm được") |
 | `scope-and-sequence.md` | Bảng nội dung 3 năm, sinh tự động từ `units.yaml` |
 | `check_seed.py` | Kiểm số từ theo Thông tư 50/2020 và sinh lại bảng: `python check_seed.py --write` |
-| `lesson-plans/s1-u1-hello.md` | Giáo án mẫu 8 buổi (chờ duyệt mẫu rồi soạn 23 chủ đề còn lại) |
+| `lesson-plans/<id>-<ten>.md` | Giáo án 8 buổi của từng chủ đề; mẫu chuẩn: `s1-u1-hello.md` (Tuan duyệt 2026-11-11) |
+| `check_plans.py` | Kiểm giáo án đúng khuôn: `python check_plans.py [s1|s2-u3]` |
 
 ## 1. Ba cấp
 
@@ -25,7 +26,8 @@ Mỗi cấp tự đứng được: bé vào ở tuổi nào cũng học được
 1. **Chỉ nghe và nói.** Không dạy đọc, viết, không chép chữ (Thông tư 50/2020). Chữ chỉ xuất hiện trên thẻ cho giáo viên.
 2. **Ngắn và đổi nhịp.** Mỗi hoạt động 3–8 phút, xen ngồi – đứng – vận động.
 3. **Nghe trước, nói sau, không ép.** Bé được im lặng nghe vài buổi; làm đúng theo lệnh đã là hiểu.
-4. **Lặp lại có chủ ý.** Mỗi từ Core gặp ít nhất ở 5 trong 8 buổi của chủ đề, rồi quay lại ở chủ đề sau.
+4. **Lặp lại có chủ ý.** Mỗi từ Core được ghi rõ trong ít nhất 3 buổi của chủ đề (`check_plans.py` kiểm), cộng các lần
+   ôn qua chant và trò chơi, rồi quay lại ở chủ đề sau.
 5. **Tiếng Anh cho bài học, tiếng Việt cho an toàn.** Lệnh lớp học và nội dung bài nói bằng tiếng Anh kèm cử chỉ;
    dặn dò an toàn và dỗ bé nói tiếng Việt.
 6. **Cú Bông là bạn cùng lớp.** Rối cú (cùng nhân vật với thiết bị english-teacher) chỉ "nói" tiếng Anh, là lý do để
@@ -75,6 +77,8 @@ kèm tên bài hát để hát ở nhà. Không xếp hạng, không so bé vớ
   cạnh bo tròn, không gãy thành mảnh nhỏ. Áp dụng cho cả lớp 5–6 tuổi.
 - **Không dùng pin cúc áo** trong bất kỳ sản phẩm nào của Seed (nguy hiểm khi nuốt). Robot dùng pin phải có nắp bắt vít.
 - Kéo, đinh ghim giấy, dao rọc: chỉ giáo viên dùng; Seed 1–2 dùng hình cắt sẵn, Seed 3 dùng kéo đầu tròn có người kèm.
+- Sản phẩm có đinh ghim giấy (nhỏ, chân nhọn): giáo viên bấm ghim và dán băng keo phủ chân ghim; **không cho bé mang về
+  nhà**, trưng bày ở góc lớp và gửi ảnh cho phụ huynh.
 - Đất nặn, bút màu, keo: loại ghi rõ dùng cho trẻ em.
 - Chủ đề Food: không cho nếm đồ ăn thật khi chưa có xác nhận dị ứng của phụ huynh.
 - Trò vận động: dọn trống sàn, không chạy khi đang cầm đồ.
