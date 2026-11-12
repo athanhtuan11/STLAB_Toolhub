@@ -11,7 +11,11 @@ qua cả 5 MCP server trong `.mcp.json`.
   **và** trong `.mcp.json`.
 - `launcher.py`: `status`, `start <id|all>`, `mcp-check <ten|all>`, `claude`.
 - `toolhub/`: giao diện web **STLAB Toolhub** (Flask app factory). Chạy `uv run flask run`
-  tại `studio/`; cấu hình trong `.flaskenv` (127.0.0.1:5050). Menu gọn (Tuan 2026-10-24: "quá nhiều điểm"):
+  tại `studio/`; cấu hình trong `.flaskenv` (127.0.0.1:5050).
+  **2026-11-12 Tuan: trang chính = In 3D** (`prints.html` + `toolhub/prints.py`, gate `tests/test_print_home.py`): ô tìm + thẻ bàn in
+  từ `maker/*/**/plates/<bàn>/` và `tools/parts-library/printables/*/` (phụ kiện linh kiện, `in_3d` trong components.yaml), nút
+  In/CAD/Thư mục (`/api/prints/open`, không nhận đường dẫn từ web). Menu: In 3D · Dự án · Báo giá · Thêm; mục cũ (ứng dụng, mô phỏng,
+  Nhân sự AI, dự án) ở `/tools`; bỏ Nghiên cứu/Báo cáo nghiên cứu khỏi menu (route còn). Đoạn mô tả trang chính cũ bên dưới = trang `/tools`. Menu gọn (Tuan 2026-10-24: "quá nhiều điểm"):
   **Trang chính · Dự án · Linh kiện** + "Thêm ▾" (Ứng dụng & MCP, Nguồn cộng đồng – chỉ kiểm tra/báo cáo,
   apply/rollback chỉ hiện lệnh –, Skills & agents, Prompt library). Trang chính chỉ có: dòng "Cần chú ý" (chỉ hiện lỗi,
   nạp sau qua `/api/health`), hàng ứng dụng (đèn + Mở), thẻ dự án in 3D (kết quả Chuẩn bị in + nút), dự án khác thu gọn.
