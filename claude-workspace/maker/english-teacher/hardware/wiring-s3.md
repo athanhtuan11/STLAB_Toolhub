@@ -57,6 +57,27 @@ Mic **INMP441** (I2S) + ampli **MAX98357A** (I2S) + loa 52 mm. Sơ đồ chân g
 | GAIN | để trống |
 | SD | để trống |
 | Loa + / Loa − | 2 dây loa (không nối GND) |
+| Tụ 1000 µF | chân (+) vào **VIN**, chân (−) vào **GND** của MAX98357A (xem bên dưới) |
+
+### Tụ 1000 µF (chống sụt áp khi loa kêu to)
+
+Tụ mắc **song song** với nguồn của ampli, đặt **sát chân VIN – GND trên module MAX98357A** (không đặt ở đầu bo ESP32):
+
+```
+  Bo ESP32-S3 5V ───────────┬──────── VIN  (MAX98357A)
+                            │
+                          ( + )   chân dài, phía KHÔNG có vạch
+                         [ 1000 µF ]
+                          ( − )   chân ngắn, phía có VẠCH trắng
+                            │
+  Bo ESP32-S3 GND ──────────┴──────── GND  (MAX98357A)
+```
+
+- Cách hàn dễ nhất: hàn 2 chân tụ thẳng vào 2 chân hàng rào **VIN** và **GND** ở mặt dưới module (2 chân này nằm cạnh nhau
+  trên phần lớn module MAX98357A – đọc chữ in trên module để chắc), rồi mới cắm dây nguồn.
+- Tụ tháo bo cũ dùng được (vd. 1000 µF 50 V): đỉnh tụ phẳng, không phồng, không rỉ nước; điện áp định mức ≥ 10 V là đủ.
+- **Ngược cực = tụ có thể phồng, nổ.** Kiểm lại vạch trắng nằm phía GND trước khi cắm điện.
+- 2 module MAX98357A (2 loa) → mỗi module 1 tụ.
 
 ### Nút
 
