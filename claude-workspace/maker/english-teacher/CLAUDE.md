@@ -51,6 +51,11 @@ Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\
   (log `[NUT]` nhấn/nhả đủ 2 lượt, probe-log-nut.txt). Chuỗi thanh ghi ES8388 của firmware dò viết theo trí nhớ ESP-ADF – xiaozhi dùng driver riêng.
 
 ## Trạng thái
+- 2026-11-12: **Lộ trình = giáo trình Seed** (Tuan chọn thay 12 bài cũ): `lessons-seed/` (24 bài + ROADMAP.md) sinh từ
+  `stlab/english-curriculum/seed/units.yaml` bằng `seed/export_device.py` – sửa units.yaml rồi chạy lại, không sửa tay.
+  2–3 tuổi học Seed 1; 4–5 tuổi Seed 2 → Seed 3. `bridge.py` mặc định `lessons-seed`, quay lại bài cũ: `STLAB_LESSONS_DIR=..\lessons`.
+  Gate `server/test_seed_lessons.py` PASS + 6 test cũ PASS. Có hiệu lực khi khởi động lại bridge; `free-lesson.on` còn bật thì
+  Seed chỉ là gợi ý cho Gemini.
 - 2026-11-08 tối (mới nhất; chi tiết từng bước trong git log + `docs/review-2026-11-08.md`):
   - Máy chủ đang chạy **Gemini Live** (`server/live.on`, cầu nối `server/live/bridge.py`) + **bài tự do** (`server/free-lesson.on`), IP cố định 192.168.1.56.
     Chế độ xinnan (`run.py`, Whisper tại máy) vẫn còn, nhưng không có hồ sơ bé/lộ trình.

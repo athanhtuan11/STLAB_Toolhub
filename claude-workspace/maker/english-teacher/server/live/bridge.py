@@ -153,7 +153,8 @@ PREFIX_PAD_MS = int(os.environ.get("STLAB_LIVE_PREFIX_MS", "300"))
 VAD_GATE = os.environ.get("STLAB_VAD_GATE", "1") != "0"           # cong loc giong nguoi (Silero) truoc Gemini
 VAD_THRESHOLD = float(os.environ.get("STLAB_VAD_THRESHOLD", "0.5"))
 
-CUR = Curriculum(os.environ.get("STLAB_LEARNERS_PATH") or (SERVER / "data" / "learners.json"), SERVER.parent / "lessons")
+CUR = Curriculum(os.environ.get("STLAB_LEARNERS_PATH") or (SERVER / "data" / "learners.json"),
+                 Path(os.environ["STLAB_LESSONS_DIR"]) if os.environ.get("STLAB_LESSONS_DIR") else (SERVER.parent / "lessons-seed"))
 CUR.free_flag = os.environ.get("STLAB_FREE_FLAG") or (SERVER / "free-lesson.on")   # co file -> Gemini tu len bai (2026-11-08)
 CURRICULUM_PROMPT = (
     "\n\nAt the start, ask in Vietnamese which animal friend is learning today (offer 2-3 different animal names each time, as the system tells you). "

@@ -1,6 +1,6 @@
 # Giáo trình tiếng Anh STLab – khung tổng thể (mẫu giáo → lớp 12)
 
-**Trạng thái:** khung đã được Tuan duyệt hướng đi (2026-11-11). Đang soạn chặng [Seed](seed/README.md): bảng nội dung 3 năm xong, giáo án mẫu 1 chủ đề chờ duyệt.
+**Trạng thái:** khung đã được Tuan duyệt hướng đi (2026-11-11). Chặng [Seed](seed/README.md): bảng nội dung 3 năm + 24 giáo án (8 buổi/chủ đề) xong 2026-11-12, chờ Tuan duyệt; đang đưa sang máy Cú Bông (`maker/english-teacher/lessons-seed/`, sinh bằng `seed/export_device.py`).
 **Dùng cho:** lớp tại trung tâm STLab · thiết bị `maker/english-teacher` (cô giáo AI) · trường mầm non Cây Nhỏ.
 **Căn cứ:** [báo cáo nghiên cứu 2026-11](../../docs/research-notes/education/english-curriculum-research-2026-11.md) (có nguồn từng số liệu).
 Số nào trong file này ghi "Bộ" là lấy từ văn bản; ghi "STLab" là đề xuất của mình, Tuan sửa được.
