@@ -48,8 +48,9 @@ if AL:
         _S = P['sensor']; _sp = _S['place']
         _sx0 = xl + _sp['dx']; _sy0 = yt + _sp['dy'] - _S['H']
         _pl = (_sx0 + _sp['L_from_plunger'], _sy0 - _sp['L_below_bottom'])
-        while math.dist(_pl, ac) + AL['wrap_L'] > ar:
-            yb -= 0.05; ar, ac = _arc(yb)
+        _n = 0
+        while math.dist(_pl, ac) + AL['wrap_L'] > ar and _n < 400:
+            yb -= 0.05; ar, ac = _arc(yb); _n += 1
     pc = lambda a: [round(ac[0] + ar * math.cos(a), 3), round(ac[1] + ar * math.sin(a), 3)]
     dx_, dy_ = xr - ac[0], y3 - ac[1]; dd = math.hypot(dx_, dy_)
     at2 = math.atan2(dy_, dx_) - math.acos(ar / dd)        # tiep tuyen tu chan E3, nhanh duoi
@@ -215,6 +216,10 @@ def base_cmds(A_, name, join_to=None):
         A_("solid.cylinder", diameter=BB['id'], height=ZS - bz0 + 0.2, base=[hb[0], hb[1], bz0 - 0.1], axis="Z", operation="cut", targets=[tg])
         A_("solid.cylinder", diameter=BB['cb_d'], height=BB['cb_depth'] + 0.1, base=[hb[0], hb[1], ZS - BB['cb_depth']], axis="Z", operation="cut", targets=[tg])
 base_cmds(A, "base", join_to="mount" if MG else None)
+BL = P.get('bump_L')   # v3.10: L nam ngoai cung -> buou tron quanh L om vau L2 + ong dem
+if BL:
+    A("solid.cylinder", diameter=BL['d'], height=(ZS if MG else Z1) - H, base=[pl[0], pl[1], H], axis="Z", **J)
+    A("solid.cylinder", diameter=SP['post_hole_d'], height=ZS - H + boss_dn + 0.2, base=[pl[0], pl[1], H - boss_dn - 0.1], axis="Z", **C)
 BA = P.get('bump_A')   # v3.8: E2 lui 2 -> buou tron quanh A de om vai A2 + lo P1
 if BA:
     A("solid.cylinder", diameter=BA['d'], height=(ZS if MG else Z1) - H, base=[pa[0], pa[1], H], axis="Z", **J)
@@ -262,6 +267,9 @@ N_("solid.cylinder", diameter=SP['N_d'], height=S['N_stick_out'], base=[sx0 - S[
    axis="X", operation="new_body", body_name="N_nut_nhan")
 N_("appearance.assign", bodies=["S_cong_tac_chi_xem"], color="#333333", opacity=0.45)
 N_("appearance.assign", bodies=["N_nut_nhan"], color="#00e676")
+if BL:
+    cyl("T3_buou_vien_quanh_L", BL['d'], (ZS if MG else Z1) - H, H, pl, "#3a8fd8")
+    cutN(SP['post_hole_d'], ZS - H + 0.2, H - 0.1, pl, ["T3_buou_vien_quanh_L"])
 if BA:
     cyl("T2_buou_vien_quanh_A", BA['d'], (ZS if MG else Z1) - H, H, pa, "#3a8fd8")
     cutN(SP['P1_hole_d'], bt + 0.2, Z1 - 0.1, p1, ["T2_buou_vien_quanh_A"])
