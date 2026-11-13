@@ -14,11 +14,12 @@
 - In: `solidcraft/plates/p1-mount-v3/p1-mount-v3.3mf` (PETG, mặt trên úp xuống bàn, không support, ~18 ph, 2,6 g).
 - Ảnh duyệt: `review/sheet-v3.png`. Bản vẽ mã cạnh: `review/edges-named.png` (E1–E13, A, B, C, D – trùng note trong .sc; chiều dài từng cạnh ở `solidcraft/edges.json`). Đo trong SolidCraft rồi báo theo mã.
 
-## 2 khối in riêng (v3.6)
-- `p1-mount-v3` – **gá (khối dưới)** + ống đệm L1: tấm chứa trọn công tắc (31,35 × 25,6), ổ chốt rỗng J1 Ø5,3 sâu 4,5, vấu L2 ren Ø3,4.
-- `p2-switch-base` – **đế (khối trên)**: tấm 3,5 có lỗ P1 Ø5,3, lỗ L Ø4,4, chốt nối DE-J Ø5 × 4 ở mặt dưới (in úp mặt trên xuống bàn).
-- Lắp: đế cắm chốt vào J1 → công tắc úp lên đế (P1 vào lỗ) → ống đệm dưới tai L → ốc **M4×25** qua tai + ống đệm + đế, vặn vào vấu L2 của gá.
-- File .sc để đo: mỗi chi tiết 1 body có tên (T_tam_ga, E6_vanh_om, A1/A2, B2, J2, L1/L2, S, N, DE_cong_tac_khoi_tren); ảnh đế: `review/switch-base.png`.
+## 1 khối (v3.7)
+- `p1-mount-v3` – gá + đế **gộp 1 khối**: tấm phẳng dày 7 mm (z 5,5 → 12,5), in úp mặt trên xuống bàn, không support; kèm ống đệm L1 cao 4,85.
+- Lỗ B Ø4,4 xuyên hết từ đáy trụ B2 lên mặt trên, hốc đầu ốc Ø8 sâu 4,2 (đầu ốc nằm dưới công tắc).
+- Lỗ L Ø3,4 xuyên cả khối (ốc M4 tự ren, ăn ren khoảng 10 mm).
+- Lắp: ốc M4 qua B (bắt trước khi úp công tắc) → công tắc úp lên (P1 vào lỗ) → ống đệm L1 dưới tai L → ốc M4 qua tai + ống đệm vào lỗ L.
+- Hình: tất cả trong `review/` (ảnh đầu vào của Tuan ở `review/input/`, bản cũ ở `review/archive/`).
 
 ## TODO
 - Loại cảm biến + cách gắn lên gá.

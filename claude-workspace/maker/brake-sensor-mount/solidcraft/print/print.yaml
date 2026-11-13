@@ -1,5 +1,5 @@
 # brake-sensor-mount - ban in, doc boi tools/print/scripts/slice.py
-# p1: ga gan tay thang + ong dem L ; p2: de cong tac (in rieng de test)
+# v3.7: ga + de gop 1 khoi (in up mat tren xuong ban) + ong dem L1 cao 4,85
 data_dir: ..
 machine: Bambu Lab A1 0.4 nozzle
 filament: Bambu PETG Basic @BBL A1
@@ -11,7 +11,3 @@ plates:
     process: 0.16mm Optimal @BBL A1
     overrides: {wall_loops: "3", sparse_infill_density: "30%"}
     stl: ["mount.stl", "spacer-L.stl"]
-  p2-switch-base:
-    process: 0.16mm Optimal @BBL A1
-    overrides: {wall_loops: "3", sparse_infill_density: "30%"}
-    stl: ["switch-base.stl"]

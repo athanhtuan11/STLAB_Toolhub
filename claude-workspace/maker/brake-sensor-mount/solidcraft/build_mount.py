@@ -106,13 +106,15 @@ sy1 = yt + SP['dy']                       # canh tren than
 sx1, sy0 = sx0 + S['W'], sy1 - S['H']
 p1 = [round(sx0 + SP['P1_from_plunger'], 3), round(sy1 - SP['P1_from_top'], 3)]
 pl = [round(sx0 + SP['L_from_plunger'], 3), round(sy0 - SP['L_below_bottom'], 3)]
-post_h = S['T'] - SP['ear_t']             # tai L nam o mat xa tam ga -> tru do tai cao T - ear_t
+post_h = SP.get('post_h', S['T'] - SP['ear_t'])   # ong dem L1 (v3.7 Tuan: 4,85)
+MG = P.get('merge', False)                # v3.7 Tuan: gop de vao ga thanh 1 khoi
 SB = P['switch_base']; bt = SB['t']; JT = P['joint']
 ZS = Z1 + bt                              # v3.6: de nam tren mat ga (z Z1..ZS), cong tac nam tren de
 jp_ = JT['pos']                           # chot noi de -> ga
 # ga: o chot rong O hole_d sau depth tu mat tren + vau duoi tam
-A("solid.cylinder", diameter=JT['boss_od'], height=JT['depth'] - T + 1.0 + 0.3, base=[jp_[0], jp_[1], Z1 - JT['depth'] - 1.0], axis="Z", **J)
-A("solid.cylinder", diameter=JT['hole_d'], height=JT['depth'] + 0.1, base=[jp_[0], jp_[1], Z1 - JT['depth']], axis="Z", **C)
+if not MG:
+    A("solid.cylinder", diameter=JT['boss_od'], height=JT['depth'] - T + 1.0 + 0.3, base=[jp_[0], jp_[1], Z1 - JT['depth'] - 1.0], axis="Z", **J)
+    A("solid.cylinder", diameter=JT['hole_d'], height=JT['depth'] + 0.1, base=[jp_[0], jp_[1], Z1 - JT['depth']], axis="Z", **C)
 # tai L: ga co vau O post_d (tam + 3 mm xuong duoi) lo O3,4 cho oc M4 tu ren
 boss_dn = 3.0
 A("solid.cylinder", diameter=SP['post_d'], height=T + boss_dn, base=[pl[0], pl[1], H - boss_dn], axis="Z", **J)
@@ -171,8 +173,8 @@ if AL:
     A("note.add", anchor=[*lpc(angs_lip[-1]), -L["depth"]], text="E6b cuoi vanh (da bo %.2f mm phia chan E1)" % L.get("cut_E6b", 0))
 A("note.add", anchor=[(pa[0] + hb[0]) / 2, (pa[1] + hb[1]) / 2 + 2, Z1], text="C = A-B %.1f mm" % P['C_mm'])
 A("note.add", anchor=[p1[0], p1[1], ZS], text="DE-P1 lo chot cong tac O%.1f xuyen de | tam %s" % (SP['P1_hole_d'], XY(p1)))
-A("note.add", anchor=[jp_[0], jp_[1], Z1], text="J1 o chot rong tren ga O%.1f sau %.1f (nhan chot de O%.0f cao %.0f) | tam %s" % (JT['hole_d'], JT['depth'], JT['pin_d'], JT['pin_h'], XY(jp_)))
-A("note.add", anchor=[jp_[0] + JT['boss_od'] / 2, jp_[1], Z1 - JT['depth'] - 1.0], text="J2 vau o chot duoi tam O%.0f" % JT['boss_od'])
+if not MG: A("note.add", anchor=[jp_[0], jp_[1], Z1], text="J1 o chot rong tren ga O%.1f sau %.1f (nhan chot de O%.0f cao %.0f) | tam %s" % (JT['hole_d'], JT['depth'], JT['pin_d'], JT['pin_h'], XY(jp_)))
+if not MG: A("note.add", anchor=[jp_[0] + JT['boss_od'] / 2, jp_[1], Z1 - JT['depth'] - 1.0], text="J2 vau o chot duoi tam O%.0f" % JT['boss_od'])
 A("note.add", anchor=[pl[0], pl[1], ZS + post_h], text="L1 ong dem roi O%.0f / lo O4.4, cao %.2f (giua de va tai) | tam %s | oc M4x25 qua tai+ong+de vao ga" % (SP['post_d'], post_h, XY(pl)))
 A("note.add", anchor=[pl[0] + SP['post_d'] / 2, pl[1], H - 3], text="L2 vau O%.0f duoi tam sau 3, lo ren O%.1f oc M4" % (SP['post_d'], SP['post_hole_d']))
 A("note.add", anchor=[sx0 + S['W'] / 2, sy1, ZS + S['T']], text="S cong tac %.2f x %.2f x %.2f (chi de xem, khong in)" % (S['W'], S['H'], S['T']))
@@ -197,21 +199,27 @@ def hull(pts_):
 base_pts = [[sx0, sy0], [sx1, sy0], [sx1, sy1], [sx0, sy1]] +            [[pl[0] + SB['ear_r'] * math.cos(a), pl[1] + SB['ear_r'] * math.sin(a)] for a in np.linspace(0, 2 * math.pi, 48, endpoint=False)]
 base_poly = [[round(x + bdx, 3), round(y, 3)] for x, y in hull(base_pts)]
 bp1 = [p1[0] + bdx, p1[1]]; bpl = [pl[0] + bdx, pl[1]]; bjp = [jp_[0] + bdx, jp_[1]]
-def base_cmds(A_, name):
-    """DE: tam z Z1..ZS, lo P1, lo L O4,4 xuyen (oc M4 qua de vao ga), chot noi O pin_d cao pin_h o mat duoi."""
+def base_cmds(A_, name, join_to=None):
+    """DE: tam z Z1..ZS, lo P1, lo L. Tach (v3.6): chot noi O pin_d mat duoi, lo L O4,4. Gop (v3.7): join vao ga, lo L O3,4 (ren M4 xuyen ca khoi)."""
+    tg = join_to or name
     A_("sketch.create", plane={"origin": [0, 0, Z1], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]})
-    A_("sketch.line", points=base_poly, closed=True); A_("sketch.finish")
-    A_("solid.extrude", distance=bt, operation="new_body", body_name=name)
-    A_("solid.cylinder", diameter=JT['pin_d'], height=JT['pin_h'] + 0.5, base=[bjp[0], bjp[1], Z1 - JT['pin_h']], axis="Z", operation="join", targets=[name])
-    A_("solid.cylinder", diameter=4.4, height=bt + 0.2, base=[bpl[0], bpl[1], Z1 - 0.1], axis="Z", operation="cut", targets=[name])
-    A_("solid.cylinder", diameter=SP['P1_hole_d'], height=bt + 0.2, base=[bp1[0], bp1[1], Z1 - 0.1], axis="Z", operation="cut", targets=[name])
-base_cmds(A, "base")
+    A_("sketch.line", points=(poly if MG else base_poly), closed=True); A_("sketch.finish")   # gop: phu het vien ga -> mat tren phang, in khong support
+    if join_to: A_("solid.extrude", distance=bt, operation="join", targets=[tg])
+    else: A_("solid.extrude", distance=bt, operation="new_body", body_name=name)
+    if not MG:
+        A_("solid.cylinder", diameter=JT['pin_d'], height=JT['pin_h'] + 0.5, base=[bjp[0], bjp[1], Z1 - JT['pin_h']], axis="Z", operation="join", targets=[tg])
+    A_("solid.cylinder", diameter=(SP['post_hole_d'] if MG else 4.4), height=bt + 0.2, base=[bpl[0], bpl[1], Z1 - 0.1], axis="Z", operation="cut", targets=[tg])
+    A_("solid.cylinder", diameter=SP['P1_hole_d'], height=bt + 0.2, base=[bp1[0], bp1[1], Z1 - 0.1], axis="Z", operation="cut", targets=[tg])
+    if MG:   # B: lo M4 xuyen het tu duoi len + hoc dau oc tren mat (dau oc nam duoi cong tac)
+        A_("solid.cylinder", diameter=BB['id'], height=ZS - bz0 + 0.2, base=[hb[0], hb[1], bz0 - 0.1], axis="Z", operation="cut", targets=[tg])
+        A_("solid.cylinder", diameter=BB['cb_d'], height=BB['cb_depth'] + 0.1, base=[hb[0], hb[1], ZS - BB['cb_depth']], axis="Z", operation="cut", targets=[tg])
+base_cmds(A, "base", join_to="mount" if MG else None)
 
 raw = os.path.join(BUILD, 'mount.raw.stl').replace(os.sep, '/')
 raw_sp = os.path.join(BUILD, 'spacer.raw.stl').replace(os.sep, '/')
 raw_b = os.path.join(BUILD, 'base.raw.stl').replace(os.sep, '/')
 A("file.export_stl", path=raw, bodies=["mount"], quality="fine")
-A("file.export_stl", path=raw_b, bodies=["base"], quality="fine")
+if not MG: A("file.export_stl", path=raw_b, bodies=["base"], quality="fine")
 A("file.export_stl", path=raw_sp, bodies=["spacer"], quality="fine"); A("inspect.measure")
 jp = os.path.join(BUILD, 'mount.json'); json.dump({"commands": cmd}, open(jp, 'w'), indent=1)
 res = os.path.join(BUILD, 'mount.result.json')
@@ -237,8 +245,9 @@ cyl("A1_chot_A_O3.7", PA['d'], PA['len'], -PA['len'], pa, "#e65100")
 cyl("B2_tru_rong_B", BB['od'], H - bz0, bz0, hb, "#e53935")
 cyl("L2_vau_L_duoi_tam", SP['post_d'], boss_dn, H - boss_dn, pl, "#8e24aa")
 cutN(BB['id'], Z1 - bz0 + 0.2, bz0 - 0.1, hb, ["T_tam_ga", "B2_tru_rong_B"])
-cyl("J2_vau_o_chot", JT['boss_od'], JT['depth'] - T + 1.0, Z1 - JT['depth'] - 1.0, jp_, "#5e35b1")
-cutN(JT['hole_d'], JT['depth'] + 0.1, Z1 - JT['depth'], jp_, ["T_tam_ga", "J2_vau_o_chot"])
+if not MG:
+    cyl("J2_vau_o_chot", JT['boss_od'], JT['depth'] - T + 1.0, Z1 - JT['depth'] - 1.0, jp_, "#5e35b1")
+    cutN(JT['hole_d'], JT['depth'] + 0.1, Z1 - JT['depth'], jp_, ["T_tam_ga", "J2_vau_o_chot"])
 cutN(SP['post_hole_d'], T + boss_dn + 0.2, H - boss_dn - 0.1, pl, ["T_tam_ga", "L2_vau_L_duoi_tam"])
 cyl("L1_ong_dem_roi", SP['post_d'], post_h, ZS, pl, "#ff8c00"); cutN(4.4, post_h + 0.2, ZS - 0.1, pl, ["L1_ong_dem_roi"])
 N_("sketch.create", plane={"origin": [0, 0, ZS], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]})
@@ -248,10 +257,14 @@ N_("solid.cylinder", diameter=SP['N_d'], height=S['N_stick_out'], base=[sx0 - S[
    axis="X", operation="new_body", body_name="N_nut_nhan")
 N_("appearance.assign", bodies=["S_cong_tac_chi_xem"], color="#333333", opacity=0.45)
 N_("appearance.assign", bodies=["N_nut_nhan"], color="#00e676")
-base_cmds(N_, "DE_cong_tac_khoi_tren"); N_("appearance.assign", bodies=["DE_cong_tac_khoi_tren"], color="#00acc1")
+DEN = "DE_tang_tren_gop_lien_ga" if MG else "DE_cong_tac_khoi_tren"
+base_cmds(N_, DEN); N_("appearance.assign", bodies=[DEN], color="#00acc1")
 cN += [c for c in cmd if c['command'] in ('note.add', 'parameters.add')]
 N_("note.add", anchor=[bpl[0], bpl[1], ZS], text="DE-L lo xuyen O4.4 (oc M4) | de day %.1f (z %.1f -> %.1f)" % (bt, Z1, ZS))
-N_("note.add", anchor=[bjp[0], bjp[1], Z1 - JT['pin_h']], text="DE-J chot noi O%.1f cao %.1f mat duoi de -> cam o J1 tren ga" % (JT['pin_d'], JT['pin_h']))
+if MG:
+    N_("note.add", anchor=[hb[0], hb[1], ZS], text="B3 hoc dau oc M4 O%.1f sau %.1f (dau oc nam duoi cong tac) | lo B xuyen tu z %.1f -> %.1f" % (BB['cb_d'], BB['cb_depth'], bz0, ZS))
+else:
+    N_("note.add", anchor=[bjp[0], bjp[1], Z1 - JT['pin_h']], text="DE-J chot noi O%.1f cao %.1f mat duoi de -> cam o J1 tren ga" % (JT['pin_d'], JT['pin_h']))
 jn = os.path.join(BUILD, 'named.json'); json.dump({"commands": cN}, open(jn, 'w'), indent=1)
 r = subprocess.run([CLI, 'run', jn, '--save', os.path.join(HERE, 'brake-sensor-mount.sc'), '--quiet'],
                    capture_output=True, text=True, encoding='utf-8', errors='replace')
@@ -270,10 +283,11 @@ rec = np.frombuffer(b, np.dtype([('n', '<f4', 3), ('v', '<f4', (3, 3)), ('a', '<
 v = rec['v'].astype(float); v[..., 2] -= v[..., 2].min(); rec['v'] = v.astype('<f4')
 open(os.path.join(STLD, 'spacer-L.stl'), 'wb').write(b[:84] + rec.tobytes()); os.remove(raw_sp)
 # de cong tac: lat 180 quanh X (mat tren xuong ban, chot noi huong len), zmin = 0
-b = open(raw_b, 'rb').read(); n = int(np.frombuffer(b, '<u4', 1, 80)[0])
-rec = np.frombuffer(b, np.dtype([('n', '<f4', 3), ('v', '<f4', (3, 3)), ('a', '<u2')]), n, 84).copy()
-v = rec['v'].astype(float) @ Rm.T; v[..., 2] -= v[..., 2].min(); rec['v'] = v.astype('<f4'); rec['n'] = (rec['n'].astype(float) @ Rm.T).astype('<f4')
-open(os.path.join(STLD, 'switch-base.stl'), 'wb').write(b[:84] + rec.tobytes()); os.remove(raw_b)
+if not MG:
+    b = open(raw_b, 'rb').read(); n = int(np.frombuffer(b, '<u4', 1, 80)[0])
+    rec = np.frombuffer(b, np.dtype([('n', '<f4', 3), ('v', '<f4', (3, 3)), ('a', '<u2')]), n, 84).copy()
+    v = rec['v'].astype(float) @ Rm.T; v[..., 2] -= v[..., 2].min(); rec['v'] = v.astype('<f4'); rec['n'] = (rec['n'].astype(float) @ Rm.T).astype('<f4')
+    open(os.path.join(STLD, 'switch-base.stl'), 'wb').write(b[:84] + rec.tobytes()); os.remove(raw_b)
 bodies = {bd.get('name'): bd for bd in json.load(open(res, encoding='utf-8'))[-1]['bodies']}
 body = bodies.get('mount') or list(bodies.values())[0]
 rep = {"volume_mm3": body.get('volume_mm3'), "bbox": body['bbox'], "closed": body.get('closed'),
@@ -357,8 +371,8 @@ try:
     ax.add_patch(plt.Circle(pl, 2.2, fill=False, color='purple', lw=2))
     ax.add_patch(plt.Circle(pl, SP['post_d'] / 2, fill=False, color='orange', ls='--', lw=1.5))
     ax.annotate('DE-L lo O4.4 xuyen (M4)\nong dem L1 O8 dat tren\n%s' % XY(pl), (pl[0] + 5, pl[1] - 1), color='purple', weight='bold')
-    ax.add_patch(plt.Circle(jp_, JT['pin_d'] / 2, color='#5e35b1', alpha=.6))
-    ax.annotate('DE-J chot noi O%.0f cao %.0f\n(mat duoi) %s' % (JT['pin_d'], JT['pin_h'], XY(jp_)), (jp_[0] + 3, jp_[1] - 1), color='#5e35b1', weight='bold')
+    if not MG: ax.add_patch(plt.Circle(jp_, JT['pin_d'] / 2, color='#5e35b1', alpha=.6))
+    if not MG: ax.annotate('DE-J chot noi O%.0f cao %.0f\n(mat duoi) %s' % (JT['pin_d'], JT['pin_h'], XY(jp_)), (jp_[0] + 3, jp_[1] - 1), color='#5e35b1', weight='bold')
     ax.plot([sx0, sx0 - S['N_stick_out']], [sy1 - SP['N_from_top']] * 2, 'g-', lw=5)
     ax.annotate('N nut (cong tac)', (sx0 - S['N_stick_out'], sy1 - SP['N_from_top'] + 1), color='green', weight='bold')
     ax.add_patch(plt.Rectangle((sx0, sy0), S['W'], S['H'], fill=False, ls='--', color='gray'))
@@ -367,8 +381,8 @@ try:
     ax.set_xlim(sx0 - 9, sx1 + 6); ax.set_ylim(pl[1] - 8, sy1 + 4)
     # canh ben (cat doc qua L va P1 theo X)
     ax2.add_patch(plt.Rectangle((sx0, 0), S['W'], bt, color='#b2ebf2', ec='k'))
-    ax2.add_patch(plt.Rectangle((jp_[0] - JT['pin_d'] / 2, -JT['pin_h']), JT['pin_d'], JT['pin_h'], color='#5e35b1', ec='k'))
-    ax2.annotate('DE-J chot %.0f' % JT['pin_h'], (jp_[0] + JT['pin_d'] / 2 + 0.5, -JT['pin_h'] / 2), color='#5e35b1', weight='bold')
+    if not MG: ax2.add_patch(plt.Rectangle((jp_[0] - JT['pin_d'] / 2, -JT['pin_h']), JT['pin_d'], JT['pin_h'], color='#5e35b1', ec='k'))
+    if not MG: ax2.annotate('DE-J chot %.0f' % JT['pin_h'], (jp_[0] + JT['pin_d'] / 2 + 0.5, -JT['pin_h'] / 2), color='#5e35b1', weight='bold')
     ax2.add_patch(plt.Rectangle((pl[0] - SP['post_d'] / 2, bt), SP['post_d'], post_h, color='orange', alpha=.5, ec='k'))
     ax2.add_patch(plt.Rectangle((sx0, bt), S['W'], S['T'], fill=False, ls='--', color='gray'))
     ax2.annotate('cong tac (chi xem) cao %.2f' % S['T'], (sx0 + 9, bt + S['T'] / 2), color='gray')
