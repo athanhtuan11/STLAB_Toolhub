@@ -2,10 +2,10 @@
  {
   "ma": "E1",
   "ten": "mep trai (canh khoi luc giac)",
-  "dai_mm": 8.0,
+  "dai_mm": 12.0,
   "nhan": [
    -8.94,
-   10.27
+   12.27
   ]
  },
  {
@@ -14,16 +14,16 @@
   "dai_mm": 32.35,
   "nhan": [
    10.23,
-   15.77
+   19.77
   ]
  },
  {
   "ma": "E3",
   "ten": "canh phai (sat xi-lanh)",
-  "dai_mm": 30.6,
+  "dai_mm": 34.6,
   "nhan": [
    28.91,
-   -1.03
+   0.97
   ]
  },
  {
@@ -47,7 +47,7 @@
  {
   "ma": "E6",
   "ten": "vanh om: R ngoai 11.19 / trong 9.69 quanh tam (-3.75, -4.71), thanh 1.5, sau 4.5 duoi mat tay thang",
-  "dai_mm": 35.81,
+  "dai_mm": 36.91,
   "nhan": [
    -8.68,
    -9.23

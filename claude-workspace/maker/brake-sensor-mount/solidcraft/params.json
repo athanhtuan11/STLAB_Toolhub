@@ -1,5 +1,5 @@
 {
-  "_note": "Ga cam bien tay thang v2 (2026-11-13). Tuan do: C(A-B)=13, mep cung tay thang R10 quanh tam dai oc D, mep day 5,5, dai oc cao 5,5, chot A O3,7 sau 5,5, B lo tron M4, E2=24, E1=10 roi bo tron toi cung, E3=11, vien E5-E12 bo tron deu R~11. Uoc tu anh (ti le theo C): vi tri A/B, canh tren y=16,27, canh phai x=17,06. Goc = tam D, X phai, Y len, Z=0 mat tay thang. v2.1: E2 keo dai sang phai che mep ngoai tru B (+1 mm). v3.2 (Tuan): chot A dai 5,5->2; E1 vao 2 mm; tru B len 1,75 + phai 1, keo xuong them 2 (z0 -2); vanh E6 sau 5,5->7,5; E3 keo phai 1 de van che B; cong tac giu vi tri cu (dx -2). v3.3: vien trai+day = 1 cung lien (mep trai cach E1 10 mm, day -11,8). v3.5: bo 6,25 mm dau vanh phia E6b (can khi bop); them de cong tac in rieng; .sc do = moi chi tiet 1 body co ten. v3.6: tach de (khoi tren, chot O5x4) + o chot rong tren ga; ga noi rong chua tron cong tac + om vau L2 (+1 mm); cong tac doi phai 2 mm (mep nut = E1). v3.7 Tuan: gop de vao ga 1 khoi (bo chot noi); lo B M4 xuyen het + hoc dau oc O8 sau 4,2; ong dem L1 cao 4,85; lo L O3,4 xuyen ca khoi. v3.8 Tuan: E6 cao 10 (sau 4,5); B2 cao 5,8; cong tac doi ve E2 5 mm (truc nut thang chot ren M3 O10); E2 lui 2 (E1 8 giu chan E1); L1 doi 9 ve phia nut N; E3 keo xuong y -13,33. v3.9 Tuan: L1 doi XA nut N +5 mm (L cach mat nut 10,8; thay lan doi -9 ve phia nut). v3.10 Tuan: quay ve L cua v3.8 roi doi 5 mm ve phia E6; E1 chi vao 1 mm (E2 25,48); cong tac + vanh giu cho. v3.10b: buou O10 quanh L; goc phai E3 ha them 3 mm (y3 -16,33) che mat duoi. v3.11 Tuan: chi doi L1 - ve 5,8 tu mat nut (v3.9 doi 5 mm ve E6, P1-L 20,0); bo buou L; B2 cao 5,5; giu E1 vao 1, goc E3 -16,33.",
+  "_note": "Ga cam bien tay thang v2 (2026-11-13). Tuan do: C(A-B)=13, mep cung tay thang R10 quanh tam dai oc D, mep day 5,5, dai oc cao 5,5, chot A O3,7 sau 5,5, B lo tron M4, E2=24, E1=10 roi bo tron toi cung, E3=11, vien E5-E12 bo tron deu R~11. Uoc tu anh (ti le theo C): vi tri A/B, canh tren y=16,27, canh phai x=17,06. Goc = tam D, X phai, Y len, Z=0 mat tay thang. v2.1: E2 keo dai sang phai che mep ngoai tru B (+1 mm). v3.2 (Tuan): chot A dai 5,5->2; E1 vao 2 mm; tru B len 1,75 + phai 1, keo xuong them 2 (z0 -2); vanh E6 sau 5,5->7,5; E3 keo phai 1 de van che B; cong tac giu vi tri cu (dx -2). v3.3: vien trai+day = 1 cung lien (mep trai cach E1 10 mm, day -11,8). v3.5: bo 6,25 mm dau vanh phia E6b (can khi bop); them de cong tac in rieng; .sc do = moi chi tiet 1 body co ten. v3.6: tach de (khoi tren, chot O5x4) + o chot rong tren ga; ga noi rong chua tron cong tac + om vau L2 (+1 mm); cong tac doi phai 2 mm (mep nut = E1). v3.7 Tuan: gop de vao ga 1 khoi (bo chot noi); lo B M4 xuyen het + hoc dau oc O8 sau 4,2; ong dem L1 cao 4,85; lo L O3,4 xuyen ca khoi. v3.8 Tuan: E6 cao 10 (sau 4,5); B2 cao 5,8; cong tac doi ve E2 5 mm (truc nut thang chot ren M3 O10); E2 lui 2 (E1 8 giu chan E1); L1 doi 9 ve phia nut N; E3 keo xuong y -13,33. v3.9 Tuan: L1 doi XA nut N +5 mm (L cach mat nut 10,8; thay lan doi -9 ve phia nut). v3.10 Tuan: quay ve L cua v3.8 roi doi 5 mm ve phia E6; E1 chi vao 1 mm (E2 25,48); cong tac + vanh giu cho. v3.10b: buou O10 quanh L; goc phai E3 ha them 3 mm (y3 -16,33) che mat duoi. v3.11 Tuan: chi doi L1 - ve 5,8 tu mat nut (v3.9 doi 5 mm ve E6, P1-L 20,0); bo buou L; B2 cao 5,5; giu E1 vao 1, goc E3 -16,33. v3.12 Tuan: E2 keo RA ngoai 2 mm (y 18,27) thay vi lui vao; giu chan E1, cong tac, tam T2/L1.",
   "img_origin_px": [
     405,
     560
@@ -7,10 +7,10 @@
   "C_mm": 13.0,
   "standoff": 5.5,
   "plate_t": 3.5,
-  "top_y": 14.27,
+  "top_y": 18.27,
   "right_x": 19.54,
   "E2": 25.48,
-  "E1": 8.0,
+  "E1": 12.0,
   "E3": 11.0,
   "fillet_E1": 2.0,
   "lip": {
@@ -61,7 +61,7 @@
       "plunger_face_x": "E1",
       "top_align": "E2",
       "dx": 1.0,
-      "dy": 7.0,
+      "dy": 3.0,
       "P1_from_plunger": 6.7,
       "P1_from_top": 8.2,
       "L_from_plunger": 5.8,
