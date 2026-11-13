@@ -1,0 +1,11 @@
+{
+  "_note": "Ga cam bien tay thang v1 (2026-11-13). So Tuan do: C=13 (A-B), R cung=10, mep cung day 5,5, dai oc cao 5,5 (tam gá dat tren dai oc), chot A O3,7 sau 5,5, B lo tron M4. Vi tri lay tu anh IMG_20261113_085228, ti le theo C. Goc = tam dai oc D, X phai, Y len, Z=0 mat tay thang.",
+  "img_origin_px": [405, 560],
+  "C_mm": 13.0,
+  "standoff": 5.5,
+  "plate_t": 3.0,
+  "outline_px": [[255,370],[255,128],[858,128],[858,425],[770,462],[720,540],[680,630],[600,722],[500,848],[405,872],[300,848]],
+  "lip": {"R": 10.0, "center_dx_mm": -3.0, "gap": 0.3, "wall": 2.0, "depth": 5.5, "a0": 150, "a1": 212},
+  "pin_a": {"px": [450, 222], "d": 3.7, "len": 5.5, "shoulder_d": 7.0},
+  "boss_b": {"px": [778, 330], "od": 7.0, "id": 4.4}
+}
