@@ -11,46 +11,46 @@
  {
   "ma": "E2",
   "ten": "canh tren",
-  "dai_mm": 24.48,
+  "dai_mm": 31.35,
   "nhan": [
-   7.3,
+   10.73,
    17.77
   ]
  },
  {
   "ma": "E3",
   "ten": "canh phai (sat xi-lanh)",
-  "dai_mm": 11.0,
+  "dai_mm": 25.6,
   "nhan": [
-   22.04,
-   10.77
+   28.91,
+   3.47
   ]
  },
  {
   "ma": "E4",
   "ten": "doan thang tiep tuyen",
-  "dai_mm": 22.88,
+  "dai_mm": 25.96,
   "nhan": [
-   14.56,
-   -3.39
+   16.68,
+   -13.68
   ]
  },
  {
   "ma": "E5",
-  "ten": "cung lien R11.1 (chan E1 -> trai -> day -> E4, gop E5-E7)",
-  "dai_mm": 43.34,
+  "ten": "cung lien R12.7 (chan E1 -> trai -> day -> E4, gop E5-E7)",
+  "dai_mm": 41.39,
   "nhan": [
-   -13.87,
-   -13.98
+   -13.46,
+   -16.33
   ]
  },
  {
   "ma": "E6",
-  "ten": "vanh om het cung E5: R ngoai 11.11 / trong 9.61 (tam cung), thanh 1.5, sau 7.5 duoi mat tay thang",
-  "dai_mm": 43.34,
+  "ten": "vanh om: R ngoai 11.11 / trong 9.61 quanh tam (-3.83, -4.79), thanh 1.5, sau 7.5 duoi mat tay thang",
+  "dai_mm": 37.01,
   "nhan": [
-   -8.7,
-   -9.25
+   -7.17,
+   -10.57
   ]
  }
 ]

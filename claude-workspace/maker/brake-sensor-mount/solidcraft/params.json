@@ -1,5 +1,5 @@
 {
-  "_note": "Ga cam bien tay thang v2 (2026-11-13). Tuan do: C(A-B)=13, mep cung tay thang R10 quanh tam dai oc D, mep day 5,5, dai oc cao 5,5, chot A O3,7 sau 5,5, B lo tron M4, E2=24, E1=10 roi bo tron toi cung, E3=11, vien E5-E12 bo tron deu R~11. Uoc tu anh (ti le theo C): vi tri A/B, canh tren y=16,27, canh phai x=17,06. Goc = tam D, X phai, Y len, Z=0 mat tay thang. v2.1: E2 keo dai sang phai che mep ngoai tru B (+1 mm). v3.2 (Tuan): chot A dai 5,5->2; E1 vao 2 mm; tru B len 1,75 + phai 1, keo xuong them 2 (z0 -2); vanh E6 sau 5,5->7,5; E3 keo phai 1 de van che B; cong tac giu vi tri cu (dx -2). v3.3: vien trai+day = 1 cung lien (mep trai cach E1 10 mm, day -11,8). v3.5: bo 6,25 mm dau vanh phia E6b (can khi bop); them de cong tac in rieng; .sc do = moi chi tiet 1 body co ten.",
+  "_note": "Ga cam bien tay thang v2 (2026-11-13). Tuan do: C(A-B)=13, mep cung tay thang R10 quanh tam dai oc D, mep day 5,5, dai oc cao 5,5, chot A O3,7 sau 5,5, B lo tron M4, E2=24, E1=10 roi bo tron toi cung, E3=11, vien E5-E12 bo tron deu R~11. Uoc tu anh (ti le theo C): vi tri A/B, canh tren y=16,27, canh phai x=17,06. Goc = tam D, X phai, Y len, Z=0 mat tay thang. v2.1: E2 keo dai sang phai che mep ngoai tru B (+1 mm). v3.2 (Tuan): chot A dai 5,5->2; E1 vao 2 mm; tru B len 1,75 + phai 1, keo xuong them 2 (z0 -2); vanh E6 sau 5,5->7,5; E3 keo phai 1 de van che B; cong tac giu vi tri cu (dx -2). v3.3: vien trai+day = 1 cung lien (mep trai cach E1 10 mm, day -11,8). v3.5: bo 6,25 mm dau vanh phia E6b (can khi bop); them de cong tac in rieng; .sc do = moi chi tiet 1 body co ten. v3.6: tach de (khoi tren, chot O5x4) + o chot rong tren ga; ga noi rong chua tron cong tac + om vau L2 (+1 mm); cong tac doi phai 2 mm (mep nut = E1).",
   "img_origin_px": [
     405,
     560
@@ -58,7 +58,7 @@
       "_note": "v3.1: up mat co P1 xuong tam ga, nut N chia ve E1 (-X). Tuan do P1 cao 3,2, tai L day 4 -> ong dem 11,26; tam ga 3 -> 3,5 de chot P1 khong lo xuong cham dai oc. Vi tri P1/L/N tren than uoc tu anh (Tuan dong y 've di').",
       "plunger_face_x": "E1",
       "top_align": "E2",
-      "dx": -2.0,
+      "dx": 0.0,
       "dy": 0.0,
       "P1_from_plunger": 6.7,
       "P1_from_top": 8.2,
@@ -76,12 +76,29 @@
   "arc_left": {
     "offset_from_E1": 10.0,
     "bottom_y": -15.9,
-    "_note": "v3.3 Tuan: E7 doi ra 10, E7-E6 bo 1 cung tron lien toi E4; day -15,9 de cung om tru L (oc tai cong tac)"
+    "_note": "v3.3 Tuan: E7 doi ra 10, E7-E6 bo 1 cung tron lien toi E4; day -15,9 de cung om tru L (oc tai cong tac)",
+    "wrap_L": 6.0
   },
   "switch_base": {
-    "_note": "De cong tac in rieng de test (Tuan 2026-11-13): tam theo dau cong tac + tai L, lo P1, tru L lien.",
+    "_note": "De cong tac = khoi tren (v3.6): tam 3,5 tren mat ga, lo P1, lo L O4,4, chot noi O5x4 mat duoi; in up mat tren xuong ban.",
     "t": 3.5,
     "ear_r": 5.0,
-    "display_dx": 45.0
+    "display_dx": 0.0
+  },
+  "joint": {
+    "_note": "v3.6 Tuan: tach 2 khoi, de co chot day O5 cao 4 cam vao tru rong tren ga. Vi tri chot do Claude chon (vung trong duoi tam, xa dai oc/A/B/L).",
+    "pin_d": 5.0,
+    "pin_h": 4.0,
+    "hole_d": 5.3,
+    "depth": 4.5,
+    "boss_od": 9.0,
+    "pos": [
+      10.0,
+      1.0
+    ]
+  },
+  "fit_switch": {
+    "margin": 0.0,
+    "_note": "v3.6 Tuan: tam ga chua tron cong tac"
   }
 }

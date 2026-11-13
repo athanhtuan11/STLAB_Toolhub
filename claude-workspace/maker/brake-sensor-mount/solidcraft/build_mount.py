@@ -24,6 +24,10 @@ pol = lambda r, a: [round(r * math.cos(a), 3), round(r * math.sin(a), 3)]
 r_in = L['R'] + L['gap']; R = r_in + L['wall']          # R = ban kinh vien day (E5 + E6), tam D
 xr, yt = P['right_x'], P['top_y']
 xl = xr - P['E2']; y1 = yt - P['E1']; y3 = yt - P['E3']; rf = P['fillet_E1']
+if P.get('fit_switch'):   # v3.6 (Tuan): tam ga chua tron cong tac (mep phai + day cong tac)
+    _S = P['sensor']; _sp = _S['place']
+    _sx1 = xl + _sp['dx'] + _S['W']; _sy0 = yt + _sp['dy'] - _S['H']
+    xr = max(xr, round(_sx1 + P['fit_switch'].get('margin', 0.0), 3)); y3 = min(y3, round(_sy0 - P['fit_switch'].get('margin', 0.0), 3))
 d = math.hypot(xr, y3); at = math.atan2(y3, xr) - math.acos(R / d)   # tiep tuyen tu chan E3, nhanh duoi
 a_top = math.pi - math.asin(min(y1 / R, 1.0))                        # cung gap do cao chan E1 (phia trai)
 a0, a1 = math.radians(L['a0']), math.radians(L['a1'])
@@ -33,9 +37,18 @@ if AL:
     # v3.3 (Tuan): 1 cung tron lien tu chan E1 -> mep trai (cach E1 'offset' mm) -> day (y = bottom_y) -> tiep tuyen E4
     # tam (ac_x, ac_y), ban kinh ar: ac_x - ar = xl - off ; ac_y - ar = yb ; qua (xl, y1)
     off, yb = AL['offset_from_E1'], AL['bottom_y']
-    u, w = off, y1 - yb                                    # (u - ar)^2 + (w - ar)^2 = ar^2
-    ar = ((u + w) - math.sqrt((u + w) ** 2 - (u * u + w * w))); ar = ar if ar > 0 else None
-    ac = (xl - off + ar, yb + ar)
+    def _arc(yb_):
+        u, w = off, y1 - yb_                               # (u - ar)^2 + (w - ar)^2 = ar^2
+        ar_ = (u + w) - math.sqrt((u + w) ** 2 - (u * u + w * w))
+        return ar_, (xl - off + ar_, yb_ + ar_)
+    ar, ac = _arc(yb)
+    # v3.6 (Tuan): cung phai om tron vau L2 + tai L (ban kinh wrap_L) - ha day toi khi du
+    if AL.get('wrap_L'):
+        _S = P['sensor']; _sp = _S['place']
+        _sx0 = xl + _sp['dx']; _sy0 = yt + _sp['dy'] - _S['H']
+        _pl = (_sx0 + _sp['L_from_plunger'], _sy0 - _sp['L_below_bottom'])
+        while math.dist(_pl, ac) + AL['wrap_L'] > ar:
+            yb -= 0.05; ar, ac = _arc(yb)
     pc = lambda a: [round(ac[0] + ar * math.cos(a), 3), round(ac[1] + ar * math.sin(a), 3)]
     dx_, dy_ = xr - ac[0], y3 - ac[1]; dd = math.hypot(dx_, dy_)
     at2 = math.atan2(dy_, dx_) - math.acos(ar / dd)        # tiep tuyen tu chan E3, nhanh duoi
@@ -54,15 +67,23 @@ else:
     poly += [[round(fc[0] + rf * math.cos(a), 3), round(fc[1] + rf * math.sin(a), 3)] for a in np.linspace(-math.pi / 2, 0, 8)[1:]]
 lip = [pol(R, a) for a in np.linspace(a0, a1, 16)] + [pol(r_in, a) for a in np.linspace(a1, a0, 16)]
 if AL:   # v3.4 (Tuan): vanh om chay HET cung vien E5 (chan E1 -> qua tru L -> E4), bam theo cung vien
-    lw = L['wall']; ri = ar - lw
-    pci = lambda a: [round(ac[0] + ri * math.cos(a), 3), round(ac[1] + ri * math.sin(a), 3)]
+    lw = L['wall']
+    # v3.6: vanh giu cung CU (bottom_y goc) - chi vien tam noi rong; vanh nam duoi tam (z -depth..H)
+    lar, lac = _arc(AL['bottom_y'])
+    _xr0, _y30 = P['right_x'], yt - P['E3']                # goc chan E3 cu -> diem dau vanh E6a cu
+    _d0 = math.hypot(_xr0 - lac[0], _y30 - lac[1])
+    _a0 = math.atan2(_y30 - lac[1], _xr0 - lac[0]) - math.acos(lar / _d0)
+    _ae = math.atan2(y1 - lac[1], xl - lac[0])
+    l_angs = np.linspace(_a0, _ae - 2 * math.pi if _ae > _a0 else _ae, 90)
+    ri = lar - lw
+    lpc = lambda a: [round(lac[0] + lar * math.cos(a), 3), round(lac[1] + lar * math.sin(a), 3)]
+    pci = lambda a: [round(lac[0] + ri * math.cos(a), 3), round(lac[1] + ri * math.sin(a), 3)]
     # v3.5 (Tuan): bo doan dau vanh phia E6b (chan E1) dai cut_E6b mm - doan nay can khi bop
-    # cat theo dung dinh cua vien (trung dinh -> nhan SMLib khong loi mat trung)
-    step = abs(angs_[1] - angs_[0]) * ar
+    step = abs(l_angs[1] - l_angs[0]) * lar
     k = int(round(L.get('cut_E6b', 0.0) / step))
-    angs_lip = angs_[:len(angs_) - k] if k else angs_
-    lip = [pc(a) for a in angs_lip] + [pci(a) for a in angs_lip[::-1]]
-    r_in, R = ri, ar
+    angs_lip = l_angs[:len(l_angs) - k] if k else l_angs
+    lip = [lpc(a) for a in angs_lip] + [pci(a) for a in angs_lip[::-1]]
+    r_in, R = ri, lar
 
 cmd = []
 A = lambda c, **p: cmd.append({"command": c, "params": p})
@@ -72,7 +93,7 @@ A("solid.extrude", distance=T, operation="new_body", body_name="mount")
 J = {"operation": "join", "targets": ["mount"]}; C = {"operation": "cut", "targets": ["mount"]}
 A("sketch.create", plane={"origin": [0, 0, -L['depth']], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]})
 A("sketch.line", points=lip, closed=True); A("sketch.finish")
-A("solid.extrude", distance=L['depth'] + H + 0.5, **J)
+A("solid.extrude", distance=L['depth'] + H, **J)
 A("solid.cylinder", diameter=PA['shoulder_d'], height=H + 0.5, base=[pa[0], pa[1], 0], axis="Z", **J)
 A("solid.cylinder", diameter=PA['d'], height=PA['len'] + 0.5, base=[pa[0], pa[1], -PA['len']], axis="Z", **J)
 A("solid.cylinder", diameter=BB['od'], height=H - bz0 + 0.5, base=[hb[0], hb[1], bz0], axis="Z", **J)
@@ -86,28 +107,34 @@ sx1, sy0 = sx0 + S['W'], sy1 - S['H']
 p1 = [round(sx0 + SP['P1_from_plunger'], 3), round(sy1 - SP['P1_from_top'], 3)]
 pl = [round(sx0 + SP['L_from_plunger'], 3), round(sy0 - SP['L_below_bottom'], 3)]
 post_h = S['T'] - SP['ear_t']             # tai L nam o mat xa tam ga -> tru do tai cao T - ear_t
-A("solid.cylinder", diameter=SP['P1_hole_d'], height=T + 0.6, base=[p1[0], p1[1], H - 0.3], axis="Z", **C)
-# tai L: tam ga co vau O post_d (mat tam + 3 mm xuong duoi) lo O3,4 cho oc M4 tu ren; ong dem roi cao post_h dat giua tai va tam
+SB = P['switch_base']; bt = SB['t']; JT = P['joint']
+ZS = Z1 + bt                              # v3.6: de nam tren mat ga (z Z1..ZS), cong tac nam tren de
+jp_ = JT['pos']                           # chot noi de -> ga
+# ga: o chot rong O hole_d sau depth tu mat tren + vau duoi tam
+A("solid.cylinder", diameter=JT['boss_od'], height=JT['depth'] - T + 1.0 + 0.3, base=[jp_[0], jp_[1], Z1 - JT['depth'] - 1.0], axis="Z", **J)
+A("solid.cylinder", diameter=JT['hole_d'], height=JT['depth'] + 0.1, base=[jp_[0], jp_[1], Z1 - JT['depth']], axis="Z", **C)
+# tai L: ga co vau O post_d (tam + 3 mm xuong duoi) lo O3,4 cho oc M4 tu ren
 boss_dn = 3.0
 A("solid.cylinder", diameter=SP['post_d'], height=T + boss_dn, base=[pl[0], pl[1], H - boss_dn], axis="Z", **J)
 A("solid.cylinder", diameter=SP['post_hole_d'], height=T + boss_dn + 0.2, base=[pl[0], pl[1], H - boss_dn - 0.1], axis="Z", **C)
-A("solid.cylinder", diameter=SP['post_d'], height=post_h, base=[pl[0], pl[1], Z1], axis="Z", operation="new_body", body_name="spacer")
-A("solid.cylinder", diameter=4.4, height=post_h + 0.2, base=[pl[0], pl[1], Z1 - 0.1], axis="Z", operation="cut", targets=["spacer"])
+# ong dem roi giua de va tai L
+A("solid.cylinder", diameter=SP['post_d'], height=post_h, base=[pl[0], pl[1], ZS], axis="Z", operation="new_body", body_name="spacer")
+A("solid.cylinder", diameter=4.4, height=post_h + 0.2, base=[pl[0], pl[1], ZS - 0.1], axis="Z", operation="cut", targets=["spacer"])
 # than cong tac (chi de xem, khong in)
-A("sketch.create", plane={"origin": [0, 0, Z1], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]})
+A("sketch.create", plane={"origin": [0, 0, ZS], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]})
 A("sketch.rectangle.two_point", p0=[sx0, sy0], p1=[sx1, sy1]); A("sketch.finish")
 A("solid.extrude", distance=S['T'], operation="new_body", body_name="switch")
-A("solid.cylinder", diameter=SP['N_d'], height=S['N_stick_out'], base=[sx0 - S['N_stick_out'], sy1 - SP['N_from_top'], Z1 + S['T'] / 2],
+A("solid.cylinder", diameter=SP['N_d'], height=S['N_stick_out'], base=[sx0 - S['N_stick_out'], sy1 - SP['N_from_top'], ZS + S['T'] / 2],
   axis="X", operation="join", targets=["switch"])
-A("solid.cylinder", diameter=8.0, height=SP['ear_t'], base=[pl[0], pl[1], Z1 + post_h], axis="Z", operation="join", targets=["switch"])
+A("solid.cylinder", diameter=8.0, height=SP['ear_t'], base=[pl[0], pl[1], ZS + post_h], axis="Z", operation="join", targets=["switch"])
 A("appearance.assign", bodies=["switch"], color="#333333", opacity=0.6)
 
 # --- ma canh (note trong .sc) + tham so ten ro ---
 p4 = pol(R, at)
 EDGES = [
     {"ma": "E1", "ten": "mep trai (canh khoi luc giac)", "dai_mm": P['E1'], "nhan": [xl - 3, (yt + y1) / 2]},
-    {"ma": "E2", "ten": "canh tren", "dai_mm": P['E2'], "nhan": [(xl + xr) / 2, yt + 1.5]},
-    {"ma": "E3", "ten": "canh phai (sat xi-lanh)", "dai_mm": P['E3'], "nhan": [xr + 2.5, (yt + y3) / 2]},
+    {"ma": "E2", "ten": "canh tren", "dai_mm": round(xr - xl, 2), "nhan": [(xl + xr) / 2, yt + 1.5]},
+    {"ma": "E3", "ten": "canh phai (sat xi-lanh)", "dai_mm": round(yt - y3, 2), "nhan": [xr + 2.5, (yt + y3) / 2]},
     {"ma": "E4", "ten": "doan thang tiep tuyen", "dai_mm": round(math.dist([xr, y3], p4), 2),
      "nhan": [(xr + p4[0]) / 2 + 2.5, (y3 + p4[1]) / 2]},
     {"ma": "E5", "ten": "cung day R%.1f tam D (gop E5-E11 cu)" % R, "dai_mm": round(R * abs(at - (a1 - 2 * math.pi)), 2),
@@ -123,8 +150,8 @@ if AL:   # v3.3: E5+E6+E7 thanh 1 cung lien; E6 chi con la vanh om duoi tam
     EDGES[4] = {"ma": "E5", "ten": "cung lien R%.1f (chan E1 -> trai -> day -> E4, gop E5-E7)" % ar,
                 "dai_mm": round(ar * abs(angs_[-1] - angs_[0]), 2),
                 "nhan": [round(ac[0] + (ar + 2.5) * math.cos(-2.4), 2), round(ac[1] + (ar + 2.5) * math.sin(-2.4), 2)]}
-    EDGES[5] = {"ma": "E6", "ten": "vanh om het cung E5: R ngoai %.2f / trong %.2f (tam cung), thanh %.1f, sau %.1f duoi mat tay thang" % (ar, ri, lw, L['depth']),
-                "dai_mm": round(ar * abs(angs_[-1] - angs_[0]), 2),
+    EDGES[5] = {"ma": "E6", "ten": "vanh om: R ngoai %.2f / trong %.2f quanh tam %s, thanh %.1f, sau %.1f duoi mat tay thang" % (lar, ri, "(%.2f, %.2f)" % lac, lw, L['depth']),
+                "dai_mm": round(lar * abs(angs_lip[-1] - angs_lip[0]), 2),
                 "nhan": [round(ac[0] + (ri - 3) * math.cos(-2.4), 2), round(ac[1] + (ri - 3) * math.sin(-2.4), 2)]}
     del EDGES[6]
 for e in EDGES:
@@ -140,14 +167,16 @@ A("note.add", anchor=[0, 0, Z1], text="D tam dai oc (0, 0) = goc toa do")
 A("note.add", anchor=[xr - 3, yt - 3, Z1], text="T tam ga day %.1f (z %.1f -> %.1f), mat duoi tua len dai oc" % (T, H, Z1))
 if AL:
     A("note.add", anchor=[ac[0], ac[1], Z1], text="O tam cung E5/E6 %s, R %.2f" % (XY(ac), ar))
-    A("note.add", anchor=[*pc(angs_[0]), -L['depth']], text="E6a dau vanh (giap E4)")
-    A("note.add", anchor=[*pc(angs_lip[-1]), -L["depth"]], text="E6b cuoi vanh (da bo %.2f mm phia chan E1)" % L.get("cut_E6b", 0))
+    A("note.add", anchor=[*lpc(angs_lip[0]), -L['depth']], text="E6a dau vanh (phia tru L)")
+    A("note.add", anchor=[*lpc(angs_lip[-1]), -L["depth"]], text="E6b cuoi vanh (da bo %.2f mm phia chan E1)" % L.get("cut_E6b", 0))
 A("note.add", anchor=[(pa[0] + hb[0]) / 2, (pa[1] + hb[1]) / 2 + 2, Z1], text="C = A-B %.1f mm" % P['C_mm'])
-A("note.add", anchor=[p1[0], p1[1], Z1], text="P1 lo chot cong tac O%.1f xuyen tam | tam %s" % (SP['P1_hole_d'], XY(p1)))
-A("note.add", anchor=[pl[0], pl[1], Z1 + post_h], text="L1 ong dem roi O%.0f / lo O4.4, cao %.2f (in rieng) | tam %s" % (SP['post_d'], post_h, XY(pl)))
+A("note.add", anchor=[p1[0], p1[1], ZS], text="DE-P1 lo chot cong tac O%.1f xuyen de | tam %s" % (SP['P1_hole_d'], XY(p1)))
+A("note.add", anchor=[jp_[0], jp_[1], Z1], text="J1 o chot rong tren ga O%.1f sau %.1f (nhan chot de O%.0f cao %.0f) | tam %s" % (JT['hole_d'], JT['depth'], JT['pin_d'], JT['pin_h'], XY(jp_)))
+A("note.add", anchor=[jp_[0] + JT['boss_od'] / 2, jp_[1], Z1 - JT['depth'] - 1.0], text="J2 vau o chot duoi tam O%.0f" % JT['boss_od'])
+A("note.add", anchor=[pl[0], pl[1], ZS + post_h], text="L1 ong dem roi O%.0f / lo O4.4, cao %.2f (giua de va tai) | tam %s | oc M4x25 qua tai+ong+de vao ga" % (SP['post_d'], post_h, XY(pl)))
 A("note.add", anchor=[pl[0] + SP['post_d'] / 2, pl[1], H - 3], text="L2 vau O%.0f duoi tam sau 3, lo ren O%.1f oc M4" % (SP['post_d'], SP['post_hole_d']))
-A("note.add", anchor=[sx0 + S['W'] / 2, sy1, Z1 + S['T']], text="S cong tac %.2f x %.2f x %.2f (chi de xem, khong in)" % (S['W'], S['H'], S['T']))
-A("note.add", anchor=[sx0 - S['N_stick_out'], sy1 - SP['N_from_top'], Z1 + S['T'] / 2], text="N nut nhan (nho %.2f) -> ve E1" % S['N_stick_out'])
+A("note.add", anchor=[sx0 + S['W'] / 2, sy1, ZS + S['T']], text="S cong tac %.2f x %.2f x %.2f (chi de xem, khong in)" % (S['W'], S['H'], S['T']))
+A("note.add", anchor=[sx0 - S['N_stick_out'], sy1 - SP['N_from_top'], ZS + S['T'] / 2], text="N nut nhan (nho %.2f) -> ve E1" % S['N_stick_out'])
 for nm, val, cm in [("C_AB", P['C_mm'], "tam A - tam B"), ("R_mep", L['R'], "mep cung tay thang, tam D"), ("R_vien", R, "vien day ga"),
                     ("E1", P['E1'], ""), ("E2", P['E2'], ""), ("E3", P['E3'], ""),
                     ("cao_dai_oc", H, "mat duoi tam ga"), ("day_tam", T, ""), ("sau_vanh", L['depth'], "mep cung day"),
@@ -155,7 +184,7 @@ for nm, val, cm in [("C_AB", P['C_mm'], "tam A - tam B"), ("R_mep", L['R'], "mep
     A("parameters.add", name=nm, expression="%g mm" % val, comment=cm)
 
 # --- DE cong tac (phan in rieng, Tuan 2026-11-13): tam day SB['t'] theo dau cong tac + tai L, lo P1, tru L lien (in phang, tru huong len)
-SB = P['switch_base']; bdx = SB['display_dx']               # dat lech sang phai de xem canh ga
+bdx = SB.get('display_dx', 0.0)            # 0 = dat dung cho lap tren ga
 def hull(pts_):
     pts_ = sorted(set(map(tuple, pts_)))
     def half(ps):
@@ -165,17 +194,17 @@ def hull(pts_):
             h.append(p_)
         return h
     lo, up = half(pts_), half(pts_[::-1]); return [list(q) for q in lo[:-1] + up[:-1]]
-base_pts = [[sx0, sy0], [sx1, sy0], [sx1, sy1], [sx0, sy1]] + \
-           [[pl[0] + SB['ear_r'] * math.cos(a), pl[1] + SB['ear_r'] * math.sin(a)] for a in np.linspace(0, 2 * math.pi, 48, endpoint=False)]
+base_pts = [[sx0, sy0], [sx1, sy0], [sx1, sy1], [sx0, sy1]] +            [[pl[0] + SB['ear_r'] * math.cos(a), pl[1] + SB['ear_r'] * math.sin(a)] for a in np.linspace(0, 2 * math.pi, 48, endpoint=False)]
 base_poly = [[round(x + bdx, 3), round(y, 3)] for x, y in hull(base_pts)]
-bp1 = [p1[0] + bdx, p1[1]]; bpl = [pl[0] + bdx, pl[1]]; bt = SB['t']
+bp1 = [p1[0] + bdx, p1[1]]; bpl = [pl[0] + bdx, pl[1]]; bjp = [jp_[0] + bdx, jp_[1]]
 def base_cmds(A_, name):
-    A_("sketch.create", plane={"origin": [0, 0, 0], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]})
+    """DE: tam z Z1..ZS, lo P1, lo L O4,4 xuyen (oc M4 qua de vao ga), chot noi O pin_d cao pin_h o mat duoi."""
+    A_("sketch.create", plane={"origin": [0, 0, Z1], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]})
     A_("sketch.line", points=base_poly, closed=True); A_("sketch.finish")
     A_("solid.extrude", distance=bt, operation="new_body", body_name=name)
-    A_("solid.cylinder", diameter=SP['post_d'], height=post_h + 0.5, base=[bpl[0], bpl[1], bt - 0.5], axis="Z", operation="join", targets=[name])
-    A_("solid.cylinder", diameter=SP['post_hole_d'], height=bt + post_h + 0.2, base=[bpl[0], bpl[1], -0.1], axis="Z", operation="cut", targets=[name])
-    A_("solid.cylinder", diameter=SP['P1_hole_d'], height=bt + 0.2, base=[bp1[0], bp1[1], -0.1], axis="Z", operation="cut", targets=[name])
+    A_("solid.cylinder", diameter=JT['pin_d'], height=JT['pin_h'] + 0.5, base=[bjp[0], bjp[1], Z1 - JT['pin_h']], axis="Z", operation="join", targets=[name])
+    A_("solid.cylinder", diameter=4.4, height=bt + 0.2, base=[bpl[0], bpl[1], Z1 - 0.1], axis="Z", operation="cut", targets=[name])
+    A_("solid.cylinder", diameter=SP['P1_hole_d'], height=bt + 0.2, base=[bp1[0], bp1[1], Z1 - 0.1], axis="Z", operation="cut", targets=[name])
 base_cmds(A, "base")
 
 raw = os.path.join(BUILD, 'mount.raw.stl').replace(os.sep, '/')
@@ -208,20 +237,21 @@ cyl("A1_chot_A_O3.7", PA['d'], PA['len'], -PA['len'], pa, "#e65100")
 cyl("B2_tru_rong_B", BB['od'], H - bz0, bz0, hb, "#e53935")
 cyl("L2_vau_L_duoi_tam", SP['post_d'], boss_dn, H - boss_dn, pl, "#8e24aa")
 cutN(BB['id'], Z1 - bz0 + 0.2, bz0 - 0.1, hb, ["T_tam_ga", "B2_tru_rong_B"])
-cutN(SP['P1_hole_d'], T + 0.2, H - 0.1, p1, ["T_tam_ga"])
+cyl("J2_vau_o_chot", JT['boss_od'], JT['depth'] - T + 1.0, Z1 - JT['depth'] - 1.0, jp_, "#5e35b1")
+cutN(JT['hole_d'], JT['depth'] + 0.1, Z1 - JT['depth'], jp_, ["T_tam_ga", "J2_vau_o_chot"])
 cutN(SP['post_hole_d'], T + boss_dn + 0.2, H - boss_dn - 0.1, pl, ["T_tam_ga", "L2_vau_L_duoi_tam"])
-cyl("L1_ong_dem_roi", SP['post_d'], post_h, Z1, pl, "#ff8c00"); cutN(4.4, post_h + 0.2, Z1 - 0.1, pl, ["L1_ong_dem_roi"])
-N_("sketch.create", plane={"origin": [0, 0, Z1], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]})
+cyl("L1_ong_dem_roi", SP['post_d'], post_h, ZS, pl, "#ff8c00"); cutN(4.4, post_h + 0.2, ZS - 0.1, pl, ["L1_ong_dem_roi"])
+N_("sketch.create", plane={"origin": [0, 0, ZS], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]})
 N_("sketch.rectangle.two_point", p0=[sx0, sy0], p1=[sx1, sy1]); N_("sketch.finish")
 N_("solid.extrude", distance=S['T'], operation="new_body", body_name="S_cong_tac_chi_xem")
-N_("solid.cylinder", diameter=SP['N_d'], height=S['N_stick_out'], base=[sx0 - S['N_stick_out'], sy1 - SP['N_from_top'], Z1 + S['T'] / 2],
+N_("solid.cylinder", diameter=SP['N_d'], height=S['N_stick_out'], base=[sx0 - S['N_stick_out'], sy1 - SP['N_from_top'], ZS + S['T'] / 2],
    axis="X", operation="new_body", body_name="N_nut_nhan")
 N_("appearance.assign", bodies=["S_cong_tac_chi_xem"], color="#333333", opacity=0.45)
 N_("appearance.assign", bodies=["N_nut_nhan"], color="#00e676")
-base_cmds(N_, "DE_cong_tac_in_rieng"); N_("appearance.assign", bodies=["DE_cong_tac_in_rieng"], color="#00acc1")
+base_cmds(N_, "DE_cong_tac_khoi_tren"); N_("appearance.assign", bodies=["DE_cong_tac_khoi_tren"], color="#00acc1")
 cN += [c for c in cmd if c['command'] in ('note.add', 'parameters.add')]
-N_("note.add", anchor=[bpl[0], bpl[1], bt + post_h], text="DE-L tru lien O%.0f cao %.2f, lo ren O%.1f oc M4 | DE in rieng (phan 2)" % (SP['post_d'], post_h, SP['post_hole_d']))
-N_("note.add", anchor=[bp1[0], bp1[1], bt], text="DE-P1 lo chot O%.1f | de day %.1f" % (SP['P1_hole_d'], bt))
+N_("note.add", anchor=[bpl[0], bpl[1], ZS], text="DE-L lo xuyen O4.4 (oc M4) | de day %.1f (z %.1f -> %.1f)" % (bt, Z1, ZS))
+N_("note.add", anchor=[bjp[0], bjp[1], Z1 - JT['pin_h']], text="DE-J chot noi O%.1f cao %.1f mat duoi de -> cam o J1 tren ga" % (JT['pin_d'], JT['pin_h']))
 jn = os.path.join(BUILD, 'named.json'); json.dump({"commands": cN}, open(jn, 'w'), indent=1)
 r = subprocess.run([CLI, 'run', jn, '--save', os.path.join(HERE, 'brake-sensor-mount.sc'), '--quiet'],
                    capture_output=True, text=True, encoding='utf-8', errors='replace')
@@ -239,10 +269,10 @@ b = open(raw_sp, 'rb').read(); n = int(np.frombuffer(b, '<u4', 1, 80)[0])
 rec = np.frombuffer(b, np.dtype([('n', '<f4', 3), ('v', '<f4', (3, 3)), ('a', '<u2')]), n, 84).copy()
 v = rec['v'].astype(float); v[..., 2] -= v[..., 2].min(); rec['v'] = v.astype('<f4')
 open(os.path.join(STLD, 'spacer-L.stl'), 'wb').write(b[:84] + rec.tobytes()); os.remove(raw_sp)
-# de cong tac: in phang (tam xuong ban, tru L huong len), zmin = 0
+# de cong tac: lat 180 quanh X (mat tren xuong ban, chot noi huong len), zmin = 0
 b = open(raw_b, 'rb').read(); n = int(np.frombuffer(b, '<u4', 1, 80)[0])
 rec = np.frombuffer(b, np.dtype([('n', '<f4', 3), ('v', '<f4', (3, 3)), ('a', '<u2')]), n, 84).copy()
-v = rec['v'].astype(float); v[..., 2] -= v[..., 2].min(); rec['v'] = v.astype('<f4')
+v = rec['v'].astype(float) @ Rm.T; v[..., 2] -= v[..., 2].min(); rec['v'] = v.astype('<f4'); rec['n'] = (rec['n'].astype(float) @ Rm.T).astype('<f4')
 open(os.path.join(STLD, 'switch-base.stl'), 'wb').write(b[:84] + rec.tobytes()); os.remove(raw_b)
 bodies = {bd.get('name'): bd for bd in json.load(open(res, encoding='utf-8'))[-1]['bodies']}
 body = bodies.get('mount') or list(bodies.values())[0]
@@ -287,8 +317,8 @@ try:
     if AL:
         feats.append((('O  tam cung R%.2f' + NL + '   %s') % (ar, XY(ac)), list(ac), (-4, -4)))
         ax.plot(*ac, 'kx', ms=10)
-        for t_, a_ in [('E6a', angs_[0]), ('E6b', angs_lip[-1])]:
-            q = pc(a_); ax.plot(*q, 'go', ms=8); ax.annotate(t_, (q[0] + 0.6, q[1] + 0.6), color='green', weight='bold')
+        for t_, a_ in [('E6a', angs_lip[0]), ('E6b', angs_lip[-1])]:
+            q = lpc(a_); ax.plot(*q, 'go', ms=8); ax.annotate(t_, (q[0] + 0.6, q[1] + 0.6), color='green', weight='bold')
     for t_, p_, o_ in feats:
         ax.annotate(t_, (p_[0] + o_[0], p_[1] + o_[1]), color='crimson', fontsize=9, weight='bold')
     ax.plot([pa[0], hb[0]], [pa[1], hb[1]], 'm--')
@@ -324,23 +354,27 @@ try:
         ax.annotate('DE-E%d\n%.1f' % (j + 1, Ld), m + dv * 2.8, ha='center', va='center', color='navy', weight='bold', fontsize=10)
     ax.add_patch(plt.Circle(p1, SP['P1_hole_d'] / 2, fill=False, color='crimson', lw=2))
     ax.annotate('DE-P1 lo O%.1f xuyen\n%s' % (SP['P1_hole_d'], XY(p1)), (p1[0] + 3, p1[1] + 1), color='crimson', weight='bold')
-    for d0 in (SP['post_d'], SP['post_hole_d']):
-        ax.add_patch(plt.Circle(pl, d0 / 2, fill=False, color='purple', lw=2))
-    ax.annotate('DE-L tru O%.0f cao %.2f\nlo ren O%.1f (M4)\n%s' % (SP['post_d'], post_h, SP['post_hole_d'], XY(pl)), (pl[0] + 5, pl[1] - 1), color='purple', weight='bold')
+    ax.add_patch(plt.Circle(pl, 2.2, fill=False, color='purple', lw=2))
+    ax.add_patch(plt.Circle(pl, SP['post_d'] / 2, fill=False, color='orange', ls='--', lw=1.5))
+    ax.annotate('DE-L lo O4.4 xuyen (M4)\nong dem L1 O8 dat tren\n%s' % XY(pl), (pl[0] + 5, pl[1] - 1), color='purple', weight='bold')
+    ax.add_patch(plt.Circle(jp_, JT['pin_d'] / 2, color='#5e35b1', alpha=.6))
+    ax.annotate('DE-J chot noi O%.0f cao %.0f\n(mat duoi) %s' % (JT['pin_d'], JT['pin_h'], XY(jp_)), (jp_[0] + 3, jp_[1] - 1), color='#5e35b1', weight='bold')
     ax.plot([sx0, sx0 - S['N_stick_out']], [sy1 - SP['N_from_top']] * 2, 'g-', lw=5)
     ax.annotate('N nut (cong tac)', (sx0 - S['N_stick_out'], sy1 - SP['N_from_top'] + 1), color='green', weight='bold')
     ax.add_patch(plt.Rectangle((sx0, sy0), S['W'], S['H'], fill=False, ls='--', color='gray'))
     ax.set_aspect('equal'); ax.grid(alpha=.3); ax.set_xlabel('X mm (cung goc toa do voi ga, tam D)'); ax.set_ylabel('Y mm')
-    ax.set_title('DE cong tac (in rieng) - nhin tu tren, day %.1f mm' % bt)
+    ax.set_title('DE cong tac (khoi tren, in rieng) - nhin tu tren, day %.1f mm' % bt)
     ax.set_xlim(sx0 - 9, sx1 + 6); ax.set_ylim(pl[1] - 8, sy1 + 4)
     # canh ben (cat doc qua L va P1 theo X)
     ax2.add_patch(plt.Rectangle((sx0, 0), S['W'], bt, color='#b2ebf2', ec='k'))
-    ax2.add_patch(plt.Rectangle((pl[0] - SP['post_d'] / 2, bt), SP['post_d'], post_h, color='#80deea', ec='k'))
+    ax2.add_patch(plt.Rectangle((jp_[0] - JT['pin_d'] / 2, -JT['pin_h']), JT['pin_d'], JT['pin_h'], color='#5e35b1', ec='k'))
+    ax2.annotate('DE-J chot %.0f' % JT['pin_h'], (jp_[0] + JT['pin_d'] / 2 + 0.5, -JT['pin_h'] / 2), color='#5e35b1', weight='bold')
+    ax2.add_patch(plt.Rectangle((pl[0] - SP['post_d'] / 2, bt), SP['post_d'], post_h, color='orange', alpha=.5, ec='k'))
     ax2.add_patch(plt.Rectangle((sx0, bt), S['W'], S['T'], fill=False, ls='--', color='gray'))
     ax2.annotate('cong tac (chi xem) cao %.2f' % S['T'], (sx0 + 9, bt + S['T'] / 2), color='gray')
-    ax2.annotate('DE-L tru cao %.2f' % post_h, (pl[0] + SP['post_d'] / 2 + 0.5, bt + post_h / 2), color='purple', weight='bold')
+    ax2.annotate('L1 ong dem roi %.2f' % post_h, (pl[0] + SP['post_d'] / 2 + 0.5, bt + post_h / 2), color='purple', weight='bold')
     ax2.annotate('day %.1f' % bt, (sx1 + 0.5, bt / 2), color='navy', weight='bold')
-    ax2.set_aspect('equal'); ax2.set_xlim(sx0 - 3, sx1 + 8); ax2.set_ylim(-2, bt + S['T'] + 3); ax2.grid(alpha=.3)
+    ax2.set_aspect('equal'); ax2.set_xlim(sx0 - 3, sx1 + 8); ax2.set_ylim(-JT['pin_h'] - 2, bt + S['T'] + 3); ax2.grid(alpha=.3)
     ax2.set_title('Nhin ngang (X-Z)'); ax2.set_xlabel('X mm'); ax2.set_ylabel('Z mm')
     plt.tight_layout(); plt.savefig(os.path.join(HERE, '..', 'review', 'switch-base.png'), dpi=80)
     json.dump([{"ma": "DE-E%d" % (j + 1), "tu": p_, "den": q_, "dai_mm": round(Ld, 2)} for j, (p_, q_, Ld) in enumerate(BE)],
