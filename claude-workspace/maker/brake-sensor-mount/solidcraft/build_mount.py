@@ -56,7 +56,12 @@ lip = [pol(R, a) for a in np.linspace(a0, a1, 16)] + [pol(r_in, a) for a in np.l
 if AL:   # v3.4 (Tuan): vanh om chay HET cung vien E5 (chan E1 -> qua tru L -> E4), bam theo cung vien
     lw = L['wall']; ri = ar - lw
     pci = lambda a: [round(ac[0] + ri * math.cos(a), 3), round(ac[1] + ri * math.sin(a), 3)]
-    lip = [pc(a) for a in angs_] + [pci(a) for a in angs_[::-1]]
+    # v3.5 (Tuan): bo doan dau vanh phia E6b (chan E1) dai cut_E6b mm - doan nay can khi bop
+    # cat theo dung dinh cua vien (trung dinh -> nhan SMLib khong loi mat trung)
+    step = abs(angs_[1] - angs_[0]) * ar
+    k = int(round(L.get('cut_E6b', 0.0) / step))
+    angs_lip = angs_[:len(angs_) - k] if k else angs_
+    lip = [pc(a) for a in angs_lip] + [pci(a) for a in angs_lip[::-1]]
     r_in, R = ri, ar
 
 cmd = []
@@ -136,7 +141,7 @@ A("note.add", anchor=[xr - 3, yt - 3, Z1], text="T tam ga day %.1f (z %.1f -> %.
 if AL:
     A("note.add", anchor=[ac[0], ac[1], Z1], text="O tam cung E5/E6 %s, R %.2f" % (XY(ac), ar))
     A("note.add", anchor=[*pc(angs_[0]), -L['depth']], text="E6a dau vanh (giap E4)")
-    A("note.add", anchor=[*pc(angs_[-1]), -L['depth']], text="E6b cuoi vanh (chan E1)")
+    A("note.add", anchor=[*pc(angs_lip[-1]), -L["depth"]], text="E6b cuoi vanh (da bo %.2f mm phia chan E1)" % L.get("cut_E6b", 0))
 A("note.add", anchor=[(pa[0] + hb[0]) / 2, (pa[1] + hb[1]) / 2 + 2, Z1], text="C = A-B %.1f mm" % P['C_mm'])
 A("note.add", anchor=[p1[0], p1[1], Z1], text="P1 lo chot cong tac O%.1f xuyen tam | tam %s" % (SP['P1_hole_d'], XY(p1)))
 A("note.add", anchor=[pl[0], pl[1], Z1 + post_h], text="L1 ong dem roi O%.0f / lo O4.4, cao %.2f (in rieng) | tam %s" % (SP['post_d'], post_h, XY(pl)))
@@ -149,16 +154,79 @@ for nm, val, cm in [("C_AB", P['C_mm'], "tam A - tam B"), ("R_mep", L['R'], "mep
                     ("chot_A_d", PA['d'], ""), ("chot_A_dai", PA['len'], ""), ("tru_B_od", BB['od'], ""), ("lo_B_d", BB['id'], "")]:
     A("parameters.add", name=nm, expression="%g mm" % val, comment=cm)
 
+# --- DE cong tac (phan in rieng, Tuan 2026-11-13): tam day SB['t'] theo dau cong tac + tai L, lo P1, tru L lien (in phang, tru huong len)
+SB = P['switch_base']; bdx = SB['display_dx']               # dat lech sang phai de xem canh ga
+def hull(pts_):
+    pts_ = sorted(set(map(tuple, pts_)))
+    def half(ps):
+        h = []
+        for p_ in ps:
+            while len(h) >= 2 and (h[-1][0] - h[-2][0]) * (p_[1] - h[-2][1]) - (h[-1][1] - h[-2][1]) * (p_[0] - h[-2][0]) <= 0: h.pop()
+            h.append(p_)
+        return h
+    lo, up = half(pts_), half(pts_[::-1]); return [list(q) for q in lo[:-1] + up[:-1]]
+base_pts = [[sx0, sy0], [sx1, sy0], [sx1, sy1], [sx0, sy1]] + \
+           [[pl[0] + SB['ear_r'] * math.cos(a), pl[1] + SB['ear_r'] * math.sin(a)] for a in np.linspace(0, 2 * math.pi, 48, endpoint=False)]
+base_poly = [[round(x + bdx, 3), round(y, 3)] for x, y in hull(base_pts)]
+bp1 = [p1[0] + bdx, p1[1]]; bpl = [pl[0] + bdx, pl[1]]; bt = SB['t']
+def base_cmds(A_, name):
+    A_("sketch.create", plane={"origin": [0, 0, 0], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]})
+    A_("sketch.line", points=base_poly, closed=True); A_("sketch.finish")
+    A_("solid.extrude", distance=bt, operation="new_body", body_name=name)
+    A_("solid.cylinder", diameter=SP['post_d'], height=post_h + 0.5, base=[bpl[0], bpl[1], bt - 0.5], axis="Z", operation="join", targets=[name])
+    A_("solid.cylinder", diameter=SP['post_hole_d'], height=bt + post_h + 0.2, base=[bpl[0], bpl[1], -0.1], axis="Z", operation="cut", targets=[name])
+    A_("solid.cylinder", diameter=SP['P1_hole_d'], height=bt + 0.2, base=[bp1[0], bp1[1], -0.1], axis="Z", operation="cut", targets=[name])
+base_cmds(A, "base")
+
 raw = os.path.join(BUILD, 'mount.raw.stl').replace(os.sep, '/')
 raw_sp = os.path.join(BUILD, 'spacer.raw.stl').replace(os.sep, '/')
+raw_b = os.path.join(BUILD, 'base.raw.stl').replace(os.sep, '/')
 A("file.export_stl", path=raw, bodies=["mount"], quality="fine")
+A("file.export_stl", path=raw_b, bodies=["base"], quality="fine")
 A("file.export_stl", path=raw_sp, bodies=["spacer"], quality="fine"); A("inspect.measure")
 jp = os.path.join(BUILD, 'mount.json'); json.dump({"commands": cmd}, open(jp, 'w'), indent=1)
 res = os.path.join(BUILD, 'mount.result.json')
-r = subprocess.run([CLI, 'run', jp, '--save', os.path.join(HERE, 'brake-sensor-mount.sc'), '--results', '--json-out', res, '--quiet'],
+r = subprocess.run([CLI, 'run', jp, '--save', os.path.join(BUILD, 'print.sc'), '--results', '--json-out', res, '--quiet'],
                    capture_output=True, text=True, encoding='utf-8', errors='replace')
 if r.returncode:
     sys.stderr.write(r.stdout[-3000:] + r.stderr[-3000:]); sys.exit(1)
+
+# --- file .sc de DO: moi chi tiet 1 body co ten + mau (bam vao mat -> thay ten body) ---
+cN = []
+N_ = lambda c, **p: cN.append({"command": c, "params": p})
+cyl = lambda name, d, h, z0, q, col: (N_("solid.cylinder", diameter=d, height=h, base=[q[0], q[1], z0], axis="Z", operation="new_body", body_name=name),
+                                      N_("appearance.assign", bodies=[name], color=col))
+cutN = lambda d, h, z0, q, tg: N_("solid.cylinder", diameter=d, height=h, base=[q[0], q[1], z0], axis="Z", operation="cut", targets=tg)
+N_("sketch.create", plane={"origin": [0, 0, H], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]})
+N_("sketch.line", points=poly, closed=True); N_("sketch.finish")
+N_("solid.extrude", distance=T, operation="new_body", body_name="T_tam_ga"); N_("appearance.assign", bodies=["T_tam_ga"], color="#3a8fd8")
+N_("sketch.create", plane={"origin": [0, 0, -L['depth']], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]})
+N_("sketch.line", points=lip, closed=True); N_("sketch.finish")
+N_("solid.extrude", distance=L['depth'] + H, operation="new_body", body_name="E6_vanh_om"); N_("appearance.assign", bodies=["E6_vanh_om"], color="#4caf50")
+cyl("A2_vai_chot_A", PA['shoulder_d'], H, 0, pa, "#ffb300")
+cyl("A1_chot_A_O3.7", PA['d'], PA['len'], -PA['len'], pa, "#e65100")
+cyl("B2_tru_rong_B", BB['od'], H - bz0, bz0, hb, "#e53935")
+cyl("L2_vau_L_duoi_tam", SP['post_d'], boss_dn, H - boss_dn, pl, "#8e24aa")
+cutN(BB['id'], Z1 - bz0 + 0.2, bz0 - 0.1, hb, ["T_tam_ga", "B2_tru_rong_B"])
+cutN(SP['P1_hole_d'], T + 0.2, H - 0.1, p1, ["T_tam_ga"])
+cutN(SP['post_hole_d'], T + boss_dn + 0.2, H - boss_dn - 0.1, pl, ["T_tam_ga", "L2_vau_L_duoi_tam"])
+cyl("L1_ong_dem_roi", SP['post_d'], post_h, Z1, pl, "#ff8c00"); cutN(4.4, post_h + 0.2, Z1 - 0.1, pl, ["L1_ong_dem_roi"])
+N_("sketch.create", plane={"origin": [0, 0, Z1], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]})
+N_("sketch.rectangle.two_point", p0=[sx0, sy0], p1=[sx1, sy1]); N_("sketch.finish")
+N_("solid.extrude", distance=S['T'], operation="new_body", body_name="S_cong_tac_chi_xem")
+N_("solid.cylinder", diameter=SP['N_d'], height=S['N_stick_out'], base=[sx0 - S['N_stick_out'], sy1 - SP['N_from_top'], Z1 + S['T'] / 2],
+   axis="X", operation="new_body", body_name="N_nut_nhan")
+N_("appearance.assign", bodies=["S_cong_tac_chi_xem"], color="#333333", opacity=0.45)
+N_("appearance.assign", bodies=["N_nut_nhan"], color="#00e676")
+base_cmds(N_, "DE_cong_tac_in_rieng"); N_("appearance.assign", bodies=["DE_cong_tac_in_rieng"], color="#00acc1")
+cN += [c for c in cmd if c['command'] in ('note.add', 'parameters.add')]
+N_("note.add", anchor=[bpl[0], bpl[1], bt + post_h], text="DE-L tru lien O%.0f cao %.2f, lo ren O%.1f oc M4 | DE in rieng (phan 2)" % (SP['post_d'], post_h, SP['post_hole_d']))
+N_("note.add", anchor=[bp1[0], bp1[1], bt], text="DE-P1 lo chot O%.1f | de day %.1f" % (SP['P1_hole_d'], bt))
+jn = os.path.join(BUILD, 'named.json'); json.dump({"commands": cN}, open(jn, 'w'), indent=1)
+r = subprocess.run([CLI, 'run', jn, '--save', os.path.join(HERE, 'brake-sensor-mount.sc'), '--quiet'],
+                   capture_output=True, text=True, encoding='utf-8', errors='replace')
+if r.returncode:
+    sys.stderr.write('NAMED: ' + r.stdout[-3000:] + r.stderr[-3000:]); sys.exit(1)
 
 # STL huong in: lat 180 quanh X, zmin = 0
 b = open(raw, 'rb').read(); n = int(np.frombuffer(b, '<u4', 1, 80)[0])
@@ -171,6 +239,11 @@ b = open(raw_sp, 'rb').read(); n = int(np.frombuffer(b, '<u4', 1, 80)[0])
 rec = np.frombuffer(b, np.dtype([('n', '<f4', 3), ('v', '<f4', (3, 3)), ('a', '<u2')]), n, 84).copy()
 v = rec['v'].astype(float); v[..., 2] -= v[..., 2].min(); rec['v'] = v.astype('<f4')
 open(os.path.join(STLD, 'spacer-L.stl'), 'wb').write(b[:84] + rec.tobytes()); os.remove(raw_sp)
+# de cong tac: in phang (tam xuong ban, tru L huong len), zmin = 0
+b = open(raw_b, 'rb').read(); n = int(np.frombuffer(b, '<u4', 1, 80)[0])
+rec = np.frombuffer(b, np.dtype([('n', '<f4', 3), ('v', '<f4', (3, 3)), ('a', '<u2')]), n, 84).copy()
+v = rec['v'].astype(float); v[..., 2] -= v[..., 2].min(); rec['v'] = v.astype('<f4')
+open(os.path.join(STLD, 'switch-base.stl'), 'wb').write(b[:84] + rec.tobytes()); os.remove(raw_b)
 bodies = {bd.get('name'): bd for bd in json.load(open(res, encoding='utf-8'))[-1]['bodies']}
 body = bodies.get('mount') or list(bodies.values())[0]
 rep = {"volume_mm3": body.get('volume_mm3'), "bbox": body['bbox'], "closed": body.get('closed'),
@@ -214,7 +287,7 @@ try:
     if AL:
         feats.append((('O  tam cung R%.2f' + NL + '   %s') % (ar, XY(ac)), list(ac), (-4, -4)))
         ax.plot(*ac, 'kx', ms=10)
-        for t_, a_ in [('E6a', angs_[0]), ('E6b', angs_[-1])]:
+        for t_, a_ in [('E6a', angs_[0]), ('E6b', angs_lip[-1])]:
             q = pc(a_); ax.plot(*q, 'go', ms=8); ax.annotate(t_, (q[0] + 0.6, q[1] + 0.6), color='green', weight='bold')
     for t_, p_, o_ in feats:
         ax.annotate(t_, (p_[0] + o_[0], p_[1] + o_[1]), color='crimson', fontsize=9, weight='bold')

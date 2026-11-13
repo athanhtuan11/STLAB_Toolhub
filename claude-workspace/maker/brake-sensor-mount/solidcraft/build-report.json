@@ -1,5 +1,5 @@
 {
- "volume_mm3": 3790.969693277594,
+ "volume_mm3": 3675.889916777593,
  "bbox": {
   "max": [
    19.54,
@@ -15,6 +15,7 @@
  "closed": true,
  "shells": 1,
  "bodies": [
+  "base",
   "mount",
   "spacer",
   "switch"

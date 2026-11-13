@@ -14,6 +14,11 @@
 - In: `solidcraft/plates/p1-mount-v3/p1-mount-v3.3mf` (PETG, mặt trên úp xuống bàn, không support, ~18 ph, 2,6 g).
 - Ảnh duyệt: `review/sheet-v3.png`. Bản vẽ mã cạnh: `review/edges-named.png` (E1–E13, A, B, C, D – trùng note trong .sc; chiều dài từng cạnh ở `solidcraft/edges.json`). Đo trong SolidCraft rồi báo theo mã.
 
+## In 2 phần riêng để test (v3.5)
+- `p1-mount-v3`: gá gắn tay thắng + ống đệm L.
+- `p2-switch-base`: đế công tắc (lỗ P1 Ø5,3 + trụ L liền Ø8 cao 11,26, lỗ ren Ø3,4 cho M4) – test vừa công tắc.
+- File .sc để đo: mỗi chi tiết là 1 body có tên (T_tam_ga, E6_vanh_om, A1/A2, B2, L1/L2, S, N, DE_cong_tac_in_rieng); bấm vào mặt → thấy tên.
+
 ## TODO
 - Loại cảm biến + cách gắn lên gá.
 - Kiểm vành ôm R10 có trùng mép thật (ảnh ước tâm cung lệch trái tâm đai ốc 3 mm).
