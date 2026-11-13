@@ -121,6 +121,7 @@ from curriculum import Curriculum, ALLOWED_NICKNAMES, live_tools, find_nickname,
 import voiceid  # noqa: E402
 from duplex import BargeGate  # noqa: E402
 import music  # noqa: E402
+from intent import parse_volume_intent, music_requested  # noqa: E402
 from tuning import Tuning, Agc, BOUNDS  # noqa: E402
 
 
@@ -213,10 +214,13 @@ LANG_LOCK = (
     "không ạ, hông có, chưa. Accents from the North, Central and South of Vietnam (e.g. 'dzạ', 'hông', 'zậy', 'hổng "
     "biết') and toddler pronunciation are normal Vietnamese - understand them kindly. Short sounds like 'dạ', 'ạ', "
     "'ơi' are answers, not noise: respond to them (e.g. continue the lesson). If you truly cannot tell what was said, "
-    "guess the most likely simple meaning from the lesson context first; ask again only if it matters.\n\n")
+    "guess the meaning from the lesson context when answering a lesson question, but NEVER call a tool (play_music, "
+    "finish_lesson, change_topic...) when you did not hear clearly - ask again: 'Cô chưa nghe rõ, con nói lại nhé!'.\n\n")
 LIMIT_PROMPT = (
     "\n\nIf the child or an adult says to speak louder/softer (to lên, nói lớn lên, nhỏ lại), call set_volume "
-    "(or volume_change with +20 / -20 if you do not know the level).")
+    "(or volume_change with +20 / -20 if you do not know the level). Vietnamese volume phrases: mở to, mở lớn, to nữa, "
+    "tối đa, hết cỡ, lớn nhất, âm lượng -> set_volume (tối đa / hết cỡ = 100). The word 'mở' alone, without nhạc/bài/hát, "
+    "is NOT play_music.")
 PROMPT = LANG_LOCK + load_prompt() + CURRICULUM_PROMPT + LIMIT_PROMPT
 VOLUME_TOOLS = [
     {"name": "set_volume",
@@ -231,7 +235,8 @@ VOLUME_TOOLS = [
 MUSIC_TOOLS = [
     dict(name="play_music",
          description=("Play a song/music file stored on the server for the child. query = song name or words from it "
-                      "(empty string = any song). The song plays by itself; stay silent until it ends."),
+                      "(empty string = any song). Only when someone asked for music. The song plays by itself; stay silent until it ends. "
+                      "If someone speaks during the song, the music stops; answer them."),
          parameters={"type": "OBJECT", "properties": {"query": {"type": "STRING", "description": "song name, may be empty"}}}),
     dict(name="stop_music", description="Stop the music that is playing.", parameters={"type": "OBJECT", "properties": {}}),
     dict(name="list_music", description="List the song titles that can be played.", parameters={"type": "OBJECT", "properties": {}}),
@@ -365,6 +370,7 @@ def device_nick_save(dev, nick):
 
 
 _devices_load()    # device-id -> kieu mo dau lan truoc
+MUSIC_BARGE_MS = float(os.environ.get("STLAB_MUSIC_BARGE_MS", "500"))   # giong lien tuc luc nhac -> dung nhac
 MIC_BUF_MAX = 400          # khung 60 ms (~24 s) toi da dem truoc khi phien san sang
 
 
@@ -548,6 +554,12 @@ class Session:
         self.last_active = time.time()
         self.t_user_end = None
         self.user_txt, self.reply_txt = "", ""
+        self.prev_user_txt = ""            # loi nguoi luot truoc (cho chan play_music)
+        self.vol_local_t = 0.0             # luc VOL-LOCAL gan nhat (chong ap am luong 2 lan)
+        self.vol_local_done = False        # luot nay da xu ly lenh am luong
+        self.music_voice_ms = 0.0          # giong lien tuc luc phat nhac (full_duplex)
+        self.music_held = []
+        self.music_pass_until = 0.0
         self.first_ms = None
         self.live = None
         self.closed = False
@@ -730,6 +742,9 @@ class Session:
             self.mcp_wait.pop(mid, None)
 
     async def do_volume(self, name, a):
+        if time.time() - self.vol_local_t < 4.0:
+            log("[VOL-LOCAL] Gemini cung goi volume -> bo qua (da ap)")
+            return {"ok": True, "note": "already applied"}
         try:
             if name == "set_volume":
                 level = int(a.get("level"))
@@ -748,6 +763,29 @@ class Session:
         except Exception as e:
             log(f"[LIVE-TOOL] volume loi {type(e).__name__}: {str(e)[:80]}")
             return {"ok": False, "error": type(e).__name__}
+
+    async def vol_local(self):
+        """Lenh am luong bat tai cau noi (tu transcript), khong cho Gemini; 1 lan moi luot."""
+        if self.vol_local_done:
+            return
+        it = parse_volume_intent(self.in_buf)
+        if it is None:
+            return
+        self.vol_local_done = True
+        if it[0] == "set":
+            r = await self.do_volume("set_volume", {"level": it[1]})
+        else:
+            r = await self.do_volume("volume_change", {"delta": it[1]})
+        log(f"[VOL-LOCAL] {self.in_buf.strip()[:40]} -> {r.get('volume')}")
+        self.vol_local_t = time.time()
+        if r.get("ok") and self.live is not None:
+            try:
+                await self.live.send_client_content(
+                    turns=types.Content(role="user", parts=[types.Part(
+                        text=f"[volume] Volume is now {r.get('volume')}. Say one very short sentence (Vietnamese) then continue.")]),
+                    turn_complete=False)
+            except Exception as e:
+                dbg(f"vol_local loi {type(e).__name__}")
 
     async def send_json(self, obj):
         await self.ws.send(json.dumps(obj, ensure_ascii=False))
@@ -771,6 +809,9 @@ class Session:
 
     # ---- Phat nhac tu thu muc may chu (play_music): dung lai out_q/pacer nhu tieng co ----
     async def do_play_music(self, query):
+        if not music_requested([self.user_txt + " " + self.in_buf, self.prev_user_txt], music.list_tracks()):
+            log("[MUSIC] chan: khong ai xin nhac")
+            return {"ok": False, "error": "nobody asked for music; if unsure what they said, ask again"}
         path = music.find_track(query)
         if path is None:
             titles = music.list_tracks()
@@ -779,7 +820,7 @@ class Session:
                     "available": titles[:30]}
         self.stop_music("bai moi")
         self.music_task = asyncio.create_task(self.music_run(path))
-        return {"ok": True, "title": path.stem, "note": "Say at most one very short sentence, then stay silent while it plays."}
+        return {"ok": True, "title": path.stem, "note": "Say at most one very short sentence, then stay silent while it plays. If someone speaks during the song, the music stops; answer them."}
 
     def stop_music(self, reason):
         """Dung nhac dang phat (neu co). Tra True neu co dang phat."""
@@ -966,6 +1007,9 @@ class Session:
             self.m_replies.append(self.reply_txt.strip())
         if self.first_ms is not None:
             log(f"[LIVE-T] first_audio={self.first_ms}ms user='{self.user_txt.strip()}' reply='{self.reply_txt.strip()}'")
+        if self.user_txt.strip():
+            self.prev_user_txt = self.user_txt
+        self.vol_local_done = False
         self.first_ms, self.user_txt, self.reply_txt, self.t_user_end = None, "", "", None
 
     def metric_line(self):
@@ -1168,6 +1212,7 @@ class Session:
                                "then go back to the lesson.")
                         self.pending_lesson = (self.pending_lesson + "\n" + msg) if self.pending_lesson else msg
                     self.check_nick()
+                    asyncio.create_task(self.vol_local())   # khong chan vong nhan Gemini khi cho thiet bi tra loi MCP
                 if sc.interrupted:
                     self.stop_music("Gemini bao be noi chen")
                     self.clear_out()
@@ -1198,6 +1243,9 @@ class Session:
                     else:
                         self.aborted = False
                         if not self.dev_on and self.out_q.empty():
+                            if self.user_txt.strip():
+                                self.prev_user_txt = self.user_txt
+                            self.vol_local_done = False
                             self.user_txt, self.reply_txt, self.t_user_end = "", "", None
                     # DETOUR (2026-11-12): che do lo trinh KHONG con tu CUR.switch khi be xin doi/viec khac -
                     # Gemini lam theo yeu cau theo muc DETOUR cua prompt roi quay lai bai. Chi ep lai khi STLAB_FORCE_SWITCH=1.
@@ -1260,7 +1308,30 @@ class Session:
                         del self.dump_pcm[:len(self.dump_pcm) - RATE_BYTES * DUMP_MAX_S]
                 barged = False
                 self.apply_tuning()
-                if self.full_duplex and self.tts_on:
+                if self.full_duplex and self.music_task is not None and not self.music_task.done():
+                    # Dang phat nhac (S3): giong nguoi >= MUSIC_BARGE_MS lien tuc -> dung nhac, tra khung da giu qua Gemini
+                    if self.vad is not None:
+                        self.vad.process(pcm)
+                        prob = self.vad.max_prob
+                    else:
+                        prob = 1.0 if audioop.rms(pcm, 2) > 1500 else 0.0
+                    if prob >= 0.5:
+                        self.voice_seen_t = time.time()
+                        self.music_held.append(pcm)
+                        self.music_voice_ms += len(pcm) / 2 * 1000.0 / IN_RATE
+                    else:
+                        self.music_held, self.music_voice_ms = [], 0.0
+                    if self.music_voice_ms >= MUSIC_BARGE_MS:
+                        log(f"[MUSIC] nguoi noi luc nhac ({self.music_voice_ms:.0f} ms) -> dung nhac")
+                        chunks, hot = [b"".join(self.music_held)], True
+                        self.music_held, self.music_voice_ms = [], 0.0
+                        self.music_pass_until = time.time() + 1.5
+                        self.stop_music("nguoi noi luc nhac")
+                    else:
+                        chunks, hot = [bytes(len(pcm))], False
+                elif self.full_duplex and self.tts_on and time.time() < self.music_pass_until:
+                    chunks, hot = [pcm], True      # vua dung nhac: cho mic qua, BargeGate khong chan
+                elif self.full_duplex and self.tts_on:
                     # Bo S3 (AEC tren bo): luc co noi van giai ma mic, lay xac suat giong nguoi Silero, qua BargeGate:
                     # so 0 cho toi khi giong lien tuc >= STLAB_BARGE_MS; luc do tra cac khung da giu + bao ngat loi
                     if self.vad is not None:
