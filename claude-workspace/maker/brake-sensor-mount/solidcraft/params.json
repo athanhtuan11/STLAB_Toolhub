@@ -37,5 +37,18 @@
     ],
     "od": 7.0,
     "id": 4.4
+  },
+  "sensor": {
+    "_note": "Cong tac den phanh co '564 / 27 21' - Tuan do 2026-11-13. Vi tri gan + huong nut: TODO (cho Tuan).",
+    "W": 31.35,
+    "H": 25.6,
+    "T": 15.26,
+    "P1_d": 5.0,
+    "L_hole_d": 4.4,
+    "L_screw": "M4",
+    "P1_to_L": 20.0,
+    "P2": "khong can",
+    "N_stick_out": 4.62,
+    "N_pressed": "gan nhu het hanh trinh"
   }
 }
