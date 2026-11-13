@@ -6,7 +6,7 @@
   ],
   "C_mm": 13.0,
   "standoff": 5.5,
-  "plate_t": 3.0,
+  "plate_t": 3.5,
   "top_y": 16.27,
   "right_x": 18.54,
   "E2": 25.48,
@@ -51,7 +51,7 @@
     "N_stick_out": 4.62,
     "N_pressed": "gan nhu het hanh trinh",
     "place": {
-      "_note": "v3 mockup: up mat co P1 xuong tam ga, nut N chia ve E1 (-X). Vi tri P1/L/N tren than UOC TU ANH (TODO do lai). ear_t TODO.",
+      "_note": "v3.1: up mat co P1 xuong tam ga, nut N chia ve E1 (-X). Tuan do P1 cao 3,2, tai L day 4 -> ong dem 11,26; tam ga 3 -> 3,5 de chot P1 khong lo xuong cham dai oc. Vi tri P1/L/N tren than uoc tu anh (Tuan dong y 've di').",
       "plunger_face_x": "E1",
       "top_align": "E2",
       "dx": 0.0,
@@ -62,10 +62,11 @@
       "L_below_bottom": 2.6,
       "N_from_top": 11.0,
       "N_d": 4.0,
-      "ear_t": 3.0,
+      "ear_t": 4.0,
       "P1_hole_d": 5.3,
       "post_d": 8.0,
       "post_hole_d": 3.4
-    }
+    },
+    "P1_h": 3.2
   }
 }
