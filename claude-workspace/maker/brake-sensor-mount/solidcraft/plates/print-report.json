@@ -1,9 +1,9 @@
 {
  "yaml": "D:\\04_Stlab\\04_STLAB_Toolhub\\claude-workspace\\maker\\brake-sensor-mount\\solidcraft\\print\\print.yaml",
- "thoi_gian": "2026-11-13 13:45",
+ "thoi_gian": "2026-11-13 15:06",
  "ket_luan": "PASS",
- "tong_thoi_gian_in": "0h30",
- "tong_gam": 8.2,
+ "tong_thoi_gian_in": "0h29",
+ "tong_gam": 8.0,
  "stl_chua_xep": [],
  "stl_xep_2_lan": [],
  "xu_ly_lo_lung": {},
@@ -18,8 +18,8 @@
   {
    "ban": "p1-mount-v3",
    "anh": "D:\\04_Stlab\\04_STLAB_Toolhub\\claude-workspace\\maker\\brake-sensor-mount\\solidcraft\\plates\\p1-mount-v3\\preview.png",
-   "thoi_gian_s": 1810,
-   "gam": 8.2,
+   "thoi_gian_s": 1788,
+   "gam": 8.0,
    "so_chi_tiet": 2,
    "co_canh_bao_cat": false,
    "support": false,
@@ -28,5 +28,5 @@
    "trang_thai": "PASS"
   }
  ],
- "thoi_gian_chay_s": 5.6
+ "thoi_gian_chay_s": 3.1
 }

@@ -120,7 +120,7 @@ if not MG:
     A("solid.cylinder", diameter=JT['boss_od'], height=JT['depth'] - T + 1.0 + 0.3, base=[jp_[0], jp_[1], Z1 - JT['depth'] - 1.0], axis="Z", **J)
     A("solid.cylinder", diameter=JT['hole_d'], height=JT['depth'] + 0.1, base=[jp_[0], jp_[1], Z1 - JT['depth']], axis="Z", **C)
 # tai L: ga co vau O post_d (tam + 3 mm xuong duoi) lo O3,4 cho oc M4 tu ren
-boss_dn = 3.0
+boss_dn = SP.get('boss_dn', 3.0)          # v3.14 Tuan: 0 = bo vau L2 lo duoi tam
 A("solid.cylinder", diameter=SP['post_d'], height=T + boss_dn, base=[pl[0], pl[1], H - boss_dn], axis="Z", **J)
 A("solid.cylinder", diameter=SP['post_hole_d'], height=T + boss_dn + 0.2, base=[pl[0], pl[1], H - boss_dn - 0.1], axis="Z", **C)
 # ong dem roi giua de va tai L
@@ -180,7 +180,7 @@ A("note.add", anchor=[p1[0], p1[1], ZS], text="P1 lo chot cong tac O%.1f sau %.1
 if not MG: A("note.add", anchor=[jp_[0], jp_[1], Z1], text="J1 o chot rong tren ga O%.1f sau %.1f (nhan chot de O%.0f cao %.0f) | tam %s" % (JT['hole_d'], JT['depth'], JT['pin_d'], JT['pin_h'], XY(jp_)))
 if not MG: A("note.add", anchor=[jp_[0] + JT['boss_od'] / 2, jp_[1], Z1 - JT['depth'] - 1.0], text="J2 vau o chot duoi tam O%.0f" % JT['boss_od'])
 A("note.add", anchor=[pl[0], pl[1], ZS + post_h], text="L1 ong dem roi O%.0f / lo O4.4, cao %.2f (giua mat tam va tai L) | tam %s (CO DINH) | oc M4x16 qua tai + ong vao lo ren" % (SP['post_d'], post_h, XY(pl)))
-A("note.add", anchor=[pl[0] + SP['post_d'] / 2, pl[1], H - 3], text="L2 vau O%.0f duoi tam sau 3 | lo ren O%.1f (M4) xuyen tu z %.1f -> %.1f" % (SP['post_d'], SP['post_hole_d'], H - boss_dn, ZS if MG else Z1))
+A("note.add", anchor=[pl[0] + SP['post_d'] / 2, pl[1], H - boss_dn], text=("L2 vau O%.0f duoi tam sau %.1f | " % (SP['post_d'], boss_dn) if boss_dn > 0 else "L2 (da bo vau, mat duoi phang) | ") + "lo ren O%.1f (M4) xuyen tu z %.1f -> %.1f" % (SP['post_hole_d'], H - boss_dn, ZS if MG else Z1))
 A("note.add", anchor=[sx0 + S['W'] / 2, sy1, ZS + S['T']], text="S cong tac %.2f x %.2f x %.2f (chi de xem, khong in)" % (S['W'], S['H'], S['T']))
 A("note.add", anchor=[sx0 - S['N_stick_out'], sy1 - SP['N_from_top'], ZS + S['T'] / 2], text="N nut nhan (nho %.2f) -> ve E1" % S['N_stick_out'])
 for nm, val, cm in [("C_AB", P['C_mm'], "tam A - tam B"), ("R_mep", L['R'], "mep cung tay thang, tam D"), ("R_vien", R, "vien day ga"),
@@ -257,7 +257,7 @@ N_("solid.extrude", distance=L['depth'] + H, operation="new_body", body_name="E6
 cyl("A2_vai_chot_A", PA['shoulder_d'], H, 0, pa, "#ffb300")
 cyl("A1_chot_A_O3.7", PA['d'], PA['len'], -PA['len'], pa, "#e65100")
 cyl("B2_tru_rong_B", BB['od'], H - bz0, bz0, hb, "#e53935")
-cyl("L2_vau_L_duoi_tam", SP['post_d'], boss_dn, H - boss_dn, pl, "#8e24aa")
+if boss_dn > 0: cyl("L2_vau_L_duoi_tam", SP['post_d'], boss_dn, H - boss_dn, pl, "#8e24aa")
 cutN(BB['id'], (ZS if MG else Z1) - bz0 + 0.2, bz0 - 0.1, hb, [TN, "B2_tru_rong_B"])
 if MG:
     cutN(BB['cb_d'], BB['cb_depth'] + 0.1, ZS - BB['cb_depth'], hb, [TN])
@@ -265,7 +265,7 @@ if MG:
 if not MG:
     cyl("J2_vau_o_chot", JT['boss_od'], JT['depth'] - T + 1.0, Z1 - JT['depth'] - 1.0, jp_, "#5e35b1")
     cutN(JT['hole_d'], JT['depth'] + 0.1, Z1 - JT['depth'], jp_, [TN, "J2_vau_o_chot"])
-cutN(SP['post_hole_d'], (ZS - H if MG else T) + boss_dn + 0.2, H - boss_dn - 0.1, pl, [TN, "L2_vau_L_duoi_tam"])
+cutN(SP['post_hole_d'], (ZS - H if MG else T) + boss_dn + 0.2, H - boss_dn - 0.1, pl, [TN] + (["L2_vau_L_duoi_tam"] if boss_dn > 0 else []))
 cyl("L1_ong_dem_roi", SP['post_d'], post_h, ZS, pl, "#ff8c00"); cutN(4.4, post_h + 0.2, ZS - 0.1, pl, ["L1_ong_dem_roi"])
 N_("sketch.create", plane={"origin": [0, 0, ZS], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]})
 N_("sketch.rectangle.two_point", p0=[sx0, sy0], p1=[sx1, sy1]); N_("sketch.finish")

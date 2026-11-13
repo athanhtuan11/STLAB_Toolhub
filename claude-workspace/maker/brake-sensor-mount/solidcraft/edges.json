@@ -4,7 +4,7 @@
   "ten": "mep trai (canh khoi luc giac)",
   "dai_mm": 12.0,
   "nhan": [
-   -3.94,
+   -4.94,
    12.27
   ]
  },
@@ -13,7 +13,7 @@
   "ten": "canh tren",
   "dai_mm": 32.35,
   "nhan": [
-   15.23,
+   14.23,
    19.77
   ]
  },
@@ -22,16 +22,16 @@
   "ten": "canh phai (sat xi-lanh)",
   "dai_mm": 34.6,
   "nhan": [
-   33.91,
+   32.91,
    0.97
   ]
  },
  {
   "ma": "E4",
   "ten": "doan thang tiep tuyen",
-  "dai_mm": 35.3,
+  "dai_mm": 34.3,
   "nhan": [
-   16.26,
+   15.76,
    -16.11
   ]
  },
