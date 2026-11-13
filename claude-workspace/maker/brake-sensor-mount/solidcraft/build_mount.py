@@ -307,6 +307,47 @@ try:
 except Exception as e:
     print('anh duyet loi:', e)
 
+# --- anh duyet DE cong tac: ban ve tren + canh ben (ma canh DE-E1..) + anh 3D SolidCraft ---
+try:
+    import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
+    bpp = [[x - bdx, y] for x, y in base_poly]                   # ve theo toa do ga (bo lech hien thi)
+    BE = []
+    for i in range(len(bpp)):
+        p_, q_ = bpp[i], bpp[(i + 1) % len(bpp)]
+        Ld = math.dist(p_, q_)
+        if Ld > 2.0: BE.append((p_, q_, Ld))
+    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(15, 7.5), gridspec_kw={'width_ratios': [3, 2]})
+    pp = np.array(bpp + [bpp[0]]); ax.fill(pp[:, 0], pp[:, 1], color='#b2ebf2'); ax.plot(pp[:, 0], pp[:, 1], 'k-', lw=1.5)
+    cen_b = np.mean(np.array(bpp), 0)
+    for j, (p_, q_, Ld) in enumerate(BE):
+        m = (np.array(p_) + np.array(q_)) / 2; dv = m - cen_b; dv /= np.linalg.norm(dv) + 1e-9
+        ax.annotate('DE-E%d\n%.1f' % (j + 1, Ld), m + dv * 2.8, ha='center', va='center', color='navy', weight='bold', fontsize=10)
+    ax.add_patch(plt.Circle(p1, SP['P1_hole_d'] / 2, fill=False, color='crimson', lw=2))
+    ax.annotate('DE-P1 lo O%.1f xuyen\n%s' % (SP['P1_hole_d'], XY(p1)), (p1[0] + 3, p1[1] + 1), color='crimson', weight='bold')
+    for d0 in (SP['post_d'], SP['post_hole_d']):
+        ax.add_patch(plt.Circle(pl, d0 / 2, fill=False, color='purple', lw=2))
+    ax.annotate('DE-L tru O%.0f cao %.2f\nlo ren O%.1f (M4)\n%s' % (SP['post_d'], post_h, SP['post_hole_d'], XY(pl)), (pl[0] + 5, pl[1] - 1), color='purple', weight='bold')
+    ax.plot([sx0, sx0 - S['N_stick_out']], [sy1 - SP['N_from_top']] * 2, 'g-', lw=5)
+    ax.annotate('N nut (cong tac)', (sx0 - S['N_stick_out'], sy1 - SP['N_from_top'] + 1), color='green', weight='bold')
+    ax.add_patch(plt.Rectangle((sx0, sy0), S['W'], S['H'], fill=False, ls='--', color='gray'))
+    ax.set_aspect('equal'); ax.grid(alpha=.3); ax.set_xlabel('X mm (cung goc toa do voi ga, tam D)'); ax.set_ylabel('Y mm')
+    ax.set_title('DE cong tac (in rieng) - nhin tu tren, day %.1f mm' % bt)
+    ax.set_xlim(sx0 - 9, sx1 + 6); ax.set_ylim(pl[1] - 8, sy1 + 4)
+    # canh ben (cat doc qua L va P1 theo X)
+    ax2.add_patch(plt.Rectangle((sx0, 0), S['W'], bt, color='#b2ebf2', ec='k'))
+    ax2.add_patch(plt.Rectangle((pl[0] - SP['post_d'] / 2, bt), SP['post_d'], post_h, color='#80deea', ec='k'))
+    ax2.add_patch(plt.Rectangle((sx0, bt), S['W'], S['T'], fill=False, ls='--', color='gray'))
+    ax2.annotate('cong tac (chi xem) cao %.2f' % S['T'], (sx0 + 9, bt + S['T'] / 2), color='gray')
+    ax2.annotate('DE-L tru cao %.2f' % post_h, (pl[0] + SP['post_d'] / 2 + 0.5, bt + post_h / 2), color='purple', weight='bold')
+    ax2.annotate('day %.1f' % bt, (sx1 + 0.5, bt / 2), color='navy', weight='bold')
+    ax2.set_aspect('equal'); ax2.set_xlim(sx0 - 3, sx1 + 8); ax2.set_ylim(-2, bt + S['T'] + 3); ax2.grid(alpha=.3)
+    ax2.set_title('Nhin ngang (X-Z)'); ax2.set_xlabel('X mm'); ax2.set_ylabel('Z mm')
+    plt.tight_layout(); plt.savefig(os.path.join(HERE, '..', 'review', 'switch-base.png'), dpi=80)
+    json.dump([{"ma": "DE-E%d" % (j + 1), "tu": p_, "den": q_, "dai_mm": round(Ld, 2)} for j, (p_, q_, Ld) in enumerate(BE)],
+              open(os.path.join(HERE, 'edges-base.json'), 'w', encoding='utf-8'), indent=1)
+except Exception as e:
+    print('anh de loi:', e)
+
 ok = rep['closed'] is not False and rep['shells'] in (None, 1)
 print('px/mm %.2f  R_vien %.2f' % (K, R))
 print('MOUNT', 'PASS' if ok else 'FAIL', rep)
