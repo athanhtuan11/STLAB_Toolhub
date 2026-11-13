@@ -40,6 +40,17 @@ robocopy $Src $Real /E /XD .git /NFL /NDL /NJH /NJS /NP | Out-Null
 if ($LASTEXITCODE -ge 8) { throw "robocopy loi $LASTEXITCODE" }
 if (Test-Path $cache) { Move-Item $cache (Join-Path $Real 'managed_components') }
 
+# Phien ban STLab (2026-11-13): dat PROJECT_VER trong ban chep theo VERSION (khong dong community)
+$verFile = Join-Path $H 'VERSION'
+if (Test-Path $verFile) {
+    $stlabVer = (Get-Content $verFile -Raw).Trim()
+    if ($stlabVer -notmatch '^\d+(\.\d+){2,3}$') { throw "VERSION sai dang: $stlabVer" }
+    $cmk = Join-Path $Real 'CMakeLists.txt'
+    $cm = Get-Content $cmk -Raw
+    if ($cm -notmatch 'set\(PROJECT_VER "[^"]*"\)') { throw 'Khong thay PROJECT_VER trong CMakeLists.txt' }
+    [IO.File]::WriteAllText($cmk, ($cm -replace 'set\(PROJECT_VER "[^"]*"\)', "set(PROJECT_VER `"$stlabVer`")"))
+}
+
 $boardDst = Join-Path $Real 'main\boards\stlab-s3'
 New-Item -ItemType Directory -Path $boardDst -Force | Out-Null
 Copy-Item (Join-Path $H 'boards\stlab-s3\*') $boardDst -Recurse -Force

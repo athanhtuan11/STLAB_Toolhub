@@ -120,6 +120,7 @@ def load_prompt():
 from curriculum import Curriculum, ALLOWED_NICKNAMES, live_tools, find_nickname, _fold, wants_switch  # noqa: E402
 import voiceid  # noqa: E402
 from duplex import BargeGate  # noqa: E402
+import ota_logic  # noqa: E402
 import music  # noqa: E402
 from intent import parse_volume_intent, music_requested  # noqa: E402
 from tuning import Tuning, Agc, BOUNDS  # noqa: E402
@@ -317,26 +318,62 @@ def live_config():
 POOL = None
 
 
+FW_DIR = SERVER / "data" / "firmware" / "s3"
+
+
+def _base_url(request):
+    proto = request.headers.get("X-Forwarded-Proto", request.scheme).split(",")[0].strip() or request.scheme
+    return f"{proto}://{request.host}"
+
+
 async def ota_handler(request):
     if POOL is not None:
         POOL.touch()   # bo vua khoi dong / goi OTA -> giu phien du phong san cho lan bam dau
     ver = ""
+    data = {}
     try:
         data = await request.json() if request.method == "POST" else {}
         ver = (data.get("application") or {}).get("version", "")
     except Exception:
-        pass
+        data = {}
     ver = request.headers.get("device-version", ver) or ver or "0.0.0"
     dev = request.headers.get("device-id") or request.headers.get("Device-Id") or ""
     if not device_allowed(dev):
         log(f"OTA tu choi thiet bi la {dev[:20]!r}")
         return web.json_response({"error": "device not allowed"}, status=403)
+    fw_url = ""
+    new_ver = ver
+    try:
+        if ota_logic.sysinfo_ok(data):   # chi S3 STLab; A1S (esp32) khong bao gio qua day
+            man = ota_logic.load_manifest(FW_DIR)
+            path = ota_logic.pick_firmware(data, man, True, current=ver)
+            if path:
+                fw_url = _base_url(request) + path
+                new_ver = man["version"]
+                log(f"[OTA] {dev[:20]} ban {ver} -> moi {new_ver}")
+            elif man and os.environ.get("STLAB_OTA_DISABLE", "").strip() != "1":
+                log(f"[OTA] {dev[:20]} da ban moi nhat")
+    except Exception as e:
+        log(f"[OTA] loi chon firmware: {e}")
     body = {
         "server_time": {"timestamp": int(round(time.time() * 1000)), "timezone_offset": 7 * 60},
-        "firmware": {"version": ver, "url": ""},
+        "firmware": {"version": new_ver, "url": fw_url},
         "websocket": {"url": public_ws_url(), "token": os.environ.get("STLAB_DEVICE_TOKEN", "").strip()},
     }
     return web.json_response(body)
+
+
+async def firmware_handler(request):
+    name = request.match_info.get("name", "")
+    dev = request.headers.get("device-id") or request.headers.get("Device-Id") or ""
+    man = ota_logic.load_manifest(FW_DIR)
+    if (os.environ.get("STLAB_OTA_DISABLE", "").strip() == "1" or not man
+            or not ota_logic.safe_name(name) or name != man.get("file")):
+        return web.Response(status=404)
+    fp = FW_DIR / name
+    log(f"[OTA] tai {name} {dev[:20]}")
+    return web.Response(body=fp.read_bytes(), content_type="application/octet-stream",
+                        headers={"Content-Length": str(fp.stat().st_size)})
 
 
 STANDBY_MAX_S = 480.0      # phien du phong khong dung qua 8 phut -> dong, mo lai
@@ -1564,6 +1601,7 @@ async def main():
     asyncio.create_task(pool.maintain())
     app = web.Application()
     app.router.add_route("*", "/xiaozhi/ota/", ota_handler)
+    app.router.add_get("/xiaozhi/firmware/s3/{name}", firmware_handler)
     runner = web.AppRunner(app, access_log=None)
     await runner.setup()
     await web.TCPSite(runner, "0.0.0.0", HTTP_PORT).start()

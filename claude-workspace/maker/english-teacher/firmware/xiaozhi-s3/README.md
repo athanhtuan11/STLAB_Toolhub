@@ -53,3 +53,11 @@ trước đó gửi số 0. Log `[BARGE]`. Gate: `server/test_full_duplex.py`. K
 ## Chưa chắc (cần đo trên bo)
 - Trễ tham chiếu tối ưu; INMP441 qua `>>12` của xiaozhi có thể bão hòa khi nói to sát mic (nếu `rms mic` ~ 32000 thì đổi dịch bit).
 - Chân LED 48 là WS2812 trên phần lớn devkit N16R8; không sáng thì bỏ qua.
+
+## OTA (2026-11-13)
+- Phiên bản STLab nằm ở `VERSION` (dạng `2.5.2.1`, 4 số: `ParseVersion` của ota.cc chấp nhận số đoạn bất kỳ, bản dài hơn cùng tiền tố tính là mới); `sync.ps1` đặt `PROJECT_VER` bản chép theo file này.
+- Phát hành: `powershell -NoProfile -ExecutionPolicy Bypass -File release.ps1 -Bump` (hoặc `-Version x.y.z.w`): sync + build thật + `check_s3.py`, đọc version trong `xiaozhi.bin` (phải khớp), chép `server/data/firmware/s3/xiaozhi-<ver>.bin` + `manifest.json` (sha256, size). Giữ 3 bản, cũ hơn vào `server/backup/<ngày>-firmware-cu/`. Không nạp bo, không restart máy chủ.
+- Bo hỏi `POST /xiaozhi/ota/` mỗi lần khởi động; `bridge.py` chỉ trả URL khi chip `esp32s3` + board `stlab-s3` + version bo cũ hơn manifest + sha256/file khớp. Có bản mới thì bo tải, ghi phân vùng app (không cập nhật assets) rồi tự khởi động lại; bản bằng nhau thì không làm gì (không vòng lặp).
+- A1S (ESP32, 4 MB, không khe OTA) không bao giờ nhận URL. Tắt khẩn cấp: biến môi trường `STLAB_OTA_DISABLE=1` (rồi restart máy chủ).
+- Rollback: `CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y` đã bật trong sdkconfig build → bản mới hỏng (không tự xác nhận) thì bootloader quay về khe cũ. Cần bản 2.5.2 đang chạy trên bo đã có bootloader này (bootloader chỉ đổi qua USB).
+- Lần đầu KHÔNG cần USB: bản 2.5.2 trên bo đã có client OTA; chỉ cần Wi-Fi + máy chủ chạy bản bridge.py mới (restart máy chủ 1 lần).
