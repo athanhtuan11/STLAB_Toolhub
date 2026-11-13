@@ -49,6 +49,23 @@
     "P1_to_L": 20.0,
     "P2": "khong can",
     "N_stick_out": 4.62,
-    "N_pressed": "gan nhu het hanh trinh"
+    "N_pressed": "gan nhu het hanh trinh",
+    "place": {
+      "_note": "v3 mockup: up mat co P1 xuong tam ga, nut N chia ve E1 (-X). Vi tri P1/L/N tren than UOC TU ANH (TODO do lai). ear_t TODO.",
+      "plunger_face_x": "E1",
+      "top_align": "E2",
+      "dx": 0.0,
+      "dy": 0.0,
+      "P1_from_plunger": 6.7,
+      "P1_from_top": 8.2,
+      "L_from_plunger": 5.8,
+      "L_below_bottom": 2.6,
+      "N_from_top": 11.0,
+      "N_d": 4.0,
+      "ear_t": 3.0,
+      "P1_hole_d": 5.3,
+      "post_d": 8.0,
+      "post_hole_d": 3.4
+    }
   }
 }

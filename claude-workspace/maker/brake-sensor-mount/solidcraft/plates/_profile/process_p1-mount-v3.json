@@ -1,6 +1,6 @@
 {
  "type": "process",
- "name": "STLab p1-mount-v2",
+ "name": "STLab p1-mount-v3",
  "from": "User",
  "instantiation": "true",
  "adaptive_layer_height": "0",
@@ -297,5 +297,6 @@
   "Bambu Lab A1 0.4 nozzle"
  ],
  "curr_bed_type": "Textured PEI Plate",
- "inherits": "0.16mm Optimal @BBL A1"
+ "inherits": "0.16mm Optimal @BBL A1",
+ "brim_type": "outer_only"
 }
