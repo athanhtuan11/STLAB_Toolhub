@@ -12,7 +12,7 @@
 ## File
 - CAD đo được: `solidcraft/brake-sensor-mount.sc`; số liệu: `solidcraft/params.json` → `python build_mount.py`.
 - In: `solidcraft/plates/p1-mount-v1/p1-mount-v1.3mf` (PETG, mặt trên úp xuống bàn, không support, ~18 ph, 2,6 g).
-- Ảnh duyệt: `review/sheet-v1.png`.
+- Ảnh duyệt: `review/sheet-v1.png`. Bản vẽ mã cạnh: `review/edges-named.png` (E1–E13, A, B, C, D – trùng note trong .sc; chiều dài từng cạnh ở `solidcraft/edges.json`). Đo trong SolidCraft rồi báo theo mã.
 
 ## TODO
 - Loại cảm biến + cách gắn lên gá.

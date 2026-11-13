@@ -37,6 +37,36 @@ A("solid.cylinder", diameter=PA['d'], height=PA['len'] + 0.5, base=[pa[0], pa[1]
 hb = mm(P['boss_b']['px']); BB = P['boss_b']
 A("solid.cylinder", diameter=BB['od'], height=H + 0.5, base=[hb[0], hb[1], 0], axis="Z", **J)
 A("solid.cylinder", diameter=BB['id'], height=Z1 + 0.2, base=[hb[0], hb[1], -0.1], axis="Z", **C)
+# --- Nhan ten canh + chi tiet (note trong .sc) de Tuan do va bao lai theo ma ---
+EDGE_NAMES = ["mep trai (canh khoi luc giac)", "canh tren", "canh phai (sat xi-lanh)", "lom phai 1", "lom phai 2",
+              "lom phai 3", "lom phai 4", "day phai", "day giua", "day trai", "cheo trai duoi"]
+pts = poly; nseg = len(P['outline_px'])
+cen = np.mean(np.array(pts), 0)
+EDGES = []
+def label(p, q, code, name, curve=False, length=None):
+    m = np.array([(p[0] + q[0]) / 2, (p[1] + q[1]) / 2]); dv = m - cen; dv = dv / (np.linalg.norm(dv) + 1e-9)
+    at = m + dv * 2.5
+    L_ = length if length is not None else math.hypot(q[0] - p[0], q[1] - p[1])
+    EDGES.append({"ma": code, "ten": name, "dai_mm": round(L_, 2), "tu": p, "den": q, "nhan": [round(at[0], 2), round(at[1], 2)]})
+    A("note.add", anchor=[round(at[0], 2), round(at[1], 2), Z1], text="%s %s | %.1f mm" % (code, name, L_))
+for i in range(nseg - 1):
+    label(pts[i], pts[i + 1], "E%d" % (i + 1), EDGE_NAMES[i])
+i0 = nseg - 1
+label(pts[i0], pts[i0 + 1], "E%d" % nseg, EDGE_NAMES[nseg - 1])
+arc_len = r_out * abs(math.radians(L['a1'] - L['a0']))
+amid = math.radians((L['a0'] + L['a1']) / 2)
+EDGES.append({"ma": "E%d" % (nseg + 1), "ten": "cung vanh om (ngoai) R%.1f" % r_out, "dai_mm": round(arc_len, 2)})
+A("note.add", anchor=[round(cx + (r_out + 2.5) * math.cos(amid), 2), round((r_out + 2.5) * math.sin(amid), 2), Z1],
+  text="E%d cung vanh om | R trong %.1f / ngoai %.1f, sau %.1f" % (nseg + 1, r_in, r_out, L['depth']))
+label(pts[-1], pts[0], "E%d" % (nseg + 2), "noi vanh -> mep trai")
+A("note.add", anchor=[pa[0], pa[1], -PA['len']], text="A chot dac O%.1f dai %.1f | vai O%.1f cao %.1f" % (PA['d'], PA['len'], PA['shoulder_d'], H))
+A("note.add", anchor=[hb[0], hb[1], Z1], text="B tru rong O%.1f / lo O%.1f (oc M4) | cao %.1f" % (BB['od'], BB['id'], H))
+A("note.add", anchor=[0, 0, Z1], text="D tam dai oc (goc toa do) | tam ga day %.1f, mat duoi cao %.1f" % (T, H))
+A("note.add", anchor=[(pa[0] + hb[0]) / 2, (pa[1] + hb[1]) / 2 + 2, Z1], text="C = A-B %.1f mm" % P['C_mm'])
+for nm, val, cm in [("C_AB", P['C_mm'], "tam A - tam B"), ("R_cung", L['R'], "ban kinh mep cung tay thang"),
+                    ("cao_dai_oc", H, "mat duoi tam ga"), ("day_tam", T, "tam ga"), ("sau_vanh", L['depth'], "mep cung day"),
+                    ("chot_A_d", PA['d'], ""), ("chot_A_dai", PA['len'], ""), ("tru_B_od", BB['od'], ""), ("lo_B_d", BB['id'], "")]:
+    A("parameters.add", name=nm, expression="%g mm" % val, comment=cm)
 raw = os.path.join(BUILD, 'mount.raw.stl').replace(os.sep, '/')
 A("file.export_stl", path=raw, bodies=["mount"], quality="fine"); A("inspect.measure")
 jp = os.path.join(BUILD, 'mount.json'); json.dump({"commands": cmd}, open(jp, 'w'), indent=1)
@@ -67,5 +97,28 @@ try:
     img.save(os.path.join(HERE, '..', 'review', 'overlay.png'))
 except Exception as e:
     print('overlay loi:', e)
+json.dump(EDGES, open(os.path.join(HERE, 'edges.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+try:
+    import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
+    fig, ax = plt.subplots(figsize=(11, 11)); pp = np.array(poly + [poly[0]])
+    ax.fill(pp[:, 0], pp[:, 1], color='#cfe8ff'); ax.plot(pp[:, 0], pp[:, 1], 'k-', lw=1.5)
+    lp = np.array(lip + [lip[0]]); ax.fill(lp[:, 0], lp[:, 1], color='#7ee08a'); 
+    for c0, d0, col in [(pa, PA['shoulder_d'], 'orange'), (pa, PA['d'], 'orange'), (hb, BB['od'], 'red'), (hb, BB['id'], 'red')]:
+        ax.add_patch(plt.Circle(c0, d0 / 2, fill=False, color=col, lw=2))
+    for e in EDGES:
+        if 'nhan' in e:
+            ax.annotate('%s %.1f' % (e['ma'], e['dai_mm']), e['nhan'], ha='center', va='center', fontsize=11, color='navy', weight='bold')
+    ax.annotate('E%d cung R%.1f' % (nseg + 1, r_out), (cx + (r_out + 3) * math.cos(amid), (r_out + 3) * math.sin(amid)), ha='center', color='green', weight='bold')
+    for t_, p_ in [('A', pa), ('B', hb), ('D', [0, 0])]:
+        ax.annotate(t_, (p_[0] + 1.5, p_[1] + 1.5), color='crimson', fontsize=14, weight='bold')
+    ax.plot([pa[0], hb[0]], [pa[1], hb[1]], 'm--'); ax.annotate('C %.1f' % P['C_mm'], ((pa[0] + hb[0]) / 2, (pa[1] + hb[1]) / 2 + 1), color='m', weight='bold')
+    ax.plot(0, 0, 'k+', ms=15)
+    allp = np.array(poly + [e['nhan'] for e in EDGES if 'nhan' in e])
+    ax.set_xlim(allp[:, 0].min() - 4, allp[:, 0].max() + 4); ax.set_ylim(allp[:, 1].min() - 3, allp[:, 1].max() + 3)
+    ax.set_aspect('equal'); ax.grid(alpha=.3); ax.set_xlabel('X mm (goc = tam dai oc D)'); ax.set_ylabel('Y mm')
+    ax.set_title('Ga cam bien tay thang - nhin tu tren (ma canh = note trong .sc)')
+    plt.savefig(os.path.join(HERE, '..', 'review', 'edges-named.png'), dpi=80, bbox_inches='tight')
+except Exception as e:
+    print('ban ve loi:', e)
 ok = rep['closed'] is not False and (rep['shells'] in (None, 1))
 print('px/mm', round(K, 2)); print('MOUNT', 'PASS' if ok else 'FAIL', rep); sys.exit(0 if ok else 1)
