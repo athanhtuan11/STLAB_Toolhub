@@ -110,5 +110,16 @@
   "bump_A": {
     "d": 9.0,
     "_note": "v3.8: E2 lui 2 -> buou O9 quanh A om vai A2 O7 + lo P1"
+  },
+  "_fixed": {
+    "_note": "Tuan 2026-11-13: GIU NGUYEN tam 2 cho nay moi gan duoc cong tac - khong doi khi sua chi tiet khac.",
+    "T2_buou_vien_quanh_A_tam": [
+      1.69,
+      12.72
+    ],
+    "L1_ong_dem_roi_tam": [
+      0.86,
+      -6.93
+    ]
   }
 }
