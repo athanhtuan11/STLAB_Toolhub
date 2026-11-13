@@ -1,6 +1,6 @@
 {
  "type": "process",
- "name": "STLab p1-mount-v1",
+ "name": "STLab p1-mount-v2",
  "from": "User",
  "instantiation": "true",
  "adaptive_layer_height": "0",

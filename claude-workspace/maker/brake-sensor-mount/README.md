@@ -1,6 +1,6 @@
 # brake-sensor-mount – gá treo cảm biến trên tay thắng
 
-**Trạng thái:** v1 (2026-11-13) – mới có tấm gá + cách cố định; chưa có chỗ gắn cảm biến (chờ Tuan báo loại cảm biến).
+**Trạng thái:** v2 (2026-11-13) – viền theo số Tuan đo (E1 10, E2 24, E3 11, cung đáy R11,8 tâm D); mới có tấm gá + cách cố định; chưa có chỗ gắn cảm biến (chờ Tuan báo loại cảm biến).
 
 ## Cố định vào tay thắng (tấm "44-24")
 - Tấm gá dày 3 mm, nằm **cao 5,5 mm** trên mặt tay thắng, tựa lên đai ốc có sẵn (cao 5,5 mm).
@@ -11,8 +11,8 @@
 
 ## File
 - CAD đo được: `solidcraft/brake-sensor-mount.sc`; số liệu: `solidcraft/params.json` → `python build_mount.py`.
-- In: `solidcraft/plates/p1-mount-v1/p1-mount-v1.3mf` (PETG, mặt trên úp xuống bàn, không support, ~18 ph, 2,6 g).
-- Ảnh duyệt: `review/sheet-v1.png`. Bản vẽ mã cạnh: `review/edges-named.png` (E1–E13, A, B, C, D – trùng note trong .sc; chiều dài từng cạnh ở `solidcraft/edges.json`). Đo trong SolidCraft rồi báo theo mã.
+- In: `solidcraft/plates/p1-mount-v2/p1-mount-v2.3mf` (PETG, mặt trên úp xuống bàn, không support, ~18 ph, 2,6 g).
+- Ảnh duyệt: `review/sheet-v2.png`. Bản vẽ mã cạnh: `review/edges-named.png` (E1–E13, A, B, C, D – trùng note trong .sc; chiều dài từng cạnh ở `solidcraft/edges.json`). Đo trong SolidCraft rồi báo theo mã.
 
 ## TODO
 - Loại cảm biến + cách gắn lên gá.

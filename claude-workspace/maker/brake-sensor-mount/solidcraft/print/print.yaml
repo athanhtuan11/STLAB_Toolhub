@@ -6,7 +6,7 @@ stl: stl
 plates_dir: plates
 common: {sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
 plates:
-  p1-mount-v1:
+  p1-mount-v2:
     process: 0.16mm Optimal @BBL A1
     overrides: {wall_loops: "3", sparse_infill_density: "30%"}
     stl: ["mount.stl"]
