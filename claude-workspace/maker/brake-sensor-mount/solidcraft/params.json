@@ -1,16 +1,41 @@
 {
-  "_note": "Ga cam bien tay thang v2 (2026-11-13). Tuan do: C(A-B)=13, mep cung tay thang R10 quanh tam dai oc D, mep day 5,5, dai oc cao 5,5, chot A O3,7 sau 5,5, B lo tron M4, E2=24, E1=10 roi bo tron toi cung, E3=11, vien E5-E12 bo tron deu R~11. Uoc tu anh (ti le theo C): vi tri A/B, canh tren y=16,27, canh phai x=17,06. Goc = tam D, X phai, Y len, Z=0 mat tay thang.",
-  "img_origin_px": [405, 560],
+  "_note": "Ga cam bien tay thang v2 (2026-11-13). Tuan do: C(A-B)=13, mep cung tay thang R10 quanh tam dai oc D, mep day 5,5, dai oc cao 5,5, chot A O3,7 sau 5,5, B lo tron M4, E2=24, E1=10 roi bo tron toi cung, E3=11, vien E5-E12 bo tron deu R~11. Uoc tu anh (ti le theo C): vi tri A/B, canh tren y=16,27, canh phai x=17,06. Goc = tam D, X phai, Y len, Z=0 mat tay thang. v2.1: E2 keo dai sang phai che mep ngoai tru B (+1 mm).",
+  "img_origin_px": [
+    405,
+    560
+  ],
   "C_mm": 13.0,
   "standoff": 5.5,
   "plate_t": 3.0,
   "top_y": 16.27,
-  "right_x": 17.06,
-  "E2": 24.0,
+  "right_x": 18.54,
+  "E2": 25.48,
   "E1": 10.0,
   "E3": 11.0,
   "fillet_E1": 2.0,
-  "lip": {"R": 10.0, "gap": 0.3, "wall": 1.5, "depth": 5.5, "a0": 150, "a1": 212},
-  "pin_a": {"px": [450, 222], "d": 3.7, "len": 5.5, "shoulder_d": 7.0},
-  "boss_b": {"px": [778, 330], "od": 7.0, "id": 4.4}
+  "lip": {
+    "R": 10.0,
+    "gap": 0.3,
+    "wall": 1.5,
+    "depth": 5.5,
+    "a0": 150,
+    "a1": 212
+  },
+  "pin_a": {
+    "px": [
+      450,
+      222
+    ],
+    "d": 3.7,
+    "len": 5.5,
+    "shoulder_d": 7.0
+  },
+  "boss_b": {
+    "px": [
+      778,
+      330
+    ],
+    "od": 7.0,
+    "id": 4.4
+  }
 }

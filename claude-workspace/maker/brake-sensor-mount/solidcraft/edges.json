@@ -11,9 +11,9 @@
  {
   "ma": "E2",
   "ten": "canh tren",
-  "dai_mm": 24.0,
+  "dai_mm": 25.48,
   "nhan": [
-   5.06,
+   5.8,
    17.77
   ]
  },
@@ -22,23 +22,23 @@
   "ten": "canh phai (sat xi-lanh)",
   "dai_mm": 11.0,
   "nhan": [
-   19.56,
+   21.04,
    10.77
   ]
  },
  {
   "ma": "E4",
   "ten": "doan thang tiep tuyen",
-  "dai_mm": 13.4,
+  "dai_mm": 15.24,
   "nhan": [
-   16.06,
-   -0.45
+   16.52,
+   -0.86
   ]
  },
  {
   "ma": "E5",
   "ten": "cung day R11.8 tam D (gop E5-E11 cu)",
-  "dai_mm": 24.0,
+  "dai_mm": 22.99,
   "nhan": [
    0.0,
    -14.3
