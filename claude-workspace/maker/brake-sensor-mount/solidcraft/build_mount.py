@@ -165,20 +165,20 @@ for e in EDGES:
 XY = lambda q: "(%.2f, %.2f)" % (q[0], q[1])
 A("note.add", anchor=[pa[0], pa[1], -PA['len']], text="A1 chot dac O%.1f dai %.1f (cam lo A) | tam %s" % (PA['d'], PA['len'], XY(pa)))
 A("note.add", anchor=[pa[0] + PA['shoulder_d'] / 2, pa[1], H / 2], text="A2 vai chot A O%.1f cao %.1f (z 0 -> %.1f)" % (PA['shoulder_d'], H, H))
-A("note.add", anchor=[hb[0], hb[1], Z1], text="B1 lo xuyen O%.1f oc M4 | tam %s" % (BB['id'], XY(hb)))
+A("note.add", anchor=[hb[0], hb[1], Z1], text="B1 lo xuyen O%.1f oc M4 (tu day B2 len mat tren) | tam %s" % (BB['id'], XY(hb)))
 A("note.add", anchor=[hb[0] + BB['od'] / 2, hb[1], bz0], text="B2 tru rong O%.1f cao %.1f (z %.1f -> %.1f)" % (BB['od'], H - bz0, bz0, H))
 A("note.add", anchor=[0, 0, Z1], text="D tam dai oc (0, 0) = goc toa do")
-A("note.add", anchor=[xr - 3, yt - 3, Z1], text="T tam ga day %.1f (z %.1f -> %.1f), mat duoi tua len dai oc" % (T, H, Z1))
+A("note.add", anchor=[xr - 3, yt - 3, ZS if MG else Z1], text="T tam ga lien khoi day %.1f (z %.1f -> %.1f), mat duoi tua len dai oc, cong tac nam tren mat z %.1f" % ((ZS - H) if MG else T, H, ZS if MG else Z1, ZS if MG else Z1))
 if AL:
     A("note.add", anchor=[ac[0], ac[1], Z1], text="O tam cung E5/E6 %s, R %.2f" % (XY(ac), ar))
     A("note.add", anchor=[*lpc(angs_lip[0]), -L['depth']], text="E6a dau vanh (phia tru L)")
     A("note.add", anchor=[*lpc(angs_lip[-1]), -L["depth"]], text="E6b cuoi vanh (da bo %.2f mm phia chan E1)" % L.get("cut_E6b", 0))
 A("note.add", anchor=[(pa[0] + hb[0]) / 2, (pa[1] + hb[1]) / 2 + 2, Z1], text="C = A-B %.1f mm" % P['C_mm'])
-A("note.add", anchor=[p1[0], p1[1], ZS], text="DE-P1 lo chot cong tac O%.1f xuyen de | tam %s" % (SP['P1_hole_d'], XY(p1)))
+A("note.add", anchor=[p1[0], p1[1], ZS], text="P1 lo chot cong tac O%.1f sau %.1f tu mat tren | tam %s (CO DINH)" % (SP['P1_hole_d'], bt, XY(p1)))
 if not MG: A("note.add", anchor=[jp_[0], jp_[1], Z1], text="J1 o chot rong tren ga O%.1f sau %.1f (nhan chot de O%.0f cao %.0f) | tam %s" % (JT['hole_d'], JT['depth'], JT['pin_d'], JT['pin_h'], XY(jp_)))
 if not MG: A("note.add", anchor=[jp_[0] + JT['boss_od'] / 2, jp_[1], Z1 - JT['depth'] - 1.0], text="J2 vau o chot duoi tam O%.0f" % JT['boss_od'])
-A("note.add", anchor=[pl[0], pl[1], ZS + post_h], text="L1 ong dem roi O%.0f / lo O4.4, cao %.2f (giua de va tai) | tam %s | oc M4x25 qua tai+ong+de vao ga" % (SP['post_d'], post_h, XY(pl)))
-A("note.add", anchor=[pl[0] + SP['post_d'] / 2, pl[1], H - 3], text="L2 vau O%.0f duoi tam sau 3, lo ren O%.1f oc M4" % (SP['post_d'], SP['post_hole_d']))
+A("note.add", anchor=[pl[0], pl[1], ZS + post_h], text="L1 ong dem roi O%.0f / lo O4.4, cao %.2f (giua mat tam va tai L) | tam %s (CO DINH) | oc M4x16 qua tai + ong vao lo ren" % (SP['post_d'], post_h, XY(pl)))
+A("note.add", anchor=[pl[0] + SP['post_d'] / 2, pl[1], H - 3], text="L2 vau O%.0f duoi tam sau 3 | lo ren O%.1f (M4) xuyen tu z %.1f -> %.1f" % (SP['post_d'], SP['post_hole_d'], H - boss_dn, ZS if MG else Z1))
 A("note.add", anchor=[sx0 + S['W'] / 2, sy1, ZS + S['T']], text="S cong tac %.2f x %.2f x %.2f (chi de xem, khong in)" % (S['W'], S['H'], S['T']))
 A("note.add", anchor=[sx0 - S['N_stick_out'], sy1 - SP['N_from_top'], ZS + S['T'] / 2], text="N nut nhan (nho %.2f) -> ve E1" % S['N_stick_out'])
 for nm, val, cm in [("C_AB", P['C_mm'], "tam A - tam B"), ("R_mep", L['R'], "mep cung tay thang, tam D"), ("R_vien", R, "vien day ga"),
@@ -222,6 +222,7 @@ if BL:
     A("solid.cylinder", diameter=SP['post_hole_d'], height=ZS - H + boss_dn + 0.2, base=[pl[0], pl[1], H - boss_dn - 0.1], axis="Z", **C)
 BA = P.get('bump_A')   # v3.8: E2 lui 2 -> buou tron quanh A de om vai A2 + lo P1
 if BA:
+    A("note.add", anchor=[pa[0] - BA['d'] / 2, pa[1], ZS if MG else Z1], text="T2 buou O%.0f quanh A (gop vao tam) | tam %s (CO DINH)" % (BA['d'], "(%.2f, %.2f)" % (pa[0], pa[1])))
     A("solid.cylinder", diameter=BA['d'], height=(ZS if MG else Z1) - H, base=[pa[0], pa[1], H], axis="Z", **J)
     A("solid.cylinder", diameter=SP['P1_hole_d'], height=bt + 0.2, base=[p1[0], p1[1], Z1 - 0.1], axis="Z", **C)
 
@@ -246,7 +247,8 @@ cyl = lambda name, d, h, z0, q, col: (N_("solid.cylinder", diameter=d, height=h,
 cutN = lambda d, h, z0, q, tg: N_("solid.cylinder", diameter=d, height=h, base=[q[0], q[1], z0], axis="Z", operation="cut", targets=tg)
 N_("sketch.create", plane={"origin": [0, 0, H], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]})
 N_("sketch.line", points=poly, closed=True); N_("sketch.finish")
-N_("solid.extrude", distance=T, operation="new_body", body_name="T_tam_ga"); N_("appearance.assign", bodies=["T_tam_ga"], color="#3a8fd8")
+TN = "T_tam_ga_lien_khoi" if MG else "T_tam_ga"
+N_("solid.extrude", distance=(ZS - H) if MG else T, operation="new_body", body_name=TN); N_("appearance.assign", bodies=[TN], color="#3a8fd8")
 N_("sketch.create", plane={"origin": [0, 0, -L['depth']], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]})
 N_("sketch.line", points=lip, closed=True); N_("sketch.finish")
 N_("solid.extrude", distance=L['depth'] + H, operation="new_body", body_name="E6_vanh_om"); N_("appearance.assign", bodies=["E6_vanh_om"], color="#4caf50")
@@ -254,11 +256,14 @@ cyl("A2_vai_chot_A", PA['shoulder_d'], H, 0, pa, "#ffb300")
 cyl("A1_chot_A_O3.7", PA['d'], PA['len'], -PA['len'], pa, "#e65100")
 cyl("B2_tru_rong_B", BB['od'], H - bz0, bz0, hb, "#e53935")
 cyl("L2_vau_L_duoi_tam", SP['post_d'], boss_dn, H - boss_dn, pl, "#8e24aa")
-cutN(BB['id'], Z1 - bz0 + 0.2, bz0 - 0.1, hb, ["T_tam_ga", "B2_tru_rong_B"])
+cutN(BB['id'], (ZS if MG else Z1) - bz0 + 0.2, bz0 - 0.1, hb, [TN, "B2_tru_rong_B"])
+if MG:
+    cutN(BB['cb_d'], BB['cb_depth'] + 0.1, ZS - BB['cb_depth'], hb, [TN])
+    cutN(SP['P1_hole_d'], bt + 0.1, ZS - bt, p1, [TN])
 if not MG:
     cyl("J2_vau_o_chot", JT['boss_od'], JT['depth'] - T + 1.0, Z1 - JT['depth'] - 1.0, jp_, "#5e35b1")
-    cutN(JT['hole_d'], JT['depth'] + 0.1, Z1 - JT['depth'], jp_, ["T_tam_ga", "J2_vau_o_chot"])
-cutN(SP['post_hole_d'], T + boss_dn + 0.2, H - boss_dn - 0.1, pl, ["T_tam_ga", "L2_vau_L_duoi_tam"])
+    cutN(JT['hole_d'], JT['depth'] + 0.1, Z1 - JT['depth'], jp_, [TN, "J2_vau_o_chot"])
+cutN(SP['post_hole_d'], (ZS - H if MG else T) + boss_dn + 0.2, H - boss_dn - 0.1, pl, [TN, "L2_vau_L_duoi_tam"])
 cyl("L1_ong_dem_roi", SP['post_d'], post_h, ZS, pl, "#ff8c00"); cutN(4.4, post_h + 0.2, ZS - 0.1, pl, ["L1_ong_dem_roi"])
 N_("sketch.create", plane={"origin": [0, 0, ZS], "x_dir": [1, 0, 0], "y_dir": [0, 1, 0]})
 N_("sketch.rectangle.two_point", p0=[sx0, sy0], p1=[sx1, sy1]); N_("sketch.finish")
@@ -270,13 +275,16 @@ N_("appearance.assign", bodies=["N_nut_nhan"], color="#00e676")
 if BL:
     cyl("T3_buou_vien_quanh_L", BL['d'], (ZS if MG else Z1) - H, H, pl, "#3a8fd8")
     cutN(SP['post_hole_d'], ZS - H + 0.2, H - 0.1, pl, ["T3_buou_vien_quanh_L"])
-if BA:
-    cyl("T2_buou_vien_quanh_A", BA['d'], (ZS if MG else Z1) - H, H, pa, "#3a8fd8")
-    cutN(SP['P1_hole_d'], bt + 0.2, Z1 - 0.1, p1, ["T2_buou_vien_quanh_A"])
-DEN = "DE_tang_tren_gop_lien_ga" if MG else "DE_cong_tac_khoi_tren"
-base_cmds(N_, DEN); N_("appearance.assign", bodies=[DEN], color="#00acc1")
+if BA and MG:   # gop buou quanh A vao tam lien khoi
+    N_("solid.cylinder", diameter=BA['d'], height=ZS - H, base=[pa[0], pa[1], H], axis="Z", operation="join", targets=[TN])
+    cutN(SP['P1_hole_d'], bt + 0.1, ZS - bt, p1, [TN])
+elif BA:
+    cyl("T2_buou_vien_quanh_A", BA['d'], Z1 - H, H, pa, "#3a8fd8")
+if not MG:
+    DEN = "DE_cong_tac_khoi_tren"
+    base_cmds(N_, DEN); N_("appearance.assign", bodies=[DEN], color="#00acc1")
 cN += [c for c in cmd if c['command'] in ('note.add', 'parameters.add')]
-N_("note.add", anchor=[bpl[0], bpl[1], ZS], text="DE-L lo xuyen O4.4 (oc M4) | de day %.1f (z %.1f -> %.1f)" % (bt, Z1, ZS))
+if not MG: N_("note.add", anchor=[bpl[0], bpl[1], ZS], text="DE-L lo xuyen O4.4 (oc M4) | de day %.1f (z %.1f -> %.1f)" % (bt, Z1, ZS))
 if MG:
     N_("note.add", anchor=[hb[0], hb[1], ZS], text="B3 hoc dau oc M4 O%.1f sau %.1f (dau oc nam duoi cong tac) | lo B xuyen tu z %.1f -> %.1f" % (BB['cb_d'], BB['cb_depth'], bz0, ZS))
 else:
@@ -367,8 +375,9 @@ try:
 except Exception as e:
     print('anh duyet loi:', e)
 
-# --- anh duyet DE cong tac: ban ve tren + canh ben (ma canh DE-E1..) + anh 3D SolidCraft ---
+# --- anh duyet DE cong tac (chi khi 2 khoi tach) ---
 try:
+    if MG: raise RuntimeError('skip')
     import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
     bpp = [[x - bdx, y] for x, y in base_poly]                   # ve theo toa do ga (bo lech hien thi)
     BE = []
@@ -410,7 +419,7 @@ try:
     json.dump([{"ma": "DE-E%d" % (j + 1), "tu": p_, "den": q_, "dai_mm": round(Ld, 2)} for j, (p_, q_, Ld) in enumerate(BE)],
               open(os.path.join(HERE, 'edges-base.json'), 'w', encoding='utf-8'), indent=1)
 except Exception as e:
-    print('anh de loi:', e)
+    if str(e) != 'skip': print('anh de loi:', e)
 
 ok = rep['closed'] is not False and rep['shells'] in (None, 1)
 print('px/mm %.2f  R_vien %.2f' % (K, R))
