@@ -28,13 +28,30 @@ d = math.hypot(xr, y3); at = math.atan2(y3, xr) - math.acos(R / d)   # tiep tuye
 a_top = math.pi - math.asin(min(y1 / R, 1.0))                        # cung gap do cao chan E1 (phia trai)
 a0, a1 = math.radians(L['a0']), math.radians(L['a1'])
 
-poly = [[xl, yt], [xr, yt], [xr, y3]]                                # E2, E3
-poly += [pol(R, a) for a in np.linspace(at, a1 - 2 * math.pi, 40)]   # E4 (doan) + E5 cung day
-poly += [pol(R, a) for a in np.linspace(a1, a0, 16)[1:]]             # E6 vanh om
-poly += [pol(R, a) for a in np.linspace(a0, a_top, 6)[1:]]           # tiep cung toi do cao chan E1
-fc = (xl - rf, y1 + rf)                                              # E7: doan ngang + bo lom R=rf vao E1
-poly.append([round(xl - rf, 3), round(y1, 3)])
-poly += [[round(fc[0] + rf * math.cos(a), 3), round(fc[1] + rf * math.sin(a), 3)] for a in np.linspace(-math.pi / 2, 0, 8)[1:]]
+AL = P.get('arc_left')
+if AL:
+    # v3.3 (Tuan): 1 cung tron lien tu chan E1 -> mep trai (cach E1 'offset' mm) -> day (y = bottom_y) -> tiep tuyen E4
+    # tam (ac_x, ac_y), ban kinh ar: ac_x - ar = xl - off ; ac_y - ar = yb ; qua (xl, y1)
+    off, yb = AL['offset_from_E1'], AL['bottom_y']
+    u, w = off, y1 - yb                                    # (u - ar)^2 + (w - ar)^2 = ar^2
+    ar = ((u + w) - math.sqrt((u + w) ** 2 - (u * u + w * w))); ar = ar if ar > 0 else None
+    ac = (xl - off + ar, yb + ar)
+    pc = lambda a: [round(ac[0] + ar * math.cos(a), 3), round(ac[1] + ar * math.sin(a), 3)]
+    dx_, dy_ = xr - ac[0], y3 - ac[1]; dd = math.hypot(dx_, dy_)
+    at2 = math.atan2(dy_, dx_) - math.acos(ar / dd)        # tiep tuyen tu chan E3, nhanh duoi
+    a_e1 = math.atan2(y1 - ac[1], xl - ac[0])              # diem chan E1 tren cung
+    # cung chay theo chieu kim dong ho tu at2 (duoi phai) qua day, trai, len toi chan E1
+    angs_ = np.linspace(at2, a_e1 - 2 * math.pi, 90) if a_e1 > at2 else np.linspace(at2, a_e1, 90)
+    poly = [[xl, yt], [xr, yt], [xr, y3]] + [pc(a) for a in angs_]
+    at = at2
+else:
+    poly = [[xl, yt], [xr, yt], [xr, y3]]                                # E2, E3
+    poly += [pol(R, a) for a in np.linspace(at, a1 - 2 * math.pi, 40)]   # E4 (doan) + E5 cung day
+    poly += [pol(R, a) for a in np.linspace(a1, a0, 16)[1:]]             # E6 vanh om
+    poly += [pol(R, a) for a in np.linspace(a0, a_top, 6)[1:]]           # tiep cung toi do cao chan E1
+    fc = (xl - rf, y1 + rf)                                              # E7: doan ngang + bo lom R=rf vao E1
+    poly.append([round(xl - rf, 3), round(y1, 3)])
+    poly += [[round(fc[0] + rf * math.cos(a), 3), round(fc[1] + rf * math.sin(a), 3)] for a in np.linspace(-math.pi / 2, 0, 8)[1:]]
 lip = [pol(R, a) for a in np.linspace(a0, a1, 16)] + [pol(r_in, a) for a in np.linspace(a1, a0, 16)]
 
 cmd = []
@@ -89,6 +106,16 @@ EDGES = [
      "dai_mm": round(R * abs(a1 - a0), 2), "nhan": pol(R + 3.5, (a0 + a1) / 2)},
     {"ma": "E7", "ten": "bo noi cung -> chan E1 (E13 cu), bo R%.1f" % rf, "dai_mm": None, "nhan": [xl - 4, y1 - 1.5]},
 ]
+if AL:   # v3.3: E5+E6+E7 thanh 1 cung lien; E6 chi con la vanh om duoi tam
+    p4 = pc(at2)
+    EDGES[3] = {"ma": "E4", "ten": "doan thang tiep tuyen", "dai_mm": round(math.dist([xr, y3], p4), 2),
+                "nhan": [(xr + p4[0]) / 2 + 2.5, (y3 + p4[1]) / 2]}
+    EDGES[4] = {"ma": "E5", "ten": "cung lien R%.1f (chan E1 -> trai -> day -> E4, gop E5-E7)" % ar,
+                "dai_mm": round(ar * abs(angs_[-1] - angs_[0]), 2),
+                "nhan": [round(ac[0] + (ar + 2.5) * math.cos(-2.4), 2), round(ac[1] + (ar + 2.5) * math.sin(-2.4), 2)]}
+    EDGES[5]['ten'] = "vanh om (duoi tam) R trong %.1f / ngoai %.1f, sau %.1f" % (r_in, R, L['depth'])
+    EDGES[5]['nhan'] = pol(R - 4, (a0 + a1) / 2)
+    del EDGES[6]
 for e in EDGES:
     e['nhan'] = [round(float(v), 2) for v in e['nhan']]
     A("note.add", anchor=[e['nhan'][0], e['nhan'][1], Z1],
