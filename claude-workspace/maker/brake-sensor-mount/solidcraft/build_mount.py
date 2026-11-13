@@ -53,6 +53,11 @@ else:
     poly.append([round(xl - rf, 3), round(y1, 3)])
     poly += [[round(fc[0] + rf * math.cos(a), 3), round(fc[1] + rf * math.sin(a), 3)] for a in np.linspace(-math.pi / 2, 0, 8)[1:]]
 lip = [pol(R, a) for a in np.linspace(a0, a1, 16)] + [pol(r_in, a) for a in np.linspace(a1, a0, 16)]
+if AL:   # v3.4 (Tuan): vanh om chay HET cung vien E5 (chan E1 -> qua tru L -> E4), bam theo cung vien
+    lw = L['wall']; ri = ar - lw
+    pci = lambda a: [round(ac[0] + ri * math.cos(a), 3), round(ac[1] + ri * math.sin(a), 3)]
+    lip = [pc(a) for a in angs_] + [pci(a) for a in angs_[::-1]]
+    r_in, R = ri, ar
 
 cmd = []
 A = lambda c, **p: cmd.append({"command": c, "params": p})
@@ -113,19 +118,30 @@ if AL:   # v3.3: E5+E6+E7 thanh 1 cung lien; E6 chi con la vanh om duoi tam
     EDGES[4] = {"ma": "E5", "ten": "cung lien R%.1f (chan E1 -> trai -> day -> E4, gop E5-E7)" % ar,
                 "dai_mm": round(ar * abs(angs_[-1] - angs_[0]), 2),
                 "nhan": [round(ac[0] + (ar + 2.5) * math.cos(-2.4), 2), round(ac[1] + (ar + 2.5) * math.sin(-2.4), 2)]}
-    EDGES[5]['ten'] = "vanh om (duoi tam) R trong %.1f / ngoai %.1f, sau %.1f" % (r_in, R, L['depth'])
-    EDGES[5]['nhan'] = pol(R - 4, (a0 + a1) / 2)
+    EDGES[5] = {"ma": "E6", "ten": "vanh om het cung E5: R ngoai %.2f / trong %.2f (tam cung), thanh %.1f, sau %.1f duoi mat tay thang" % (ar, ri, lw, L['depth']),
+                "dai_mm": round(ar * abs(angs_[-1] - angs_[0]), 2),
+                "nhan": [round(ac[0] + (ri - 3) * math.cos(-2.4), 2), round(ac[1] + (ri - 3) * math.sin(-2.4), 2)]}
     del EDGES[6]
 for e in EDGES:
     e['nhan'] = [round(float(v), 2) for v in e['nhan']]
     A("note.add", anchor=[e['nhan'][0], e['nhan'][1], Z1],
       text="%s %s%s" % (e['ma'], e['ten'], (" | %.1f mm" % e['dai_mm']) if e['dai_mm'] else ""))
-A("note.add", anchor=[pa[0], pa[1], -PA['len']], text="A chot dac O%.1f dai %.1f | vai O%.1f cao %.1f" % (PA['d'], PA['len'], PA['shoulder_d'], H))
-A("note.add", anchor=[hb[0], hb[1], Z1], text="B tru rong O%.1f / lo O%.1f (oc M4) | cao %.1f" % (BB['od'], BB['id'], H - bz0))
-A("note.add", anchor=[0, 0, Z1], text="D tam dai oc (goc toa do) | tam ga day %.1f, mat duoi cao %.1f" % (T, H))
+XY = lambda q: "(%.2f, %.2f)" % (q[0], q[1])
+A("note.add", anchor=[pa[0], pa[1], -PA['len']], text="A1 chot dac O%.1f dai %.1f (cam lo A) | tam %s" % (PA['d'], PA['len'], XY(pa)))
+A("note.add", anchor=[pa[0] + PA['shoulder_d'] / 2, pa[1], H / 2], text="A2 vai chot A O%.1f cao %.1f (z 0 -> %.1f)" % (PA['shoulder_d'], H, H))
+A("note.add", anchor=[hb[0], hb[1], Z1], text="B1 lo xuyen O%.1f oc M4 | tam %s" % (BB['id'], XY(hb)))
+A("note.add", anchor=[hb[0] + BB['od'] / 2, hb[1], bz0], text="B2 tru rong O%.1f cao %.1f (z %.1f -> %.1f)" % (BB['od'], H - bz0, bz0, H))
+A("note.add", anchor=[0, 0, Z1], text="D tam dai oc (0, 0) = goc toa do")
+A("note.add", anchor=[xr - 3, yt - 3, Z1], text="T tam ga day %.1f (z %.1f -> %.1f), mat duoi tua len dai oc" % (T, H, Z1))
+if AL:
+    A("note.add", anchor=[ac[0], ac[1], Z1], text="O tam cung E5/E6 %s, R %.2f" % (XY(ac), ar))
+    A("note.add", anchor=[*pc(angs_[0]), -L['depth']], text="E6a dau vanh (giap E4)")
+    A("note.add", anchor=[*pc(angs_[-1]), -L['depth']], text="E6b cuoi vanh (chan E1)")
 A("note.add", anchor=[(pa[0] + hb[0]) / 2, (pa[1] + hb[1]) / 2 + 2, Z1], text="C = A-B %.1f mm" % P['C_mm'])
-A("note.add", anchor=[p1[0], p1[1], Z1], text="P1 lo chot cong tac O%.1f" % SP['P1_hole_d'])
-A("note.add", anchor=[pl[0], pl[1], Z1 + post_h], text="L ong dem roi O%.0f/O4.4 cao %.2f + lo ren O%.1f oc M4" % (SP['post_d'], post_h, SP['post_hole_d']))
+A("note.add", anchor=[p1[0], p1[1], Z1], text="P1 lo chot cong tac O%.1f xuyen tam | tam %s" % (SP['P1_hole_d'], XY(p1)))
+A("note.add", anchor=[pl[0], pl[1], Z1 + post_h], text="L1 ong dem roi O%.0f / lo O4.4, cao %.2f (in rieng) | tam %s" % (SP['post_d'], post_h, XY(pl)))
+A("note.add", anchor=[pl[0] + SP['post_d'] / 2, pl[1], H - 3], text="L2 vau O%.0f duoi tam sau 3, lo ren O%.1f oc M4" % (SP['post_d'], SP['post_hole_d']))
+A("note.add", anchor=[sx0 + S['W'] / 2, sy1, Z1 + S['T']], text="S cong tac %.2f x %.2f x %.2f (chi de xem, khong in)" % (S['W'], S['H'], S['T']))
 A("note.add", anchor=[sx0 - S['N_stick_out'], sy1 - SP['N_from_top'], Z1 + S['T'] / 2], text="N nut nhan (nho %.2f) -> ve E1" % S['N_stick_out'])
 for nm, val, cm in [("C_AB", P['C_mm'], "tam A - tam B"), ("R_mep", L['R'], "mep cung tay thang, tam D"), ("R_vien", R, "vien day ga"),
                     ("E1", P['E1'], ""), ("E2", P['E2'], ""), ("E3", P['E3'], ""),
@@ -189,8 +205,19 @@ try:
     for e in EDGES:
         t = e['ma'] + ((' %.1f' % e['dai_mm']) if e['dai_mm'] else '')
         ax.annotate(t, e['nhan'], ha='center', va='center', fontsize=12, color='navy', weight='bold')
-    for t_, p_ in [('A', pa), ('B', hb), ('D', [0, 0])]:
-        ax.annotate(t_, (p_[0] + 1.5, p_[1] + 1.5), color='crimson', fontsize=14, weight='bold')
+    NL = chr(10)
+    feats = [(('A  chot O%.1f dai %.1f' + NL + '   vai O%.0f cao %.1f' + NL + '   %s') % (PA['d'], PA['len'], PA['shoulder_d'], H, XY(pa)), pa, (-13, 3)),
+             (('B  lo O%.1f M4, tru O%.0f' + NL + '   cao %.1f  %s') % (BB['id'], BB['od'], H - bz0, XY(hb)), hb, (2, 4)),
+             ('D  tam dai oc (0,0)', [0, 0], (1.5, 1.5)),
+             ('P1 lo O%.1f  %s' % (SP['P1_hole_d'], XY(p1)), p1, (2, -2.5)),
+             (('L  ong dem O%.0f cao %.2f' + NL + '   lo ren O%.1f  %s') % (SP['post_d'], post_h, SP['post_hole_d'], XY(pl)), pl, (5, -2))]
+    if AL:
+        feats.append((('O  tam cung R%.2f' + NL + '   %s') % (ar, XY(ac)), list(ac), (-4, -4)))
+        ax.plot(*ac, 'kx', ms=10)
+        for t_, a_ in [('E6a', angs_[0]), ('E6b', angs_[-1])]:
+            q = pc(a_); ax.plot(*q, 'go', ms=8); ax.annotate(t_, (q[0] + 0.6, q[1] + 0.6), color='green', weight='bold')
+    for t_, p_, o_ in feats:
+        ax.annotate(t_, (p_[0] + o_[0], p_[1] + o_[1]), color='crimson', fontsize=9, weight='bold')
     ax.plot([pa[0], hb[0]], [pa[1], hb[1]], 'm--')
     ax.annotate('C %.1f' % P['C_mm'], ((pa[0] + hb[0]) / 2, (pa[1] + hb[1]) / 2 + 1), color='m', weight='bold')
     ax.plot(0, 0, 'k+', ms=15)
@@ -202,7 +229,7 @@ try:
     allp = np.array(poly + [e['nhan'] for e in EDGES] + [[sx0 - 6, sy0 - 4], [sx1 + 2, sy1]])
     ax.set_xlim(allp[:, 0].min() - 3, allp[:, 0].max() + 3); ax.set_ylim(allp[:, 1].min() - 3, allp[:, 1].max() + 3)
     ax.set_aspect('equal'); ax.grid(alpha=.3); ax.set_xlabel('X mm (goc = tam dai oc D)'); ax.set_ylabel('Y mm')
-    ax.set_title('Ga cam bien tay thang v2 - nhin tu tren (ma canh = note trong .sc)')
+    ax.set_title('Ga cam bien tay thang v3.4 - nhin tu tren | ma = note trong .sc | toa do (x, y) mm tu tam D')
     plt.savefig(os.path.join(HERE, '..', 'review', 'edges-named.png'), dpi=80, bbox_inches='tight')
 except Exception as e:
     print('anh duyet loi:', e)
