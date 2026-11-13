@@ -1,5 +1,5 @@
 {
-  "_note": "Ga cam bien tay thang v2 (2026-11-13). Tuan do: C(A-B)=13, mep cung tay thang R10 quanh tam dai oc D, mep day 5,5, dai oc cao 5,5, chot A O3,7 sau 5,5, B lo tron M4, E2=24, E1=10 roi bo tron toi cung, E3=11, vien E5-E12 bo tron deu R~11. Uoc tu anh (ti le theo C): vi tri A/B, canh tren y=16,27, canh phai x=17,06. Goc = tam D, X phai, Y len, Z=0 mat tay thang. v2.1: E2 keo dai sang phai che mep ngoai tru B (+1 mm). v3.2 (Tuan): chot A dai 5,5->2; E1 vao 2 mm; tru B len 1,75 + phai 1, keo xuong them 2 (z0 -2); vanh E6 sau 5,5->7,5; E3 keo phai 1 de van che B; cong tac giu vi tri cu (dx -2). v3.3: vien trai+day = 1 cung lien (mep trai cach E1 10 mm, day -11,8). v3.5: bo 6,25 mm dau vanh phia E6b (can khi bop); them de cong tac in rieng; .sc do = moi chi tiet 1 body co ten. v3.6: tach de (khoi tren, chot O5x4) + o chot rong tren ga; ga noi rong chua tron cong tac + om vau L2 (+1 mm); cong tac doi phai 2 mm (mep nut = E1). v3.7 Tuan: gop de vao ga 1 khoi (bo chot noi); lo B M4 xuyen het + hoc dau oc O8 sau 4,2; ong dem L1 cao 4,85; lo L O3,4 xuyen ca khoi.",
+  "_note": "Ga cam bien tay thang v2 (2026-11-13). Tuan do: C(A-B)=13, mep cung tay thang R10 quanh tam dai oc D, mep day 5,5, dai oc cao 5,5, chot A O3,7 sau 5,5, B lo tron M4, E2=24, E1=10 roi bo tron toi cung, E3=11, vien E5-E12 bo tron deu R~11. Uoc tu anh (ti le theo C): vi tri A/B, canh tren y=16,27, canh phai x=17,06. Goc = tam D, X phai, Y len, Z=0 mat tay thang. v2.1: E2 keo dai sang phai che mep ngoai tru B (+1 mm). v3.2 (Tuan): chot A dai 5,5->2; E1 vao 2 mm; tru B len 1,75 + phai 1, keo xuong them 2 (z0 -2); vanh E6 sau 5,5->7,5; E3 keo phai 1 de van che B; cong tac giu vi tri cu (dx -2). v3.3: vien trai+day = 1 cung lien (mep trai cach E1 10 mm, day -11,8). v3.5: bo 6,25 mm dau vanh phia E6b (can khi bop); them de cong tac in rieng; .sc do = moi chi tiet 1 body co ten. v3.6: tach de (khoi tren, chot O5x4) + o chot rong tren ga; ga noi rong chua tron cong tac + om vau L2 (+1 mm); cong tac doi phai 2 mm (mep nut = E1). v3.7 Tuan: gop de vao ga 1 khoi (bo chot noi); lo B M4 xuyen het + hoc dau oc O8 sau 4,2; ong dem L1 cao 4,85; lo L O3,4 xuyen ca khoi. v3.8 Tuan: E6 cao 10 (sau 4,5); B2 cao 5,8; cong tac doi ve E2 5 mm (truc nut thang chot ren M3 O10); E2 lui 2 (E1 8 giu chan E1); L1 doi 9 ve phia nut N; E3 keo xuong y -13,33.",
   "img_origin_px": [
     405,
     560
@@ -7,17 +7,17 @@
   "C_mm": 13.0,
   "standoff": 5.5,
   "plate_t": 3.5,
-  "top_y": 16.27,
+  "top_y": 14.27,
   "right_x": 19.54,
   "E2": 24.48,
-  "E1": 10.0,
+  "E1": 8.0,
   "E3": 11.0,
   "fillet_E1": 2.0,
   "lip": {
     "R": 10.0,
     "gap": 0.3,
     "wall": 1.5,
-    "depth": 7.5,
+    "depth": 4.5,
     "a0": 150,
     "a1": 212,
     "cut_E6b": 6.25
@@ -40,7 +40,7 @@
     "id": 4.4,
     "dx_mm": 1.0,
     "dy_mm": 1.75,
-    "z0": -2.0,
+    "z0": -0.3,
     "cb_d": 8.0,
     "cb_depth": 4.2
   },
@@ -61,10 +61,10 @@
       "plunger_face_x": "E1",
       "top_align": "E2",
       "dx": 0.0,
-      "dy": 0.0,
+      "dy": 7.0,
       "P1_from_plunger": 6.7,
       "P1_from_top": 8.2,
-      "L_from_plunger": 5.8,
+      "L_from_plunger": -3.2,
       "L_below_bottom": 2.6,
       "N_from_top": 11.0,
       "N_d": 4.0,
@@ -103,7 +103,12 @@
   },
   "fit_switch": {
     "margin": 0.0,
-    "_note": "v3.6 Tuan: tam ga chua tron cong tac"
+    "_note": "v3.6 Tuan: tam ga chua tron cong tac",
+    "y3": -13.33
   },
-  "merge": true
+  "merge": true,
+  "bump_A": {
+    "d": 9.0,
+    "_note": "v3.8: E2 lui 2 -> buou O9 quanh A om vai A2 O7 + lo P1"
+  }
 }

@@ -2,10 +2,10 @@
  {
   "ma": "E1",
   "ten": "mep trai (canh khoi luc giac)",
-  "dai_mm": 10.0,
+  "dai_mm": 8.0,
   "nhan": [
    -7.94,
-   11.27
+   10.27
   ]
  },
  {
@@ -14,43 +14,43 @@
   "dai_mm": 31.35,
   "nhan": [
    10.73,
-   17.77
+   15.77
   ]
  },
  {
   "ma": "E3",
   "ten": "canh phai (sat xi-lanh)",
-  "dai_mm": 25.6,
+  "dai_mm": 27.6,
   "nhan": [
    28.91,
-   3.47
+   0.47
   ]
  },
  {
   "ma": "E4",
   "ten": "doan thang tiep tuyen",
-  "dai_mm": 25.96,
+  "dai_mm": 29.39,
   "nhan": [
-   16.68,
-   -13.68
+   14.27,
+   -14.59
   ]
  },
  {
   "ma": "E5",
-  "ten": "cung lien R12.7 (chan E1 -> trai -> day -> E4, gop E5-E7)",
-  "dai_mm": 41.39,
+  "ten": "cung lien R11.1 (chan E1 -> trai -> day -> E4, gop E5-E7)",
+  "dai_mm": 34.75,
   "nhan": [
-   -13.46,
-   -16.33
+   -13.87,
+   -13.98
   ]
  },
  {
   "ma": "E6",
-  "ten": "vanh om: R ngoai 11.11 / trong 9.61 quanh tam (-3.83, -4.79), thanh 1.5, sau 7.5 duoi mat tay thang",
-  "dai_mm": 37.01,
+  "ten": "vanh om: R ngoai 11.11 / trong 9.61 quanh tam (-3.83, -4.79), thanh 1.5, sau 4.5 duoi mat tay thang",
+  "dai_mm": 36.44,
   "nhan": [
-   -7.17,
-   -10.57
+   -8.7,
+   -9.25
   ]
  }
 ]

@@ -28,6 +28,7 @@ if P.get('fit_switch'):   # v3.6 (Tuan): tam ga chua tron cong tac (mep phai + d
     _S = P['sensor']; _sp = _S['place']
     _sx1 = xl + _sp['dx'] + _S['W']; _sy0 = yt + _sp['dy'] - _S['H']
     xr = max(xr, round(_sx1 + P['fit_switch'].get('margin', 0.0), 3)); y3 = min(y3, round(_sy0 - P['fit_switch'].get('margin', 0.0), 3))
+    if 'y3' in P['fit_switch']: y3 = min(y3, P['fit_switch']['y3'])   # v3.8 Tuan: keo dai E3 xuong cho de khong tho
 d = math.hypot(xr, y3); at = math.atan2(y3, xr) - math.acos(R / d)   # tiep tuyen tu chan E3, nhanh duoi
 a_top = math.pi - math.asin(min(y1 / R, 1.0))                        # cung gap do cao chan E1 (phia trai)
 a0, a1 = math.radians(L['a0']), math.radians(L['a1'])
@@ -214,6 +215,10 @@ def base_cmds(A_, name, join_to=None):
         A_("solid.cylinder", diameter=BB['id'], height=ZS - bz0 + 0.2, base=[hb[0], hb[1], bz0 - 0.1], axis="Z", operation="cut", targets=[tg])
         A_("solid.cylinder", diameter=BB['cb_d'], height=BB['cb_depth'] + 0.1, base=[hb[0], hb[1], ZS - BB['cb_depth']], axis="Z", operation="cut", targets=[tg])
 base_cmds(A, "base", join_to="mount" if MG else None)
+BA = P.get('bump_A')   # v3.8: E2 lui 2 -> buou tron quanh A de om vai A2 + lo P1
+if BA:
+    A("solid.cylinder", diameter=BA['d'], height=(ZS if MG else Z1) - H, base=[pa[0], pa[1], H], axis="Z", **J)
+    A("solid.cylinder", diameter=SP['P1_hole_d'], height=bt + 0.2, base=[p1[0], p1[1], Z1 - 0.1], axis="Z", **C)
 
 raw = os.path.join(BUILD, 'mount.raw.stl').replace(os.sep, '/')
 raw_sp = os.path.join(BUILD, 'spacer.raw.stl').replace(os.sep, '/')
@@ -257,6 +262,9 @@ N_("solid.cylinder", diameter=SP['N_d'], height=S['N_stick_out'], base=[sx0 - S[
    axis="X", operation="new_body", body_name="N_nut_nhan")
 N_("appearance.assign", bodies=["S_cong_tac_chi_xem"], color="#333333", opacity=0.45)
 N_("appearance.assign", bodies=["N_nut_nhan"], color="#00e676")
+if BA:
+    cyl("T2_buou_vien_quanh_A", BA['d'], (ZS if MG else Z1) - H, H, pa, "#3a8fd8")
+    cutN(SP['P1_hole_d'], bt + 0.2, Z1 - 0.1, p1, ["T2_buou_vien_quanh_A"])
 DEN = "DE_tang_tren_gop_lien_ga" if MG else "DE_cong_tac_khoi_tren"
 base_cmds(N_, DEN); N_("appearance.assign", bodies=[DEN], color="#00acc1")
 cN += [c for c in cmd if c['command'] in ('note.add', 'parameters.add')]
