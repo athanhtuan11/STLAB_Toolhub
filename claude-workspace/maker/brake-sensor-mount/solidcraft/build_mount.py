@@ -38,10 +38,11 @@ if AL:
     # v3.3 (Tuan): 1 cung tron lien tu chan E1 -> mep trai (cach E1 'offset' mm) -> day (y = bottom_y) -> tiep tuyen E4
     # tam (ac_x, ac_y), ban kinh ar: ac_x - ar = xl - off ; ac_y - ar = yb ; qua (xl, y1)
     off, yb = AL['offset_from_E1'], AL['bottom_y']
+    xla = AL.get('ref_xl', xl)                             # v3.13: cung + vanh giu theo E1 cu khi E1 doi
     def _arc(yb_):
         u, w = off, y1 - yb_                               # (u - ar)^2 + (w - ar)^2 = ar^2
         ar_ = (u + w) - math.sqrt((u + w) ** 2 - (u * u + w * w))
-        return ar_, (xl - off + ar_, yb_ + ar_)
+        return ar_, (xla - off + ar_, yb_ + ar_)
     ar, ac = _arc(yb)
     # v3.6 (Tuan): cung phai om tron vau L2 + tai L (ban kinh wrap_L) - ha day toi khi du
     if AL.get('wrap_L'):
@@ -54,10 +55,11 @@ if AL:
     pc = lambda a: [round(ac[0] + ar * math.cos(a), 3), round(ac[1] + ar * math.sin(a), 3)]
     dx_, dy_ = xr - ac[0], y3 - ac[1]; dd = math.hypot(dx_, dy_)
     at2 = math.atan2(dy_, dx_) - math.acos(ar / dd)        # tiep tuyen tu chan E3, nhanh duoi
-    a_e1 = math.atan2(y1 - ac[1], xl - ac[0])              # diem chan E1 tren cung
+    a_e1 = math.atan2(y1 - ac[1], xla - ac[0])              # diem chan E1 tren cung
     # cung chay theo chieu kim dong ho tu at2 (duoi phai) qua day, trai, len toi chan E1
     angs_ = np.linspace(at2, a_e1 - 2 * math.pi, 90) if a_e1 > at2 else np.linspace(at2, a_e1, 90)
     poly = [[xl, yt], [xr, yt], [xr, y3]] + [pc(a) for a in angs_]
+    if abs(xla - xl) > 1e-6: poly.append([round(xl, 3), round(y1, 3)])   # chan E1 noi ngang toi diem dau cung
     at = at2
 else:
     poly = [[xl, yt], [xr, yt], [xr, y3]]                                # E2, E3
@@ -75,7 +77,7 @@ if AL:   # v3.4 (Tuan): vanh om chay HET cung vien E5 (chan E1 -> qua tru L -> E
     _xr0, _y30 = P['right_x'], yt - P['E3']                # goc chan E3 cu -> diem dau vanh E6a cu
     _d0 = math.hypot(_xr0 - lac[0], _y30 - lac[1])
     _a0 = math.atan2(_y30 - lac[1], _xr0 - lac[0]) - math.acos(lar / _d0)
-    _ae = math.atan2(y1 - lac[1], xl - lac[0])
+    _ae = math.atan2(y1 - lac[1], xla - lac[0])
     l_angs = np.linspace(_a0, _ae - 2 * math.pi if _ae > _a0 else _ae, 90)
     ri = lar - lw
     lpc = lambda a: [round(lac[0] + lar * math.cos(a), 3), round(lac[1] + lar * math.sin(a), 3)]
