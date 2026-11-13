@@ -49,6 +49,7 @@ ok("flower" in t.get("instructions", "") and "hoa" in t.get("instructions", ""),
 ok("one at a time" in t.get("instructions", "").lower(), "chu de moi van day TUNG TU MOT")
 bad = cur.set_topic(nick, topic="", words=[])
 ok(bad.get("ok") is False, "chu de rong -> tu choi")
+cur.mark(nick, 'one', True)   # 2026-11-13: tu chi 'taught' khi be that su noi
 cur.end_session(nick, 200, 5)
 
 d = json.loads(data.read_text(encoding="utf-8"))

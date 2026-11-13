@@ -37,7 +37,7 @@ ok(r.get("allowed") and r.get("mode") == "free", "co free-lesson.on -> mode free
 ok(r.get("new") == [] and "Today's words, in EXACTLY this order" not in ins, "free: server khong ep danh sach tu")
 ok("change_topic" in ins and "yourself" in ins, "free: Gemini tu chon chu de + luu qua change_topic")
 ok("Toddler mode" not in ins and "at most 2 sentences" not in ins, "free: khong gan khung buoi / gioi han cau (khong rang buoc)")
-ok("Hints from Tuan" in ins and "count numbers in order from one" in ins, "free: goi y cua Tuan chi la goi y")
+ok("Hints from Tuan" in ins and "count in order from one" in ins, "free: goi y cua Tuan chi la goi y")
 
 # 2b. khong gioi han so buoi/ngay (Tuan 2026-11-08)
 for k in range(4):

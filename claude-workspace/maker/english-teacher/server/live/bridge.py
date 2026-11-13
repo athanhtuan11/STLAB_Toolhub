@@ -122,7 +122,7 @@ import voiceid  # noqa: E402
 from duplex import BargeGate  # noqa: E402
 import ota_logic  # noqa: E402
 import music  # noqa: E402
-from intent import parse_volume_intent, music_requested  # noqa: E402
+from intent import parse_volume_intent, music_requested, words_said  # noqa: E402
 from tuning import Tuning, Agc, BOUNDS  # noqa: E402
 
 
@@ -1040,6 +1040,14 @@ class Session:
     def log_turn(self):
         if self.user_txt.strip():
             self.child_turns = getattr(self, "child_turns", 0) + 1   # dem luot be noi (tinh buoi hoc)
+            # 2026-11-13: tu be that su noi (chi input_transcription, khong tinh loi co) -> mark dung
+            if self.nick or self.dev_mode:
+                try:
+                    for w in words_said(self.user_txt, CUR.session_vocab(self.nick, self.device_id or None)):
+                        CUR.mark(self.nick, w, True, device=self.device_id or None)
+                        log(f"[WORD-LOCAL] {w}")
+                except Exception as e:
+                    log(f"[WORD-LOCAL] loi {e}")
         if self.reply_txt.strip():
             self.m_replies.append(self.reply_txt.strip())
         if self.first_ms is not None:

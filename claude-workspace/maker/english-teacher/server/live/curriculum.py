@@ -42,8 +42,8 @@ TODDLER_MODE = ("Toddler mode (ages 2-3), session frame about 3-4 minutes, READ 
                 "NO ACTIONS: never ask the child to clap, wave, touch, show fingers, point or look for things - small children "
                 "cannot follow actions; only listen and say the word. "
                 "SINGLE WORDS (Tuan 2026-11-08): for ages 2-3 say English as SINGLE WORDS only, one word at a time "
-                "(e.g. 'One!', 'One finger!' is too long -> 'One!'), never English sentences or phrases; the Vietnamese around "
-                "it stays very short (e.g. 'Số một là One! Con nói theo cô: One!'). "
+                "(e.g. '<word>!' - a whole English phrase is too long), never English sentences or phrases; the Vietnamese around "
+                "it stays very short (e.g. '<Vietnamese meaning> là <word>! Con nói theo cô: <word>!', <word> = current lesson word). "
                 "Rules: at most 2 short sentences per turn; answer what the child said FIRST, teach after; ONE request per "
                 "turn (say the word after you, no open questions); after inviting STOP and wait; teach only the goal words. "
                 + PRONUNCIATION + " Warm, slow, sing-song voice; Vietnamese support is fine.")
@@ -354,7 +354,7 @@ class Curriculum:
         if new:
             s = (f"THIS SESSION'S ONLY NEW WORD(S): {', '.join(new)}. This is the default plan for today: even if the lesson above "
                  "lists more words, teach just these, one at a time. Review words only briefly, one at a time. "
-                 "Each of your turns has at most 3 short pieces in total (e.g. 'Con giỏi quá! One! Đến lượt con!').")
+                 "Each of your turns has at most 3 short pieces in total (e.g. 'Con giỏi quá! <word>! Đến lượt con!').")
         else:
             s = ("There is NO new roadmap word in this session. Default plan: only play and gently review these words, "
                  f"one at a time: {', '.join(review) or 'none'}. Keep each turn to at most 3 short pieces.")
@@ -380,7 +380,7 @@ class Curriculum:
                  "and sentence length; vary between sessions and weave in known words for review. To save new words for later "
                  "review, call change_topic with your topic and words (up to 3 per call). "
                  "Hints from Tuan (not rules): ages 2-3 learn well by hearing a word and saying it after you, they cannot "
-                 "follow actions yet; count numbers in order from one. Stay child-safe; never end the session yourself.\n")
+                 "follow actions yet; in a numbers topic count in order from one. Stay child-safe; never end the session yourself.\n")
         # 2026-11-08 Tuan 'khong rang buoc': bai tu do KHONG gan TODDLER_MODE/OLDER_MODE (khung buoi + gioi han cau)
         return {"allowed": True, "learner": learner, "lesson_id": L.get("lesson"), "instructions": instr, "review": [],
                 "week": L.get("week"), "new": [], "daily": [], "song": None, "mode": "free"}
@@ -594,6 +594,19 @@ class Curriculum:
             self._save(d)
             return out
 
+    def session_vocab(self, nickname, device=None):
+        """Tu cua buoi hien tai (tu moi + tu bai hien tai) de bridge tu nhan tu be noi."""
+        L = self._load()["learners"].get(normalize(nickname)) if nickname else None
+        if L is None and device:
+            L = (self._load().get("devices") or {}).get(device)
+        if not isinstance(L, dict):
+            return []
+        out = list(L.get("cur_new", []))
+        lid = L.get("lesson")
+        if lid in self.lessons:
+            out += [w for w in self.lessons[lid]["vocab"] if w not in out]
+        return out
+
     def last_words(self, nickname):
         """Vai tu be dat gan nhat (chi tu vung) - de nhac lai dau buoi sau."""
         L = self._load()["learners"].get(normalize(nickname)) or {}
@@ -622,9 +635,7 @@ class Curriculum:
             L = p[0]
             ok = self._meaningful(seconds, turns)
             if ok:
-                self._count(L)
-                if self.roadmap(self._age(L)) and not L.get("cur_from_mark"):
-                    self._teach(L, L.get("cur_new", []))
+                self._count(L)   # 2026-11-13: chi dem buoi; tu chi 'taught' khi be that su noi (mark)
                 self._save(d)
             return {"counted": ok}
 
@@ -637,9 +648,7 @@ class Curriculum:
             L = p[0]
             age = self._age(L)
             if self._meaningful(seconds, turns):
-                self._count(L)
-                if self.roadmap(age) and not L.get("cur_from_mark"):
-                    self._teach(L, L.get("cur_new", []))
+                self._count(L)   # 2026-11-13: khong con tu dong day cur_new khi ket thuc buoi
             if self.roadmap(age):
                 self._migrate(L, age)
                 rest = [w for w in self.word_sequence(age) if w not in L["taught"]]

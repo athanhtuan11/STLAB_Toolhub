@@ -55,3 +55,14 @@ def music_requested(texts, titles):
             if len(w) >= 4 and w in ws:
                 return True
     return False
+
+
+def words_said(text, vocab):
+    """Tu vung (co the la tu ghep) xuat hien trong loi be noi; khong phan biet hoa thuong/dau cau, chap nhan so nhieu (s/es)."""
+    t = " " + " ".join(norm_words(text)) + " "
+    out = []
+    for w in vocab or []:
+        k = " ".join(norm_words(w))
+        if k and w not in out and any(f" {k}{suf} " in t for suf in ("", "s", "es")):
+            out.append(w)
+    return out

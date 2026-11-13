@@ -41,6 +41,7 @@ ok("ONLY NEW WORD(S): one." in r["instructions"] and "ONLY NEW WORD(S): one, two
 cur.end_session(nick, 20, 0)                       # bam thu ngan
 r = cur.start(nick)
 ok(r.get("new") == ["one"], f"bam thu ngan -> khong tien, khong lui: van 'one' ({r.get('new')})")
+cur.mark(nick, 'one', True)                     # 2026-11-13: tu chi 'taught' khi be that su noi (mark)
 cur.end_session(nick, 200, 5)                      # buoi that -> 'one' da day
 
 clock[0] += dt.timedelta(hours=2)
@@ -48,6 +49,7 @@ cur = mk()                                         # KHOI DONG LAI may chu
 r = cur.start(nick)
 ok(r.get("new") == ["two"], f"khoi dong lai -> hoc TIEP 'two', khong ve dau ({r.get('new')})")
 ok("one" in r.get("review", []) and len(r.get("review", [])) <= 2, f"on toi da 2 tu, co 'one' ({r.get('review')})")
+cur.mark(nick, 'two', True)   # mark 'two' (cur_new) nhung khong sang 'three' vi 'three' do mark dua giua buoi
 cur.end_session(nick, 200, 5)
 
 clock[0] = dt.datetime(2026, 11, 10, 8, 0)         # thu Ba cung tuan: 2026-11-12 BO han muc tuan -> van co tu moi
@@ -63,6 +65,7 @@ cur.end_session(nick, 200, 5)                      # 'five' dua giua buoi nhung 
 clock[0] = dt.datetime(2026, 11, 10, 17, 0)
 r = cur.start(nick)
 ok(r.get("new") == ["five"], f"tu dua giua buoi chua hoc -> buoi sau day lai 'five', khong bo qua ({r.get('new')})")
+cur.mark(nick, 'five', True)                    # be that su noi 'five' -> da day
 cur.end_session(nick, 200, 5)                      # buoi dai -> 'five' (tu dau buoi) tinh da day
 r = cur.start(nick)
 ok(r.get("new") == ["hello"], f"buoi sau hoc tiep 'hello' ({r.get('new')})")
@@ -87,6 +90,7 @@ ok(r.get("new") == ["two"], f"ho so cu da dat 'one' -> tiep 'two' ({r.get('new')
 dev = "aa:bb:cc:dd:ee:ff"
 r = cur.start(None, device=dev)
 ok(r.get("allowed") and r.get("new") == ["one"], f"may moi, khong biet danh -> 'one' ({r.get('new')})")
+cur.mark(None, 'one', True, device=dev)
 cur.end_session(None, 200, 5, device=dev)
 clock[0] += dt.timedelta(hours=2)
 cur = mk()
