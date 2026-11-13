@@ -17,6 +17,8 @@ K = math.hypot(PA['px'][0] - BB['px'][0], PA['px'][1] - BB['px'][1]) / P['C_mm']
 H = P['standoff']; T = P['plate_t']; Z1 = H + T                                    # tam ga z H..Z1
 mm = lambda p: [round((p[0] - OX) / K, 3), round((OY - p[1]) / K, 3)]
 pa, hb = mm(PA['px']), mm(BB['px'])
+hb = [round(hb[0] + BB.get('dx_mm', 0), 3), round(hb[1] + BB.get('dy_mm', 0), 3)]   # Tuan chinh vi tri B
+bz0 = BB.get('z0', 0.0)   # mat duoi tru B (am = xuong thap hon mat tay thang)
 pol = lambda r, a: [round(r * math.cos(a), 3), round(r * math.sin(a), 3)]
 
 r_in = L['R'] + L['gap']; R = r_in + L['wall']          # R = ban kinh vien day (E5 + E6), tam D
@@ -46,8 +48,8 @@ A("sketch.line", points=lip, closed=True); A("sketch.finish")
 A("solid.extrude", distance=L['depth'] + H + 0.5, **J)
 A("solid.cylinder", diameter=PA['shoulder_d'], height=H + 0.5, base=[pa[0], pa[1], 0], axis="Z", **J)
 A("solid.cylinder", diameter=PA['d'], height=PA['len'] + 0.5, base=[pa[0], pa[1], -PA['len']], axis="Z", **J)
-A("solid.cylinder", diameter=BB['od'], height=H + 0.5, base=[hb[0], hb[1], 0], axis="Z", **J)
-A("solid.cylinder", diameter=BB['id'], height=Z1 + 0.2, base=[hb[0], hb[1], -0.1], axis="Z", **C)
+A("solid.cylinder", diameter=BB['od'], height=H - bz0 + 0.5, base=[hb[0], hb[1], bz0], axis="Z", **J)
+A("solid.cylinder", diameter=BB['id'], height=Z1 - bz0 + 0.2, base=[hb[0], hb[1], bz0 - 0.1], axis="Z", **C)
 
 # --- cong tac den phanh: up mat P1 xuong tam ga, nut N chia -X (ve E1) ---
 S = P['sensor']; SP = S['place']
@@ -92,7 +94,7 @@ for e in EDGES:
     A("note.add", anchor=[e['nhan'][0], e['nhan'][1], Z1],
       text="%s %s%s" % (e['ma'], e['ten'], (" | %.1f mm" % e['dai_mm']) if e['dai_mm'] else ""))
 A("note.add", anchor=[pa[0], pa[1], -PA['len']], text="A chot dac O%.1f dai %.1f | vai O%.1f cao %.1f" % (PA['d'], PA['len'], PA['shoulder_d'], H))
-A("note.add", anchor=[hb[0], hb[1], Z1], text="B tru rong O%.1f / lo O%.1f (oc M4) | cao %.1f" % (BB['od'], BB['id'], H))
+A("note.add", anchor=[hb[0], hb[1], Z1], text="B tru rong O%.1f / lo O%.1f (oc M4) | cao %.1f" % (BB['od'], BB['id'], H - bz0))
 A("note.add", anchor=[0, 0, Z1], text="D tam dai oc (goc toa do) | tam ga day %.1f, mat duoi cao %.1f" % (T, H))
 A("note.add", anchor=[(pa[0] + hb[0]) / 2, (pa[1] + hb[1]) / 2 + 2, Z1], text="C = A-B %.1f mm" % P['C_mm'])
 A("note.add", anchor=[p1[0], p1[1], Z1], text="P1 lo chot cong tac O%.1f" % SP['P1_hole_d'])
