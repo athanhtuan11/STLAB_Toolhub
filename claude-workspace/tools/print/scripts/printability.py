@@ -103,6 +103,9 @@ def _co_do_duoi(tri, nz, idx, gap, khoi=2000):
     a, v0, v1, d00, d01, d11, den = a[hop], v0[hop], v1[hop], d00[hop], d01[hop], d11[hop], den[hop]
     za, zb, zc = up[hop][:, 0, 2], up[hop][:, 1, 2], up[hop][:, 2, 2]
     ra = []
+    # gioi han moi mang (m, n) ~ 4M phan tu (~32 MB float64): luoi huu co nhieu mat ngua (70k) truoc day
+    # voi khoi=2000 tao mang 1 GB x ~10 -> ngon > 15 GB RAM, treo may (2026-11-14)
+    khoi = max(1, min(khoi, 4_000_000 // max(len(a), 1)))
     for s in range(0, len(idx), khoi):
         cen = tri[idx[s:s + khoi]].mean(axis=1)                        # (m, 3)
         v2 = cen[:, None, :2] - a[None, :, :2]                         # (m, n, 2)
