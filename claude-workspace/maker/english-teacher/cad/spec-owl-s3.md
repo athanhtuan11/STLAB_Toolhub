@@ -61,3 +61,7 @@ Hệ lắp ráp như build_owl.py (mm, +Z lên, mặt trước −Y, mặt ráp 
 - Nút nói (0, 0,37, 133,6) và 2 vol-pod: **giữ nguyên** như bản A1S.
 - **`shell-back` 4 khối**: gate đòi mỗi chi tiết in đúng 1 khối. Tìm các khối rời (thường là ray/gân/boss còn sót của ray Audio Kit,
   hoặc ray mới không chạm vách) → xóa phần thừa của bản A1S, ray/gân mới phải **ăn vào vách ≥ 1,0 mm** (boolean union) để liền 1 khối.
+
+## Thay thế 2026-11-12 (Tuan) – ghi đè các dòng 31, 57, 61 ở trên
+- Chỉ 1 nút nói (GPIO 1, đỉnh đầu). **Bỏ** `vol_up`/`vol_down` và cụm vol-pod; vỏ lưng liền.
+- Bo ESP32-S3 **nằm ngang** dọc trục Y, cáp USB-C **thẳng** ra lưng (không dùng cáp bẻ góc). Vị trí cuối xem README mục "Bản ESP32-S3".
