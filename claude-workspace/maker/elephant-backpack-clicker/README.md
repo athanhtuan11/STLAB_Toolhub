@@ -6,6 +6,12 @@ Tuan yêu cầu (2026-11-14): đổi chữ ELEPHANT → **STLAB**, một mẫu �
 ## Trạng thái
 - 2026-11-14: 2 balô mới xong, cắt lớp WARN (support có sẵn từ thiết kế gốc), **chờ in thử**.
 
+## File để duyệt / đo
+- **SolidCraft (đo kích thước):** `blender/out/elephant-backpack.sc` – 4 component xếp hàng: balô gốc | STLAB | SMALL TREE | voi (mm).
+- **Blender:** `blender/elephant-backpack.blend` (cùng 4 chi tiết, đơn vị mm).
+- **Ảnh:** `blender/out/review/` – `0-overview.png` + ảnh cận tấm nhãn từng balô.
+- Sinh lại: `blender -b -P blender/export_review.py -- <thư mục dự án>` rồi `python blender/export_cad.py blender/out`.
+
 ## Cách sửa
 - Chữ gốc: chữ nổi 0,7 mm, đỉnh phẳng z 34,18 mm, trên tấm nhãn cong nhẹ (z 33,34–33,55 mm), tấm phẳng 30,9 × 10 mm.
 - `blender/make_cutter.py`: khối cắt có đáy = mặt tấm nhãn nội suy từ lưới (−0,02 mm) → gọt sạch chữ cũ, tấm nhãn gần như nguyên.
