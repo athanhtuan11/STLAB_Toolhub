@@ -1,4 +1,6 @@
 # elephant-backpack-clicker
 
-Mẫu cộng đồng "Elephant clicky balô" (Tuan tải `Elephant_stls.zip`, 2026-11-14), chỉ đổi chữ trên tấm nhãn balô.
-Nguồn gốc giữ trên máy, không commit (STL bị .gitignore). Dựng lại: xem README.md mục "Dựng lại".
+Mẫu cộng đồng "Elephant clicky balô" (MakerWorld), chỉ đổi chữ trên tấm nhãn balô, **giữ màu tác giả**.
+Làm trên 3mf gốc (`community/makerworld-elephant-backpack-clicker/Elephant.3mf`): thay chi tiết chữ, không gọt lưới.
+Thông tin màu/chi tiết: `source/color-map.json`. Quy trình: README.md mục "Cách làm lại".
+File sinh (3mf, sc, blend, png, stl) chỉ trên máy; kiểm chúng tồn tại trước khi báo Tuan.

@@ -1,0 +1,19 @@
+{
+ "text": "STLAB",
+ "font": "C:/Windows/Fonts/ariblk.ttf",
+ "width": 26.67,
+ "cap_height": 5.5,
+ "faces": 1342,
+ "bbox": [
+  [
+   -13.336,
+   -17.093,
+   -26.735
+  ],
+  [
+   13.336,
+   -16.424,
+   -21.235
+  ]
+ ]
+}

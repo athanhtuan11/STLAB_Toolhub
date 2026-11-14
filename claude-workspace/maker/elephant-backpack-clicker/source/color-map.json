@@ -1,0 +1,877 @@
+{
+ "source": "Downloads/Elephant.3mf (MakerWorld, Bambu Studio)",
+ "filaments": [
+  {
+   "slot": 1,
+   "color": "#FFFFFF",
+   "profile": "Bambu PLA Matte @BBL A1"
+  },
+  {
+   "slot": 2,
+   "color": "#161616",
+   "profile": "Bambu PLA Matte @BBL A1"
+  },
+  {
+   "slot": 3,
+   "color": "#9B9EA0",
+   "profile": "Bambu PLA Matte @BBL A1"
+  }
+ ],
+ "process": {
+  "print_settings_id": "0.20mm Standard @BBL A1",
+  "layer_height": "0.2",
+  "enable_support": "1",
+  "support_type": "tree(manual)"
+ },
+ "backpack_parts": [
+  {
+   "object_id": "7",
+   "name": "backpack.stl_1",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 5782,
+   "bbox_object": [
+    [
+     22.23,
+     -0.17,
+     -28.61
+    ],
+    [
+     28.09,
+     14.58,
+     -8.35
+    ]
+   ],
+   "size": [
+    5.86,
+    14.75,
+    20.25
+   ]
+  },
+  {
+   "object_id": "8",
+   "name": "backpack.stl_2",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 5784,
+   "bbox_object": [
+    [
+     -28.09,
+     -0.17,
+     -28.61
+    ],
+    [
+     -22.23,
+     14.58,
+     -8.35
+    ]
+   ],
+   "size": [
+    5.86,
+    14.75,
+    20.25
+   ]
+  },
+  {
+   "object_id": "9",
+   "name": "backpack.stl_3",
+   "extruder": 1,
+   "color": "#FFFFFF",
+   "n_tri": 4834,
+   "bbox_object": [
+    [
+     23.01,
+     1.03,
+     -27.51
+    ],
+    [
+     29.98,
+     13.38,
+     -9.81
+    ]
+   ],
+   "size": [
+    6.97,
+    12.35,
+    17.71
+   ]
+  },
+  {
+   "object_id": "10",
+   "name": "backpack.stl_4",
+   "extruder": 1,
+   "color": "#FFFFFF",
+   "n_tri": 4834,
+   "bbox_object": [
+    [
+     -29.98,
+     1.03,
+     -27.51
+    ],
+    [
+     -23.01,
+     13.38,
+     -9.81
+    ]
+   ],
+   "size": [
+    6.97,
+    12.35,
+    17.71
+   ]
+  },
+  {
+   "object_id": "11",
+   "name": "backpack.stl_5",
+   "extruder": 1,
+   "color": "#FFFFFF",
+   "n_tri": 26914,
+   "bbox_object": [
+    [
+     -12.92,
+     4.71,
+     21.48
+    ],
+    [
+     12.92,
+     7.5,
+     33.3
+    ]
+   ],
+   "size": [
+    25.84,
+    2.78,
+    11.82
+   ]
+  },
+  {
+   "object_id": "12",
+   "name": "backpack.stl_6",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 12078,
+   "bbox_object": [
+    [
+     8.76,
+     3.83,
+     22.83
+    ],
+    [
+     13.5,
+     8.38,
+     25.93
+    ]
+   ],
+   "size": [
+    4.74,
+    4.54,
+    3.1
+   ]
+  },
+  {
+   "object_id": "13",
+   "name": "backpack.stl_7",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 12220,
+   "bbox_object": [
+    [
+     -13.5,
+     3.83,
+     22.83
+    ],
+    [
+     -8.76,
+     8.38,
+     25.93
+    ]
+   ],
+   "size": [
+    4.74,
+    4.54,
+    3.1
+   ]
+  },
+  {
+   "object_id": "14",
+   "name": "backpack.stl_8",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 30494,
+   "bbox_object": [
+    [
+     -9.63,
+     4.05,
+     28.61
+    ],
+    [
+     9.63,
+     8.16,
+     34.05
+    ]
+   ],
+   "size": [
+    19.26,
+    4.12,
+    5.44
+   ]
+  },
+  {
+   "object_id": "15",
+   "name": "backpack.stl_9",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 35718,
+   "bbox_object": [
+    [
+     -18.67,
+     -15.44,
+     -17.63
+    ],
+    [
+     18.67,
+     -12.57,
+     19.7
+    ]
+   ],
+   "size": [
+    37.34,
+    2.87,
+    37.34
+   ]
+  },
+  {
+   "object_id": "16",
+   "name": "backpack.stl_10",
+   "extruder": 1,
+   "color": "#FFFFFF",
+   "n_tri": 6196,
+   "bbox_object": [
+    [
+     -16.13,
+     -16.45,
+     -29.73
+    ],
+    [
+     16.13,
+     -12.84,
+     -18.27
+    ]
+   ],
+   "size": [
+    32.27,
+    3.61,
+    11.46
+   ]
+  },
+  {
+   "object_id": "17",
+   "name": "backpack.stl_11",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 8660,
+   "bbox_object": [
+    [
+     24.87,
+     3.49,
+     -6.97
+    ],
+    [
+     27.39,
+     10.92,
+     0.43
+    ]
+   ],
+   "size": [
+    2.52,
+    7.43,
+    7.4
+   ]
+  },
+  {
+   "object_id": "18",
+   "name": "backpack.stl_12",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 8692,
+   "bbox_object": [
+    [
+     23.18,
+     3.49,
+     2.09
+    ],
+    [
+     26.25,
+     10.92,
+     9.43
+    ]
+   ],
+   "size": [
+    3.07,
+    7.43,
+    7.34
+   ]
+  },
+  {
+   "object_id": "19",
+   "name": "backpack.stl_13",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 8684,
+   "bbox_object": [
+    [
+     19.71,
+     3.49,
+     10.96
+    ],
+    [
+     23.99,
+     10.92,
+     17.91
+    ]
+   ],
+   "size": [
+    4.27,
+    7.43,
+    6.95
+   ]
+  },
+  {
+   "object_id": "20",
+   "name": "backpack.stl_14",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 8670,
+   "bbox_object": [
+    [
+     -27.39,
+     3.49,
+     -6.97
+    ],
+    [
+     -24.87,
+     10.92,
+     0.43
+    ]
+   ],
+   "size": [
+    2.52,
+    7.43,
+    7.4
+   ]
+  },
+  {
+   "object_id": "21",
+   "name": "backpack.stl_15",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 8690,
+   "bbox_object": [
+    [
+     -26.25,
+     3.49,
+     2.09
+    ],
+    [
+     -23.18,
+     10.92,
+     9.43
+    ]
+   ],
+   "size": [
+    3.07,
+    7.43,
+    7.34
+   ]
+  },
+  {
+   "object_id": "22",
+   "name": "backpack.stl_16",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 8680,
+   "bbox_object": [
+    [
+     -23.99,
+     3.49,
+     10.96
+    ],
+    [
+     -19.71,
+     10.92,
+     17.91
+    ]
+   ],
+   "size": [
+    4.27,
+    7.43,
+    6.95
+   ]
+  },
+  {
+   "object_id": "23",
+   "name": "backpack.stl_17",
+   "extruder": 1,
+   "color": "#FFFFFF",
+   "n_tri": 5322,
+   "bbox_object": [
+    [
+     -26.38,
+     -13.99,
+     -10.45
+    ],
+    [
+     26.38,
+     -6.81,
+     26.49
+    ]
+   ],
+   "size": [
+    52.75,
+    7.18,
+    36.94
+   ]
+  },
+  {
+   "object_id": "24",
+   "name": "backpack.stl_18",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 1370,
+   "bbox_object": [
+    [
+     -26.4,
+     -6.81,
+     -33.09
+    ],
+    [
+     26.4,
+     -1.47,
+     26.49
+    ]
+   ],
+   "size": [
+    52.81,
+    5.34,
+    59.58
+   ]
+  },
+  {
+   "object_id": "25",
+   "name": "backpack.stl_19",
+   "extruder": 1,
+   "color": "#FFFFFF",
+   "n_tri": 82720,
+   "bbox_object": [
+    [
+     -26.4,
+     -1.48,
+     -33.09
+    ],
+    [
+     26.4,
+     17.09,
+     26.49
+    ]
+   ],
+   "size": [
+    52.81,
+    18.57,
+    59.58
+   ]
+  },
+  {
+   "object_id": "26",
+   "name": "backpack.stl_20",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 444,
+   "bbox_object": [
+    [
+     12.0,
+     -17.09,
+     -26.16
+    ],
+    [
+     15.41,
+     -16.25,
+     -21.81
+    ]
+   ],
+   "size": [
+    3.4,
+    0.84,
+    4.36
+   ]
+  },
+  {
+   "object_id": "27",
+   "name": "backpack.stl_21",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 2616,
+   "bbox_object": [
+    [
+     -26.4,
+     -13.99,
+     -33.09
+    ],
+    [
+     26.4,
+     -6.81,
+     -10.45
+    ]
+   ],
+   "size": [
+    52.81,
+    7.18,
+    22.64
+   ]
+  },
+  {
+   "object_id": "28",
+   "name": "backpack.stl_22",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 5980,
+   "bbox_object": [
+    [
+     24.91,
+     -6.07,
+     -6.69
+    ],
+    [
+     27.84,
+     -2.26,
+     -1.78
+    ]
+   ],
+   "size": [
+    2.93,
+    3.81,
+    4.91
+   ]
+  },
+  {
+   "object_id": "29",
+   "name": "backpack.stl_23",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 1036,
+   "bbox_object": [
+    [
+     26.52,
+     -4.93,
+     -6.46
+    ],
+    [
+     29.19,
+     -3.41,
+     -1.87
+    ]
+   ],
+   "size": [
+    2.67,
+    1.52,
+    4.59
+   ]
+  },
+  {
+   "object_id": "30",
+   "name": "backpack.stl_24",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 2700,
+   "bbox_object": [
+    [
+     26.33,
+     -5.53,
+     -9.83
+    ],
+    [
+     28.26,
+     -2.81,
+     -3.88
+    ]
+   ],
+   "size": [
+    1.92,
+    2.72,
+    5.95
+   ]
+  },
+  {
+   "object_id": "31",
+   "name": "backpack.stl_25",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 70518,
+   "bbox_object": [
+    [
+     -27.36,
+     -6.77,
+     -34.05
+    ],
+    [
+     27.36,
+     -4.86,
+     27.44
+    ]
+   ],
+   "size": [
+    54.72,
+    1.91,
+    61.49
+   ]
+  },
+  {
+   "object_id": "32",
+   "name": "backpack.stl_26",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 70540,
+   "bbox_object": [
+    [
+     -27.36,
+     -3.43,
+     -34.05
+    ],
+    [
+     27.36,
+     -1.52,
+     27.44
+    ]
+   ],
+   "size": [
+    54.72,
+    1.91,
+    61.49
+   ]
+  },
+  {
+   "object_id": "33",
+   "name": "backpack.stl_27",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 72210,
+   "bbox_object": [
+    [
+     -27.2,
+     -5.28,
+     -33.89
+    ],
+    [
+     27.2,
+     -3.05,
+     27.27
+    ]
+   ],
+   "size": [
+    54.4,
+    2.24,
+    61.17
+   ]
+  },
+  {
+   "object_id": "34",
+   "name": "backpack.stl_28",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 650,
+   "bbox_object": [
+    [
+     -15.4,
+     -17.09,
+     -26.16
+    ],
+    [
+     -12.58,
+     -16.25,
+     -21.81
+    ]
+   ],
+   "size": [
+    2.82,
+    0.84,
+    4.36
+   ]
+  },
+  {
+   "object_id": "35",
+   "name": "backpack.stl_29",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 340,
+   "bbox_object": [
+    [
+     -11.72,
+     -17.09,
+     -26.16
+    ],
+    [
+     -8.98,
+     -16.44,
+     -21.81
+    ]
+   ],
+   "size": [
+    2.74,
+    0.65,
+    4.36
+   ]
+  },
+  {
+   "object_id": "36",
+   "name": "backpack.stl_30",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 560,
+   "bbox_object": [
+    [
+     -8.22,
+     -17.09,
+     -26.16
+    ],
+    [
+     -5.4,
+     -16.45,
+     -21.81
+    ]
+   ],
+   "size": [
+    2.82,
+    0.64,
+    4.36
+   ]
+  },
+  {
+   "object_id": "37",
+   "name": "backpack.stl_31",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 586,
+   "bbox_object": [
+    [
+     -4.54,
+     -17.09,
+     -26.16
+    ],
+    [
+     -1.26,
+     -16.45,
+     -21.81
+    ]
+   ],
+   "size": [
+    3.28,
+    0.64,
+    4.36
+   ]
+  },
+  {
+   "object_id": "38",
+   "name": "backpack.stl_32",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 580,
+   "bbox_object": [
+    [
+     -0.52,
+     -17.09,
+     -26.16
+    ],
+    [
+     3.0,
+     -16.45,
+     -21.81
+    ]
+   ],
+   "size": [
+    3.52,
+    0.64,
+    4.36
+   ]
+  },
+  {
+   "object_id": "39",
+   "name": "backpack.stl_33",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 484,
+   "bbox_object": [
+    [
+     3.62,
+     -17.09,
+     -26.19
+    ],
+    [
+     7.25,
+     -16.45,
+     -21.81
+    ]
+   ],
+   "size": [
+    3.64,
+    0.64,
+    4.38
+   ]
+  },
+  {
+   "object_id": "40",
+   "name": "backpack.stl_34",
+   "extruder": 3,
+   "color": "#9B9EA0",
+   "n_tri": 600,
+   "bbox_object": [
+    [
+     7.87,
+     -17.09,
+     -26.16
+    ],
+    [
+     11.32,
+     -16.44,
+     -21.81
+    ]
+   ],
+   "size": [
+    3.46,
+    0.65,
+    4.36
+   ]
+  }
+ ],
+ "elephant": {
+  "1": {
+   "n_tri": 572624,
+   "bbox": [
+    [
+     -15.473,
+     -14.504,
+     -11.216
+    ],
+    [
+     15.473,
+     14.504,
+     11.216
+    ]
+   ],
+   "paint": {
+    "0C": 545342,
+    "8": 17947,
+    "4": 9276,
+    "80C1": 3,
+    "0C45": 3,
+    "0C81": 3,
+    "0C88A": 2,
+    "80C0C2": 2,
+    "0C89": 2,
+    "40C9": 2,
+    "00C5": 1,
+    "40C0CA": 1
+   },
+   "n_paint": 572592,
+   "extruder_default": 3
+  }
+ }
+}
