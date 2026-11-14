@@ -1,0 +1,149 @@
+{
+ "variant": "s3",
+ "wall": 2.4,
+ "speaker_pocket_d": 52.6,
+ "grille_hole_d": 2.8,
+ "mic_hole_d": 2.0,
+ "m3_clear_d": 3.4,
+ "m3_nut_s": 5.8,
+ "button_cap_d": 50.0,
+ "button_hole_d": 50.8,
+ "diffuser_t": 0.8,
+ "vent_w": 2.0,
+ "speakers": [
+  {
+   "center": [
+    0.0,
+    -42.8,
+    48.0
+   ],
+   "axis": "y"
+  }
+ ],
+ "pcb_center": [
+  0.0,
+  8.700000000000003,
+  34.0
+ ],
+ "pcb_box": [
+  29.0,
+  72.0,
+  16.0
+ ],
+ "amp_center": [
+  0.0,
+  -12.0,
+  18.0
+ ],
+ "amp_box": [
+  22.0,
+  22.0,
+  10.0
+ ],
+ "mic": {
+  "center": [
+   0.0,
+   -34.5,
+   115.4
+  ],
+  "box": [
+   17.0,
+   8.0,
+   17.0
+  ],
+  "holes": 3,
+  "hole_x": [
+   -1.5,
+   0.0,
+   1.5
+  ],
+  "hole_z": 116.4,
+  "axis": "y",
+  "tube": {
+   "od": 7.0,
+   "id": 3.0,
+   "gap_to_wall": 0.3,
+   "wall_y": -45.4
+  },
+  "seal": {
+   "type": "labyrinth",
+   "depth": 1.0,
+   "clearance": 0.15
+  }
+ },
+ "pcb_usb": {
+  "center": [
+   0.0,
+   44.7,
+   34.0
+  ],
+  "dir": "+y"
+ },
+ "cable_slot": {
+  "side": "back",
+  "w": 14.0,
+  "h": 9.0,
+  "r": 2.0,
+  "center": [
+   0.0,
+   50.7,
+   34.0
+  ],
+  "wall_t": 11.4
+ },
+ "split_plane_y": 0.37,
+ "grille_holes_per_speaker": 85,
+ "speaker_dims": [
+  52.0,
+  26.0
+ ],
+ "speaker_clamp": {
+  "flange_t": 5.0,
+  "gasket_t": 1.5,
+  "body_d_max": 39.0,
+  "ring_t": 2.4,
+  "ring_id": 42.0,
+  "gasket_locked": 1.2,
+  "gasket_slot_kept": true,
+  "petg_spring": {
+   "n": 4,
+   "t": 1.2,
+   "len": 8.5,
+   "width": 3.5,
+   "preload": 1.5,
+   "bump_r": 1.0
+  },
+  "bayonet": {
+   "n": 3,
+   "twist": 30.0,
+   "pin_w": 4.0,
+   "pin_h": 1.1,
+   "pin_t": 1.5,
+   "sleeve_clr": 0.25,
+   "pin_clr": 0.25,
+   "groove_clr": 0.3,
+   "lip_pre": 0.3,
+   "out_gap": 0.3,
+   "sleeve_t": 2.4
+  }
+ },
+ "mx": {
+  "hole": 14.0,
+  "socket_depth": 8.58,
+  "stem_cross_l": 4.19,
+  "stem_cross_w": 1.25,
+  "keys": [
+   {
+    "name": "talk",
+    "gpio": 1,
+    "axis": "z",
+    "pos": [
+     0.0,
+     0.37,
+     133.6
+    ],
+    "flange_over": 3.6
+   }
+  ]
+ }
+}

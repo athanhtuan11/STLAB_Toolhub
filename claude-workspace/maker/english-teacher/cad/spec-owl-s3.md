@@ -46,3 +46,18 @@ Dáng giữ nguyên (Cú Bông A, đã duyệt) – chỉ đổi bố trí bên 
 - Không sửa `build_owl.py`, `gate_owl.py`, `out/`, `print/print.yaml`, `print/plates/` (bản A1S giữ nguyên).
 - Không đổi số khe/vít/loa/switch ngoài spec; số nào thiếu nguồn → để rộng + ghi `TODO` trong README, không đoán chặt.
 - Không commit.
+
+## Bổ sung 2026-11-12 – vị trí chốt (Claude, trả lời ESCALATE của Codex)
+Hệ lắp ráp như build_owl.py (mm, +Z lên, mặt trước −Y, mặt ráp y = split_plane_y 0,37). Tâm hộp = tâm khối giữ chỗ trong params.
+- **Loa** (axis y, mặt ra −Y): tâm **(0, −41,6, 48)** = belly.front_y −58,5 + vành 2,4 + ron 1,5 + nửa loa 13. Thân loa tới y ≈ −28,6.
+  Được dời theo y ±3 để khớp vành/bụng thật – báo số cuối trong params.
+- **Ampli** `amp_box` [22, 22, 10] (x, y, z) nằm ngang trên khay, tâm **(0, −12, 18)** (dưới-sau loa, cách tâm loa ~ 41 mm);
+  được dời trong x ±15, y −20..0, z 12..26 nếu chạm vỏ. `amp-tray.stl` là khay 2 ray chữ U kẹp mép PCB + tai bắt vào sàn/vỏ trong.
+- **Bo ESP32-S3** `pcb_box` [29, 16, 72] (x rộng, y dày, z dài), dựng đứng, **USB xuống**, tâm **(0, 24, 56)** → z 20..92
+  (dưới vol-pod z ≥ 93), y 16..32, x ±14,5. Ray giữ 2 cạnh PCB gắn vào `shell-back`. Ghi TODO README: dùng **cáp USB-C bẻ góc 90°**
+  vì đầu cắm sát sàn (z ≈ 5–20) rồi ra khe cáp lưng.
+- **Mic** `mic.box` [17, 8, 17] (x, y, z), tâm x = 0, **z = 120**, áp vách trong trán của `shell-front` (tâm y = mặt trong vách + 1,0 ron + 4).
+  3 lỗ Ø2 trên vách tại cùng x/z (lưới ±4). Cách tâm loa ≈ 72 mm.
+- Nút nói (0, 0,37, 133,6) và 2 vol-pod: **giữ nguyên** như bản A1S.
+- **`shell-back` 4 khối**: gate đòi mỗi chi tiết in đúng 1 khối. Tìm các khối rời (thường là ray/gân/boss còn sót của ray Audio Kit,
+  hoặc ray mới không chạm vách) → xóa phần thừa của bản A1S, ray/gân mới phải **ăn vào vách ≥ 1,0 mm** (boolean union) để liền 1 khối.

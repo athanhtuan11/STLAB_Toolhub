@@ -1,7 +1,7 @@
 # Gate CAD vo Cu Bong BAN S3 (Claude viet 2026-11-12, executor KHONG sua).
 # Chay: "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b --python-exit-code 1 -P gate_owl_s3.py -- out-s3
 # Ban S3 (Tuan 2026-11-12): ESP32-S3 N16R8 + INMP441 + MAX98357A, CHI 1 LOA 4 ohm 3 W (O52 x 26, mep 5) o BUNG quay ra truoc,
-# mic o TRAN (xa loa, ngan kin), 3 switch MX: noi GPIO1 (dinh dau), vol+ GPIO40 / vol- GPIO39 (lung, vol-pod).
+# mic o TRAN (xa loa, ngan kin), 1 switch MX: noi GPIO1 (dinh dau); 2026-11-12 bo 2 nut am luong + vol-pod.
 import bpy, bmesh, json, sys, math, itertools
 from pathlib import Path
 from mathutils import Vector, Matrix
@@ -224,7 +224,7 @@ if bay and bz_m and rg_m and len(sps) == 1:
     else:
         print(f"ngam xoay: lap duoc (chieu {'+' if ok_dir > 0 else '-'}, {tw:.0f} do)")
 
-# ---- 3 switch MX (fit-library catpaw), GPIO ban S3
+# ---- switch MX (1 nut noi) (fit-library catpaw), GPIO ban S3
 mx = p.get("mx")
 if not mx:
     fails.append("params can mx")

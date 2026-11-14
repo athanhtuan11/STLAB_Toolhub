@@ -104,3 +104,49 @@ Số lắp ghép **lấy từ fit-library** (`tools/model-study/fit-library/fits
 - `out/owl-assembly.sc`: mở bằng SolidCraft, 24 chi tiết, mỗi chi tiết một component **đúng vị trí lắp**, đơn vị mm (gồm loa và bo mạch giữ chỗ `*-dummy`, không in).
 - Sinh lại: chạy `build_owl.py` (Blender) rồi `python export_cad.py out`.
 - Chi tiết là thân lưới: đo bằng Measure, bắt đỉnh/cạnh. Vành loa và vòng ép có thể chuyển sang mặt phẳng/trụ thật bằng Convert Mesh để đo dễ hơn.
+
+## Bản ESP32-S3 (1 loa ở bụng, mic ở trán chính giữa, 1 nút, 2026-11-12)
+
+Sinh bằng `build_owl_s3.py` (Blender 5.2 bpy), xuất ra `out-s3/` (STL in, `asm/` vị trí lắp, `owl-params.json`, `owl-assembly.sc`, ảnh
+`owl-preview/exploded/front/back.png`). Gate: `gate_owl_s3.py`. Bàn in: `print/print-s3.yaml` → `print/plates-s3/` (PETG Bambu A1 0,20, KHÔNG support).
+Quyết định Tuan 2026-11-12: chỉ 1 nút (nói, GPIO 1), cáp USB-C thẳng, chưa có TPU → mọi thứ in PETG, không dùng tấm EVA.
+
+### Vị trí cuối (mm; +Z lên, mặt trước −Y, mặt ráp y = 0,37)
+| Linh kiện | Tâm | Hộp giữ chỗ | Ghi chú |
+|---|---|---|---|
+| Loa Ø52 × 26 | (0; −42,8; 48) | trục Y, mặt ra −Y | mặt loa ÁP SÁT vành; vành/vòng ép đặt ở y −41,6 (như bản A1S, chỉ đổi trục) |
+| Ampli MAX98357A | (0; −12; 18) | 22 × 22 × 10 (x, y, z) | khay `amp-tray.stl` đặc từ sàn z = 4 lên đáy module z = 12,8; 2 vách bên cao 9 |
+| Bo ESP32-S3 | (0; 8,7; 34) | 29 × 72 × 16 (x, y, z) | NẰM NGANG, dọc theo Y; mặt cổng USB y = 44,7 hướng +y (lưng), đầu trước y = −27,3 |
+| Lỗ cáp USB-C | (0; 50,7; 34) | 14 × 9, R2 | xuyên phần đặc sau mái hốc dài 11,4; thẳng hàng cổng USB (lệch 0) |
+| Mic INMP441 | (0; −34,5; 115,4) | 17 × 8 × 17 | trán, x = 0 giữa 2 mắt trên mỏ, hướng −Y; 3 lỗ Ø2 tại x −1,5/0/1,5, z 116,4 (ống dẫn âm cao hơn tâm module 1,0 để tránh mặt sau mỏ) |
+| Nút nói MX (GPIO 1) | (0; 0,37; TALK_RIM) | | đỉnh đầu dưới nắp Ø50, giữ nguyên |
+
+**Bo S3 nằm ngang:** hốc đúng bo (x ±14,8, z 25,8..42,2) khoét vào phần đặc sau; mái hốc hình chữ A (dốc 45°, đỉnh cao hơn chân mái 8,2) nên in không support.
+Hai vách ray (x ±14,8..17,2, dựng từ sàn) + 2 gác đỡ cạnh PCB (x 12,5..14,8, z 24..25,8, dày 1,8) + 2 khối chặn đầu trước (không USB). Lắp bo từ trên xuống trước khi đóng 2 nửa.
+Bo chạm sàn hốc ở phần đặc phía sau. Hộp 29 × 72 × 16 là chỗ chừa, gồm cả chân header: TODO đo lại bo clone N16R8 thật.
+
+**Mic + ống dẫn âm (PETG, không ron):** nắp kẹp `mic-clamp.stl` trượt từ DƯỚI vào 2 rãnh (tường rãnh dựng từ mặt ráp tới vách trán, in đứng), giữ bằng ma sát (khe 0,15/bên).
+Tấm kẹp ép module từ phía sau; phía trước module có yoke + ỐNG DẪN ÂM OD 7 / ID 3 dài từ mặt module tới vách. Đầu ống cắm vào GỜ LÕM Ø7,3 sâu 1,0 trên mặt trong vách trán
+(`mic.seal {labyrinth, depth 1.0, clearance 0.15}`), cách đáy gờ 0,3. 3 lỗ Ø2 xuyên vách trong lòng gờ (2 lỗ biên dời vào ±1,5 nên 3 lỗ nối thành rãnh dài ~5).
+Muốn kín hơn: chấm keo nóng hoặc silicone quanh mép ống. Mỏ khoét nhẹ mặt sau chỗ ống đi qua (`beaknotch`).
+TODO: kiểm mặt lỗ âm + hướng header của INMP441 thật (ống giả định lỗ âm ở giữa module); nắp kẹp chỉ giữ bằng ma sát, tụt thì chấm keo nóng.
+
+**Loa không ron (PETG):** mép loa ì thẳng vào vành. Vòng ép ngàm xoay (3 chốt, xoay 30°, số của bản A1S) có 4 LẪY LÒ XO PETG
+(`speaker_clamp.petg_spring {n 4, t 1.2, len 8.5, width 3.5, preload 1.5}`) đè lên mặt sau mép loa: thanh dốc 45° rồi đoạn phẳng, gờ tròn R1 ở đầu tự do.
+Mô hình lắp (`asm/speaker-ring.stl`) vẽ lẫy ở trạng thái đã ép; STL in (`speaker-ring.stl`) là trạng thái tự do. Rãnh ron giữ nguyên (`gasket_slot_kept: true`):
+có TPU thì in ron Ø52/Ø46 × 2 TPU 95A (cuộn ngoài, không qua AMS lite), lẫy vẫn đè được. TODO: thử lực lẫy trên loa thật (tính tay ~1–3 N mỗi lẫy).
+
+**Khay ampli:** dán keo nóng xuống sàn (Tuan chọn), không cần vít.
+
+### Vật tư (bản S3)
+1 switch MX (nút nói, GPIO 1) + nắp `button-cap`, keo nóng (khay ampli, nắp mic nếu lỏng), cáp USB-C THẲNG, loa 4 Ω 3 W Ø52 × 26, ESP32-S3 N16R8, INMP441, MAX98357A.
+Không còn tấm EVA. Đã bỏ: 2 nút âm lượng (GPIO 39/40), vol-pod, nắp mx-cap-vol, lỗ cửa sổ ở lưng (vỏ lưng liền, giữ khe nhiệt).
+
+### Bàn in S3 (PASS cả 6, không support)
+A 1.5 h 23 g; B 4.6 h 143 g; C 5.1 h 169 g; D 1.2 h 37 g; E 0.7 h 24 g; F 0.1 h 2 g.
+
+### Chưa chắc / TODO
+- Kích thước thật bo clone ESP32-S3 N16R8 2 cổng USB-C (đang chừa 72 × 29 × 16).
+- Hướng lỗ âm INMP441; kín tiếng mic chỉ bằng gờ lõm PETG (chưa đo).
+- Lẫy lò xo PETG: lực thực tế + nứt mỏi chưa thử.
+- Lệch spec đã báo: mic z 115,4 / y −34,5 (trần hốc trán z = 124; vách trán cong dạng mái 45°); loa y −42,8 (mặt loa ì vành).

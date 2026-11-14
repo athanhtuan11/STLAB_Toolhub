@@ -1,0 +1,20 @@
+# english-teacher (Cu Bong) - ban in S3 (ESP32-S3). STL sinh bang cad/build_owl_s3.py (Blender), chep sang print/stl-s3/.
+# Cat lop: python ../../tools/print/scripts/slice.py print/print-s3.yaml   (STL da dung huong in)
+machine: Bambu Lab A1 0.4 nozzle
+filament: Bambu PETG Basic @BBL A1
+stl: stl-s3
+plates_dir: plates-s3
+common: {sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
+plates:
+  # mau MO: vanh loa (mat luoi up xuong) + vong ep mep loa + khay ampli
+  A_speakers: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%"}, stl: ["speaker-bezel.stl", "speaker-ring.stl", "amp-tray.stl"]}
+  # mau MO: nua truoc (mat rap xuong) + kep mic
+  B_shell_front: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "15%"}, stl: ["shell-front.stl", "mic-clamp.stl"]}
+  # mau MO: nua sau (mat rap xuong)
+  C_shell_back: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "15%"}, stl: ["shell-back.stl"]}
+  # mau KEM: bung (khoet lo vanh loa) + vanh mat + tam de
+  D_cream: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%", brim_type: outer_only, brim_width: "5"}, stl: ["belly.stl", "eye-ring.stl", "base-plate.stl"]}
+  # mau BO: mo + nap nut dau (MX)
+  E_butter: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%"}, stl: ["beak.stl", "button-cap.stl"]}
+  # PETG TRANG tu nhien: tam tan sang mat LED
+  F_white: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "2", sparse_infill_density: "20%"}, stl: ["eye-diffuser.stl"]}
