@@ -83,9 +83,10 @@ Tụ mắc **song song** với nguồn của ampli, đặt **sát chân VIN – 
 
 | Chức năng | Chân |
 |---|---|
-| Nói (chạm = bắt đầu/kết thúc, chạm lúc cô nói = ngắt, giữ 5 s = ngủ) | nút **BOOT** trên bo (GPIO0) – không cần hàn |
-| Âm lượng + | GPIO40 → nút → GND (tùy chọn) |
-| Âm lượng − | GPIO39 → nút → GND (tùy chọn) |
+| Nói (chạm = bắt đầu/kết thúc, chạm lúc cô nói = ngắt, giữ 5 s = ngủ) | **switch MX: GPIO1 → nút → GND** (nút trên đỉnh đầu vỏ S3) |
+| Nói (thử trên bàn, chạy song song) | nút **BOOT** trên bo (GPIO0) – không cần hàn; lắp vào vỏ thì BOOT bị che |
+| Âm lượng + | GPIO40 → nút → GND (tùy chọn, vỏ S3 KHÔNG có nút này – chỉnh âm lượng bằng giọng nói) |
+| Âm lượng − | GPIO39 → nút → GND (tùy chọn, vỏ S3 KHÔNG có nút này) |
 
 Không dùng GPIO35, 36, 37 (PSRAM của bo N16R8 chiếm).
 
