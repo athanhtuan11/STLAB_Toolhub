@@ -1,0 +1,12 @@
+{
+ "text": "SMALL TREE",
+ "font": "C:/Windows/Fonts/impact.ttf",
+ "width": 26.031538418498858,
+ "height": 4.8,
+ "z0": 32.942315673828126,
+ "top_z": 34.183677673339844,
+ "solvers": [
+  "EXACT",
+  "EXACT"
+ ]
+}

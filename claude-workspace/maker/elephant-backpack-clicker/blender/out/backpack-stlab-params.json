@@ -1,0 +1,12 @@
+{
+ "text": "STLAB",
+ "font": "C:/Windows/Fonts/ariblk.ttf",
+ "width": 26.672823275851215,
+ "height": 5.5,
+ "z0": 32.942315673828126,
+ "top_z": 34.183677673339844,
+ "solvers": [
+  "EXACT",
+  "EXACT"
+ ]
+}
