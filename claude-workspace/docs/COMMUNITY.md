@@ -54,6 +54,8 @@ Sau mỗi lần `apply`/`rollback`, cập nhật cột "Ghim" và "Kiểm tra".
   (có thể kèm `prompt_text`) nếu đồng ý: tắt bằng `DISABLE_TELEMETRY=1` (đã đặt trong `.mcp.json`).
   Addon tự kiểm tra bản mới từ nhánh `main`: tắt bằng `BLENDERMCP_NO_UPDATE_CHECK=1`.
   Có tích hợp API ngoài (Poly Haven, Sketchfab, Hyper3D/fal.ai, Poly Pizza, "premium").
+  Bản 8f40787 (ghim 2026-11-15) thêm World Labs (`api.worldlabs.ai`, chỉ chạy khi bật trong addon + có API key riêng)
+  và sự kiện telemetry "look"/chỉnh tay – vẫn tắt bởi `DISABLE_TELEMETRY=1` (code nhận "1").
   `BLENDER_MCP_SAFE_MODE=1` bật sandbox giới hạn module/builtin.
 - **ha-mcp**: cần token admin Home Assistant. Có tool xóa entity/device, restart, ghi/xóa file.
   Có chế độ read-only (`/readonly`), bật/tắt từng tool. Không có telemetry (theo README).
