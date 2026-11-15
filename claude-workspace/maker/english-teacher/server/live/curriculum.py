@@ -240,6 +240,11 @@ class Curriculum:
             L["sessions"] = L["sessions"][-50:]
             L["switch_n"] = 0
             age = self._age(L)
+            pin = self._pin_of(d, device)
+            if pin:   # 2026-11-15: nguoi lon ghim bai tren web -> day bai ghim toi khi bo ghim (thang bai tu do + lo trinh)
+                out = self._build_pinned(L, learner, age, pin)
+                self._save(d)
+                return out
             if self.roadmap(age):
                 return self._start_roadmap(d, L, learner, now, age)
             self._save(d)
@@ -266,6 +271,106 @@ class Curriculum:
             instr += "\n" + FLEXIBLE
             instr += "\n" + (TODDLER_MODE if toddler else OLDER_MODE)
             return {"allowed": True, "learner": learner, "lesson_id": lid, "instructions": instr, "review": review}
+
+    # ---------- Ghim bai theo may (web /curriculum, 2026-11-15) ----------
+    def resolve_lesson(self, lesson_id):
+        """Khoa bai day du ('s1-u3-colours') hoac id unit ngan ('s1-u3') -> khoa bai; khong co -> ValueError."""
+        lid = str(lesson_id or "").strip().lower()
+        if lid in self.lessons:
+            return lid
+        if lid:
+            for i in self.order:
+                if i.startswith(lid + "-"):
+                    return i
+        raise ValueError("khong co bai %r" % lesson_id)
+
+    def pin(self, device, lesson_id):
+        lid = self.resolve_lesson(lesson_id)
+        dev = str(device or "").strip()
+        if not dev:
+            raise ValueError("thieu may")
+        with self.lock:
+            d = self._load()
+            if not isinstance(d.get("pins"), dict):
+                d["pins"] = {}
+            d["pins"][dev] = {"lesson_id": lid, "at": self.now().isoformat(timespec="minutes")}
+            self._save(d)
+        return lid
+
+    def unpin(self, device):
+        with self.lock:
+            d = self._load()
+            if isinstance(d.get("pins"), dict) and d["pins"].pop(str(device or "").strip(), None) is not None:
+                self._save(d)
+                return True
+        return False
+
+    def _pin_of(self, d, device):
+        if not device or not isinstance(d.get("pins"), dict):
+            return None
+        p = d["pins"].get(str(device).strip())
+        lid = p.get("lesson_id") if isinstance(p, dict) else None
+        return lid if lid in self.lessons else None
+
+    def pin_info(self, device):
+        d = self._load()
+        lid = self._pin_of(d, device)
+        return dict(d["pins"][str(device).strip()]) if lid else None
+
+    def progress(self, nickname, device=None):
+        """{lesson_id: {taught, total}} - so tu cua bai da nam trong L['taught']; chua co ho so -> {}."""
+        d = self._load()
+        p = self._prof(d, nickname, device)
+        if p is None:
+            return {}
+        L = p[0]
+        self._migrate(L, self._age(L))   # chi tren ban doc trong bo nho, khong luu
+        taught = set(L.get("taught", []))
+        return {i: {"taught": sum(1 for w in self.lessons[i]["vocab"] if w in taught),
+                    "total": len(self.lessons[i]["vocab"])} for i in self.order}
+
+    def _next_pinned(self, L, lid, age):
+        return [w for w in self.lessons[lid]["vocab"] if w not in L["taught"]][:1 if age <= 3 else 2]
+
+    def _build_pinned(self, L, learner, age, lid):
+        """Chi dan day bai ghim: tu moi = vocab bai chua trong taught; het thi on lai tu bai ghim. Khong doi lo trinh con tro."""
+        self._migrate(L, age)
+        vocab = self.lessons[lid]["vocab"]
+        new = self._next_pinned(L, lid, age)
+        known = [w for w in vocab if w in L["taught"] and w not in new]
+        fail = [w for w in known if w in L.get("failed", []) and w not in L.get("passed", [])]
+        review = (fail + [w for w in known if w not in fail])[:2 if new else 4]
+        L["cur_new"], L["cur_from_mark"], L["lesson"] = list(new), False, lid
+        goals = list(dict.fromkeys(review + new)) or list(vocab)
+        last = list(L.get("last_activities", []))
+        instr = self.lessons[lid]["instructions"]
+        instr += "\nAn adult pinned this lesson on the web: teach ONLY this lesson now (it stays until the adult unpins it)."
+        instr += "\n" + self._guide_new(new, review)
+        if goals:
+            plan, act = self.today_plan(lid, review, last, words=goals, toddler=age <= 3)
+            L["last_activities"] = (last + [act])[-3:]
+            instr += "\n" + plan
+        instr += "\n" + (TODDLER_MODE if age <= 3 else OLDER_MODE)
+        out = {"allowed": True, "learner": learner, "lesson_id": lid, "instructions": instr, "review": review,
+               "new": list(new), "pinned": True}
+        if not new:
+            out["mode"] = "review"
+        return out
+
+    def pinned_instructions(self, nickname=None, device=None):
+        """Chi dan bai ghim de DAY NGAY giua buoi (web ghim luc may dang hoc): khong them buoi, khong dem gio. None neu khong ghim."""
+        with self.lock:
+            d = self._load()
+            lid = self._pin_of(d, device)
+            if not lid:
+                return None
+            p = self._prof(d, nickname, device, create=True)
+            if p is None:
+                return None
+            L, key, is_nick = p
+            out = self._build_pinned(L, key if is_nick else "device", self._age(L), lid)
+            self._save(d)
+            return out
 
     @staticmethod
     def _age(L):
@@ -577,14 +682,16 @@ class Curriculum:
             if w in L.get("cur_new", []):
                 self._teach(L, [w])       # dung hay sai deu tinh la da day (sai thi van o failed de on)
                 age = self._age(L)
-                if (not self._free() and self.roadmap(age)
+                pin = self._pin_of(d, device)
+                if ((pin or (not self._free() and self.roadmap(age)))
                         and all(x in L["taught"] for x in L["cur_new"])):
                     # 2026-11-12: hoc xong dot tu moi -> dua dot ke tiep ngay (be hoc lau thi duoc nhieu tu)
-                    nxt = self._next_new(L, age)
+                    nxt = self._next_pinned(L, pin, age) if pin else self._next_new(L, age)
                     L["cur_new"] = list(nxt)
                     L["cur_from_mark"] = True   # dot dua giua buoi: chi tinh da day khi co mark_word (khong tinh luc ket thuc)
                     if nxt:
-                        L["week"], L["lesson"] = self._word_row(age, nxt[0])
+                        if not pin:   # bai ghim: giu nguyen bai, khong nhay theo lich tuan
+                            L["week"], L["lesson"] = self._word_row(age, nxt[0])
                         out["next_words"] = list(nxt)
                         out["instructions"] = (
                             f"Well done. When the child is ready, the NEXT new word(s): {', '.join(nxt)} "

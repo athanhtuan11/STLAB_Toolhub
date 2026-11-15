@@ -124,6 +124,7 @@ import ota_logic  # noqa: E402
 import music  # noqa: E402
 from intent import parse_volume_intent, music_requested, words_said  # noqa: E402
 from tuning import Tuning, Agc, BOUNDS  # noqa: E402
+import curriculum_web  # noqa: E402
 
 
 def _voice_enabled():
@@ -407,6 +408,39 @@ def device_nick_save(dev, nick):
 
 
 _devices_load()    # device-id -> kieu mo dau lan truoc
+ACTIVE_SESSIONS = {}    # device-id (mac) -> Session dang mo (cho trang /curriculum day bai ngay giua buoi)
+
+
+def _devices_names():
+    """devices.json -> {mac: ten} cho trang /curriculum (chi doc, khong ghi)."""
+    try:
+        d = json.loads(DEVICES_PATH.read_text(encoding="utf-8"))
+        return {k: v for k, v in d.items() if isinstance(k, str) and isinstance(v, str)}
+    except Exception:
+        return {}
+
+
+class _WebLesson:
+    """Boc Session cho web: dang noi / cho gui thi dat pending_lesson (flush o turn_complete), ranh moi gui ngay."""
+
+    def __init__(self, ses):
+        self.ses = ses
+
+    async def send_lesson(self, text):
+        s = self.ses
+        if s.closed:
+            return
+        if s.pending_lesson or s.gen_open or s.tts_on or s.dev_on or not s.out_q.empty():
+            s.pending_lesson = (s.pending_lesson + "\n" + text) if s.pending_lesson else text
+            return
+        await s.send_lesson(text)
+
+
+def _active_session(mac):
+    ses = ACTIVE_SESSIONS.get(mac)
+    return _WebLesson(ses) if ses is not None and not ses.closed else None
+
+
 MUSIC_BARGE_MS = float(os.environ.get("STLAB_MUSIC_BARGE_MS", "500"))   # giong lien tuc luc nhac -> dung nhac
 MIC_BUF_MAX = 400          # khung 60 ms (~24 s) toi da dem truoc khi phien san sang
 
@@ -1163,7 +1197,7 @@ class Session:
 
     def begin_nick(self, nick):
         """Curriculum.start + chuan bi [lesson] (gui sau cau chao ngan, khong chan cau chao tu nhien)."""
-        res = CUR.start(nick)
+        res = CUR.start(nick, device=self.device_id or None)
         if res.get("allowed"):
             self.nick = res["learner"]
             device_nick_save(self.device_id, self.nick)
@@ -1553,10 +1587,14 @@ async def ws_handler(ws, pool):
     try:
         ses = Session(ws, pool)
         ses.device_id = ws_device_id(ws)
+        if ses.device_id:
+            ACTIVE_SESSIONS[ses.device_id] = ses
         await ses.run()
     except Exception as e:
         log(f"ket noi dong: {type(e).__name__}: {str(e)[:200]}")
     finally:
+        if ses is not None and ses.device_id and ACTIVE_SESSIONS.get(ses.device_id) is ses:
+            del ACTIVE_SESSIONS[ses.device_id]
         try:
             await ws.close()
         except Exception:
@@ -1610,6 +1648,9 @@ async def main():
     app = web.Application()
     app.router.add_route("*", "/xiaozhi/ota/", ota_handler)
     app.router.add_get("/xiaozhi/firmware/s3/{name}", firmware_handler)
+    curriculum_web.setup(app, cur=CUR, seed_dir=Path(os.environ.get("STLAB_CURRICULUM_SEED")
+                                                       or (SERVER.parent.parent.parent / "stlab" / "english-curriculum" / "seed")),
+                         devices=_devices_names, active=_active_session, log=log)
     runner = web.AppRunner(app, access_log=None)
     await runner.setup()
     await web.TCPSite(runner, "0.0.0.0", HTTP_PORT).start()

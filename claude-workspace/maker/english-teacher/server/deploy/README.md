@@ -52,3 +52,8 @@ Chép `setup-vps.sh` + `nginx-engteacher.conf` (đuôi dòng LF) lên VPS, chạ
 ## Gỡ
 - Máy lab: xóa `STLAB_PUBLIC_HOST` + `STLAB_TUNNEL_HOST` → về chế độ LAN; nạp lại bo `wifi-nvs.py --server 192.168.1.56`.
 - VPS: `rm /etc/nginx/sites-enabled/engteacher && systemctl reload nginx`; `userdel -r engtunnel`.
+
+## Trang giáo trình `/curriculum` (ghim bài cho Cú Bông)
+- Máy lab: đặt biến môi trường `STLAB_CURRICULUM_PIN` (mã PIN người lớn, không ghi vào file) rồi khởi động lại bridge; chưa đặt thì trang trả 503.
+- VPS: chép `nginx-engteacher.conf` lên `/etc/nginx/sites-available/engteacher` (có khối `location /curriculum`).
+- Áp dụng: `nginx -t && systemctl reload nginx`, rồi mở `https://engteacher.mamnoncaynho.com/curriculum`.

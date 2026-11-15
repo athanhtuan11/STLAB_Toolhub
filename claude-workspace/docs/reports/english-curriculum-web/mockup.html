@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><title>Mockup – Giáo trình Cú Bông</title>
+<link rel="stylesheet" href="../../../studio/toolhub/static/tokens.css">
+<link rel="stylesheet" href="../../../studio/toolhub/static/fonts.css">
+<style>
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);font-size:14px}
+.row{display:flex;gap:28px;padding:24px;align-items:flex-start}
+.phone{width:390px;min-height:820px;border:1px solid var(--line);border-radius:28px;overflow:hidden;background:var(--bg);position:relative}
+.cap{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
+.top{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.top b{font-size:16px}.muted{color:var(--muted)}
+.pad{padding:14px 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);padding:12px;margin-bottom:10px}
+.dev{border-color:var(--accent)}
+.dev h3{margin:0 0 6px;font-size:14px}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:12px;margin:2px 4px 2px 0}
+.pin{background:var(--highlight);color:var(--on-highlight);border-color:var(--highlight);font-weight:600}
+.auto{border-color:var(--accent);color:var(--accent)}
+.btn{display:inline-block;border:1px solid var(--line);border-radius:var(--r-control);padding:7px 12px;font-size:13px;margin-top:8px;margin-right:6px;background:var(--card);color:var(--text)}
+.btn.pri{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:600}
+.btn.full{display:block;text-align:center;padding:12px;font-size:15px}
+.tabs{display:flex;gap:6px;margin:4px 0 12px}.tab{flex:1;text-align:center;padding:8px 4px;border:1px solid var(--line);border-radius:var(--r-control);font-size:12px}
+.tab.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.unit{display:flex;gap:10px;align-items:flex-start}
+.num{width:30px;height:30px;border-radius:8px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;flex:none}
+.unit h4{margin:0;font-size:14px}.words{font-size:12px;color:var(--muted);margin-top:3px}
+.mark{margin-left:auto;font-size:11px;white-space:nowrap}
+.done{color:var(--ok)}.now{color:var(--highlight)}
+.unit-on{border-color:var(--highlight)}
+h2{font-size:18px;margin:4px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}td{border-top:1px solid var(--line);padding:6px 4px;vertical-align:top}td:first-child{color:var(--muted);width:90px}
+.sess{display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--line);font-size:13px}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--accent);border-radius:20px 20px 0 0;padding:18px 16px}
+.dim{position:absolute;inset:0;background:var(--bg);opacity:.7}
+.opt{border:1px solid var(--line);border-radius:var(--r-control);padding:10px;margin:8px 0;display:flex;gap:10px;align-items:center}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.radio{width:16px;height:16px;border-radius:50%;border:2px solid var(--muted);flex:none}.sel .radio{border:5px solid var(--accent)}
+.note{position:absolute;background:var(--highlight);color:var(--on-highlight);font-size:11.5px;padding:6px 8px;border-radius:6px;width:180px;line-height:1.35}
+</style></head><body>
+<div class="row">
+
+<!-- 1. Danh sach -->
+<div><div class="phone">
+  <div class="top"><b>🦉 Giáo trình Cú Bông</b><span class="muted">Seed</span></div>
+  <div class="pad">
+    <div class="card dev">
+      <h3>Máy “Cú Bông – Kay” <span class="pill" style="border-color:var(--ok);color:var(--ok)">● đang bật</span></h3>
+      <div>Đang dạy: <b>Seed 1 · U3 Colours</b></div>
+      <div style="margin-top:4px"><span class="pill pin">📌 Ghim bởi người lớn</span><span class="muted" style="font-size:12px">từ 15/11 09:30</span></div>
+      <span class="btn">Bỏ ghim → về lộ trình</span>
+    </div>
+    <div class="tabs"><div class="tab on">Seed 1<br><span class="muted">3–4 tuổi</span></div><div class="tab">Seed 2<br><span class="muted">4–5 tuổi</span></div><div class="tab">Seed 3<br><span class="muted">5–6 tuổi</span></div></div>
+    <div class="card"><div class="unit"><div class="num">1</div><div><h4>Hello! · Chào bạn</h4><div class="words">hello, bye-bye, yes, no, thank you</div></div><span class="mark done">✓ đã học</span></div></div>
+    <div class="card"><div class="unit"><div class="num">2</div><div><h4>My family · Gia đình</h4><div class="words">mummy, daddy, baby, grandma</div></div><span class="mark done">✓ đã học</span></div></div>
+    <div class="card unit-on"><div class="unit"><div class="num">3</div><div><h4>Colours · Màu sắc</h4><div class="words">red, blue, yellow, green</div></div><span class="mark now">📌 đang dạy</span></div></div>
+    <div class="card"><div class="unit"><div class="num">4</div><div><h4>Toys and numbers</h4><div class="words">ball, car, doll, one, two, three</div></div><span class="mark muted">2/6 từ</span></div></div>
+    <div class="card"><div class="unit"><div class="num">5</div><div><h4>Animals · Con vật</h4><div class="words">cat, dog, bird, fish</div></div><span class="mark muted">chưa học</span></div></div>
+    <div class="card"><div class="unit"><div class="num">6</div><div><h4>My body · Cơ thể</h4><div class="words">head, eyes, nose, mouth</div></div><span class="mark muted">chưa học</span></div></div>
+  </div>
+  <div class="note" style="right:-196px;top:70px">① Ô máy luôn ở đầu: đang dạy bài nào, ghim hay tự động, nút Bỏ ghim</div>
+  <div class="note" style="right:-196px;top:330px">② Tiến độ từng unit tính từ từ đã dạy của máy (con trỏ từ)</div>
+</div><div class="cap">1 · /curriculum – danh sách (điện thoại)</div></div>
+
+<div style="width:170px"></div>
+
+<!-- 2. Chi tiet -->
+<div><div class="phone">
+  <div class="top"><span class="muted">← Seed 1</span><span class="muted">U3 / 8</span></div>
+  <div class="pad">
+    <h2>Colours · Màu sắc</h2><div class="muted">Seed 1 · 3–4 tuổi · 8 buổi × 30 phút</div>
+    <span class="btn pri full" style="margin:12px 0">🦉 Cú Bông dạy bài này</span>
+    <div class="card"><table>
+      <tr><td>Từ Core</td><td>red · blue · yellow · green</td></tr>
+      <tr><td>Từ Plus</td><td>circle · star</td></tr>
+      <tr><td>Mẫu câu</td><td>It's red. · Red, please.</td></tr>
+      <tr><td>Bài hát</td><td>Chant “Red, red, touch something red”</td></tr>
+      <tr><td>Make &amp; Tell</td><td>Phân loại khối in 3D theo 4 màu → “It's blue.”</td></tr>
+      <tr><td>Bé làm được</td><td>Chỉ đúng 4 màu khi nghe · Nói tên màu một đồ vật</td></tr>
+    </table></div>
+    <div class="card"><b>Giáo án cho người dạy</b>
+      <div class="sess"><span>Chuẩn bị cho cả chủ đề</span><span class="muted">▸</span></div>
+      <div class="sess"><span>Buổi 1 · Gặp 4 màu</span><span class="muted">▸</span></div>
+      <div class="sess"><span>Buổi 2 · Magic bag</span><span class="muted">▸</span></div>
+      <div class="sess"><span>Buổi 3 · Đảo màu</span><span class="muted">▸</span></div>
+      <div class="sess"><span>… Buổi 8 · Make &amp; Tell</span><span class="muted">▸</span></div>
+    </div>
+  </div>
+  <div class="note" style="right:-196px;top:110px">③ Nút xanh lớn = ghim bài cho máy</div>
+  <div class="note" style="right:-196px;top:470px">④ Giáo án render từ lesson-plans/*.md, mỗi buổi gập/mở</div>
+</div><div class="cap">2 · /curriculum/s1-u3 – xem bài + giáo án</div></div>
+
+<div style="width:170px"></div>
+
+<!-- 3. Xac nhan -->
+<div><div class="phone">
+  <div class="top"><span class="muted">← Seed 1</span><span class="muted">U3 / 8</span></div>
+  <div class="pad"><h2>Colours · Màu sắc</h2><div class="muted">Seed 1 · 3–4 tuổi</div></div>
+  <div class="dim"></div>
+  <div class="sheet">
+    <b style="font-size:16px">Cú Bông dạy “Colours”?</b>
+    <div class="muted" style="margin:4px 0 6px">Chọn máy:</div>
+    <div class="opt sel"><div class="radio"></div><div>Cú Bông – Kay <span class="muted">· đang trong buổi học</span></div></div>
+    <div class="opt"><div class="radio"></div><div>Cú Bông – Lab 2 <span class="muted">· tắt</span></div></div>
+    <div class="card" style="font-size:12.5px;margin-top:10px">Máy đổi sang bài này <b>ngay</b> (đang học thì đổi giữa buổi) và các buổi sau vẫn dạy bài này tới khi bấm <b>Bỏ ghim</b>. Từ đã dạy vẫn ghi vào tiến độ.</div>
+    <span class="btn pri full">📌 Ghim bài cho Kay</span>
+    <span class="btn full" style="margin-top:6px">Hủy</span>
+  </div>
+  <div class="note" style="right:-196px;top:470px">⑤ Nhiều máy → chọn máy. Cần PIN để vào trang (web công khai)</div>
+</div><div class="cap">3 · xác nhận ghim</div></div>
+
+</div></body></html>

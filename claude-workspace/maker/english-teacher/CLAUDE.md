@@ -54,6 +54,11 @@ Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\
   (log `[NUT]` nhấn/nhả đủ 2 lượt, probe-log-nut.txt). Chuỗi thanh ghi ES8388 của firmware dò viết theo trí nhớ ESP-ADF – xiaozhi dùng driver riêng.
 
 ## Trạng thái
+- 2026-11-15: **Trang giáo trình `/curriculum`** trên bridge (`server/live/curriculum_web.py`, cổng 8003; ra ngoài
+  `https://engteacher.mamnoncaynho.com/curriculum`): xem 24 unit Seed + giáo án, **ghim bài theo máy** (`Curriculum.pin`, lưu
+  `learners.json` khóa `pins`) tới khi Bỏ ghim; đang trong buổi thì đổi bài ngay (`ACTIVE_SESSIONS`). Bé vẫn xin đổi bằng giọng
+  trong buổi; buổi sau về bài ghim. PIN = biến môi trường `STLAB_CURRICULUM_PIN` (chưa đặt → 503). Gate `server/test_curriculum_web.py`.
+  Bật: xem `server/deploy/README.md`. Chưa thử trên mạch thật (gửi bài giữa buổi chờ `turn_complete`).
 - 2026-11-12: **Lộ trình = giáo trình Seed** (Tuan chọn thay 12 bài cũ): `lessons-seed/` (24 bài + ROADMAP.md) sinh từ
   `stlab/english-curriculum/seed/units.yaml` bằng `seed/export_device.py` – sửa units.yaml rồi chạy lại, không sửa tay.
   2–3 tuổi học Seed 1; 4–5 tuổi Seed 2 → Seed 3. `bridge.py` mặc định `lessons-seed`, quay lại bài cũ: `STLAB_LESSONS_DIR=..\lessons`.
