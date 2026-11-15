@@ -21,6 +21,9 @@ TRUOC khi cat (printability.py, 2026-10-23 - Tuan in that thay phan NHO RA khong
 - ban co chi tiet nho (chan < brim_contact_max_mm2) hoac cao manh -> bat brim (tru khi print.yaml da khai brim_type
   khac auto_brim).
 Nguong: thresholds.yaml muc `print:`.
+Mau ban in (3MF mang mau thiet ke, khong phai dat lai trong Bambu Studio), uu tien cao -> thap:
+  1. `color: "#RRGGBB"` trong khai bao ban; 2. `colors: {ten.stl: "#RRGGBB"}` cap du an trong print.yaml;
+  3. `<stl_dir>/colors.json` = {ten.stl: "#RRGGBB"} (khoa bat dau `_` la ghi chu). 1 ban chi 1 mau (han che AMS).
 """
 
 from __future__ import annotations
@@ -103,6 +106,55 @@ def phang(idx, sub, ten):
 def ghi(d, p):
     p.write_text(json.dumps(d, indent=1), encoding="utf-8")
     return str(p)
+
+
+def mau_ban(cfg, ten_ban, b, stl_ban, stl_dir) -> str | None:
+    """Resolve and validate the design color for one plate."""
+    import re
+    if "color" in b:
+        mau = b["color"]
+        if not isinstance(mau, str) or not re.fullmatch(r"#[0-9A-Fa-f]{6}", mau):
+            raise ValueError(f"ban {ten_ban}: mau khong hop le {mau!r}")
+        return mau.upper()
+    p_mau = Path(stl_dir) / "colors.json"
+    file_mau = json.loads(p_mau.read_text(encoding="utf-8")) if p_mau.exists() else {}
+    mau_stl = set()
+    colors = cfg.get("colors") or {}
+    for f in stl_ban:
+        ten = Path(f).name
+        if ten in colors:
+            mau = colors[ten]
+        elif ten in file_mau and not ten.startswith("_"):
+            mau = file_mau[ten]
+        else:
+            continue
+        if not isinstance(mau, str) or not re.fullmatch(r"#[0-9A-Fa-f]{6}", mau):
+            raise ValueError(f"ban {ten_ban}: mau khong hop le {mau!r}")
+        mau_stl.add(mau.upper())
+    if len(mau_stl) > 1:
+        ds = ", ".join(sorted(mau_stl))
+        raise ValueError(f"ban {ten_ban}: {len(mau_stl)} mau ({ds}) \u2013 tach ban theo mau (1 ban 1 mau, han che AMS)")
+    return next(iter(mau_stl), None)
+
+
+def dat_mau_3mf(path, mau):
+    if not mau or not path.exists():
+        return
+    with zipfile.ZipFile(path) as z:
+        cur = json.loads(z.read("Metadata/project_settings.config")).get("filament_colour")
+    if cur and [str(x).upper() for x in cur[:1]] == [mau]:
+        return  # CLI da giu mau tu profile --load-filaments
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    with zipfile.ZipFile(path, "r") as src, zipfile.ZipFile(tmp, "w") as dst:
+        for item in src.infolist():
+            data = src.read(item.filename)
+            if item.filename == "Metadata/project_settings.config":
+                settings = json.loads(data)
+                settings["filament_colour"] = [mau]
+                settings["default_filament_colour"] = [mau]
+                data = json.dumps(settings, separators=(",", ":")).encode("utf-8")
+            dst.writestr(item, data)
+    tmp.replace(path)
 
 
 def cat(thu_muc, ten, stl, p_may, p_proc, p_fil, xoay=False):
@@ -216,6 +268,9 @@ def anh_tong_quan(bc, png):
         if b.get("anh"):
             a2.imshow(Image.open(b["anh"]))
         a2.set_title(f"{b['ban']} – {b['trang_thai']}", fontsize=9, color=MAU[b["trang_thai"]])
+        if b.get("mau"):
+            a2.add_patch(plt.Rectangle((0.0, 1.01), 0.06, 0.05, transform=a2.transAxes, clip_on=False,
+                                       facecolor=b["mau"], edgecolor="#333333"))
     fig.savefig(png, dpi=90)
     plt.close(fig)
 
@@ -240,6 +295,13 @@ def main():
         bo = b.get("exclude", [])
         xep[ten] = [f for f in tat_ca if any(fnmatch.fnmatch(f.name, g) for g in b["stl"])
                     and not any(fnmatch.fnmatch(f.name, g) for g in bo)]
+    mau_cua = {}
+    try:
+        for ten, b in cfg["plates"].items():
+            mau_cua[ten] = mau_ban(cfg, ten, b, xep[ten], stl_dir)
+    except ValueError as e:
+        print(f"LOI MAU: {e}", file=sys.stderr, flush=True)
+        raise SystemExit(2)
     dem = {f.name: sum(f in v for v in xep.values()) for f in tat_ca}
     chua_xep = [n for n, c in dem.items() if c == 0]
     if cfg.get("partial"):  # bo in lai 1 phan (vd. print-reprint-*.yaml): STL ngoai ban la co y, khong FAIL
@@ -275,6 +337,8 @@ def main():
         d = phang(idx, "process", b["process"])
         d.update(cfg.get("common") or {})
         d.update(b.get("overrides") or {})
+        if "curr_bed_type" not in {**(cfg.get("common") or {}), **(b.get("overrides") or {})}:
+            d["curr_bed_type"] = "Textured PEI Plate"  # mac dinh STLab; Cool Plate khong hop PETG -> CLI loi -61
         d.update({"name": f"STLab {ten}", "from": "User", "inherits": b["process"], "instantiation": "true"})
         p_proc = ghi(d, prof / f"process_{ten}.json")
         proc_d[ten] = d
@@ -286,6 +350,9 @@ def main():
         # preset rieng (Bambu Studio GUI tao) thieu 2 khoa nay -> CLI bao "preset file is invalid" (da gap 2026-10-23)
         fil.setdefault("type", "filament")
         fil.setdefault("instantiation", "true")
+        if mau_cua.get(ten):
+            fil["filament_colour"] = [mau_cua[ten]]
+            fil["default_filament_colour"] = [mau_cua[ten]]
         p_fil = ghi(fil, prof / f"filament_{ten}.json")
         stl_ban = xep[ten]
         co_sp = str(d.get("enable_support", "0")) == "1"
@@ -416,6 +483,18 @@ def main():
         doi(moi)
         thay = [doc_ket_qua(v[2], ten) for ten, v in moi.items()]
         bans = sorted([b for b in bans if b["ban"] not in moi] + thay, key=lambda b: b["ban"])
+    for b in bans:
+        goc_ban = b["ban"].split("__")[0]
+        mau = mau_cua.get(goc_ban)
+        b["mau"] = mau
+        if mau:
+            tmf = next((ra / b["ban"]).glob("*.3mf"), None)
+            if tmf:
+                dat_mau_3mf(tmf, mau)
+        else:
+            b["canh_bao"] = b.get("canh_bao", []) + ["chua khai mau (colors.json / color:) - Bambu dung mau mac dinh"]
+            if b["trang_thai"] == "PASS":
+                b["trang_thai"] = "WARN"
     for b in bans:
         print(f"  {b['ban']}: {b['trang_thai']} {b.get('thoi_gian_s', 0) // 60} ph, {b.get('gam', 0)} g "
               + "; ".join(b["loi"] + b.get("canh_bao", [])), flush=True)
