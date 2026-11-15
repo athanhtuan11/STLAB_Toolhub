@@ -60,7 +60,8 @@ credentials*.json
 !/photo-ai/tools/SHA256SUMS
 
 /maker/*/freecad/images/assembly/raw/
-/maker/*/print/stl-*/
+/maker/*/print/stl-*/*
+!/maker/*/print/stl-*/colors.json
 
 # Thu muc tam cua executor (tools/delegate/delegate.py), xoa sau moi run
 .delegate-tmp/
