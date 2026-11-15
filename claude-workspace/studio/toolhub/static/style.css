@@ -196,3 +196,49 @@ details.others summary { cursor: pointer; color: var(--muted); font-size: 14px; 
 .technical-notes summary { cursor: pointer; color: var(--text); font-weight: 600; }
 .technical-notes .doc { margin-top: 10px; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+/* ---- Trang Du an gop + huong dan (hub-/guide-/wiring-) ---- */
+.hub-works, .hub-tracked { margin-bottom: 18px; }
+.hub-works h2, .hub-tracked h2 { margin: 0 0 6px; font-size: 18px; }
+.hub-chips { margin: 4px 0 14px; }
+.hub-chip.current { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
+.hub-card[hidden] { display: none; }
+.hub-card, .hub-work-card { min-width: 0; overflow-wrap: anywhere; }
+.hub-cover { aspect-ratio: 4 / 3; background: var(--bg); border-radius: var(--r-control); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.hub-cover img { width: 100%; height: 100%; object-fit: contain; }
+.hub-note { margin: 0; }
+.hub-guide-btn { background: var(--ok); border-color: var(--ok); color: var(--on-accent); font-weight: 600; }
+.hub-dev { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 12px; border-top: 1px solid var(--line); padding-top: 8px; }
+
+.guide-hero { flex-direction: row; flex-wrap: wrap; gap: 18px; margin-bottom: 14px; }
+.guide-cover { flex: 0 0 260px; max-width: 100%; aspect-ratio: 4 / 3; background: var(--bg); border-radius: var(--r-control); overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.guide-cover img { width: 100%; height: 100%; object-fit: contain; }
+.guide-head { flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.guide-head h1 { margin: 0; }
+.guide-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin: 0; }
+.guide-facts div { background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-control); padding: 8px 10px; }
+.guide-facts dt { font-size: 12px; color: var(--muted); }
+.guide-facts dd { margin: 0; font-weight: 600; }
+.guide-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 14px; align-items: start; }
+.guide-toc { position: sticky; top: 12px; }
+.guide-toc ol { margin: 6px 0 0; padding-left: 20px; }
+.guide-body { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.guide-step-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+.guide-step-head h2 { margin: 0; font-size: 18px; scroll-margin-top: 12px; }
+.guide-done { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.guide-safe { border: 2px solid var(--err); }
+.guide-safe h2 { color: var(--err); }
+.guide-step .doc pre { overflow-x: auto; }
+@media (max-width:800px) { .guide-layout { grid-template-columns: 1fr; } .guide-toc { position: static; } }
+
+.wiring-block { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; }
+.wiring-svg { overflow-x: auto; background: var(--text); border-radius: var(--r-control); padding: 8px; color: var(--bg); }
+.wiring-svg[hidden], .wiring-table tr[hidden] { display: none; }
+.wiring-svg svg { max-width: 100%; height: auto; }
+.wiring-notes { margin: 0; color: var(--muted); font-size: 13px; }
+.wiring-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.wiring-table th, .wiring-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.wiring-swatch { display: inline-block; width: 28px; height: 8px; border-radius: 4px; border: 1px solid var(--muted); vertical-align: middle; }
+.guide-toc ol.guide-toc-list { list-style: none; padding-left: 0; margin-left: 0; }
+.guide-toc ol.guide-toc-list li { padding-left: 0; margin-left: 0; }
+.wiring-done td { opacity: .55; }

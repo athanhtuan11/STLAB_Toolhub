@@ -71,8 +71,8 @@ top = re.sub(r"<details.*?</details>|<div[^>]*class=\"[^\"]*(dropdown|menu-more)
 labels = [re.sub(r"<[^>]+>", "", m).strip() for m in re.findall(r"<a[^>]*>(.*?)</a>", top, re.S)]
 labels = [x for x in labels if x and x not in ("STLAB", "Toolhub", "STLAB Toolhub")]
 ok(labels[:3] == ["In 3D", "Dự án", "Báo giá"] and len(labels) == 3, f"menu chinh chi: In 3D · Dự án · Báo giá (+ Thêm) ({labels})")
-ok("Thêm" in navh and all(f'href="{u}"' in home for u in ("/tools", "/robotics", "/quote")),
-   "menu Thêm con lien ket: Cong cu, Robotics")
+ok("Thêm" in navh and all(f'href="{u}"' in home for u in ("/tools", "/quote")) and 'href="/robotics"' not in navh,
+   "menu Thêm con lien ket: Cong cu; Robotics da gop vao Du an (2026-11-14)")
 # Tuan 2026-11-12: "Nghien cuu khong can vi co README roi, bo phan nay tren giao dien" -> bo khoi menu (route cu van giu)
 ok("Nghiên cứu" not in navh and 'href="/research"' not in navh and 'href="/reports"' not in navh, "menu khong con muc Nghien cuu / Bao cao nghien cuu")
 

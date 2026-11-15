@@ -4,7 +4,7 @@ import os
 import re
 import subprocess
 from datetime import datetime
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 from . import workspace as ws
 
@@ -20,14 +20,30 @@ def _path():
 def load():
     m = json.loads(_path().read_text(encoding="utf-8"))
     statuses = m.get("statuses", {})
+    groups = m.get("groups", {})
     for p in m.get("projects", []):
         rel = p.get("rel", "")
         if p.get("status") not in statuses:
-            raise ValueError(f"{rel}: trạng thái '{p.get('status')}' không có trong danh sách statuses")
+            raise ValueError(f"{rel}: tr\u1ea1ng th\u00e1i '{p.get('status')}' kh\u00f4ng c\u00f3 trong danh s\u00e1ch statuses")
         if not rel.startswith("maker/") or ".." in rel:
-            raise ValueError(f"{rel}: đường dẫn phải bắt đầu bằng maker/ và không chứa ..")
+            raise ValueError(f"{rel}: \u0111\u01b0\u1eddng d\u1eabn ph\u1ea3i b\u1eaft \u0111\u1ea7u b\u1eb1ng maker/ v\u00e0 kh\u00f4ng ch\u1ee9a ..")
         if not (ws.ROOT / rel).is_dir():
-            raise ValueError(f"{rel}: thư mục dự án không tồn tại")
+            raise ValueError(f"{rel}: th\u01b0 m\u1ee5c d\u1ef1 \u00e1n kh\u00f4ng t\u1ed3n t\u1ea1i")
+        grp = p.get("group")
+        if grp not in groups:
+            raise ValueError(f"{rel}: nh\u00f3m '{grp}' kh\u00f4ng c\u00f3 trong danh s\u00e1ch groups")
+        folder = (ws.ROOT / rel).resolve()
+        for key in ("guide", "wiring"):
+            value = p.get(key)
+            if not value:
+                continue
+            normalized = str(value).replace("\\", "/")
+            windows_path = PureWindowsPath(normalized)
+            if windows_path.is_absolute() or windows_path.drive or ".." in normalized.split("/"):
+                raise ValueError(f"{rel}: '{key}' phải nằm trong thư mục dự án, không được chứa '..' hoặc đường dẫn tuyệt đối")
+            target = (folder / normalized).resolve()
+            if folder not in target.parents:
+                raise ValueError(f"{rel}: '{key}' thoát khỏi thư mục dự án")
     return m
 
 
@@ -88,6 +104,7 @@ def _cover(slug, folder, manifest_cover):
 def data():
     m = load()
     statuses = m.get("statuses", {})
+    groups = m.get("groups", {})
     projects = []
     for p in m.get("projects", []):
         rel = p["rel"]
@@ -100,6 +117,16 @@ def data():
         plates = (len(list(folder.glob("print/plates/*/*.3mf")))
                   + len(list(folder.glob("solidcraft/print/plates/*/*.3mf"))))
         name = rel.split("/")[-1]
+        grp = p["group"]
+        group_label = groups[grp]
+
+        # guide_url: only if manifest has 'guide' AND file exists
+        guide_rel = p.get("guide", "")
+        if guide_rel and _project_file(folder, guide_rel).is_file():
+            guide_url = f"/projects/{slug}/guide"
+        else:
+            guide_url = ""
+
         projects.append({
             "rel": rel, "slug": slug, "name": name, "title": p.get("title") or name,
             "summary": p.get("summary", ""), "audience": p.get("audience", ""), "status": p["status"],
@@ -109,6 +136,14 @@ def data():
             "bom": (folder / "BOM.md").is_file(), "todo": todo,
             "detail_url": f"/projects/{slug}" if claude.is_file() else "",
             "simulation": p.get("simulation", ""),
+            # New fields
+            "group": grp,
+            "group_label": group_label,
+            "works": bool(p.get("works", False)),
+            "works_note": p.get("works_note", ""),
+            "difficulty": p.get("difficulty", ""),
+            "duration": p.get("duration", ""),
+            "guide_url": guide_url,
         })
     sims = []
     for s in m.get("simulations", []):
@@ -121,4 +156,45 @@ def data():
             "readme_url": f"/robotics/sim/{sid}/readme" if sim_file(s, "readme") else "",
             "lesson_url": f"/robotics/sim/{sid}/lesson" if sim_file(s, "lesson") else "",
         })
-    return {"statuses": statuses, "projects": projects, "simulations": sims}
+    return {"statuses": statuses, "projects": projects, "simulations": sims, "groups": groups}
+
+
+def _project_file(folder, relative):
+    """Resolve a manifest path already validated by load()."""
+    return (folder / str(relative).replace("\\", "/")).resolve()
+
+
+def guide_info(slug):
+    """Return (project_row, guide_path, wiring_path_or_None) for a project having a guide, else None."""
+    row = next((p for p in data()["projects"] if p["slug"] == slug), None)
+    if row is None or not row["guide_url"]:
+        return None
+    raw = next(p for p in load().get("projects", []) if slug_of(p["rel"]) == slug)
+    folder = (ws.ROOT / raw["rel"]).resolve()
+    guide = _project_file(folder, raw["guide"])
+    wiring_rel = raw.get("wiring")
+    wiring = _project_file(folder, wiring_rel) if wiring_rel else None
+    if wiring is not None and not wiring.is_file():
+        wiring = None
+    return row, guide, wiring
+
+
+def hub_projects():
+    """Return manifest projects plus workspace projects not represented by the manifest."""
+    d = data()
+    rows = list(d["projects"])
+    known = {p["rel"] for p in rows}
+    for p in ws.projects():
+        if p["rel"] in known:
+            continue
+        group = "khac" if p["rel"].startswith("maker/") else "tools"
+        rows.append({
+            "rel": p["rel"], "slug": p["slug"], "name": p["rel"].split("/")[-1],
+            "title": p["title"], "summary": "", "audience": "", "status": "",
+            "status_label": "", "next": "", "cover": "", "updated": "",
+            "plates": 0, "assembly_pdf": False, "bom": False, "todo": p["todo"],
+            "detail_url": f"/projects/{p['slug']}", "simulation": "", "group": group,
+            "group_label": d["groups"][group], "works": False, "works_note": "",
+            "difficulty": "", "duration": "", "guide_url": "",
+        })
+    return rows

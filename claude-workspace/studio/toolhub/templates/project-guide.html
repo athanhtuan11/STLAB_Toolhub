@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}{{ p.title }} – hướng dẫn{% endblock %}
+{% block content %}
+<p><a href="/projects">← Dự án</a></p>
+<div class="guide" data-guide="{{ p.slug }}">
+<header class="guide-hero card">
+  <div class="guide-cover">{% if p.cover %}<img src="{{ p.cover }}" alt="{{ p.title }}">{% endif %}</div>
+  <div class="guide-head">
+    <h1>{{ p.title }}</h1>
+    {% if p.works_note %}<span class="badge ok">{{ p.works_note }}</span>{% endif %}
+    <p class="muted">{{ p.summary }}</p>
+    <dl class="guide-facts">
+      <div><dt>Cấp học</dt><dd>{{ p.audience or "TODO" }}</dd></div>
+      <div><dt>Thời gian</dt><dd>{{ p.duration or "TODO" }}</dd></div>
+      <div><dt>Độ khó</dt><dd>{{ p.difficulty or "TODO" }}</dd></div>
+      <div><dt>Số bàn in</dt><dd>{{ p.plates or "TODO" }}</dd></div>
+    </dl>
+  </div>
+</header>
+<div class="guide-layout">
+<nav class="guide-toc card" data-toc aria-label="Mục lục">
+  <strong>Các bước</strong>
+  <ol class="guide-toc-list">{% for s in steps %}<li><a href="#{{ s.id }}">{{ s.title }}</a></li>{% endfor %}</ol>
+</nav>
+<div class="guide-body">
+{% if intro %}<div class="doc guide-intro">{{ intro|safe }}</div>{% endif %}
+{% for s in steps %}
+<section class="guide-step card{% if s.safe %} guide-safe{% endif %}">
+  <div class="guide-step-head">
+    <h2 id="{{ s.id }}">{{ s.title }}</h2>
+    <label class="guide-done"><input type="checkbox" data-step-done="{{ s.id }}"> Em làm xong</label>
+  </div>
+  <div class="doc">{{ s.html_before|safe }}</div>
+  {% if s.wiring %}
+  <div class="wiring-block" data-wiring>
+    <div class="wiring-filter actions">
+      <button type="button" class="small current" data-wire-group="all">Tất cả</button>
+      {% for k, lb in wdata.groups.items() %}<button type="button" class="small" data-wire-group="{{ k }}">{{ lb }}</button>{% endfor %}
+    </div>
+    <div class="wiring-svg" data-wire-svg="all">{{ wsvg["all"]|safe }}</div>
+    {% for k in wdata.groups %}<div class="wiring-svg" data-wire-svg="{{ k }}" hidden>{{ wsvg[k]|safe }}</div>{% endfor %}
+    {% if wdata.notes %}<ul class="wiring-notes">{% for n in wdata.notes %}<li>{{ n }}</li>{% endfor %}</ul>{% endif %}
+    <table class="wiring-table">
+      <thead><tr><th>Xong</th><th>#</th><th>Từ</th><th>Đến</th><th>Màu dây</th><th>Ghi chú</th></tr></thead>
+      <tbody>
+      {% for w in wdata.wires %}
+      <tr data-wire="{{ loop.index }}" data-group="{{ w.group }}">
+        <td><input type="checkbox" aria-label="Đã nối dây {{ loop.index }}"></td>
+        <td>{{ loop.index }}</td>
+        <td>{{ w.from_label }}<br><strong>{{ w.from_pin }}</strong></td>
+        <td>{{ w.to_label }}<br><strong>{{ w.to_pin }}</strong></td>
+        <td><span class="wiring-swatch" style="background:{{ color_hex[w.color] }}"></span> {{ w.color_name }}<br><span class="muted">{{ w.group_label }}</span></td>
+        <td>{{ w.note }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+  {% if s.html_after %}<div class="doc">{{ s.html_after|safe }}</div>{% endif %}
+</section>
+{% endfor %}
+</div>
+</div>
+</div>
+<script src="{{ url_for('static', filename='hub.js') }}"></script>
+{% endblock %}

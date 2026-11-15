@@ -20,7 +20,11 @@ qua cả 5 MCP server trong `.mcp.json`.
   apply/rollback chỉ hiện lệnh –, Skills & agents, Prompt library). Trang chính chỉ có: dòng "Cần chú ý" (chỉ hiện lỗi,
   nạp sau qua `/api/health`), hàng ứng dụng (đèn + Mở), thẻ dự án in 3D (kết quả Chuẩn bị in + nút), dự án khác thu gọn.
   Thêm trang mới: đặt vào "Thêm" trừ khi dùng hằng ngày. Trang chính phải hiện ngay – việc chậm (git, tasklist) nạp bằng JS.
-  - Trang **Robotics** `/robotics` (menu chính, 2026-11-11): thẻ dự án robotics + khu Mô phỏng (GearsBot, Erebus).
+  - **2026-11-15: `/robotics` gộp vào `/projects`** (302 → `/projects?nhom=robotics`; chip lọc nhóm, mục "Chạy được",
+    Mẫu in, Mô phỏng). Hướng dẫn học sinh `/projects/<slug>/guide` = GUIDE.md của dự án (`## ` = bước) + sơ đồ dây
+    WireViz từ `hardware/wiring*.yaml` (`toolhub/wiring.py`, dòng `<!-- wiring -->`). Khai báo `guide`/`wiring`/`works`
+    trong `robotics.json`. Spec `spec-projects-hub.md`, test `tests/test_projects_hub.py`.
+  - Trang **Robotics** `/robotics` (cũ, 2026-11-11): thẻ dự án robotics + khu Mô phỏng (GearsBot, Erebus).
     Chỉ trạng thái/mô tả/bước tiếp ở `toolhub/robotics.json`; ảnh bìa, số bàn in, ASSEMBLY.pdf, ngày cập nhật tự đọc từ
     thư mục dự án. Đổi trạng thái dự án → sửa manifest cùng commit. Mã `toolhub/robotics.py`, test `tests/test_robotics.py`.
   - Trang **Điều hành** `/ops` đã gỡ 2026-11-11 (Tuan: dư thừa) → `backup/20261111-remove-ops-page/`. Kho sự kiện

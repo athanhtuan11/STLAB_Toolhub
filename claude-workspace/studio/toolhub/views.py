@@ -8,7 +8,7 @@ import tempfile
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from flask import Blueprint, abort, jsonify, render_template, request, send_file, url_for
+from flask import Blueprint, abort, jsonify, redirect, render_template, request, send_file, url_for
 
 import launcher
 
@@ -29,7 +29,7 @@ bp = Blueprint("hub", __name__)
 @bp.app_context_processor
 def nav():
     main = [("hub.overview", "In 3D"), ("hub.projects", "Dự án"), ("hub.quote", "Báo giá")]
-    more = [("hub.tools", "Công cụ"), ("hub.robotics_page", "Robotics"), ("hub.library", "Linh kiện"),
+    more = [("hub.tools", "Công cụ"), ("hub.library", "Linh kiện"),
             ("hub.apps", "Ứng dụng & MCP"), ("hub.community", "Nguồn cộng đồng"),
             ("hub.skills", "Skills & agents"), ("hub.prompt", "Prompt library")]
     ep = request.endpoint or ""
@@ -231,14 +231,7 @@ def reports_doc(name):
 
 @bp.get("/robotics")
 def robotics_page():
-    try:
-        d = robotics.data()
-    except ValueError as e:
-        return render_template("robotics.html", error=str(e), doc=None), 500
-    ps = d["projects"]
-    return render_template("robotics.html", error="", projects=ps, sims=d["simulations"], doc=None,
-                           total=len(ps), ready=sum(p["status"] == "san-sang-in" for p in ps),
-                           paused=sum(p["status"] == "tam-dung" for p in ps))
+    return redirect("/projects?nhom=robotics", code=302)
 
 
 @bp.get("/robotics/img/<slug>/<path:rel>")
@@ -286,7 +279,7 @@ def robotics_page_sim(sim_id, what):
     from . import mdrender
     text = f.read_text(encoding="utf-8")
     title = next((ln[2:].strip() for ln in text.splitlines() if ln.startswith("# ")), sim_id)
-    return render_template("robotics.html", error="", doc={"title": title, "content": mdrender.render(text)})
+    return render_template("robotics.html", error="", doc={"title": title, "content": mdrender.render(text), "back_url": "/projects?nhom=robotics"})
 
 
 @bp.get("/community/report/<name>")
@@ -309,8 +302,21 @@ def skills():
 @bp.get("/projects")
 def projects():
     ps = ws.projects()
-    for p in ps:
+    try:
+        hub = robotics.hub_projects()
+        d = robotics.data()
+        groups = d["groups"]
+        sims = d["simulations"]
+    except ValueError as e:
+        return render_template("projects.html", error=str(e), hub=[], chips=[], groups={}, active="all",
+                               works=[], sims=[], tracked=[], total=0), 500
+    for p in hub:
         p["main_file"] = opener.primary(p["rel"])
+    chips = [{"key": k, "label": lb, "n": sum(1 for p in hub if p["group"] == k)} for k, lb in groups.items()]
+    chips = [c for c in chips if c["n"]]
+    nhom = request.args.get("nhom", "all")
+    active = nhom if nhom in groups else "all"
+    works = [p for p in hub if p["works"]]
     tracked = []
     by_slug = {p["slug"]: p for p in ps}
     for slug, record in products.all().items():
@@ -320,7 +326,59 @@ def projects():
     for p in ps:
         record = products.get(p["slug"])
         p["product_label"] = products.LABELS.get(record.get("stage")) if record else None
-    return render_template("projects.html", projects=ps, tracked=tracked)
+    return render_template("projects.html", error="", hub=hub, chips=chips, groups=groups, active=active,
+                           works=works, sims=sims, tracked=tracked, total=len(hub))
+
+
+@bp.get("/projects/<slug>/guide")
+def project_guide(slug):
+    from . import mdrender, wiring
+    try:
+        info = robotics.guide_info(slug)
+    except ValueError:
+        abort(404)
+    if info is None:
+        abort(404)
+    row, guide_path, wiring_path = info
+    text = guide_path.read_text(encoding="utf-8")
+    chunks, cur, pre = [], None, []
+    for ln in text.splitlines():
+        if ln.startswith("## "):
+            cur = {"title": ln[3:].strip(), "lines": []}
+            chunks.append(cur)
+        elif cur is None:
+            if not ln.startswith("# "):
+                pre.append(ln)
+        else:
+            cur["lines"].append(ln)
+    wdata = wsvg = None
+    if wiring_path is not None:
+        try:
+            wdata = wiring.load(wiring_path)
+            wsvg = {"all": wiring.svg(wiring_path)}
+            for g in wdata["groups"]:
+                wsvg[g] = wiring.svg(wiring_path, group=g)
+        except ValueError:
+            wdata = wsvg = None
+    steps = []
+    for i, ch in enumerate(chunks, 1):
+        before, after, has_wiring = [], [], False
+        for ln in ch["lines"]:
+            if ln.strip() == "<!-- wiring -->" and not has_wiring:
+                has_wiring = True
+            elif has_wiring:
+                after.append(ln)
+            else:
+                before.append(ln)
+        steps.append({
+            "id": f"buoc-{i}", "title": ch["title"], "safe": "An toàn" in ch["title"],
+            "html_before": mdrender.render("\n".join(before)),
+            "html_after": mdrender.render("\n".join(after)),
+            "wiring": has_wiring and wdata is not None,
+        })
+    return render_template("project-guide.html", p=row, steps=steps,
+                           intro=mdrender.render("\n".join(pre)) if any(x.strip() for x in pre) else "",
+                           wdata=wdata, wsvg=wsvg, color_hex=wiring.COLOR_HEX)
 
 
 @bp.get("/projects/<slug>")

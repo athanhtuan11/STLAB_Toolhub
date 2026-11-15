@@ -1,0 +1,40 @@
+# So do dau day Cu Bong ban S3 – nguon duy nhat cho hinh SVG + bang day tren Toolhub (/projects/<slug>/guide).
+# Claude viet 2026-11-14. Chan lay tu: hardware/wiring-s3.md (muc 4) + firmware/xiaozhi-s3/boards/stlab-s3/config.h.
+# Doi chan -> sua ca 3 noi cho khop.
+# level: 5v | 3v3 | gnd | tin-hieu | loa   ;  color: ma mau WireViz (RD OG BK YE GN BU VT TQ WH PK GY BN)
+# group: nhom de loc tren trang (nguon, mic, ampli, nut, loa)
+title: "Cú Bông S3 – sơ đồ đấu dây"
+groups:
+  nguon: "Dây nguồn"
+  mic: "Mic INMP441"
+  ampli: "Ampli MAX98357A"
+  nut: "Nút nói"
+parts:
+  esp: {label: "ESP32-S3 N16R8", pins: ["3V3", "5V", "GND", "GPIO4", "GPIO5", "GPIO6", "GPIO7", "GPIO15", "GPIO16", "GPIO1"]}
+  mic: {label: "INMP441 (mic)", pins: ["VDD", "GND", "L/R", "WS", "SCK", "SD"]}
+  amp: {label: "MAX98357A (ampli)", pins: ["VIN", "GND", "LRC", "BCLK", "DIN", "Loa +", "Loa −"]}
+  cap: {label: "Tụ 1000 µF 16 V", pins: ["+ (chân dài)", "− (vạch trắng)"]}
+  spk: {label: "Loa 4 Ω 3 W", pins: ["+", "−"]}
+  btn: {label: "Nút nói (switch MX)", pins: ["1", "2"]}
+wires:
+  - {from: mic.VDD, to: esp.3V3, level: 3v3, color: OG, group: nguon, note: "CHỈ 3,3 V – cấp 5 V hỏng mic"}
+  - {from: mic.GND, to: esp.GND, level: gnd, color: BK, group: nguon}
+  - {from: mic.L/R, to: esp.GND, level: gnd, color: BK, group: mic, note: "bắt buộc nối, không để trống"}
+  - {from: mic.WS, to: esp.GPIO4, level: tin-hieu, color: YE, group: mic}
+  - {from: mic.SCK, to: esp.GPIO5, level: tin-hieu, color: GN, group: mic}
+  - {from: mic.SD, to: esp.GPIO6, level: tin-hieu, color: BU, group: mic}
+  - {from: amp.VIN, to: esp.5V, level: 5v, color: RD, group: nguon, note: "5 V, không lấy từ 3V3"}
+  - {from: amp.GND, to: esp.GND, level: gnd, color: BK, group: nguon}
+  - {from: amp.LRC, to: esp.GPIO16, level: tin-hieu, color: VT, group: ampli}
+  - {from: amp.BCLK, to: esp.GPIO15, level: tin-hieu, color: TQ, group: ampli}
+  - {from: amp.DIN, to: esp.GPIO7, level: tin-hieu, color: WH, group: ampli}
+  - {from: cap.+ (chân dài), to: amp.VIN, level: 5v, color: RD, group: ampli, note: "hàn sát chân VIN ampli – đúng cực"}
+  - {from: cap.− (vạch trắng), to: amp.GND, level: gnd, color: BK, group: ampli}
+  - {from: spk.+, to: amp.Loa +, level: loa, color: RD, group: ampli, note: "KHÔNG nối GND"}
+  - {from: spk.−, to: amp.Loa −, level: loa, color: GY, group: ampli, note: "KHÔNG nối GND (dây xám, không dùng dây đen)"}
+  - {from: btn.1, to: esp.GPIO1, level: tin-hieu, color: PK, group: nut}
+  - {from: btn.2, to: esp.GND, level: gnd, color: BK, group: nut}
+notes:
+  - "Vị trí chân trên hình là sơ đồ nguyên lý. Khi cắm, đọc chữ in cạnh chân trên bo."
+  - "ESP32-S3 có nhiều chân GND – dùng chân GND nào cũng được."
+  - "GAIN và SD của MAX98357A để trống. Không dùng GPIO35, 36, 37 (PSRAM)."

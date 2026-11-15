@@ -93,15 +93,13 @@ for bad, why in [
         pass
 os.environ.pop("STLAB_ROBOTICS_MANIFEST")
 
-# ---- 3. Trang ----
-r = c.get("/robotics", headers=H)
-check(r.status_code == 200, f"/robotics -> {r.status_code}")
+# ---- 3. Trang (2026-11-14: /robotics gop vao /projects, gate chinh tests/test_projects_hub.py) ----
+r = c.get("/projects", headers=H)
+check(r.status_code == 200, f"/projects -> {r.status_code}")
 html = r.get_data(as_text=True)
 nav = html[html.find("<nav"):html.find("</nav>")]
-check('href="/robotics"' in nav and "Robotics" in nav, "menu chinh phai co Robotics -> /robotics")
+check('href="/robotics"' not in nav, "menu khong con Robotics (gop vao Du an)")
 check("/ops" not in nav and "Điều hành" not in nav, "menu khong con Dieu hanh /ops")
-check('class="on"' in nav[:nav.find('href="/robotics"') + 40] or 'href="/robotics" class="on"' in nav,
-      "muc Robotics phai sang (on) khi dang o /robotics")
 for p in MANIFEST["projects"]:
     name = p["rel"].split("/")[-1]
     check(name in html, f"trang thieu du an {name}")
@@ -109,7 +107,7 @@ for p in MANIFEST["projects"]:
     check(p["next"] in html, f"trang thieu buoc tiep {name}")
 for label in {MANIFEST["statuses"][p["status"]] for p in MANIFEST["projects"]}:
     check(label in html, f"trang thieu nhan trang thai {label}")
-check(html.count("data-robot=") == len(MANIFEST["projects"]), "moi du an 1 the data-robot")
+check(html.count('data-group="robotics"') == sum(p.get("group") == "robotics" for p in MANIFEST["projects"]), "moi du an robotics 1 the data-group=robotics")
 check(html.count("data-sim=") == 2, "2 the mo phong data-sim")
 for s in MANIFEST["simulations"]:
     for ln in s["links"]:
@@ -123,7 +121,7 @@ check("/projects/maker--line-bot" in html, "the line-bot phai link chi tiet")
 check("/robotics/file/maker--pushrod-arm/ASSEMBLY.pdf" in html, "pushrod-arm phai co link ASSEMBLY.pdf")
 check(c.get("/ops", headers=H).status_code == 404, "/ops phai 404 (da go)")
 check(c.get("/api/ops", headers=H).status_code == 404, "/api/ops phai 404 (da go)")
-check(c.get("/robotics", headers={"Host": "evil.com"}).status_code == 403, "Host la -> 403")
+check(c.get("/projects", headers={"Host": "evil.com"}).status_code == 403, "Host la -> 403")
 
 # ---- 4. Anh / file / tai lieu: chi trong thu muc du an, dung loai ----
 lb = rows["maker/line-bot"]
@@ -146,8 +144,8 @@ r = c.get("/robotics/sim/gearsbot/cover", headers=H)
 check(r.status_code == 200 and r.mimetype == "image/png", "anh gearsbot -> 200 png")
 r = c.get("/robotics/sim/gearsbot/readme", headers=H)
 t = r.get_data(as_text=True)
-check(r.status_code == 200 and "<h1" in t and "GearsBot" in t and 'href="/robotics"' in t,
-      "README gearsbot render markdown (mdrender) trong khung Toolhub, co link ve /robotics")
+check(r.status_code == 200 and "<h1" in t and "GearsBot" in t and 'href="/projects?nhom=robotics"' in t,
+      "README gearsbot render markdown (mdrender) trong khung Toolhub, co link ve /projects?nhom=robotics")
 r = c.get("/robotics/sim/gearsbot/lesson", headers=H)
 check(r.status_code == 200 and "<h1" in r.get_data(as_text=True), "giao an gearsbot render")
 

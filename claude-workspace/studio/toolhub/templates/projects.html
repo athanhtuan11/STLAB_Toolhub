@@ -4,35 +4,90 @@
 <div class="head">
   <div>
     <h1>Dự án</h1>
-    <p class="sub">Mỗi dự án có CLAUDE.md riêng (tự nạp quy ước chung của workspace). Mở trong VS Code để làm việc với Claude Code.</p>
+    <p class="sub">{{ total }} dự án. Mỗi dự án có CLAUDE.md riêng (tự nạp quy ước chung của workspace). Mở trong VS Code để làm việc với Claude Code.</p>
   </div>
   <button data-post="/api/open/_root">Mở cả workspace</button>
 </div>
+{% if error %}<p class="muted">{{ error }}</p>{% endif %}
 
-<section class="card" style="margin-bottom:14px">
+<div class="hub-chips chips" role="group" aria-label="Lọc theo nhóm">
+  <button type="button" class="chip hub-chip" data-filter="all">Tất cả ({{ total }})</button>
+  {% for c in chips %}<button type="button" class="chip hub-chip" data-filter="{{ c.key }}">{{ c.label }} ({{ c.n }})</button>{% endfor %}
+</div>
+
+{% if works %}
+<section class="hub-works">
+  <h2>Chạy được – làm theo được</h2>
+  <p class="sub">Đã thử thật trên mạch, có hướng dẫn từng bước cho học sinh.</p>
+  <div class="grid wide">
+    {% for p in works %}
+    <article class="card hub-work-card" data-works="{{ p.slug }}">
+      <div class="hub-cover">{% if p.cover %}<img src="{{ p.cover }}" alt="{{ p.title }}" loading="lazy">{% else %}<span class="muted">Chưa có ảnh</span>{% endif %}</div>
+      <h3>{{ p.title }}</h3>
+      <div class="robot-badges">
+        <span class="badge ok">Chạy được</span>
+        {% if p.difficulty %}<span class="badge plain">{{ p.difficulty }}</span>{% endif %}
+      </div>
+      {% if p.works_note %}<p class="muted hub-note">{{ p.works_note }}</p>{% endif %}
+      <div class="actions robot-actions">
+        {% if p.guide_url %}<a class="btn hub-guide-btn" href="{{ p.guide_url }}">Hướng dẫn làm</a>{% else %}<span class="muted">Hướng dẫn: chưa có</span>{% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="grid robot-grid hub-grid" data-active-filter="{{ active }}">
+  {% for p in hub %}
+  <article class="card robot-card hub-card" data-project="{{ p.slug }}" data-group="{{ p.group }}">
+    <div class="hub-cover">{% if p.cover %}<img src="{{ p.cover }}" alt="{{ p.title }}" loading="lazy">{% else %}<span class="muted">Chưa có ảnh</span>{% endif %}</div>
+    <h3>{% if p.detail_url %}<a href="{{ p.detail_url }}">{{ p.title }}</a>{% else %}{{ p.title }}{% endif %}</h3>
+    <div class="robot-badges">
+      {% if p.status_label %}<span class="badge{% if p.status in ('xong','san-sang-in') %} ok{% elif p.status == 'chua-ro' %} bad{% elif p.status in ('tam-dung','y-tuong') %} plain{% endif %}">{{ p.status_label }}</span>{% endif %}
+      {% if p.audience %}<span class="badge plain">{{ p.audience }}</span>{% endif %}
+      <span class="badge plain">{{ p.group_label }}</span>
+      {% if p.todo %}<span class="badge">{{ p.todo }} TODO</span>{% endif %}
+    </div>
+    {% if p.summary %}<p class="robot-summary">{{ p.summary }}</p>{% endif %}
+    {% if p.next %}<p class="robot-next">Tiếp: {{ p.next }}</p>{% endif %}
+    {% set bits = [] %}{% if p.plates %}{% set _ = bits.append(p.plates ~ " bàn in") %}{% endif %}{% if p.bom %}{% set _ = bits.append("BOM") %}{% endif %}{% if p.updated %}{% set _ = bits.append("cập nhật " ~ p.updated) %}{% endif %}
+    {% if bits %}<p class="muted robot-meta">{{ bits|join(" · ") }}</p>{% endif %}
+    <div class="actions robot-actions">
+      {% if p.detail_url %}<a class="btn" href="{{ p.detail_url }}">Chi tiết</a>{% endif %}
+      {% if p.assembly_pdf %}<a class="btn" href="/robotics/file/{{ p.slug }}/ASSEMBLY.pdf" target="_blank" rel="noopener">ASSEMBLY.pdf</a>{% endif %}
+      {% if p.simulation %}<a class="btn" href="#sim-{{ p.simulation }}">Mô phỏng</a>{% endif %}
+    </div>
+    <div class="hub-dev muted">
+      <a href="/projects/{{ p.slug }}">CLAUDE.md</a>
+      <button type="button" class="small" data-post="/api/open/{{ p.slug }}">VS Code</button>
+      {% if p.main_file %}<button type="button" class="small" data-post="/api/open-file/{{ p.slug }}/{{ p.main_file.i }}" data-busy="Đang mở…" title="{{ p.main_file.rel }}">Mở bằng {{ p.main_file.app_name }}</button>{% endif %}
+    </div>
+  </article>
+  {% endfor %}
+</section>
+
+<section class="card hub-tracked">
   <h2>Mẫu in</h2>
   {% if tracked %}<ul>{% for row in tracked %}<li><a href="{{ url_for('hub.project_detail', slug=row.project.slug) }}">{{ row.project.title }}</a> · {{ row.label }} · {{ row.date }}</li>{% endfor %}</ul>
   {% else %}<p class="muted">Chưa có mẫu in nào được theo dõi</p>{% endif %}
 </section>
 
-<section class="grid">
-  {% for p in projects %}
-  <article class="card">
-    <div class="row"><h3 class="grow"><a href="{{ url_for('hub.project_detail', slug=p.slug) }}">{{ p.rel }}</a></h3>
-      {% if p.todo %}<span class="badge">{{ p.todo }} TODO</span>{% else %}<span class="badge ok">đủ</span>{% endif %}</div>
-    <div class="muted">{{ p.title }}{% if p.product_label %} · <span class="badge">{{ p.product_label }}</span>{% endif %}</div>
-    <div class="muted">
-      {% for l in p.links %}<span class="badge plain">{{ l.name }}</span> {% endfor %}
-      {% for m in p.mcp %}<span class="badge">MCP {{ m }}</span> {% endfor %}
-      {% if not p.links and not p.mcp %}Chưa liên kết skill/agent{% endif %}
-    </div>
-    <div class="actions" style="margin-top:auto">
-      <a class="btn" href="{{ url_for('hub.project_detail', slug=p.slug) }}">Xem CLAUDE.md</a>
-      {% if p.main_file %}<button data-post="/api/open-file/{{ p.slug }}/{{ p.main_file.i }}" data-busy="Đang mở…"
-        title="{{ p.main_file.rel }}">Mở bằng {{ p.main_file.app_name }}</button>{% endif %}
-      <button data-post="/api/open/{{ p.slug }}">Mở VS Code</button>
-    </div>
-  </article>
-  {% endfor %}
-</section>
+<h2>Mô phỏng</h2>
+<div class="grid wide sim-grid">
+{% for s in sims %}
+<article class="card sim-card" data-sim="{{ s.id }}" id="sim-{{ s.id }}">
+  {% if s.cover %}<div class="sim-cover"><img src="{{ s.cover }}" alt="{{ s.title }}" loading="lazy"></div>{% endif %}
+  <h3>{{ s.title }}</h3>
+  <div class="robot-badges"><span class="badge{% if s.status in ('xong','san-sang-in') %} ok{% elif s.status in ('tam-dung','y-tuong') %} plain{% endif %}">{{ s.status_label }}</span></div>
+  <p class="robot-summary">{{ s.note }}</p>
+  <div class="actions robot-actions">
+    {% for ln in s.links %}<a class="btn" href="{{ ln.url }}" target="_blank" rel="noopener">{{ ln.label }}</a>{% endfor %}
+    {% if s.readme_url %}<a class="btn" href="{{ s.readme_url }}">README</a>{% endif %}
+    {% if s.lesson_url %}<a class="btn" href="{{ s.lesson_url }}">Giáo án</a>{% endif %}
+  </div>
+</article>
+{% endfor %}
+</div>
+<script src="{{ url_for('static', filename='hub.js') }}"></script>
 {% endblock %}

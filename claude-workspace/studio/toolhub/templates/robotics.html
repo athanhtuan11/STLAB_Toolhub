@@ -2,7 +2,7 @@
 {% block title %}{{ doc.title if doc else "Robotics" }}{% endblock %}
 {% block content %}
 {% if doc %}
-<p><a href="/robotics">← Robotics</a></p>
+<p><a href="/projects?nhom=robotics">← Robotics</a></p>
 <article class="doc report-doc">{{ doc.content|safe }}</article>
 {% elif error %}
 <div class="head"><h1>Robotics</h1></div>

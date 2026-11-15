@@ -1,5 +1,5 @@
 {
-  "_note": "Trang /robotics. Chi ghi phan nguoi quyet (trang thai, buoc tiep, mo ta ngan). Anh, so ban in, PDF, ngay cap nhat: Toolhub tu doc tu thu muc du an. Doi trang thai du an -> sua file nay trong cung commit.",
+  "_note": "Trang Du an /projects (gop /robotics 2026-11-14). Chi ghi phan nguoi quyet: nhom, trang thai, buoc tiep, mo ta ngan, chay-duoc (works = da thu that tren mach), huong dan (guide = GUIDE.md, wiring = file yaml so do dau day). Anh, so ban in, PDF, ngay cap nhat: Toolhub tu doc tu thu muc du an. Du an khong co o day: maker/ -> nhom 'khac', ngoai maker/ -> 'tools'. Doi trang thai -> sua file nay trong cung commit.",
   "statuses": {
     "dang-lam": "Đang làm",
     "san-sang-in": "Sẵn sàng in",
@@ -15,49 +15,174 @@
       "audience": "Lớp 6",
       "status": "tam-dung",
       "next": "Chờ ảnh linh kiện thật để thay số rồi in thử 2 bàn (114 g).",
-      "simulation": "gearsbot"
+      "simulation": "gearsbot",
+      "group": "robotics"
     },
     {
       "rel": "maker/pushrod-arm",
       "summary": "Cánh tay 4 bậc xi-lanh đẩy, điều khiển CyberBrick.",
       "audience": "",
       "status": "san-sang-in",
-      "next": "Bộ in lại (sửa lỗ trục Worm) đã sẵn sàng: in và lắp thử."
+      "next": "Bộ in lại (sửa lỗ trục Worm) đã sẵn sàng: in và lắp thử.",
+      "group": "robotics"
     },
     {
       "rel": "maker/cyberbrick-car",
       "summary": "Xe coupé RC cầu sau 2 động cơ, lái servo, CyberBrick.",
       "audience": "",
       "status": "chua-ro",
-      "next": "TODO: Tuan xác nhận trạng thái (cập nhật cuối 2026-10-26)."
+      "next": "TODO: Tuan xác nhận trạng thái (cập nhật cuối 2026-10-26).",
+      "group": "robotics"
     },
     {
       "rel": "maker/cyberbrick-arm",
       "summary": "Tay máy 3 khớp + kẹp 3 ngón, CyberBrick, dáng B.",
       "audience": "Lớp 6",
       "status": "tam-dung",
-      "next": "Còn dấu lắp, khe theo fit-library, print.yaml."
+      "next": "Còn dấu lắp, khe theo fit-library, print.yaml.",
+      "group": "robotics"
     },
     {
       "rel": "maker/card-coding-robot",
       "summary": "Robot lập trình bằng thẻ lệnh, không màn hình, ESP32 + RC522.",
       "audience": "4–7 tuổi",
       "status": "tam-dung",
-      "next": "Spec + gate CAD v1 xong; chờ Tuan báo để dựng CAD."
+      "next": "Spec + gate CAD v1 xong; chờ Tuan báo để dựng CAD.",
+      "group": "robotics"
     },
     {
       "rel": "maker/sesame-quadruped",
       "summary": "In thử robot 4 chân Sesame (nguồn cộng đồng, Apache-2.0).",
       "audience": "",
       "status": "san-sang-in",
-      "next": "In bàn p1-body rồi lắp thử."
+      "next": "In bàn p1-body rồi lắp thử.",
+      "group": "robotics"
     },
     {
       "rel": "maker/uwb-drone-positioning",
       "summary": "Định vị drone trong nhà bằng UWB.",
       "audience": "",
       "status": "y-tuong",
-      "next": "Chưa bắt đầu: bước 0 dáng sản phẩm + mockup."
+      "next": "Chưa bắt đầu: bước 0 dáng sản phẩm + mockup.",
+      "group": "robotics"
+    },
+    {
+      "rel": "maker/english-teacher",
+      "group": "smart",
+      "title": "Cú Bông – loa dạy tiếng Anh",
+      "summary": "ESP32-S3 nói chuyện tiếng Anh với bé, mic INMP441 + ampli MAX98357A + loa 52 mm.",
+      "audience": "",
+      "status": "dang-lam",
+      "next": "Vỏ S3 chờ in thử; thử firmware mới trên mạch.",
+      "cover": "cad/out-s3/owl-front.png",
+      "works": true,
+      "works_note": "thử thật trên mạch 2026-11-12",
+      "difficulty": "Có hàn",
+      "duration": "",
+      "guide": "GUIDE.md",
+      "wiring": "hardware/wiring-s3.yaml"
+    },
+    {
+      "rel": "maker/esp32-s3-cam",
+      "group": "smart",
+      "title": "Camera AI ESP32-S3",
+      "summary": "Camera Wi-Fi xem qua trình duyệt, phát hiện chuyển động, quay clip.",
+      "audience": "",
+      "status": "dang-lam",
+      "next": "OTA v0.4.0 khi bật mạch; dáng vỏ.",
+      "cover": "design/concepts/A-soi-tile.png",
+      "works": true,
+      "works_note": "chạy thật ~18 fps qua Wi-Fi 2026-11-03",
+      "difficulty": "Không hàn",
+      "duration": ""
+    },
+    {
+      "rel": "maker/smart-home",
+      "group": "smart",
+      "summary": "ESP32 + ESPHome + Home Assistant.",
+      "audience": "",
+      "status": "y-tuong",
+      "next": "Chốt phòng/thiết bị cần tự động hóa."
+    },
+    {
+      "rel": "maker/diy-audio-amp",
+      "group": "smart",
+      "summary": "Ampli tự làm – chưa chốt loại, công suất, nguồn.",
+      "audience": "",
+      "status": "y-tuong",
+      "next": "Chốt mục tiêu (README còn TODO)."
+    },
+    {
+      "rel": "maker/solar-battery",
+      "group": "smart",
+      "summary": "Hệ pin năng lượng mặt trời – chưa chốt tải.",
+      "audience": "",
+      "status": "y-tuong",
+      "next": "Chốt tải cần cấp (README còn TODO)."
+    },
+    {
+      "rel": "maker/pi4-dslr-control",
+      "group": "smart",
+      "summary": "Điều khiển máy ảnh DSLR từ Raspberry Pi 4.",
+      "audience": "",
+      "status": "y-tuong",
+      "next": "Chốt tính năng (README còn TODO)."
+    },
+    {
+      "rel": "maker/brake-sensor-mount",
+      "group": "print",
+      "summary": "Gá công tắc đèn phanh trên tay thắng xe.",
+      "audience": "",
+      "status": "san-sang-in",
+      "next": "In thử v3.14 (bàn p1, 29 phút, 8,0 g)."
+    },
+    {
+      "rel": "maker/tet-goat-flexi",
+      "group": "print",
+      "summary": "Dê flexi Tết 2027, khớp in liền.",
+      "audience": "",
+      "status": "dang-lam",
+      "next": "Mẫu thử khớp chờ in."
+    },
+    {
+      "rel": "maker/switch-clicker",
+      "group": "print",
+      "summary": "Móc khóa clicker 1 switch Cherry MX + keycap thay được.",
+      "audience": "",
+      "status": "dang-lam",
+      "next": "Thân v2 + keycap."
+    },
+    {
+      "rel": "maker/halloween-pumpkin",
+      "group": "print",
+      "summary": "Bí ngô in 3D làm đạo cụ quay video.",
+      "audience": "",
+      "status": "chua-ro",
+      "next": "TODO: Tuan xác nhận trạng thái."
+    },
+    {
+      "rel": "maker/pump-control",
+      "group": "client",
+      "summary": "Bật/tắt máy bơm 220 V 2 HP qua Wi-Fi (ESP32 + RainMaker) – công trình cho khách, điện 220 V, KHÔNG làm hướng dẫn học sinh.",
+      "audience": "",
+      "status": "xong",
+      "next": "Sửa firmware → phát hành OTA (release.ps1)."
+    },
+    {
+      "rel": "maker/sliding-wardrobe",
+      "group": "client",
+      "summary": "Tủ áo cửa lùa 2 cánh, khung sắt âm tường.",
+      "audience": "",
+      "status": "tam-dung",
+      "next": "Chờ Tuan mua phụ kiện + gửi số đo."
+    },
+    {
+      "rel": "maker/oss-toolkit",
+      "group": "tools",
+      "summary": "Bộ công cụ mã nguồn mở (README còn TODO).",
+      "audience": "",
+      "status": "y-tuong",
+      "next": "Chốt mô tả."
     }
   ],
   "simulations": [
@@ -70,9 +195,18 @@
       "lesson": "stlab/lesson-plans/gearsbot-virtual-line-bot.md",
       "cover": "stlab/simulation/gearsbot/review/contact-sheet.png",
       "links": [
-        {"label": "Line đơn giản", "url": "https://gears.aposteriori.com.sg/index.html?worldJSON=https%3A%2F%2Fraw.githubusercontent.com%2Fathanhtuan11%2FSTLAB_Toolhub%2Fmain%2Fclaude-workspace%2Fstlab%2Fsimulation%2Fgearsbot%2Fline-simple.world.json&robotJSON=https%3A%2F%2Fraw.githubusercontent.com%2Fathanhtuan11%2FSTLAB_Toolhub%2Fmain%2Fclaude-workspace%2Fstlab%2Fsimulation%2Fgearsbot%2Fstlab-line-bot.robot.json"},
-        {"label": "Cua gắt", "url": "https://gears.aposteriori.com.sg/index.html?worldJSON=https%3A%2F%2Fraw.githubusercontent.com%2Fathanhtuan11%2FSTLAB_Toolhub%2Fmain%2Fclaude-workspace%2Fstlab%2Fsimulation%2Fgearsbot%2Fline-sharp.world.json&robotJSON=https%3A%2F%2Fraw.githubusercontent.com%2Fathanhtuan11%2FSTLAB_Toolhub%2Fmain%2Fclaude-workspace%2Fstlab%2Fsimulation%2Fgearsbot%2Fstlab-line-bot.robot.json"},
-        {"label": "Vật cản", "url": "https://gears.aposteriori.com.sg/index.html?worldJSON=https%3A%2F%2Fraw.githubusercontent.com%2Fathanhtuan11%2FSTLAB_Toolhub%2Fmain%2Fclaude-workspace%2Fstlab%2Fsimulation%2Fgearsbot%2Fline-obstacles.world.json&robotJSON=https%3A%2F%2Fraw.githubusercontent.com%2Fathanhtuan11%2FSTLAB_Toolhub%2Fmain%2Fclaude-workspace%2Fstlab%2Fsimulation%2Fgearsbot%2Fstlab-line-bot.robot.json"}
+        {
+          "label": "Line đơn giản",
+          "url": "https://gears.aposteriori.com.sg/index.html?worldJSON=https%3A%2F%2Fraw.githubusercontent.com%2Fathanhtuan11%2FSTLAB_Toolhub%2Fmain%2Fclaude-workspace%2Fstlab%2Fsimulation%2Fgearsbot%2Fline-simple.world.json&robotJSON=https%3A%2F%2Fraw.githubusercontent.com%2Fathanhtuan11%2FSTLAB_Toolhub%2Fmain%2Fclaude-workspace%2Fstlab%2Fsimulation%2Fgearsbot%2Fstlab-line-bot.robot.json"
+        },
+        {
+          "label": "Cua gắt",
+          "url": "https://gears.aposteriori.com.sg/index.html?worldJSON=https%3A%2F%2Fraw.githubusercontent.com%2Fathanhtuan11%2FSTLAB_Toolhub%2Fmain%2Fclaude-workspace%2Fstlab%2Fsimulation%2Fgearsbot%2Fline-sharp.world.json&robotJSON=https%3A%2F%2Fraw.githubusercontent.com%2Fathanhtuan11%2FSTLAB_Toolhub%2Fmain%2Fclaude-workspace%2Fstlab%2Fsimulation%2Fgearsbot%2Fstlab-line-bot.robot.json"
+        },
+        {
+          "label": "Vật cản",
+          "url": "https://gears.aposteriori.com.sg/index.html?worldJSON=https%3A%2F%2Fraw.githubusercontent.com%2Fathanhtuan11%2FSTLAB_Toolhub%2Fmain%2Fclaude-workspace%2Fstlab%2Fsimulation%2Fgearsbot%2Fline-obstacles.world.json&robotJSON=https%3A%2F%2Fraw.githubusercontent.com%2Fathanhtuan11%2FSTLAB_Toolhub%2Fmain%2Fclaude-workspace%2Fstlab%2Fsimulation%2Fgearsbot%2Fstlab-line-bot.robot.json"
+        }
       ]
     },
     {
@@ -84,9 +218,23 @@
       "lesson": "",
       "cover": "",
       "links": [
-        {"label": "Trang Erebus", "url": "https://erebus.rcj.cloud/"},
-        {"label": "Lắp robot (3000 điểm)", "url": "https://robot.erebus.rcj.cloud"}
+        {
+          "label": "Trang Erebus",
+          "url": "https://erebus.rcj.cloud/"
+        },
+        {
+          "label": "Lắp robot (3000 điểm)",
+          "url": "https://robot.erebus.rcj.cloud"
+        }
       ]
     }
-  ]
+  ],
+  "groups": {
+    "robotics": "Robotics",
+    "smart": "Thiết bị thông minh",
+    "print": "Mẫu in",
+    "client": "Khách hàng",
+    "tools": "Công cụ",
+    "khac": "Khác"
+  }
 }
