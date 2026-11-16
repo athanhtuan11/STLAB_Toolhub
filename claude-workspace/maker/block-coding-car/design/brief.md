@@ -57,6 +57,7 @@ nóc phẳng đặt nút Dừng + nhãn màu tên xe. Đế chung nên vẫn đ�
 
 ## Quyết định
 <!-- Tuan chọn: ngày | dáng xe | bố cục app | ghi chú → chép 1 dòng vào README "Lịch sử sửa" -->
+2026-11-16 | **A – Xe hộp mặt cười** | **U1** | Tuan: "đồng ý, theo ý bạn". Bộ khối rút gọn (Bắt đầu cố định, bỏ Kết thúc, Lặp 1 khối, bỏ Chờ v1, nút trên xe v2; khối ≥ 96 px, bấm-thêm + kéo-sắp). Nút Dừng luôn đỏ – bản thân xanh thêm 1 cuộn đỏ nhỏ. CAD bo mượt thân A (bớt "bánh tầng").
 
 ## Chờ Tuan quyết (2026-11-16) – xem `contact-sheet.png`
 1. **Dáng xe** A / B / C (khuyến nghị A). Ghi chú: A hơi "bánh tầng" – CAD sẽ bo mượt.

@@ -1,0 +1,68 @@
+# So do dau day block-coding-car – nguon duy nhat cho hinh SVG + bang day tren Toolhub (/projects/<slug>/guide).
+# Claude viet 2026-11-16 (giai doan 1). Chan tranh: GPIO0/3/45/46 (strapping), 19/20 (USB), 35-37 (PSRAM octal N16R8),
+# 38/48 (LED RGB tren bo), 43/44 (UART log). Doi chan -> sua ca firmware/main/pins.h (giai doan 2).
+# level: 5v | 3v3 | gnd | tin-hieu | loa (day pin 4,8 V ghi level 5v, note noi ro) ; color: ma mau WireViz
+title: "Xe lập trình kéo thả – sơ đồ đấu dây"
+groups:
+  nguon: "Dây nguồn"
+  motor-trai: "Động cơ trái"
+  motor-phai: "Động cơ phải"
+  mat: "Mắt LED"
+  ampli: "Loa"
+  nut: "Nút Dừng + đo pin"
+parts:
+  bat: {label: "Hộp pin 4×AA NiMH (4,8 V)", pins: ["+", "−"]}
+  sw: {label: "Công tắc nguồn", pins: ["1", "2"]}
+  ptc: {label: "Cầu chì PTC", pins: ["1", "2"]}
+  bb: {label: "Buck-boost 5 V", pins: ["VIN", "GND", "VOUT"]}
+  esp: {label: "ESP32-S3 N16R8", pins: ["5V", "GND", "GPIO1", "GPIO4", "GPIO5", "GPIO6", "GPIO7", "GPIO9", "GPIO10", "GPIO11", "GPIO12", "GPIO13", "GPIO15", "GPIO16", "GPIO17", "GPIO18"]}
+  ml: {label: "ULN2003 trái", pins: ["IN1", "IN2", "IN3", "IN4", "+", "−"]}
+  mr: {label: "ULN2003 phải", pins: ["IN1", "IN2", "IN3", "IN4", "+", "−"]}
+  buf: {label: "74AHCT125 (nâng mức)", pins: ["VCC", "GND", "1A", "1Y", "1OE"]}
+  led: {label: "2 × WS2812B (mắt)", pins: ["5V", "GND", "DIN"]}
+  amp: {label: "MAX98357A (ampli)", pins: ["VIN", "GND", "LRC", "BCLK", "DIN", "Loa +", "Loa −"]}
+  spk: {label: "Loa 4 Ω", pins: ["+", "−"]}
+  btn: {label: "Nút Dừng (đỏ)", pins: ["1", "2"]}
+  div: {label: "Chia áp 100k/100k", pins: ["Vào", "Giữa", "GND"]}
+wires:
+  - {from: bat.+, to: sw.1, level: 5v, color: RD, group: nguon, note: "pin NiMH – KHÔNG nối thẳng vào chân 5V của ESP"}
+  - {from: sw.2, to: ptc.1, level: 5v, color: RD, group: nguon}
+  - {from: ptc.2, to: bb.VIN, level: 5v, color: RD, group: nguon}
+  - {from: bat.−, to: bb.GND, level: gnd, color: BK, group: nguon}
+  - {from: bb.VOUT, to: esp.5V, level: 5v, color: RD, group: nguon, note: "5,0 V ổn định (LDO trên bo chịu tối đa 5,5 V)"}
+  - {from: bb.GND, to: esp.GND, level: gnd, color: BK, group: nguon}
+  - {from: bb.VOUT, to: ml.+, level: 5v, color: RD, group: nguon}
+  - {from: bb.VOUT, to: mr.+, level: 5v, color: RD, group: nguon}
+  - {from: bb.GND, to: ml.−, level: gnd, color: BK, group: nguon}
+  - {from: bb.GND, to: mr.−, level: gnd, color: BK, group: nguon}
+  - {from: ml.IN1, to: esp.GPIO4, level: tin-hieu, color: BU, group: motor-trai}
+  - {from: ml.IN2, to: esp.GPIO5, level: tin-hieu, color: PK, group: motor-trai}
+  - {from: ml.IN3, to: esp.GPIO6, level: tin-hieu, color: YE, group: motor-trai}
+  - {from: ml.IN4, to: esp.GPIO7, level: tin-hieu, color: OG, group: motor-trai}
+  - {from: mr.IN1, to: esp.GPIO15, level: tin-hieu, color: BU, group: motor-phai}
+  - {from: mr.IN2, to: esp.GPIO16, level: tin-hieu, color: PK, group: motor-phai}
+  - {from: mr.IN3, to: esp.GPIO17, level: tin-hieu, color: YE, group: motor-phai}
+  - {from: mr.IN4, to: esp.GPIO18, level: tin-hieu, color: OG, group: motor-phai}
+  - {from: buf.VCC, to: bb.VOUT, level: 5v, color: RD, group: mat}
+  - {from: buf.GND, to: bb.GND, level: gnd, color: BK, group: mat}
+  - {from: buf.1OE, to: bb.GND, level: gnd, color: BK, group: mat, note: "OE nối GND = luôn bật"}
+  - {from: buf.1A, to: esp.GPIO12, level: tin-hieu, color: GN, group: mat}
+  - {from: buf.1Y, to: led.DIN, level: tin-hieu, color: GN, group: mat, note: "điện trở ~330 Ω nối tiếp sát DIN (TODO datasheet)"}
+  - {from: led.5V, to: bb.VOUT, level: 5v, color: RD, group: mat}
+  - {from: led.GND, to: bb.GND, level: gnd, color: BK, group: mat}
+  - {from: amp.VIN, to: bb.VOUT, level: 5v, color: RD, group: ampli, note: "tụ 1000 µF sát VIN, đúng cực"}
+  - {from: amp.GND, to: bb.GND, level: gnd, color: BK, group: ampli}
+  - {from: amp.BCLK, to: esp.GPIO9, level: tin-hieu, color: TQ, group: ampli}
+  - {from: amp.LRC, to: esp.GPIO10, level: tin-hieu, color: VT, group: ampli}
+  - {from: amp.DIN, to: esp.GPIO11, level: tin-hieu, color: WH, group: ampli}
+  - {from: spk.+, to: amp.Loa +, level: loa, color: RD, group: ampli, note: "KHÔNG nối GND"}
+  - {from: spk.−, to: amp.Loa −, level: loa, color: GY, group: ampli, note: "KHÔNG nối GND"}
+  - {from: btn.1, to: esp.GPIO13, level: tin-hieu, color: PK, group: nut, note: "kéo lên nội; nhấn = dừng + nhả cuộn"}
+  - {from: btn.2, to: esp.GND, level: gnd, color: BK, group: nut}
+  - {from: div.Vào, to: ptc.2, level: 5v, color: RD, group: nut, note: "đo sau công tắc – tắt máy không hao pin"}
+  - {from: div.Giữa, to: esp.GPIO1, level: tin-hieu, color: YE, group: nut, note: "ADC1; tối đa ~2,9 V khi pin ~5,8 V (TODO kiểm dải ADC)"}
+  - {from: div.GND, to: esp.GND, level: gnd, color: BK, group: nut}
+notes:
+  - "Vị trí chân trên hình là sơ đồ nguyên lý. Khi cắm, đọc chữ in cạnh chân trên bo."
+  - "Không cắm USB khi công tắc pin đang bật. Cập nhật firmware qua Wi-Fi (OTA)."
+  - "Không dùng GPIO35, 36, 37 (PSRAM) và GPIO0, 3, 45, 46 (chân khởi động)."

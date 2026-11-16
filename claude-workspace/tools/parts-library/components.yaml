@@ -738,3 +738,36 @@ components:
       - "vít phụ nào là 43/44/31/32 và vít góc dưới phải có phải A2: đo thông mạch (chưa hút: 31–32 thông, 43–44 hở; cuộn A1–A2 có điện trở)"
       - "dây 2,5 mm² nhỏ hơn dải AWG 12 (≈ 3,3 mm²) in trên nhãn UL: tra catalog LS dải đấu IEC hoặc bấm đầu cos/ống"
       - "kích thước, lỗ bắt / ray DIN 35 mm (mm): đo hàng thật; chưa có model STEP"
+
+  - id: stepper-28byj-48-5v
+    ten: Động cơ bước 28BYJ-48 5 V (unipolar, hộp số)
+    loai: dong-co-buoc
+    thong_so:
+      dien_ap_v: 5
+      dien_tro_cuon_ohm: "50 ±7 % (25 °C)"
+      buoc_goc: "5,625°/64"
+      ti_so_hop_so: "64:1 danh định (đo tháo thực tế ~63,68395:1 – hiệu chỉnh bằng phần mềm)"
+      buoc_moi_vong_nua_buoc: "~4 076 (63,68:1) / 4 096 (64:1)"
+      mo_men_keo_vao: "300 gf·cm (~29,4 mN·m)"
+      tan_so_keo_vao_khong_tai_hz: "> 600"
+      dong_moi_cuon_a: "~0,1 ở 5 V (tính 5 V / 50 Ω)"
+    nguon:
+      - https://robotix.ah-oui.org/user_docs/dos08/28BYJ-48.pdf
+      - https://docs.whiteat.com/28byj-48-%EC%8A%A4%ED%85%9D%EB%AA%A8%ED%84%B0-%EB%93%9C%EB%9D%BC%EC%9D%B4%EB%B2%84-5v/
+    todo: ["khối lượng (g)", "kích thước thân/tai/trục: đo hàng thật (card-coding-robot params.json đang ước lượng Ø28 × 19, tai cách 35)", "chưa có model STEP"]
+
+  - id: uln2003-stepper-board
+    ten: Mạch driver ULN2003 cho 28BYJ-48 (module phổ biến)
+    loai: driver-dong-co
+    thong_so:
+      dong_moi_kenh_max_a: 0.5
+      vce_sat_v: "0,9 điển hình / 1,1 max @100 mA; 1,0 / 1,3 @200 mA"
+      dien_ap_ra_max_v: 50
+      kich_thuoc_mm: "~35 × 31 (tùy hãng)"
+      lo_bat: "4 lỗ Ø3,2 (tùy hãng)"
+      muc_logic_vao: "nhận 3,3 V từ ESP32"
+    nguon:
+      - https://www.ti.com/lit/ds/symlink/uln2003a.pdf
+      - https://cdn-reichelt.de/documents/datenblatt/A300/ME016.pdf
+      - https://www.tinytronics.nl/en/mechanics-and-actuators/motor-controllers-and-drivers/stepper-motor-controllers-and-drivers/uln2003-stepper-motor-driver-module
+    todo: ["đo module thật: kích thước, tọa độ lỗ, chiều cao linh kiện", "chưa có model STEP"]

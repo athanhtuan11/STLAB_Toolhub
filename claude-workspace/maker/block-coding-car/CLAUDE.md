@@ -19,7 +19,7 @@ Kế hoạch đã duyệt: `C:\Users\hoang\.claude\plans\l-n-d-n-robotics-fizzy-
 
 ## An toàn
 - Trẻ 6–7: không chi tiết rời nhỏ, vít không lộ, bánh giấu, hộp pin mở bằng tua vít, NiMH. Firmware nhả cuộn stepper khi đứng yên.
-- `TODO` kiểm NiMH đầy (~5,6 V) cấp chân 5V DevKit có an toàn không (datasheet LDO) – nếu không thêm ổn áp 5 V.
+- Nguồn: LDO DevKitC-1 v1.1 (SGM2212) tối đa 5,5 V, chân 5V nối thẳng LDO → **bắt buộc buck-boost 5 V**, không cấp pin thẳng. Không cắm USB khi pin bật (`hardware/BOM.md`).
 
 ## Trạng thái
-- 2026-11-16: bước 0 xong ảnh (concepts, ui-mockups, cmf, contact-sheet) + báo cáo giáo dục. **Chờ Tuan chọn** dáng + bố cục (mục "Chờ Tuan quyết" trong design/brief.md).
+- 2026-11-16: bước 0 xong – Tuan chọn **dáng A Xe hộp mặt cười + app U1**, bộ khối rút gọn, nút Dừng luôn đỏ. Giai đoạn 1 xong (giấy): `hardware/BOM.md`, `hardware/wiring.yaml` (render Toolhub OK), parts-library + 28BYJ-48/ULN2003. Tiếp: Tuan mua linh kiện; giai đoạn 2 firmware + 3 app làm song song được.
