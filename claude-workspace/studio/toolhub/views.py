@@ -108,7 +108,8 @@ def api_health():
 
 @bp.get("/api/prints")
 def api_prints():
-    return jsonify({"prints": print_lib.list_prints()})
+    # Tuan 2026-11-16: trang In 3D gom 1 the / du an, nhan vao mo ban in
+    return jsonify({"prints": print_lib.list_prints(), "projects": print_lib.list_print_projects()})
 
 
 @bp.get("/prints/img/<project>/<plate>")

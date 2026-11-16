@@ -179,6 +179,36 @@ def list_prints():
     return [{key: value for key, value in row.items() if not key.startswith("_")} for row in _cache_prints]
 
 
+def list_print_projects():
+    """Gom cac ban in theo (source, folder) thanh nhom du an, sap xep moi nhat truoc."""
+    plates = list_prints()
+    groups = {}
+    for plate in plates:
+        key = (plate["source"], plate["folder"])
+        groups.setdefault(key, []).append(plate)
+    out = []
+    for items in groups.values():
+        items = sorted(items, key=lambda p: p["plate"])
+        first = items[0]
+        minutes_values = [p["minutes"] for p in items if p["minutes"] is not None]
+        grams_values = [p["grams"] for p in items if p["grams"] is not None]
+        out.append({
+            "project": first["project"],
+            "title": first["title"],
+            "source": first["source"],
+            "folder": first["folder"],
+            "cad": first["cad"],
+            "plates": items,
+            "plate_count": len(items),
+            "minutes": sum(minutes_values) if minutes_values else None,
+            "grams": round(sum(grams_values), 1) if grams_values else None,
+            "image_url": next((p["image_url"] for p in items if p["image_url"]), None),
+            "mtime": max(p["mtime"] for p in items),
+        })
+    out.sort(key=lambda g: g["mtime"], reverse=True)
+    return out
+
+
 def _match(project, plate):
     list_prints()
     return next((row for row in _cache_prints

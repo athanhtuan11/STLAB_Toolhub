@@ -242,3 +242,12 @@ details.others summary { cursor: pointer; color: var(--muted); font-size: 14px; 
 .guide-toc ol.guide-toc-list { list-style: none; padding-left: 0; margin-left: 0; }
 .guide-toc ol.guide-toc-list li { padding-left: 0; margin-left: 0; }
 .wiring-done td { opacity: .55; }
+
+/* The du an (trang chinh In 3D) */
+.print-project { cursor: pointer; }
+.print-project:hover, .print-project:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.print-back-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.print-back { background: transparent; border: 1px solid var(--line); color: var(--text); }
+.print-back:hover { border-color: var(--accent); }
+.print-project-title { font-size: 18px; font-weight: 700; margin: 0; overflow-wrap: anywhere; }
+#print-grid[data-view="project"] .print-name, #print-grid[data-view="project"] .print-title { display: none; }
