@@ -35,7 +35,7 @@ static const char *TAG = "car";
 
 // ---- Hang so lay tu PROTOCOL.md muc 5 ----
 #define DEFAULT_STEPS_CELL   4054   // buoc / o 150 mm
-#define DEFAULT_STEPS_90     1698   // buoc moi banh de quay 90 do
+#define DEFAULT_STEPS_90     1231   // buoc moi banh de quay 90 do
 #define CAL_CELL_MIN         1000
 #define CAL_CELL_MAX         8000
 #define CAL_90_MIN           500

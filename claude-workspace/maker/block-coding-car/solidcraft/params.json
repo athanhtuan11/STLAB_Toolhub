@@ -1,0 +1,71 @@
+{
+  "_ghi_chu": "Claude 2026-11-16, GD4 CAD than xe A (Xe hop mat cuoi). Don vi mm, g. uoc_luong = chua do hang that (TODO). He toa do: san z=0, xe nhin +X, truc 2 banh qua (0,0).",
+  "cell_mm": 150,
+  "max_bbox": [116, 116, 100],
+  "max_turn_radius": 70,
+  "ground_clearance_min": 4.0,
+
+  "body": {
+    "_dang": "hop bo tron dang A (design/concepts dims.json: 113,5 x 112,4 x 81,8); goc mat bang R>=26 de quay trong o",
+    "l": 112.0, "w": 112.0, "z_bottom": 4.0, "z_roof_top": 82.5,
+    "corner_r_plan": 26.0, "wall": 2.2, "roof_t": 2.5, "roof_chamfer": 4.0,
+    "face_notch_w": 56.0, "face_notch_top_z": 74.0, "face_flange": 3.0,
+    "screw_columns": 4, "_vit": "M2.5 tu duoi day Chassis vao cot goc Body"
+  },
+  "colors": {"body": "#E0453A", "chassis": "#1E2A24", "face": "#FFF3DF", "diffuser": "#FFFFFF", "stop": "#D7261E", "wheel": "#1E2A24",
+             "_": "ban 1 xe robot-do; xe mau khac chi doi body. Nut Dung luon do (Tuan 2026-11-16)."},
+
+  "wheel": {"od": 48.0, "rim_d": 45.0, "width": 8.0, "oring_groove_w": 3.2, "oring_groove_d": 1.5,
+            "_oring": "O-ring tiet dien 3,0 mm (TODO chon ma, ID ~40) -> nho 1,5 mm khoi vanh -> OD 48 (chu vi 150,8 ~ 1 o)"},
+  "track_mm": 58.0,
+  "_track": "khoang cach tam 2 banh = 2 x (2 + 19 than motor + 2,5 vach + 1,5 khe + 4 nua banh). PROTOCOL steps_90 = 58/(4*48)*4076 = 1231",
+
+  "motor_28byj48": {
+    "_nguon": "datasheet 28BYJ-48 pho bien (parts-library stepper-28byj-48-5v) - kich thuoc than TODO do hang that",
+    "body_d": 28.0, "body_h": 19.0, "shaft_d": 5.0, "shaft_flat": 3.0, "shaft_len": 10.0, "shaft_offset": 8.0,
+    "boss_d": 9.0, "boss_h": 1.5, "ear_pitch": 35.0, "ear_hole": 4.2, "ear_t": 1.0, "ear_w": 7.0,
+    "cap_w": 17.0, "cap_h": 15.0, "cap_depth": 6.0, "mass_g": 33,
+    "_lap": "truc nam theo Y, than lech len tren truc (shaft_offset huong +Z); mat bich (tai) ap vao vach Chassis o |y| = 21",
+    "center_gap": 4.0
+  },
+  "bulkhead_t": 2.5, "wheel_gap": 1.5,
+
+  "battery_4aa": {"h": 62, "w": 58, "t": 16, "mass_g": 128, "x_center": -34.0, "z_bottom": 5.0, "fit_gap": 0.5,
+                  "_": "uoc_luong hop 4xAA CO NAP VAN VIT (h dung theo Z, w theo Y, t theo X) + 4 pin NiMH ~27 g + hop ~20 g. Dung trong ong sau truc, rut ra tu day qua Battery_lid. Claude 2026-11-16: hop nam phang 2xAA truoc/sau de len banh (banh |x|<=24 o y 25..33) nen doi."},
+  "battery_cg_z_max": 38.0,
+  "battery_lid_t": 1.8,
+
+  "skid": {"d": 10.0, "main": [-48.5, 0.0, 0.0], "anti_tip": [[-48.5, 24.0, 1.5], [-48.5, -24.0, 1.5], [46.0, 0.0, 1.5]],
+           "_": "CHI TIET RIENG Skid_* (Claude 2026-11-16: chan lien san khong in duoc khong support) - vom O10 + chot dinh vi, vit M2.5 tu TRONG san xuong (dau vit trong xe, be khong thao). 3 diem ti that = 2 banh + chan chinh sau (z 0) -> banh khong bi nhac. 3 chan chong lat cao 1,5 chi cham khi nghieng. Khong bi roi (tre nuot)."},
+  "anti_tip_z_max": 1.6,
+
+  "deck": {"z": 50.0, "t": 2.5, "_": "tam dien tu tren motor, dung tren 4 cot cua Chassis, vit M2.5"},
+  "esp32_s3": {"l": 62.74, "w": 25.4, "ant": 6.41, "pcb_t": 1.6, "under_clear": 17.0, "top_h": 4.0, "mass_g": 10,
+               "_": "parts-library esp32-s3-devkitc-1 (khong co lo bat -> gia do ke 2 canh dai + mau giu). under_clear = chan header + dau Dupont (TODO do)"},
+  "uln2003_board": {"l": 35, "w": 32, "h": 15, "hole_d": 3.2, "mass_g": 8, "_": "uoc_luong ~35x31 (tuy hang), 2 cai"},
+  "buck_boost": {"l": 17.8, "w": 12.7, "h": 6, "mass_g": 3, "_": "TODO theo ma mua (vd Pololu S9V11F5 0,7 x 0,5 in)"},
+  "max98357": {"l": 19, "w": 18, "h": 4, "mass_g": 2, "_": "uoc_luong"},
+  "speaker": {"d": 28, "h": 6, "mass_g": 8, "x_face": 50.0, "z_center": 24.0, "_": "TODO chon loa 4 ohm O28; sau Face phan duoi, huong +X, khe loa doc tren Face"},
+  "power_switch": {"l": 12, "w": 6, "h": 6, "slot_l": 8, "x": 30.0, "y": 15.0, "_": "TODO ma cong tac gat; lap duoi day Chassis, can gat lo ra day"},
+  "led_eye": {"pcb_d": 10.0, "pcb_t": 1.6, "led_h": 1.6, "_": "WS2812B tren mach tron O10 (TODO do), 2 cai"},
+
+  "stop_button": {
+    "_nguon_mx": "fit-library catpaw/mx-socket: lo vuong 14,0 (community); keycap stem cross catpaw/mx-keycap-cross 4,19",
+    "mx_socket": 14.0, "mx_plate_t": 1.5, "mx_below_plate": 8.3, "mx_above_plate": 6.6, "mx_travel": 4.0, "stem_cross": 4.19,
+    "x": -14.0, "y": 0.0, "_vi_tri": "noc giua-sau; than MX (z ~62-74) nam truoc ong pin (x <= -25,5, dinh z 67). Goi y bo tri deck: ESP32 doc theo Y o x 20..46, 2 ULN2003 o |y| 18..53 x -22..13, de trong |y|<18 quanh MX",
+    "cap_d": 24.0, "cap_h_above_roof": 6.0, "roof_hole_d": 25.0, "cap_flange_d": 32.0, "cap_flange_t": 2.0,
+    "_cap": "mu do O24 lo qua nap O25 (khe 0,5/ben), go O32 nam duoi nap -> khong rut ra duoc; luc nghi go cach nap 0,3"
+  },
+  "eye": {"hole_d": 14.0, "diffuser_d": 18.0, "diffuser_t": 1.0, "y": 18.0, "z": 62.0, "smile_groove": 1.0},
+
+  "screw_m25": {"_nguon": "fit-library mec1/m2.5-self-tap 2,2 + tipflow 2,4 -> 2,3; mec1/m2.5-clearance 2,8; dau BHCS bac O5,0",
+                "self_tap": 2.3, "clear": 2.8, "head_d": 5.0, "head_h": 2.0, "boss_d": 6.0},
+  "dshaft_press_try": [[5.0, 3.0], [5.1, 3.1], [5.2, 3.2]],
+  "dshaft_use": [5.1, 3.1],
+
+  "petg_density_g_cm3": 1.27,
+  "print_fill_factor": 0.45,
+  "tip_angle_min_deg": 30,
+  "wall_min": 0.9,
+  "edge_round_min": 1.0
+}

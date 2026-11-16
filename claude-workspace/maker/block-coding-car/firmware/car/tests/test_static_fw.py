@@ -60,7 +60,7 @@ def test_pins_match_wiring():
 
 def test_protocol_constants():
     src = strip_comments(all_c())
-    for k in ("4054", "1698"):  # steps_cell, steps_90 mac dinh (PROTOCOL.md muc 5)
+    for k in ("4054", "1231"):  # steps_cell, steps_90 mac dinh (PROTOCOL.md muc 5)
         assert k in src, f"thieu hang so mac dinh {k}"
     for n in ("200", "500", "300"):
         assert re.search(rf"\b{n}\b", src), f"thieu so toc do/nghi {n}"

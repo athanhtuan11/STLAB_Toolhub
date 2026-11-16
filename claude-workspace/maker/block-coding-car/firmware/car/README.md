@@ -40,7 +40,7 @@ Màu mắt trạng thái: xanh lá = sẵn sàng, xanh dương nhấp nháy = đ
 Phát hành: `python ota.py --host robot-do.local` (khi xe không chạy chương trình). Xe tự quay về bản cũ nếu bản mới không chạy ổn.
 
 ## Hiệu chỉnh `cal`
-Mặc định `steps_cell = 4054` (bước/ô 150 mm) và `steps_90 = 1698` (bước mỗi bánh để quay 90°) – tính từ BOM, chưa đo thật.
+Mặc định `steps_cell = 4054` (bước/ô 150 mm) và `steps_90 = 1231` (bước mỗi bánh để quay 90°, vết bánh 58 mm theo CAD) – tính toán, chưa đo thật.
 Giáo viên chỉnh từ app (thông điệp ws `cal`, khoảng 1000–8000 và 500–4000), lưu NVS namespace `car`. Cách đo: chạy `fwd 4` trên thảm ô,
 đo quãng đường thật, nhân tỉ lệ; `left` x4 phải về đúng hướng cũ.
 

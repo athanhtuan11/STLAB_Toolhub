@@ -1,0 +1,31 @@
+# block-coding-car (SolidCraft) - xe A "Xe hop mat cuoi". STL da dung huong in (build_car.py), moi ban 1 mau (mau lay tu stl/colors.json).
+# Cat lop: python tools/print/scripts/slice.py maker/block-coding-car/print/print.yaml (gate: solidcraft/tests/test_build.py)
+machine: Bambu Lab A1 0.4 nozzle
+filament: Bambu PETG Basic @BBL A1
+stl: ../solidcraft/stl
+plates_dir: plates
+common: {sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
+plates:
+  p1-body:
+    process: 0.20mm Standard @BBL A1
+    overrides: {wall_loops: "2", sparse_infill_density: "10%"}
+    stl: ["body.stl"]
+  p2-chassis:
+    process: 0.20mm Standard @BBL A1
+    overrides: {wall_loops: "3", sparse_infill_density: "15%"}
+    stl: ["chassis.stl"]
+  p3-small-black:
+    process: 0.20mm Standard @BBL A1
+    overrides: {wall_loops: "3", sparse_infill_density: "20%"}
+    stl: ["deck.stl", "battery_lid.stl", "eye_holder.stl", "btn_holder.stl", "wheel_l.stl", "wheel_r.stl", "skid_*.stl", "coupon.stl"]
+  p4-face:
+    process: 0.20mm Standard @BBL A1
+    overrides: {wall_loops: "3", sparse_infill_density: "20%"}
+    stl: ["face.stl"]
+  p5-white:
+    process: 0.20mm Standard @BBL A1
+    stl: ["diffuser_l.stl", "diffuser_r.stl"]
+  p6-stop:
+    process: 0.20mm Standard @BBL A1
+    overrides: {wall_loops: "3", sparse_infill_density: "30%"}
+    stl: ["stop_cap.stl"]

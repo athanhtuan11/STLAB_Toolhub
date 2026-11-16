@@ -1,0 +1,19 @@
+{
+ "chassis.stl": "#1E2A24",
+ "battery_lid.stl": "#1E2A24",
+ "skid_main.stl": "#1E2A24",
+ "skid_tip_l.stl": "#1E2A24",
+ "skid_tip_r.stl": "#1E2A24",
+ "skid_tip_f.stl": "#1E2A24",
+ "deck.stl": "#1E2A24",
+ "body.stl": "#E0453A",
+ "face.stl": "#FFF3DF",
+ "diffuser_l.stl": "#FFFFFF",
+ "diffuser_r.stl": "#FFFFFF",
+ "eye_holder.stl": "#1E2A24",
+ "stop_cap.stl": "#D7261E",
+ "btn_holder.stl": "#1E2A24",
+ "wheel_l.stl": "#1E2A24",
+ "wheel_r.stl": "#1E2A24",
+ "coupon.stl": "#1E2A24"
+}

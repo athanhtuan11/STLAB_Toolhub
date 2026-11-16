@@ -24,10 +24,10 @@ Số liệu có nguồn ghi ở cột Nguồn; chưa có → `TODO`. Giá: TODO 
 | 9 | IC đệm 74AHCT125 (nâng mức 3,3 → 5 V cho dây dữ liệu LED) | 1 | Dữ liệu WS2812 ở 5 V cần mức cao ~0,7·VDD > 3,3 V – `TODO` xác nhận datasheet | TODO |
 | 10 | Ampli I2S MAX98357A + loa 4 Ω nhỏ | 1 | cùng loại Cú Bông S3 | `maker/english-teacher/hardware/wiring-s3.yaml` |
 | 11 | Tụ 1000 µF 16 V (sát VIN ampli) + tụ 470 µF 16 V (đầu ra buck-boost) | 1+1 | chống sụt áp khi stepper đổi pha | – |
-| 12 | Nút nhấn **Dừng** đỏ, mũ Ø28 trên nóc | 1 | nối GPIO13 ↔ GND | – |
+| 12 | Switch bàn phím **MX** (loại lắp không PCB) cho nút **Dừng** + mũ đỏ in 3D Ø24 (gờ Ø32 dưới nóc, không rút ra được) | 1 | nối GPIO13 ↔ GND; `TODO` chọn loại switch (lực nhấn) | fit-library `catpaw/mx-socket` 14,0 |
 | 13 | Điện trở 100 kΩ × 2 (chia áp đo pin) | 2 | pin → GPIO1 (ADC1) | – |
-| 14 | Bánh xe in 3D Ø48 + vòng cao su (O-ring) | 2 | chu vi 150,8 mm ≈ 1 ô | card-coding-robot params.json |
-| 15 | Bi đỡ Ø10 (bi thép/bi nhựa trong ổ in) | 1 | phía sau | – |
+| 14 | Bánh xe in 3D vành Ø45 + O-ring tiết diện 3,0 mm (ID ~40, `TODO` mã) → Ø48 | 2 | chu vi 150,8 mm ≈ 1 ô | `solidcraft/params.json` |
+| 15 | (bỏ) – chân trượt vòm in liền đế thay bi đỡ | – | trẻ không nuốt được bi rời | – |
 | 16 | Dây Dupont, ốc M3 | – | – | – |
 
 ## Dòng điện ước tính (tính từ datasheet, `TODO` đo thật)
@@ -39,10 +39,10 @@ Số liệu có nguồn ghi ở cột Nguồn; chưa có → `TODO`. Giá: TODO 
 - Tần số kéo vào không tải > 600 Hz (datasheet). Nửa bước ~4 076 bước/vòng trục ra (theo tỉ số đo 63,68:1).
 - Bánh Ø48 → 1 ô ≈ 1 vòng bánh. Ở ~500 bước/s nửa bước ≈ **8 s/ô**; thử chế độ cả bước + tăng/giảm tốc để còn ~4–5 s/ô
   (`TODO` đo trên thảm thật – xe chậm là chấp nhận được với lớp 1, đổi lại đi đúng ô).
-- Quay 90° tại chỗ (khoảng cách 2 bánh 80 mm): mỗi bánh lăn π·80/4 ≈ 62,8 mm ≈ 0,42 vòng.
+- Quay 90° tại chỗ (vết bánh 58 mm – GĐ4 CAD 2026-11-16): mỗi bánh lăn π·58/4 ≈ 45,6 mm ≈ 0,30 vòng ≈ 1231 nửa bước.
 
 ## Trọng tâm + chống lật (gate cho CAD giai đoạn 4)
-- Đế 3 điểm: 2 bánh (trục x = 20, cách nhau 80 mm) + 1 bi đỡ sau (x ≈ −57) – theo `design/concepts/dims.json` (ước lượng).
+- Đế 3 điểm (GĐ4, `solidcraft/params.json`): 2 bánh trục qua tâm xe (0,0), vết 58 mm + chân trượt vòm chính sau (x −48,5) liền đế; 3 chân chống lật cao 1,5 mm. Không bi rời (trẻ nuốt được). Pin: 1 hộp 4×AA nắp vít đứng sau trục (hộp phẳng 2×AA đè lên bánh).
 - Pin 4 × AA (khối nặng nhất) nằm phẳng sát đáy, sau trục bánh → trọng tâm nằm giữa trục và bi: xe không chúi mũi.
 - Gate CAD: trọng tâm (tính từ khối lượng từng chi tiết trong .sc + linh kiện) nằm trong tam giác đỡ, cách mỗi cạnh ≥ 15 mm;
   góc lật ≥ 30° mọi hướng (cùng gate card-coding-robot). Khối lượng pin/motor hiện `TODO` (cân hàng thật trước khi chốt).

@@ -17,7 +17,7 @@ xem xe ảo chạy thử trên lưới ô, rồi bấm **Chạy xe thật** – 
 2. Firmware – **v0.1 PASS** (chưa thử mạch): `firmware/car/` – build ESP-IDF, OTA, AP dự phòng
 3. App kéo thả + xe ảo – **v0.1 PASS**: `app/` – nhúng vào flash xe; ảnh duyệt `app/review/`
    Đặc tả chung app ↔ xe: `protocol/PROTOCOL.md` + 33 ca `golden.json` (cả 2 gate so cùng bộ ca)
-4. CAD + in · 5. Bài học + GUIDE + Toolhub
+4. CAD + in – **v1 PASS, chờ in thử**: `solidcraft/car.sc` (Tuan mở đo), bàn in `print/plates/p1…p6/*.3mf` (~223 g, ~7,3 giờ) · 5. Bài học + GUIDE + Toolhub
 
 ## Lịch sử sửa
 - 2026-11-16: tạo dự án, chốt S3 N16R8 + 28BYJ-48 + Wi-Fi lab, dùng chung thân xe với card-coding-robot.
@@ -25,3 +25,4 @@ xem xe ảo chạy thử trên lưới ô, rồi bấm **Chạy xe thật** – 
 - 2026-11-16: Tuan chọn dáng A + bố cục U1 + bộ khối rút gọn; nút Dừng luôn đỏ.
 - 2026-11-16: giai đoạn 1 – BOM, sơ đồ dây (GPIO tránh PSRAM/strapping/USB), nguồn qua buck-boost 5 V, thêm 28BYJ-48 + ULN2003 vào parts-library.
 - 2026-11-16: giai đoạn 2 + 3 song song – PROTOCOL.md + golden 33 ca; firmware v0.1 (stepper dốc tốc, nhả cuộn, nút Dừng, pin, mắt, loa ≤ 30 %, Wi-Fi/AP, OTA) gate 45/45 + build; app v0.1 bố cục U1 gate 47/47, 18 KB gzip.
+- 2026-11-16: GĐ4 CAD v1 thân xe A (SolidCraft) – trục bánh qua tâm, vết 58 mm → steps_90 đổi 1698 → 1231 (PROTOCOL + firmware); hộp 4×AA nắp vít đứng sau trục; chân trượt rời bắt vít từ trong (không bi rời); nút Dừng = switch MX + mũ đỏ có gờ; gate 10/10 (quay ≤ 68,4 mm, góc lật 39°, 364 g), 6 bàn in PASS không support.

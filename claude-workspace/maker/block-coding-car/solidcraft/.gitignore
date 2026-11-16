@@ -1,0 +1,6 @@
+build/
+out/
+car.sc
+*.sc.bak
+build-report.json
+__pycache__/

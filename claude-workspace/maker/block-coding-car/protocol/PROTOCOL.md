@@ -72,7 +72,7 @@ Xe → app:
   Tiến: 2 bánh lăn về trước (motor trái và phải gắn đối xứng → chiều quay ngược nhau, đặt bằng `DIR_LEFT`/`DIR_RIGHT` trong `pins.h`).
   Quay trái tại chỗ: bánh trái lùi, bánh phải tiến, mỗi bánh `steps_90` bước.
 - Mặc định (tính từ BOM, `TODO` hiệu chỉnh trên thảm thật): `steps_cell = 4054` (150 mm / (π·48 mm) × 4076 bước/vòng),
-  `steps_90 = 1698` (π·80 mm / 4 / (π·48 mm) × 4076). Lưu NVS namespace `car`.
+  `steps_90 = 1231` (vết bánh 58 mm theo CAD: π·58 mm / 4 / (π·48 mm) × 4076). Lưu NVS namespace `car`.
 - Tốc độ: khởi động 200 bước/s, tăng tuyến tính tới tối đa 500 bước/s trong 300 bước đầu, giảm đối xứng cuối đoạn
   (giới hạn kéo vào > 600 Hz theo datasheet – không vượt 500). Nghỉ 300 ms giữa 2 bước.
 - **Nhả cuộn** (4 chân về 0) khi xong/dừng/lỗi. Nút Dừng (GPIO13, kéo lên nội, chống dội 30 ms) dừng mọi lúc kể cả khi không có Wi-Fi.
