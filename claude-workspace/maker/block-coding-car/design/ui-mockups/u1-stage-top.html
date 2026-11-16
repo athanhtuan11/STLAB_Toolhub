@@ -1,0 +1,80 @@
+<!doctype html><html lang="vi"><meta charset="utf-8"><title>U1 - Sân khấu trên, dải lệnh dưới</title><style>
+@font-face{font-family:'Be Vietnam Pro';font-weight:400;src:url('../../../../studio/toolhub/static/fonts/be-vietnam-pro-400-latin.woff2')}
+@font-face{font-family:'Be Vietnam Pro';font-weight:400;unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+1EA0-1EF9,U+20AB;src:url('../../../../studio/toolhub/static/fonts/be-vietnam-pro-400-vietnamese.woff2')}
+@font-face{font-family:'Be Vietnam Pro';font-weight:700;src:url('../../../../studio/toolhub/static/fonts/be-vietnam-pro-700-latin.woff2')}
+@font-face{font-family:'Be Vietnam Pro';font-weight:700;unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+1EA0-1EF9,U+20AB;src:url('../../../../studio/toolhub/static/fonts/be-vietnam-pro-700-vietnamese.woff2')}
+:root{
+ /* tokens STLab ban sang (studio/design/DESIGN.md) */
+ --bg:#ECF1EF; --card:#FFFFFF; --ink:#16231D; --pine:#1E5A45; --pass:#257A45; --fail:#B3341F; --line:#C9D6D0;
+ /* mau nhom khoi cho tre */
+ --move:#2F7BE0; --ctrl:#F2B01E; --ctrl-ink:#3A2A00; --snd:#8E55D6; --end:#E0453A;
+ --move-bg:rgba(47,123,224,.14); --ctrl-bg:rgba(242,176,30,.22); --snd-bg:rgba(142,85,214,.14); --end-bg:rgba(224,69,58,.14);
+ --grid-a:#F6FAF8; --grid-b:#DCE9E3; --goal-bg:#FFF3C4; --glow:#FFD84D; --shadow:rgba(0,0,0,.25);
+ --btn-h:72px; --r:20px;
+}
+*{box-sizing:border-box;margin:0}
+html,body{width:1920px;height:1080px;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font-family:'Be Vietnam Pro',system-ui,sans-serif;display:flex;flex-direction:column}
+.top{height:96px;flex:none;background:var(--card);border-bottom:2px solid var(--line);display:flex;align-items:center;gap:20px;padding:0 28px}
+.conn{display:flex;align-items:center;gap:12px;background:var(--bg);border-radius:48px;padding:6px 22px 6px 14px;height:68px}
+.dot{width:22px;height:22px;border-radius:50%;background:var(--pass);box-shadow:0 0 0 6px rgba(37,122,69,.25)}
+.conn svg{width:56px;height:56px}
+.conn b{font-size:22px}
+.sp{flex:1}
+.btn{height:var(--btn-h);min-width:var(--btn-h);border:0;border-radius:var(--r);padding:0 28px;font:700 24px 'Be Vietnam Pro';color:#fff;display:flex;align-items:center;gap:12px;box-shadow:0 5px 0 var(--shadow)}
+.btn svg{width:44px;height:44px}
+.b-try{background:var(--move)} .b-real{background:var(--pine)}
+.b-stop{background:var(--fail);height:84px;padding:0 40px;font-size:32px;border-radius:42px}
+.b-stop svg{width:52px;height:52px}
+.lv{display:flex;gap:8px;background:var(--bg);padding:6px;border-radius:26px}
+.lv span{height:60px;min-width:60px;padding:0 22px;border-radius:20px;display:flex;align-items:center;justify-content:center;font:700 26px 'Be Vietnam Pro';color:var(--pine)}
+.lv .on{background:var(--pine);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(6,var(--c));grid-template-rows:repeat(6,var(--c));border:6px solid var(--pine);border-radius:24px;overflow:hidden;background:var(--grid-a);position:relative;flex:none}
+.grid i{display:flex;align-items:center;justify-content:center;background:var(--grid-a)}
+.grid i.d{background:var(--grid-b)}
+.grid i.goal{background:var(--goal-bg)}
+.grid i.goal svg{width:72%;height:72%}
+.grid .car{position:absolute;width:var(--c);height:var(--c);left:0;top:calc(var(--c)*5);display:flex;align-items:center;justify-content:center}
+.grid .car svg{width:86%;height:86%;filter:drop-shadow(0 4px 3px var(--shadow))}
+.strip{display:flex;align-items:center;gap:8px;background:var(--card);border:3px dashed var(--line);border-radius:28px;padding:22px 20px}
+.blk{position:relative;flex:none;width:var(--bs);height:var(--bs);border-radius:22px;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 6px 0 var(--shadow)}
+.blk svg{width:calc(var(--bs)*.72);height:calc(var(--bs)*.72)}
+.blk .x{position:absolute;right:-6px;top:-10px;background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:20px;font:700 22px 'Be Vietnam Pro';padding:0 10px;min-width:36px;text-align:center}
+.move{background:var(--move)} .ctrl{background:var(--ctrl);color:var(--ctrl-ink)} .snd{background:var(--snd)} .end{background:var(--end)}
+.blk.run{outline:8px solid var(--ink);outline-offset:4px;transform:translateY(-10px) scale(1.08);box-shadow:0 0 0 14px #fff,0 0 34px 18px var(--glow);z-index:2}
+.arr{flex:none;width:22px;height:22px;opacity:.5}
+.rep{display:flex;align-items:center;background:var(--ctrl-bg);border:4px solid var(--ctrl);border-radius:30px;padding:12px 10px 8px 10px;position:relative;flex:none}
+.rep .lab{position:absolute;top:-18px;left:14px;background:var(--ctrl);color:var(--ctrl-ink);font:700 24px 'Be Vietnam Pro';border-radius:16px;padding:0 14px}
+.pal{display:flex;gap:18px}
+.grp{display:flex;gap:12px;padding:14px;border-radius:26px}
+.grp.move{background:var(--move-bg)} .grp.ctrl{background:var(--ctrl-bg)} .grp.snd{background:var(--snd-bg)} .grp.end{background:var(--end-bg)}
+.grp .blk{width:var(--ps);height:var(--ps)} .grp .blk svg{width:calc(var(--ps)*.72);height:calc(var(--ps)*.72)}
+</style><body><svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-flag" viewBox="0 0 64 64"><path d="M16 8v50" stroke="#3A2A00" stroke-width="7" stroke-linecap="round"/><path d="M20 10h34l-9 12 9 12H20z" fill="#1F9A47" stroke="#3A2A00" stroke-width="4" stroke-linejoin="round"/></symbol>
+<symbol id="i-fwd" viewBox="0 0 64 64"><path d="M32 8 12 32h13v24h14V32h13z" fill="#fff"/></symbol>
+<symbol id="i-back" viewBox="0 0 64 64"><path d="M32 56 12 32h13V8h14v24h13z" fill="#fff"/></symbol>
+<symbol id="i-left" viewBox="0 0 64 64"><path d="M52 54V34C52 24 45 18 36 18H24v-9L6 24l18 15v-9h12c4 0 6 2 6 6v18z" fill="#fff"/></symbol>
+<symbol id="i-right" viewBox="0 0 64 64"><path d="M12 54V34c0-10 7-16 16-16h12v-9l18 15-18 15v-9H28c-4 0-6 2-6 6v18z" fill="#fff"/></symbol>
+<symbol id="i-rep" viewBox="0 0 64 64"><path d="M14 30v-4c0-8 6-14 14-14h14V4l14 14-14 14v-8H28c-3 0-4 1-4 4v4zM50 34v4c0 8-6 14-14 14H22v8L8 46l14-14v8h14c3 0 4-1 4-4v-4z" fill="#3A2A00"/></symbol>
+<symbol id="i-wait" viewBox="0 0 64 64"><circle cx="32" cy="34" r="22" fill="none" stroke="#3A2A00" stroke-width="7"/><path d="M32 20v15l10 7" stroke="#3A2A00" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M26 6h12" stroke="#3A2A00" stroke-width="7" stroke-linecap="round"/></symbol>
+<symbol id="i-sound" viewBox="0 0 64 64"><path d="M6 24h14l16-14v44L20 40H6z" fill="#fff"/><path d="M44 22c6 6 6 14 0 20M50 14c11 11 11 25 0 36" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="i-eye" viewBox="0 0 64 64"><path d="M4 36C14 20 50 20 60 36 50 52 14 52 4 36z" fill="#fff"/><circle cx="32" cy="36" r="10" fill="#62339C"/><path d="M32 4v9M12 9l5 7M52 9l-5 7" stroke="#FFD84D" stroke-width="5" stroke-linecap="round"/></symbol>
+<symbol id="i-stop" viewBox="0 0 64 64"><rect x="12" y="12" width="40" height="40" rx="8" fill="#fff"/></symbol>
+<symbol id="i-end" viewBox="0 0 64 64"><path d="M14 8v50" stroke="#fff" stroke-width="7" stroke-linecap="round"/><path d="M20 10h34v26H20z" fill="#fff"/><path d="M20 10h9v9h-9zM38 10h9v9h-9zM29 19h9v9h-9zM47 19h7v9h-7zM20 28h9v8h-9zM38 28h9v8h-9z" fill="#16231D"/></symbol>
+<symbol id="i-star" viewBox="0 0 64 64"><path d="M32 5l8 18 20 2-15 13 5 20-18-10-18 10 5-20L4 25l20-2z" fill="#F2B01E" stroke="#B07C00" stroke-width="3" stroke-linejoin="round"/></symbol>
+<symbol id="i-arr" viewBox="0 0 24 24"><path d="M8 3l10 9-10 9" stroke="#16231D" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-car" viewBox="0 0 64 64"><rect x="9" y="6" width="46" height="52" rx="14" fill="#E0453A" stroke="#7A1A14" stroke-width="3"/><rect x="14" y="10" width="36" height="22" rx="9" fill="#FFF3DF"/><circle cx="24" cy="21" r="6" fill="#fff" stroke="#16231D" stroke-width="2.5"/><circle cx="40" cy="21" r="6" fill="#fff" stroke="#16231D" stroke-width="2.5"/><circle cx="24" cy="19.5" r="3" fill="#16231D"/><circle cx="40" cy="19.5" r="3" fill="#16231D"/><rect x="22" y="40" width="20" height="12" rx="5" fill="#FFF3DF" opacity=".55"/><rect x="3" y="14" width="7" height="14" rx="3" fill="#16231D"/><rect x="54" y="14" width="7" height="14" rx="3" fill="#16231D"/><rect x="3" y="38" width="7" height="14" rx="3" fill="#16231D"/><rect x="54" y="38" width="7" height="14" rx="3" fill="#16231D"/></symbol>
+</defs></svg><div class="top">
+<div class="conn"><svg><use href="#i-car"/></svg><span class="dot"></span><b>robot-đỏ</b></div>
+<div class="sp"></div>
+<div class="btn b-try"><svg><use href="#i-fwd"/></svg>Chạy thử</div>
+<div class="btn b-real"><svg><use href="#i-car"/></svg>Chạy xe thật</div>
+<div class="sp"></div>
+<div class="lv"><span class="on">Cấp 1</span><span class="">Cấp 2</span><span class="">Cấp 3</span></div>
+<div class="btn b-stop"><svg><use href="#i-stop"/></svg>DỪNG</div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:20px 40px 24px">
+ <div class="grid" style="--c:88px"><i class=""></i><i class="d"></i><i class=""></i><i class="d"></i><i class=""></i><i class="goal"><svg><use href="#i-star"/></svg></i><i class="d"></i><i class=""></i><i class="d"></i><i class=""></i><i class="d"></i><i class=""></i><i class=""></i><i class="d"></i><i class=""></i><i class="d"></i><i class=""></i><i class="d"></i><i class="d"></i><i class=""></i><i class="d"></i><i class=""></i><i class="d"></i><i class=""></i><i class=""></i><i class="d"></i><i class=""></i><i class="d"></i><i class=""></i><i class="d"></i><i class="d"></i><i class=""></i><i class="d"></i><i class=""></i><i class="d"></i><i class=""></i><div class="car"><svg><use href="#i-car"/></svg></div></div>
+ <div style="width:100%"><div class="strip" style="--bs:100px"><div class="blk ctrl"><svg><use href="#i-flag"/></svg></div><svg class="arr"><use href="#i-arr"/></svg><div class="blk move"><svg><use href="#i-fwd"/></svg></div><svg class="arr"><use href="#i-arr"/></svg><div class="blk move run"><svg><use href="#i-fwd"/></svg></div><svg class="arr"><use href="#i-arr"/></svg><div class="blk move"><svg><use href="#i-right"/></svg></div><svg class="arr"><use href="#i-arr"/></svg><div class="rep"><span class="lab">×2</span><div class="blk move"><svg><use href="#i-fwd"/></svg></div></div><svg class="arr"><use href="#i-arr"/></svg><div class="blk snd"><svg><use href="#i-sound"/></svg></div><svg class="arr"><use href="#i-arr"/></svg><div class="blk end"><svg><use href="#i-end"/></svg></div></div></div>
+ <div class="pal"><div class="grp move" style="--ps:96px;"><div class="blk move"><svg><use href="#i-fwd"/></svg></div><div class="blk move"><svg><use href="#i-back"/></svg></div><div class="blk move"><svg><use href="#i-left"/></svg></div><div class="blk move"><svg><use href="#i-right"/></svg></div></div><div class="grp ctrl" style="--ps:96px;"><div class="blk ctrl"><svg><use href="#i-flag"/></svg></div><div class="blk ctrl"><svg><use href="#i-rep"/></svg></div><div class="blk ctrl"><svg><use href="#i-wait"/></svg></div></div><div class="grp snd" style="--ps:96px;"><div class="blk snd"><svg><use href="#i-sound"/></svg></div><div class="blk snd"><svg><use href="#i-eye"/></svg></div></div><div class="grp end" style="--ps:96px;"><div class="blk end"><svg><use href="#i-end"/></svg></div></div></div>
+</div></body></html>
