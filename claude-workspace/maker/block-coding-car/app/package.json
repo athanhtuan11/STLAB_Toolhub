@@ -1,0 +1,11 @@
+{
+  "name": "block-coding-car-app",
+  "version": "0.1.0",
+  "description": "Web app keo tha khoi lenh cho xe robot ESP32-S3 (STLab)",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test \"tests/*.test.mjs\"",
+    "build": "python build.py --out dist/index.html.gz"
+  }
+}

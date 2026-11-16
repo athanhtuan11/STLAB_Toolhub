@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Xe lập trình – STLab</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<svg width="0" height="0" class="defs" aria-hidden="true"><defs>
+<symbol id="i-flag" viewBox="0 0 64 64"><path d="M16 8v50" stroke="#3A2A00" stroke-width="7" stroke-linecap="round"/><path d="M20 10h34l-9 12 9 12H20z" fill="#1F9A47" stroke="#3A2A00" stroke-width="4" stroke-linejoin="round"/></symbol>
+<symbol id="i-fwd" viewBox="0 0 64 64"><path d="M32 8 12 32h13v24h14V32h13z" fill="#fff"/></symbol>
+<symbol id="i-back" viewBox="0 0 64 64"><path d="M32 56 12 32h13V8h14v24h13z" fill="#fff"/></symbol>
+<symbol id="i-left" viewBox="0 0 64 64"><path d="M52 54V34C52 24 45 18 36 18H24v-9L6 24l18 15v-9h12c4 0 6 2 6 6v18z" fill="#fff"/></symbol>
+<symbol id="i-right" viewBox="0 0 64 64"><path d="M12 54V34c0-10 7-16 16-16h12v-9l18 15-18 15v-9H28c-4 0-6 2-6 6v18z" fill="#fff"/></symbol>
+<symbol id="i-rep" viewBox="0 0 64 64"><path d="M14 30v-4c0-8 6-14 14-14h14V4l14 14-14 14v-8H28c-3 0-4 1-4 4v4zM50 34v4c0 8-6 14-14 14H22v8L8 46l14-14v8h14c3 0 4-1 4-4v-4z" fill="#3A2A00"/></symbol>
+<symbol id="i-wait" viewBox="0 0 64 64"><circle cx="32" cy="34" r="22" fill="none" stroke="#3A2A00" stroke-width="7"/><path d="M32 20v15l10 7" stroke="#3A2A00" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M26 6h12" stroke="#3A2A00" stroke-width="7" stroke-linecap="round"/></symbol>
+<symbol id="i-sound" viewBox="0 0 64 64"><path d="M6 24h14l16-14v44L20 40H6z" fill="#fff"/><path d="M44 22c6 6 6 14 0 20M50 14c11 11 11 25 0 36" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="i-eye" viewBox="0 0 64 64"><path d="M4 36C14 20 50 20 60 36 50 52 14 52 4 36z" fill="#fff"/><circle cx="32" cy="36" r="10" fill="#62339C"/><path d="M32 4v9M12 9l5 7M52 9l-5 7" stroke="#FFD84D" stroke-width="5" stroke-linecap="round"/></symbol>
+<symbol id="i-stop" viewBox="0 0 64 64"><rect x="12" y="12" width="40" height="40" rx="8" fill="#fff"/></symbol>
+<symbol id="i-end" viewBox="0 0 64 64"><path d="M14 8v50" stroke="#fff" stroke-width="7" stroke-linecap="round"/><path d="M20 10h34v26H20z" fill="#fff"/><path d="M20 10h9v9h-9zM38 10h9v9h-9zM29 19h9v9h-9zM47 19h7v9h-7zM20 28h9v8h-9zM38 28h9v8h-9z" fill="#16231D"/></symbol>
+<symbol id="i-star" viewBox="0 0 64 64"><path d="M32 5l8 18 20 2-15 13 5 20-18-10-18 10 5-20L4 25l20-2z" fill="#F2B01E" stroke="#B07C00" stroke-width="3" stroke-linejoin="round"/></symbol>
+<symbol id="i-arr" viewBox="0 0 24 24"><path d="M8 3l10 9-10 9" stroke="#16231D" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-car" viewBox="0 0 64 64"><rect x="9" y="6" width="46" height="52" rx="14" fill="currentColor" stroke="#16231D" stroke-width="3"/><rect x="14" y="10" width="36" height="22" rx="9" fill="#FFF3DF"/><circle cx="24" cy="21" r="6" fill="#fff" stroke="#16231D" stroke-width="2.5"/><circle cx="40" cy="21" r="6" fill="#fff" stroke="#16231D" stroke-width="2.5"/><circle cx="24" cy="19.5" r="3" fill="#16231D"/><circle cx="40" cy="19.5" r="3" fill="#16231D"/><rect x="22" y="40" width="20" height="12" rx="5" fill="#FFF3DF" opacity=".55"/><rect x="3" y="14" width="7" height="14" rx="3" fill="#16231D"/><rect x="54" y="14" width="7" height="14" rx="3" fill="#16231D"/><rect x="3" y="38" width="7" height="14" rx="3" fill="#16231D"/><rect x="54" y="38" width="7" height="14" rx="3" fill="#16231D"/></symbol>
+<symbol id="i-batt" viewBox="0 0 64 64"><rect x="6" y="18" width="48" height="28" rx="6" fill="none" stroke="currentColor" stroke-width="5"/><rect x="56" y="25" width="6" height="14" rx="2" fill="currentColor"/><rect x="13" y="25" width="10" height="14" rx="2" fill="currentColor"/></symbol>
+<symbol id="i-trash" viewBox="0 0 64 64"><path d="M14 20h36" stroke="#16231D" stroke-width="6" stroke-linecap="round"/><path d="M24 20v-6h16v6" fill="none" stroke="#16231D" stroke-width="5" stroke-linejoin="round"/><path d="M18 20l4 34h20l4-34" fill="none" stroke="#16231D" stroke-width="5" stroke-linejoin="round"/><path d="M28 30v16M36 30v16" stroke="#16231D" stroke-width="4" stroke-linecap="round"/></symbol>
+<symbol id="i-import" viewBox="0 0 64 64"><path d="M32 8v28" stroke="#16231D" stroke-width="6" stroke-linecap="round"/><path d="M20 24l12 12 12-12" fill="none" stroke="#16231D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 46v8h40v-8" fill="none" stroke="#16231D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-export" viewBox="0 0 64 64"><path d="M32 36V8" stroke="#16231D" stroke-width="6" stroke-linecap="round"/><path d="M20 20l12-12 12 12" fill="none" stroke="#16231D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 46v8h40v-8" fill="none" stroke="#16231D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-warn" viewBox="0 0 64 64"><path d="M32 6 60 56H4z" fill="#F2B01E" stroke="#8A5C00" stroke-width="4" stroke-linejoin="round"/><path d="M32 22v16" stroke="#16231D" stroke-width="7" stroke-linecap="round"/><circle cx="32" cy="47" r="4" fill="#16231D"/></symbol>
+</defs></svg>
+
+<header class="top">
+  <button id="conn" class="conn" type="button" aria-label="Kết nối xe">
+    <svg class="car-ico"><use href="#i-car"/></svg>
+    <span id="conn-dot" class="dot off"></span>
+    <b id="conn-name">Chưa có xe</b>
+    <svg id="batt" class="batt hidden"><use href="#i-batt"/></svg>
+  </button>
+  <div class="sp"></div>
+  <button id="btn-try" class="btn b-try" type="button"><svg><use href="#i-fwd"/></svg><span>Chạy thử</span></button>
+  <button id="btn-real" class="btn b-real" type="button" disabled><svg><use href="#i-car"/></svg><span>Chạy xe thật</span></button>
+  <div class="sp"></div>
+  <div class="lv" role="group" aria-label="Chọn cấp">
+    <button id="level-1" class="on" type="button">Cấp 1</button>
+    <button id="level-2" type="button">Cấp 2</button>
+    <button id="level-3" type="button">Cấp 3</button>
+  </div>
+  <button id="btn-stop" class="btn b-stop" type="button"><svg><use href="#i-stop"/></svg><span>DỪNG</span></button>
+  <div class="tools">
+    <button id="btn-clear" class="tool" type="button" title="Xóa dải lệnh"><svg><use href="#i-trash"/></svg></button>
+    <button id="btn-export" class="tool" type="button" title="Xuất chương trình ra tệp"><svg><use href="#i-export"/></svg></button>
+    <button id="btn-import" class="tool" type="button" title="Nhập chương trình từ tệp"><svg><use href="#i-import"/></svg></button>
+  </div>
+</header>
+
+<main class="stage">
+  <div class="grid-wrap"><div id="grid" class="grid" aria-label="Lưới 6 nhân 6"></div></div>
+  <section class="strip-wrap" aria-label="Dải lệnh">
+    <div id="strip" class="strip">
+      <div class="blk ctrl start" id="start-block" title="Bắt đầu"><svg><use href="#i-flag"/></svg></div>
+    </div>
+  </section>
+  <section id="palette" class="pal" aria-label="Kho khối"></section>
+</main>
+
+<div id="popover" class="pop hidden" role="dialog" aria-label="Chọn số"></div>
+
+<div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <svg class="modal-ico"><use id="modal-use" href="#i-flag"/></svg>
+    <h2 id="modal-title">Chú ý</h2>
+    <p id="modal-text"></p>
+    <div id="modal-body" class="modal-body"></div>
+    <div class="modal-btns">
+      <button id="modal-cancel" class="btn-ghost" type="button">Hủy</button>
+      <button id="modal-ok" class="btn-ok" type="button">Đồng ý</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"><svg><use href="#i-warn"/></svg><span id="toast-text"></span></div>
+<input id="file-input" type="file" accept="application/json,.json" hidden>
+
+<script type="module" src="ui.js"></script>
+</body>
+</html>

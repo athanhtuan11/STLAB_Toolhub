@@ -23,3 +23,4 @@ Kế hoạch đã duyệt: `C:\Users\hoang\.claude\plans\l-n-d-n-robotics-fizzy-
 
 ## Trạng thái
 - 2026-11-16: bước 0 xong – Tuan chọn **dáng A Xe hộp mặt cười + app U1**, bộ khối rút gọn, nút Dừng luôn đỏ. Giai đoạn 1 xong (giấy): `hardware/BOM.md`, `hardware/wiring.yaml` (render Toolhub OK), parts-library + 28BYJ-48/ULN2003. Tiếp: Tuan mua linh kiện; giai đoạn 2 firmware + 3 app làm song song được.
+- 2026-11-16: GĐ2 firmware v0.1 + GĐ3 app v0.1 PASS (chưa thử mạch). **Đổi ngữ nghĩa khối → sửa `protocol/PROTOCOL.md` + `make_golden.py` trước**, rồi chạy lại 2 gate: `firmware/car`: `..\.venv-host\Scripts\python.exe -m pytest -q tests` + `build.ps1`; `app`: `node --test "tests/*.test.mjs"`. Tiếp: Tuan duyệt ảnh app, mua linh kiện → nạp USB lần đầu, hiệu chỉnh `cal`; GĐ4 CAD.

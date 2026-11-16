@@ -51,6 +51,15 @@
       "group": "robotics"
     },
     {
+      "rel": "maker/block-coding-car",
+      "summary": "Xe ESP32-S3 lập trình kéo thả bằng khối hình trên máy tính, có xe ảo chạy thử, rồi chạy xe thật trên thảm ô.",
+      "audience": "lớp 1–3",
+      "status": "dang-lam",
+      "next": "Firmware v0.1 + app kéo thả v0.1 PASS (chưa thử mạch); chờ Tuan mua linh kiện, duyệt ảnh app.",
+      "group": "robotics",
+      "wiring": "hardware/wiring.yaml"
+    },
+    {
       "rel": "maker/sesame-quadruped",
       "summary": "In thử robot 4 chân Sesame (nguồn cộng đồng, Apache-2.0).",
       "audience": "",
