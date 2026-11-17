@@ -1,0 +1,13 @@
+# english-teacher (Cu Bong S3) - BAN IN THU khop lap truoc khi in ca bo (Tuan 2026-11-17). 1 mau, 1 ban, khong AMS.
+# Thu: loa O52 vao vanh loa + vong ep (khe 0,3/ben), MAX98357A vao khay ampli, INMP441 vao kep mic,
+#      switch MX vao nap nut dau, LED nhin qua tam tan sang. Vua het thi in plates-s3/ (print-s3.yaml).
+# Ray do bo ESP32-S3 va ranh kep mic nam trong 2 nua vo (in rieng, ~5 h moi nua) - chua co mau cat thu.
+# Cat lop: python tools/print/scripts/memjob.py 3 -- python tools/print/scripts/slice.py maker/english-teacher/print/print-s3-test.yaml
+machine: Bambu Lab A1 0.4 nozzle
+filament: Bambu PETG Basic @BBL A1
+stl: stl-s3
+plates_dir: plates-s3-test
+common: {sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
+plates:
+  p1-fit-test: {process: 0.20mm Standard @BBL A1, color: "#F6BE9A", overrides: {wall_loops: "3", sparse_infill_density: "20%"},
+                stl: ["speaker-bezel.stl", "speaker-ring.stl", "amp-tray.stl", "mic-clamp.stl", "button-cap.stl", "eye-diffuser.stl"]}
