@@ -272,6 +272,8 @@ Các bản clone có `__pycache__/`, `*.pyc`, `build/`, `*.egg-info/`, `logs/` t
 
 ## Repo nghiên cứu (chỉ đọc, chưa liên kết)
 
+- 2026-11-17 (Tuan chọn hướng B cho ESP32-A1S): **jakubthedeveloper-rudebox** – synth trống 1 pad trên ESP32 Audio Kit V2.2 / ES8388, Arduino PlatformIO, không lib_deps, không mạng (đã grep WiFi/HTTP: không có), test native Unity. Không license → chỉ đọc.
+
 Ngày 2026-10-27, Tuan lưu từ 2 bài Facebook để học/nghiên cứu. Ghim trong `community/pins.tsv` (22 dòng cuối).
 Sao và ngày push kiểm bằng GitHub API ngày 2026-10-27.
 
@@ -337,6 +339,7 @@ Báo cáo: `docs/reports/3d-print-cost-quote-oss.md`. Ghim trong `community/pins
 ## Đã xem và KHÔNG dùng
 | Repo | Lý do |
 |---|---|
+| marcel-licence/esp32_drum_computer (2026-11-17) | Cần thư viện ML_SynthTools phát hành dạng biên dịch sẵn (đóng), ngừng cập nhật 06/2024 |
 | schwarztim/bambu-mcp | Nhúng khóa trích từ Bambu Connect để vượt xác thực firmware: rủi ro pháp lý/ToS |
 | Eyalm321, griches, rowbotik (bambu) | Không hỗ trợ A1 / 0★ |
 | musistudio/claude-code-router, LiteLLM proxy (2026-10-26) | Gateway đổi `ANTHROPIC_BASE_URL` → Claude tính theo API, không dùng gói Pro |
@@ -361,6 +364,7 @@ Khi chuyển sang thương mại, rà bảng này trước (và cột License �
 
 | Nguồn | License / ràng buộc | Đang dùng ở đâu |
 |---|---|---|
+| jakubthedeveloper/RudeBox (`c6c8e17`, 2026-11-17) | **Không có file license** – chỉ đọc tham khảo, không chép mã | Dự án bộ trống STEAM trên ESP32-A1S: học cách bắt nhịp gõ, cấu hình ES8388 LINE IN, mạch bảo vệ đầu vào pad |
 | hesreallyhim/awesome-claude-code | CC BY-NC-ND 4.0 (phi thương mại, không phái sinh) | Tra cứu |
 | GarethManning/education-agent-skills | CC BY-SA 4.0 (ghi công, chia sẻ cùng license) | stlab |
 | wireviz/WireViz | GPL-3.0 (phân phối phần mềm phái sinh phải mở mã GPL; ảnh SVG xuất ra không bị ràng buộc) | Toolhub – sơ đồ đấu dây |
