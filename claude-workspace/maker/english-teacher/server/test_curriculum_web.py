@@ -127,6 +127,9 @@ async def web_tests():
         r = await c.get("/curriculum")
         t = await r.text()
         ok(r.status == 200 and 'name="pin"' in t and 'data-unit=' not in t, "chua dang nhap -> form PIN, khong lo danh sach")
+        # 2026-11-17: no-referrer lam trinh duyet gui "Origin: null" khi POST form -> dang nhap luon 403 du PIN dung
+        ok(r.headers.get("Referrer-Policy", "") not in ("no-referrer", ""), "Referrer-Policy khong duoc la no-referrer (Origin: null)")
+        ok('inputmode="numeric"' not in t, "o PIN khong ep ban phim so (PIN co chu)")
         r = await c.post("/curriculum/api/pin", json={"device": DEV, "lesson": "s1-u3-colours"}, headers=origin)
         ok(r.status in (401, 403), "API ghim khi chua dang nhap -> 401/403")
         r = await c.post("/curriculum/login", data={"pin": "0000"}, headers=origin, allow_redirects=False)

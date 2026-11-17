@@ -133,7 +133,7 @@ def setup(app, *, cur, seed_dir, devices, active, log=None):
                % (esc(title), extra_head, body))
         return web.Response(text=doc, status=status, content_type="text/html", charset="utf-8",
                             headers={"Cache-Control": "no-store", "X-Content-Type-Options": "nosniff",
-                                     "Referrer-Policy": "no-referrer"})
+                                     "Referrer-Policy": "same-origin"})
 
     def login_form(msg="", status=200):
         m = '<p class="err">%s</p>' % esc(msg) if msg else ""
