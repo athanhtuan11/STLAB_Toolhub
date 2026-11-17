@@ -96,6 +96,8 @@ static SemaphoreHandle_t s_mtx;        // bao ve s_state
 static SemaphoreHandle_t s_dsp_mtx;    // bao ve dsp_set / dsp_process
 static volatile int64_t s_save_due_us; // 0 = khong co gi can luu
 static volatile int s_tone_frames;     // so khung con phat sine thu loa
+// chan doan (lenh LVL, 2026-11-17): dinh vao trai/phai, so vong, doc thieu, thoi gian xu ly lon nhat (us)
+static volatile int s_pk_l, s_pk_r, s_loops, s_short, s_maxus;
 static volatile int s_adc_in = GUITAR_ADC_INPUT;
 
 static uint16_t s_conn = BLE_HS_CONN_HANDLE_NONE;
@@ -459,10 +461,18 @@ static void audio_task(void *arg)
         if (n <= 0) {
             continue;
         }
+        int64_t t0 = esp_timer_get_time();
+        if (n < FRAME_SAMPLES) {
+            s_short++;
+        }
         for (int i = 0; i < n; i++) {
             il[i] = inb[2 * i];
             ir[i] = inb[2 * i + 1];
+            int al = il[i] < 0 ? -il[i] : il[i], ar = ir[i] < 0 ? -ir[i] : ir[i];
+            if (al > s_pk_l) s_pk_l = al;
+            if (ar > s_pk_r) s_pk_r = ar;
         }
+        s_loops++;
         xSemaphoreTake(s_dsp_mtx, portMAX_DELAY);
         dsp_process(il, ir, ol, orr, n);
         xSemaphoreGive(s_dsp_mtx);
@@ -483,6 +493,8 @@ static void audio_task(void *arg)
             outb[2 * i] = (int16_t)((float)ol[i] * GUITAR_OUT_MAX);
             outb[2 * i + 1] = (int16_t)((float)orr[i] * GUITAR_OUT_MAX);
         }
+        int us = (int)(esp_timer_get_time() - t0);
+        if (us > s_maxus) s_maxus = us;
         size_t done = 0, bytes = (size_t)n * 4;
         while (done < bytes) {
             size_t w = 0;
@@ -584,6 +596,11 @@ static void uart_cmd_line(const char *line)
             es_select_input(in);
         }
         LOG("ngo vao ADC = %d (%s)", in, in == 1 ? "LIN1/RIN1" : "LIN2/RIN2");
+    } else if (strncmp(line, "LVL", 3) == 0) {
+        s_pk_l = s_pk_r = s_loops = s_short = s_maxus = 0;
+        vTaskDelay(pdMS_TO_TICKS(1000));
+        LOG("LVL 1 s: dinh vao L=%d R=%d | vong=%d (can ~%d) doc_thieu=%d | xu ly max %d us (khung %d us)",
+            s_pk_l, s_pk_r, s_loops, SAMPLE_RATE / FRAME_SAMPLES, s_short, s_maxus, FRAME_SAMPLES * 1000000 / SAMPLE_RATE);
     } else if (strncmp(line, "TONE", 4) == 0) {
         s_tone_frames = 2 * SAMPLE_RATE / FRAME_SAMPLES;
         LOG("phat sine 1 kHz 2 s");

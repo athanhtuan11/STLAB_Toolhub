@@ -12,13 +12,18 @@ $Src = 'C:\xzb\s3'
 if (-not (Test-Path (Join-Path $Src 'CMakeLists.txt'))) { throw 'Chua co build-src; chay sync.ps1 truoc' }
 Set-Location $Src
 Remove-Item -Force (Join-Path $Src 'build\xiaozhi.bin') -ErrorAction SilentlyContinue
+Remove-Item -Force (Join-Path $Src 'build\xiaozhi.elf') -ErrorAction SilentlyContinue   # 2026-11-17: xoa ca .elf de ninja lien ket + tao lai .bin (chi xoa .bin -> ninja loi check_size)
 
 $log = Join-Path $H 'build.log'
 "" | Set-Content $log
 # stderr cua idf.py khong duoc lam PowerShell ngat; ghi tat ca vao log
 $ErrorActionPreference = 'Continue'
-& cmd /c "idf.py set-target esp32s3 >> `"$log`" 2>&1"
-$rc1 = $LASTEXITCODE
+# 2026-11-17: set-target XOA build -> build lai tu dau (vai phut); chi chay khi chua cau hinh
+$rc1 = 0
+if (-not (Test-Path (Join-Path $Src 'sdkconfig')) -or -not (Test-Path (Join-Path $Src 'build\CMakeCache.txt'))) {
+    & cmd /c "idf.py set-target esp32s3 >> `"$log`" 2>&1"
+    $rc1 = $LASTEXITCODE
+}
 if ($rc1 -eq 0) {
     & cmd /c "idf.py build >> `"$log`" 2>&1"
     $rc1 = $LASTEXITCODE

@@ -27,8 +27,10 @@ if (-not $appOk) {
 }
 
 Remove-Item build\block_coding_car.bin -ErrorAction SilentlyContinue
+Remove-Item build\block_coding_car.elf -ErrorAction SilentlyContinue   # 2026-11-17: xoa ca .elf de ninja lien ket + tao lai .bin (chi xoa .bin -> ninja loi check_size)
 . C:\Espressif\Initialize-Idf.ps1 -IdfId $IdfId *> $null
-idf.py set-target esp32s3 *> build-target.log
+# 2026-11-17: set-target XOA build -> build lai tu dau (vai phut); chi chay khi chua cau hinh
+if (-not (Test-Path sdkconfig) -or -not (Test-Path build\CMakeCache.txt)) { idf.py set-target esp32s3 *> build-target.log }
 idf.py build *> build.log
 $code = $LASTEXITCODE
 Get-Content build.log -Tail 15
