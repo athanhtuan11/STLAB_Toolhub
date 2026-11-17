@@ -111,9 +111,20 @@ static esp_err_t es_write(uint8_t reg, uint8_t val)
     return i2c_master_transmit(s_es, b, 2, 100);
 }
 
+// 2026-11-17: PGA 3 dB/nac (0..8 = 0..24 dB), ca 2 kenh. Mic tren bo (IN 2) can +24 dB nhu firmware do (0xBB).
+static void es_set_gain(int g)
+{
+    if (g < 0) g = 0;
+    if (g > 8) g = 8;
+    es_write(ES_ADCCONTROL1, (uint8_t)((g << 4) | g));
+}
+
 static void es_select_input(int in)
 {
     es_write(ES_ADCCONTROL2, in == 2 ? 0x50 : 0x00);
+    if (in == 2) {
+        es_set_gain(8);
+    }
 }
 
 static int es_init_regs(void)
@@ -451,6 +462,12 @@ static void audio_task(void *arg)
     (void)arg;
     static int16_t inb[FRAME_SAMPLES * 2], outb[FRAME_SAMPLES * 2];
     static int16_t il[FRAME_SAMPLES], ir[FRAME_SAMPLES], ol[FRAME_SAMPLES], orr[FRAME_SAMPLES];
+    // 2026-11-17: bang sine tinh 1 lan (sinf tung mau tren ESP32 cham ~30 us -> 7,8 ms/khung > 5,8 ms -> thieu I2S, xet xet)
+    static int16_t sine_tab[1024];
+    for (int i = 0; i < 1024; i++) {
+        sine_tab[i] = (int16_t)(32767.0f * sinf(2.0f * 3.14159265f * (float)i / 1024.0f));
+    }
+    const uint32_t tone_step = (uint32_t)((1000.0 * 4294967296.0) / SAMPLE_RATE);   // 1 kHz, pha 32 bit
     uint32_t tone_phase = 0;
     while (true) {
         size_t got = 0;
@@ -482,8 +499,8 @@ static void audio_task(void *arg)
             float g = dsp_volume_gain(s_state.p[15]) * 0.5f;
             xSemaphoreGive(s_mtx);
             for (int i = 0; i < n; i++) {
-                int16_t v = (int16_t)(32767.0f * g * sinf(2.0f * 3.14159265f * (float)tone_phase / (float)SAMPLE_RATE * 1000.0f));
-                tone_phase = (tone_phase + 1) % SAMPLE_RATE;
+                int16_t v = (int16_t)(g * (float)sine_tab[tone_phase >> 22]);
+                tone_phase += tone_step;
                 ol[i] = v;
                 orr[i] = v;
             }
@@ -596,6 +613,9 @@ static void uart_cmd_line(const char *line)
             es_select_input(in);
         }
         LOG("ngo vao ADC = %d (%s)", in, in == 1 ? "LIN1/RIN1" : "LIN2/RIN2");
+    } else if (sscanf(line, "GAIN %d", &val) == 1) {
+        es_set_gain(val);
+        LOG("PGA ngo vao = %d dB (nac %d)", (val < 0 ? 0 : val > 8 ? 8 : val) * 3, val);
     } else if (strncmp(line, "LVL", 3) == 0) {
         s_pk_l = s_pk_r = s_loops = s_short = s_maxus = 0;
         vTaskDelay(pdMS_TO_TICKS(1000));
