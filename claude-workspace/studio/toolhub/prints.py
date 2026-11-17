@@ -127,7 +127,7 @@ def _root_records(root, source, folder_prefix):
         for current, names in _walk(project_dir):
             names.sort()
             plate_parent = Path(current)
-            if plate_parent.name != "plates":
+            if plate_parent.name != "plates" and not plate_parent.name.startswith("plates-"):   # 2026-11-17: plates-s3, plates-test...
                 continue
             for plate_name in sorted(p.name for p in plate_parent.iterdir() if p.is_dir()):   # ban in = thu muc con
                 if plate_name.startswith("_"):
@@ -146,13 +146,15 @@ def _root_records(root, source, folder_prefix):
                               if (plate_dir / candidate).is_file()), None)
                 minutes, grams = _slice_stats(plate_dir)
                 relative_folder = (Path(folder_prefix) / project_dir.name).as_posix()
+                # plates-<bien the>/ (vd plates-s3) -> khoa "<bien the>-<ban>" de khong trung ten ban cua plates/
+                key = plate_name if plate_parent.name == "plates" else f"{plate_parent.name[len('plates-'):]}-{plate_name}"
                 rows.append({
                     "project": project_dir.name,
-                    "plate": plate_name,
+                    "plate": key,
                     "title": _title(project_dir),
                     "minutes": minutes,
                     "grams": grams,
-                    "image_url": f"/prints/img/{project_dir.name}/{plate_name}" if image else None,
+                    "image_url": f"/prints/img/{project_dir.name}/{key}" if image else None,
                     "mtime": mtime,
                     "cad": _cad_files(project_dir),
                     "source": source,
