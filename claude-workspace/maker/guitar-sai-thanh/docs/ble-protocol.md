@@ -28,16 +28,27 @@ Không ghép đôi / không mã hóa: ai ở gần cũng kết nối và ghi đ�
 - Đàn gửi (notify): header `03 10 01 00 <b4> 00 00 00` – `b4` = 0x72…0x75 (đoán mức pin/trạng thái, `TODO`).
 - App ghi: header `03 00 01 00 00 00 00 00` + cùng vùng tham số. Byte 40–128 = 0.
 
-| Byte | Ý nghĩa (đã kiểm bằng thanh trượt app + núm vật lý) | Khoảng |
+| Byte | Ý nghĩa (đã kiểm: app + núm vật lý, 2026-11-17) | Giá trị |
 |---|---|---|
-| [15] | **Âm lượng guitar** (núm vật lý + app) | 0–30 (bước 1 qua app, bước 2 qua núm) |
+| [4] (chỉ gói đàn gửi) | **Điện áp pin × 0,1 V** (0x6D = 10,9 V khớp tab Thông số; 0x75 = 11,7 V lúc pin đầy hơn) | pin 3 cell Li-ion (đoán từ 10,9–11,7 V) |
+| [8] | **Độ sáng LED** | 0–30 (35 % ≈ 13, 75 % ≈ 24) |
+| [11] | **Màu LED**: nibble thấp = màu chính, nibble cao = màu phụ | đỏ = 1, xanh ngọc = 6 (bảng 8 màu – `TODO` thứ tự đủ) |
+| [15] | **Âm lượng guitar** (núm vật lý + app) | 0–30 |
 | [19] | **Âm sắc** (núm vật lý + app) | 0–30 |
+| [20] | **Mức nhạy dây đàn** | 75 = Trung bình (quạt chả), 100 = Tối đa (rải dây) |
+| [21] | **Tự động cân bằng** | 0 = tắt, 2 = bật |
+| [22] | **Ngõ ra cho âm ly** (jack ra ampli ngoài) | 0 / 1 |
 | [25] | **Độ nhạy mic** (chỉ app) | 0–30 |
 | [27] | **Echo** (núm vật lý + app) | 0–30 |
-| [32] | Đàn tự tính (đổi ngược chiều âm lượng/âm sắc, 15–25) – app chép lại giá trị cũ | `TODO` |
-| [8]=13, [11]=17, [20]=75, [30]=20 | Chưa rõ – có thể là các mục app ở dưới chưa thử (Tự động cân bằng…) | `TODO` |
+| [30] = 20 | chưa rõ (không đổi khi thử mọi mục) | `TODO` |
+| [32] | đàn tự tính (đổi theo âm lượng/âm sắc, 15–25); app chép lại giá trị đàn gửi | `TODO` |
+| [45] | **Hiệu ứng âm thanh 3D** | 0 / 1 |
+
+- Tab **Thông số** không ghi gì: hiện pin (từ byte [4]), nhà sản xuất "UMI", phần sụn 0.0.1, ID 00:00:00:00:00:00.
+- Mục **Cấu hình AI** (tên + mật khẩu Wi-Fi) có trong app nhưng **chưa thử** (không nhập thông tin Wi-Fi thật). nRF52832 không có Wi-Fi →
+  hoặc trên bo có thêm module Wi-Fi, hoặc tính năng chưa dùng (`TODO` kiểm bo).
 
 ## Việc còn lại
-- Thử các mục app chưa kéo (Tự động cân bằng, Học Solo, Thông số) → ghép byte còn lại.
+- Học Solo chưa thử; Cấu hình AI chưa thử (cần quyết có nhập Wi-Fi thử không).
 - Thử ghi từ PC (bleak) 1 khung đổi âm lượng – chỉ khi Tuan đồng ý.
 - Nếu làm firmware/app STLab: thêm ghép đôi BLE (hiện không bảo mật).
