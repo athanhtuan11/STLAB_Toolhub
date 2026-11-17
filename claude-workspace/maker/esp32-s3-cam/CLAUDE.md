@@ -41,6 +41,7 @@ Dự án Tuan bắt đầu 2026-11-03. Mạch **ESP32-S3-CAM N16R8** (16 MB flas
   `CONFIG_SCCB_HARDWARE_I2C_DRIVER_LEGACY=y` (IDF 5.5 cấm trộn 2 driver → abort khởi động).
 
 ## Trạng thái
+- 2026-11-17: **đã nạp OTA v0.4.0** (ota_1). Trên mạch thật: test_v04 PASS (không thẻ TF: stream 95 khung/15 s, clip tắt đúng), test_v031 PASS (lần đầu ngay sau khởi động FAIL 2, chạy lại PASS); chip 50,8 °C. `PROJECT_VER` trong CMakeLists còn 0.3.1 lúc build nên ota.py báo lệch giả → đã sửa thành 0.4.0 (bản build sau mới mang số mới). Phần thẻ TF: vẫn chờ thẻ.
 - 2026-11-09: **firmware v0.4.0 ghi clip AVI khi có chuyển động** (`firmware/cam/spec-v04.md`, ý tưởng MJPEG2SD, code tự viết
   `main/avi_mjpeg.h`): đệm trước 3 s PSRAM ≤ 2 MB, sau 5 s, tối đa 60 s; bật bằng `clip=1` (mặc định tắt). Build PASS (1,13 MB),
   gate tĩnh 4/4 PASS (check_v04 giải mã AVI mẫu bằng ffmpeg). **CHƯA nạp OTA**: mạch không lên mạng lúc build → khi mạch bật:
