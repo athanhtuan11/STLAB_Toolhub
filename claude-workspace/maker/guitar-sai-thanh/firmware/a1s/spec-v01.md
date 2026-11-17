@@ -71,3 +71,9 @@ Chuỗi DSP (số do Claude chốt):
 
 ## PASS
 - `test_gate.py` exit 0 có build thật. Báo cáo: kích thước bin, % phân vùng, những `TODO`.
+
+## Kế hoạch v0.2 (Tuan 2026-11-17: "có thể sử dụng bluetooth thay thế" dây line-in)
+- Thêm **A2DP sink** (điện thoại phát nhạc qua Bluetooth Classic vào A1S) → đổi NimBLE sang **Bluedroid dual-mode** (BLE GATT 0x2B00 giữ nguyên).
+- Luồng A2DP (SBC 44,1 kHz) qua ring buffer, trộn vào đầu vào chuỗi DSP cùng tiếng line-in/pickup (cùng âm lượng/âm sắc/echo).
+- Thử phần cứng: loa 4 Ω gắn cổng **Left** của A1S (kênh trái = kênh chính).
+- Làm sau khi v0.1 PASS + thử app Umi trên mạch thật.
