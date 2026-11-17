@@ -69,7 +69,7 @@
           payload.session = currentSession;
         }
         post("/curriculum/api/pin", payload).then(function (j) {
-          if (j.ok) { window.location.href = "/curriculum"; return; }
+          if (j.ok) { window.location.reload(); return; }   // 2026-11-17: o lai trang bai de thay nut buoi doi trang thai
           msg.textContent = j.status === 401 ? "Hết phiên đăng nhập, tải lại trang." : "Không ghim được (mã " + j.status + ").";
           msg.hidden = false;
         }).catch(function () { msg.textContent = "Không kết nối được máy chủ."; msg.hidden = false; });

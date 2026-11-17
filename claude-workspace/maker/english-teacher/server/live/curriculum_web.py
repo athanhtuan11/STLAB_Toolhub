@@ -128,8 +128,8 @@ def setup(app, *, cur, seed_dir, devices, active, log=None):
     def page(title, body, status=200, extra_head=""):
         doc = ("<!doctype html><html lang=\"vi\"><head><meta charset=\"utf-8\">"
                "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
-               "<title>%s</title><link rel=\"stylesheet\" href=\"/curriculum/static/curriculum.css\">%s</head><body>"
-               "<main class=\"wrap\">%s</main><script src=\"/curriculum/static/curriculum.js\" defer></script></body></html>"
+               "<title>%s</title><link rel=\"stylesheet\" href=\"/curriculum/static/curriculum.css?v=20261117b\">%s</head><body>"
+               "<main class=\"wrap\">%s</main><script src=\"/curriculum/static/curriculum.js?v=20261117b\" defer></script></body></html>"
                % (esc(title), extra_head, body))
         return web.Response(text=doc, status=status, content_type="text/html", charset="utf-8",
                             headers={"Cache-Control": "no-store", "X-Content-Type-Options": "nosniff",
@@ -274,15 +274,32 @@ def setup(app, *, cur, seed_dir, devices, active, log=None):
                  '<button class="btn full" type="button" data-cancel>Hủy</button></div>'
                  % (attr(unit_id), esc(u.get("theme", "")), "".join(radios)))
         sessions = plan_sections(unit_id)
+        # 2026-11-17 Tuan: nut buoi phai hien trang thai ghim -> {so buoi | 0 = ca bai: [ten may]}
+        unit_lessons = set(lessons_of(unit_id))
+        pinned_here = {}
+        for mac, name in devs.items():
+            info = cur.pin_info(mac)
+            if info and info.get("lesson_id") in unit_lessons:
+                pinned_here.setdefault(int(info.get("session") or 0), []).append(str(name))
         details_list = []
         for h, b in sessions:
             m = re.match(r"^Buổi\s*(\d+)", h)
             btn_session = ""
+            on = False
             if m:
                 n_sess = m.group(1)
-                btn_session = f'<button class="btn" type="button" data-pin-session="{n_sess}">📌 Cú Bông dạy buổi này</button>'
-            details_list.append(f'<details data-session><summary>{esc(h)}</summary>{btn_session}<div class="md">{b}</div></details>')
-        plan = "".join(details_list)
+                who = pinned_here.get(int(n_sess))
+                on = bool(who)
+                if on:
+                    btn_session = ('<div class="row"><span class="pill pin" data-pinned-session="%s">📌 Đang dạy buổi này · máy %s</span></div>'
+                                   % (n_sess, esc(", ".join(who))))
+                btn_session += (f'<button class="btn{" pri" if on else ""}" type="button" data-pin-session="{n_sess}">'
+                                f'{"✅ Đang ghim – ghim lại cho máy khác" if on else "📌 Cú Bông dạy buổi này"}</button>')
+            details_list.append(f'<details data-session{" open" if on else ""}><summary>{"📌 " if on else ""}{esc(h)}</summary>'
+                                f'{btn_session}<div class="md">{b}</div></details>')
+        unit_note = ('<div class="row"><span class="pill pin" data-pinned-session="0">📌 Đang ghim cả chủ đề · máy %s</span></div>'
+                     % esc(", ".join(pinned_here[0]))) if pinned_here.get(0) else ""
+        plan = unit_note + "".join(details_list)
         plan_card = '<div class="card"><b>Giáo án cho người dạy</b>%s</div>' % (plan or '<div class="muted">Chưa có giáo án.</div>')
         body = ('<header class="top"><a class="muted" href="/curriculum">← %s</a><span class="muted">U%d / %d</span></header>'
                 '<h2>%s · %s</h2><div class="muted">%s · %s · %s buổi × %s phút</div>'

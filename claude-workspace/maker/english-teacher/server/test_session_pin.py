@@ -175,6 +175,14 @@ async def web_tests():
         ok(r.status == 200 and (cur.pin_info(DEV) or {}).get("session") == 5 and j.get("session") == 5,
            "API ghim buoi 5 -> luu session=5")
         ok(sess.sent and "Buổi 5" in sess.sent[-1], "may dang hoc -> gui ngay noi dung buoi 5")
+        # 2026-11-17 Tuan: "chua thay nut ghim tren tung buoi thay doi icon" -> trang bai danh dau buoi dang ghim
+        r = await c.get("/curriculum/s2-u1")
+        t = await r.text()
+        ok('data-pinned-session="5"' in t and "Đang dạy buổi này" in t and "kay" in t.split('data-pinned-session="5"', 1)[-1][:200],
+           "trang bai danh dau buoi 5 dang ghim + ten may")
+        ok('data-pinned-session="3"' not in t, "buoi khac khong bi danh dau")
+        js = (H / "live" / "static" / "curriculum.js").read_text(encoding="utf-8")
+        ok("location.reload()" in js.split("api/pin", 1)[-1][:400], "ghim xong o lai trang bai (reload), khong ve trang chinh")
         r = await c.get("/curriculum")
         t = await r.text()
         ok("Buổi 5" in t, "trang chinh hien may dang ghim Buoi 5")
