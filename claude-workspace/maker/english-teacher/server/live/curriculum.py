@@ -69,6 +69,19 @@ def _fold(t):
     return " ".join("".join(c if c.isalnum() else " " for c in t).split())
 
 
+def _match_text(a, b):
+    fa, fb = _fold(a), _fold(b)
+    if not fa or not fb:
+        return False
+    if fa == fb:
+        return True
+    if len(fa) >= 4 and fa in fb:
+        return True
+    if len(fb) >= 4 and fb in fa:
+        return True
+    return False
+
+
 _SWITCH_RE = (r"\bdoi (bai|tro|cai)\b", r"\b(bai|tro|cai) khac\b")
 
 
@@ -92,13 +105,16 @@ def find_nickname(text):
 
 
 class Curriculum:
-    def __init__(self, data_path, lessons_dir, now=datetime.now):
+    def __init__(self, data_path, lessons_dir, now=datetime.now, plans_dir=None):
         self.path = Path(data_path)
         self.now = now
         self.free_flag = None   # duong dan file free-lesson.on (bridge dat); co file -> bai tu do do Gemini tu len
         self.lock = threading.Lock()
         self.lessons = {}
         self.order = []
+        self.plans_dir = Path(plans_dir) if plans_dir is not None else (
+            Path(lessons_dir).resolve().parents[2] / "stlab/english-curriculum/seed/lesson-plans"
+        )
         for f in sorted(Path(lessons_dir).glob("*.md"), key=lambda p: p.name):
             if f.name.lower() == "readme.md":
                 continue
@@ -116,9 +132,42 @@ class Curriculum:
                         vocab.append(w)
             self.order.append(f.stem)
             mt = re.match(r"#[^\n]*?[–-]\s*(.+)", txt)
+            title = re.sub(r"\s*\(.*?\)", "", mt.group(1)).strip() if mt else f.stem
+            m_vi = re.search(r"\((.*?)\)", mt.group(1)) if mt else None
+            title_vi = m_vi.group(1).strip() if m_vi else ""
             self.lessons[f.stem] = {"instructions": instr, "vocab": vocab,
-                                    "title": re.sub(r"\s*\(.*?\)", "", mt.group(1)).strip() if mt else f.stem}
+                                    "title": title, "title_vi": title_vi}
         self.rm_young, self.rm_old = self._parse_roadmap(Path(lessons_dir) / "ROADMAP.md")
+
+    def session_plan(self, lesson_id, n):
+        """Doc muc '## Buoi n' tu giao an theo buoi. Tra (heading, text) hoac None."""
+        if type(n) is not int or n <= 0:
+            return None
+        p = self.plans_dir / f"{lesson_id}.md"
+        if not p.is_file():
+            try:
+                lid = self.resolve_lesson(lesson_id)
+                p = self.plans_dir / f"{lid}.md"
+            except Exception:
+                pass
+        if not p.is_file():
+            matches = sorted(self.plans_dir.glob(f"{lesson_id}*.md"))
+            if matches:
+                p = matches[0]
+        if not p.is_file():
+            return None
+        try:
+            txt = p.read_text(encoding="utf-8")
+        except OSError:
+            return None
+        parts = re.split(r"(?m)^## ", txt)
+        for part in parts[1:]:
+            head, _, body = part.partition("\n")
+            head = head.strip()
+            m = re.match(r"^Buổi\s*(\d+)(?!\d)", head)
+            if m and int(m.group(1)) == n:
+                return (head, body.strip())
+        return None
 
     WEEK_RE = re.compile(r"^Week (\d+): (\S+) \| new: (.*?) \| review: (.*?) \| daily: (.*?) \| song: (\S+)\s*$")
 
@@ -235,6 +284,7 @@ class Curriculum:
             today = now.date().isoformat()
             if MAX_SESSIONS_PER_DAY and sum(1 for s in L.get("counted", []) if s[:10] == today) >= MAX_SESSIONS_PER_DAY:
                 return {"allowed": False, "reason": REASON_LIMIT}
+            L.pop("detour", None)
             L["sessions"].append(now.isoformat(timespec="minutes"))
             L["cur"], L["cur_counted"] = now.isoformat(timespec="minutes"), False
             L["sessions"] = L["sessions"][-50:]
@@ -242,7 +292,8 @@ class Curriculum:
             age = self._age(L)
             pin = self._pin_of(d, device)
             if pin:   # 2026-11-15: nguoi lon ghim bai tren web -> day bai ghim toi khi bo ghim (thang bai tu do + lo trinh)
-                out = self._build_pinned(L, learner, age, pin)
+                pin_sess = d["pins"][str(device).strip()].get("session") if isinstance(d.get("pins"), dict) else None
+                out = self._build_pinned(L, learner, age, pin, session=pin_sess)
                 self._save(d)
                 return out
             if self.roadmap(age):
@@ -284,16 +335,22 @@ class Curriculum:
                     return i
         raise ValueError("khong co bai %r" % lesson_id)
 
-    def pin(self, device, lesson_id):
+    def pin(self, device, lesson_id, session=None):
         lid = self.resolve_lesson(lesson_id)
         dev = str(device or "").strip()
         if not dev:
             raise ValueError("thieu may")
+        if session is not None:
+            if type(session) is not int or self.session_plan(lid, session) is None:
+                raise ValueError("session khong hop le")
         with self.lock:
             d = self._load()
             if not isinstance(d.get("pins"), dict):
                 d["pins"] = {}
-            d["pins"][dev] = {"lesson_id": lid, "at": self.now().isoformat(timespec="minutes")}
+            pin_data = {"lesson_id": lid, "at": self.now().isoformat(timespec="minutes")}
+            if session is not None:
+                pin_data["session"] = session
+            d["pins"][dev] = pin_data
             self._save(d)
         return lid
 
@@ -332,7 +389,7 @@ class Curriculum:
     def _next_pinned(self, L, lid, age):
         return [w for w in self.lessons[lid]["vocab"] if w not in L["taught"]][:1 if age <= 3 else 2]
 
-    def _build_pinned(self, L, learner, age, lid):
+    def _build_pinned(self, L, learner, age, lid, session=None):
         """Chi dan day bai ghim: tu moi = vocab bai chua trong taught; het thi on lai tu bai ghim. Khong doi lo trinh con tro."""
         self._migrate(L, age)
         vocab = self.lessons[lid]["vocab"]
@@ -345,14 +402,27 @@ class Curriculum:
         last = list(L.get("last_activities", []))
         instr = self.lessons[lid]["instructions"]
         instr += "\nAn adult pinned this lesson on the web: teach ONLY this lesson now (it stays until the adult unpins it)."
+        if session is not None:
+            sp = self.session_plan(lid, session)
+            if sp:
+                head, body = sp
+                body_cut = body[:3000]
+                instr += (f"\nAn adult chose class session {session} of this unit's teacher plan. "
+                          "Follow it today, adapted for ONE child at home, voice only "
+                          "(no materials: talk about crafts instead of making them). "
+                          f"Plan: {head}\n{body_cut}")
         instr += "\n" + self._guide_new(new, review)
         if goals:
             plan, act = self.today_plan(lid, review, last, words=goals, toddler=age <= 3)
             L["last_activities"] = (last + [act])[-3:]
             instr += "\n" + plan
         instr += "\n" + (TODDLER_MODE if age <= 3 else OLDER_MODE)
+        if len(instr) >= 9000:
+            instr = instr[:8999]
         out = {"allowed": True, "learner": learner, "lesson_id": lid, "instructions": instr, "review": review,
                "new": list(new), "pinned": True}
+        if session is not None:
+            out["session"] = session
         if not new:
             out["mode"] = "review"
         return out
@@ -368,7 +438,8 @@ class Curriculum:
             if p is None:
                 return None
             L, key, is_nick = p
-            out = self._build_pinned(L, key if is_nick else "device", self._age(L), lid)
+            pin_sess = d["pins"][str(device).strip()].get("session") if isinstance(d.get("pins"), dict) else None
+            out = self._build_pinned(L, key if is_nick else "device", self._age(L), lid, session=pin_sess)
             self._save(d)
             return out
 
@@ -619,26 +690,102 @@ class Curriculum:
                 break
         return out
 
-    def set_topic(self, nickname=None, device=None, topic="", words=None):
-        """Be/nguoi lon xin chu de khac: luu 1-3 tu vao L['extra'] (on 2 buoi sau), tra chi dan day tung tu mot.
-        Con tro lo trinh KHONG doi; khong luu hoi thoai."""
-        topic = re.sub(r"\s+", " ", re.sub(r"[^\w\s]", " ", str(topic or ""))).strip()[:40]
+    def _match_lesson(self, L, topic, words):
+        """Tim bai trong giao trinh khop chu de / tu be xin."""
+        age = self._age(L)
+        if age <= 3:
+            candidates = [lid for lid in self.order if lid.startswith("s1-")]
+            fallback = [lid for lid in self.order if not lid.startswith("s1-")]
+        else:
+            candidates = ([lid for lid in self.order if lid.startswith("s2-")] +
+                          [lid for lid in self.order if lid.startswith("s3-")])
+            fallback = [lid for lid in self.order if lid not in candidates]
+
         ws = self._clean_words(words)
-        if not topic or not ws:
-            return {"ok": False, "words": [], "instructions": ""}
+
+        def find_in(pool):
+            if ws:
+                for lid in pool:
+                    v_set = {x.lower() for x in self.lessons[lid]["vocab"]}
+                    if any(w.lower() in v_set for w in ws):
+                        return lid
+            for lid in pool:
+                t_en = self.lessons[lid].get("title", "")
+                t_vi = self.lessons[lid].get("title_vi", "")
+                if _match_text(topic, t_en) or _match_text(topic, t_vi):
+                    return lid
+            return None
+
+        lid = find_in(candidates)
+        if not lid:
+            lid = find_in(fallback)
+        return lid
+
+    def detour_info(self, nickname=None, device=None):
+        d = self._load()
+        p = self._prof(d, nickname, device)
+        if p is None:
+            return None
+        L = p[0]
+        det = L.get("detour")
+        if isinstance(det, dict) and det.get("lesson_id") and det.get("at"):
+            return dict(det)
+        return None
+
+    def set_topic(self, nickname=None, device=None, topic="", words=None):
+        """Be/nguoi lon xin chu de khac: neu co trong giao trinh thi nhay bai (detour), khong thi luu vao L['extra']."""
+        if isinstance(topic, (list, tuple)) and words is None:
+            words, topic, device = topic, device, None
         with self.lock:
             d = self._load()
             p = self._prof(d, nickname, device)
             if p is None:
                 return {"ok": False, "words": [], "instructions": ""}
             L = p[0]
+            lid = self._match_lesson(L, topic, words) if not self._free() else None
+            if lid:
+                age = self._age(L)
+                limit = 1 if age <= 3 else 2
+                vocab = self.lessons[lid]["vocab"]
+                taught = set(L.get("taught", []))
+                ws = self._clean_words(words)
+                req_in_vocab = [w for w in ws if w in vocab]
+                untaught_req = [w for w in req_in_vocab if w not in taught]
+                untaught_rest = [w for w in vocab if w not in taught and w not in untaught_req]
+                untaught = untaught_req + untaught_rest
+                if untaught:
+                    picked = untaught[:limit]
+                else:
+                    picked = (req_in_vocab + [w for w in vocab if w not in req_in_vocab])[:limit]
+
+                now_str = self.now().isoformat(timespec="minutes")
+                L["detour"] = {"lesson_id": lid, "at": now_str}
+                L["cur_new"] = list(picked)
+                L["cur_from_mark"] = False
+                self._save(d)
+
+                title = self.lessons[lid].get("title", lid)
+                review = [w for w in vocab if w in taught and w not in picked][:2]
+                guide = self._guide_new(picked, review)
+                ins = (f"{self.lessons[lid]['instructions']}\n"
+                       f"The child asked for '{topic}'. Switch now, warmly, to this lesson from our curriculum: {title}. "
+                       f"Call mark_word for these words as usual.\n"
+                       f"{guide}")
+                if not self._free():
+                    ins += "\n" + (TODDLER_MODE if age <= 3 else OLDER_MODE)
+                return {"ok": True, "jump": True, "lesson_id": lid, "words": list(picked), "instructions": ins}
+
+            topic_clean = re.sub(r"\s+", " ", re.sub(r"[^\w\s]", " ", str(topic or ""))).strip()[:40]
+            ws = self._clean_words(words)
+            if not topic_clean or not ws:
+                return {"ok": False, "words": [], "instructions": ""}
             ex = [e for e in L.get("extra", []) if isinstance(e, dict) and e.get("word") not in ws]
             for i, w in enumerate(ws):
-                ex.append({"word": w, "topic": topic, "rv": 0} if i == 0 else {"word": w, "rv": 0})
+                ex.append({"word": w, "topic": topic_clean, "rv": 0} if i == 0 else {"word": w, "rv": 0})
             L["extra"] = ex[-30:]
             age = self._age(L)
             self._save(d)
-        ins = (f"[topic] The child (or an adult) asked for a new topic: '{topic}'. Pause the roadmap for the rest of this session "
+        ins = (f"[topic] The child (or an adult) asked for a new topic: '{topic_clean}'. Pause the roadmap for the rest of this session "
                f"and happily follow this topic instead. Words: {', '.join(ws)}. Teach them ONE AT A TIME (one at a time, never "
                "two in one turn): say the word slowly, then the child says it after you ('Con nói theo cô: ...!'); no actions or gestures. "
                "Keep everything child-safe. Do not call mark_word for these words. ")
@@ -686,18 +833,31 @@ class Curriculum:
                 if ((pin or (not self._free() and self.roadmap(age)))
                         and all(x in L["taught"] for x in L["cur_new"])):
                     # 2026-11-12: hoc xong dot tu moi -> dua dot ke tiep ngay (be hoc lau thi duoc nhieu tu)
-                    nxt = self._next_pinned(L, pin, age) if pin else self._next_new(L, age)
-                    L["cur_new"] = list(nxt)
-                    L["cur_from_mark"] = True   # dot dua giua buoi: chi tinh da day khi co mark_word (khong tinh luc ket thuc)
-                    if nxt:
-                        if not pin:   # bai ghim: giu nguyen bai, khong nhay theo lich tuan
-                            L["week"], L["lesson"] = self._word_row(age, nxt[0])
-                        out["next_words"] = list(nxt)
-                        out["instructions"] = (
-                            f"Well done. When the child is ready, the NEXT new word(s): {', '.join(nxt)} "
-                            f"(lesson: {self.lessons[L['lesson']].get('title', L['lesson'])}). Teach them one at a time "
-                            "the same way, mix in a quick review of earlier words, then call mark_word. If the child seems "
-                            "tired, just play and review instead.")
+                    if L.get("detour"):
+                        detour_lid = L["detour"]["lesson_id"]
+                        nxt = [x for x in self.lessons[detour_lid]["vocab"] if x not in L["taught"]][:1 if age <= 3 else 2]
+                        L["cur_new"] = list(nxt)
+                        L["cur_from_mark"] = True
+                        if nxt:
+                            out["next_words"] = list(nxt)
+                            out["instructions"] = (
+                                f"Well done. When the child is ready, the NEXT new word(s): {', '.join(nxt)} "
+                                f"(lesson: {self.lessons[detour_lid].get('title', detour_lid)}). Teach them one at a time "
+                                "the same way, mix in a quick review of earlier words, then call mark_word. If the child seems "
+                                "tired, just play and review instead.")
+                    else:
+                        nxt = self._next_pinned(L, pin, age) if pin else self._next_new(L, age)
+                        L["cur_new"] = list(nxt)
+                        L["cur_from_mark"] = True   # dot dua giua buoi: chi tinh da day khi co mark_word (khong tinh luc ket thuc)
+                        if nxt:
+                            if not pin:   # bai ghim: giu nguyen bai, khong nhay theo lich tuan
+                                L["week"], L["lesson"] = self._word_row(age, nxt[0])
+                            out["next_words"] = list(nxt)
+                            out["instructions"] = (
+                                f"Well done. When the child is ready, the NEXT new word(s): {', '.join(nxt)} "
+                                f"(lesson: {self.lessons[L['lesson']].get('title', L['lesson'])}). Teach them one at a time "
+                                "the same way, mix in a quick review of earlier words, then call mark_word. If the child seems "
+                                "tired, just play and review instead.")
             self._save(d)
             return out
 
@@ -740,10 +900,11 @@ class Curriculum:
             if p is None:
                 return {"counted": False}
             L = p[0]
+            L.pop("detour", None)
             ok = self._meaningful(seconds, turns)
             if ok:
                 self._count(L)   # 2026-11-13: chi dem buoi; tu chi 'taught' khi be that su noi (mark)
-                self._save(d)
+            self._save(d)
             return {"counted": ok}
 
     def finish(self, nickname, seconds=None, turns=None, device=None):
@@ -753,6 +914,7 @@ class Curriculum:
             if p is None:
                 return {"next_lesson": self.order[0]}
             L = p[0]
+            L.pop("detour", None)
             age = self._age(L)
             if self._meaningful(seconds, turns):
                 self._count(L)   # 2026-11-13: khong con tu dong day cur_new khi ket thuc buoi

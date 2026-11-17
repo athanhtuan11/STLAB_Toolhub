@@ -16,7 +16,7 @@ import yaml
 from aiohttp import web
 from markdown_it import MarkdownIt
 
-UNIT_RE = re.compile(r"^s[1-3]-u[1-8]$")
+UNIT_RE = re.compile(r"^s[1-3]-u(?:[1-9]|1[0-9])$")   # 2026-11-17: them chu de mo rong u9..u13
 SESSION_S = 30 * 24 * 3600
 FAIL_MAX, FAIL_WINDOW_S = 10, 600
 COOKIE = "stlab_cur"
@@ -162,6 +162,7 @@ def setup(app, *, cur, seed_dir, devices, active, log=None):
         for mac, name in devices().items():
             info = cur.pin_info(mac)
             sess = active(mac)
+            det = cur.detour_info(nickname=name, device=mac)
             lid = info["lesson_id"] if info else None
             if not lid:
                 try:
@@ -182,7 +183,22 @@ def setup(app, *, cur, seed_dir, devices, active, log=None):
                                '<span class="muted small">từ %s/%s %s</span></div>' % (a[8:10], a[5:7], a[11:16]))
                 except Exception:
                     pinline = '<div class="row"><span class="pill pin">📌 Ghim bởi người lớn</span></div>'
-            cur_txt = ("Đang dạy: <b>%s</b>" % esc(unit_label(lid))) if lid else "Chưa có bài hiện tại"
+            if sess is not None and det:
+                det_lid = det.get("lesson_id")
+                cur_txt = 'Đang dạy: <b>%s</b> <span class="pill">🙋 bé xin</span>' % esc(unit_label(det_lid))
+            elif info and info.get("session"):
+                sess_n = info["session"]
+                sp = cur.session_plan(lid, sess_n)
+                title_short = ""
+                if sp and sp[0]:
+                    m_h = re.match(r"^Buổi\s*\d+\s*[–-]\s*(.+)", sp[0].strip())
+                    title_short = m_h.group(1).strip() if m_h else sp[0].strip()
+                sess_label = (" · Buổi %d – %s" % (sess_n, title_short)) if title_short else (" · Buổi %d" % sess_n)
+                cur_txt = "Đang dạy: <b>%s%s</b>" % (esc(unit_label(lid)), esc(sess_label))
+            elif lid:
+                cur_txt = "Đang dạy: <b>%s</b>" % esc(unit_label(lid))
+            else:
+                cur_txt = "Chưa có bài hiện tại"
             btn = ('<button class="btn" type="button" data-unpin="%s">Bỏ ghim → về lộ trình</button>' % attr(mac)) if info else ""
             out.append('<div class="%s" data-device="%s"%s><h3>Máy “%s” <span class="muted small">·%s</span> %s</h3><div>%s</div>%s%s</div>'
                        % (cls, attr(mac), " data-pinned" if info else "", esc(name), esc(str(mac)[-5:]), st, cur_txt, pinline, btn))
@@ -190,8 +206,10 @@ def setup(app, *, cur, seed_dir, devices, active, log=None):
             out.append('<div class="card muted">Chưa có máy Cú Bông nào kết nối.</div>')
         return "".join(out)
 
-    def unit_state(unit_id, prog, pinned_ids):
+    def unit_state(unit_id, prog, pinned_ids, detour_ids=None):
         ls = lessons_of(unit_id)
+        if detour_ids and any(l in detour_ids for l in ls):
+            return "now", "🙋 bé đang học"
         if any(l in pinned_ids for l in ls):
             return "now", "📌 đang dạy"
         n = sum(prog.get(l, {}).get("taught", 0) for l in ls)
@@ -208,6 +226,9 @@ def setup(app, *, cur, seed_dir, devices, active, log=None):
         first_nick = next(iter(devs.values()), None)
         prog = cur.progress(first_nick) if first_nick else {}
         pinned_ids = {(cur.pin_info(m) or {}).get("lesson_id") for m in devs}
+        detour_ids = {cur.detour_info(nickname=name, device=mac).get("lesson_id")
+                      for mac, name in devs.items()
+                      if active(mac) is not None and cur.detour_info(nickname=name, device=mac)}
         tabs, panels = [], []
         for i, lv in enumerate(levels):
             lid = lv["id"]
@@ -215,7 +236,7 @@ def setup(app, *, cur, seed_dir, devices, active, log=None):
                         % (" on" if i == 0 else "", attr(lid), esc(lv.get("name", lid)), esc(lv.get("age", ""))))
             cards = []
             for n, u in enumerate(lv.get("units", []), 1):
-                kind, label = unit_state(u["id"], prog, pinned_ids)
+                kind, label = unit_state(u["id"], prog, pinned_ids, detour_ids)
                 cards.append('<a class="card unit %s" data-unit="%s" href="/curriculum/%s"><div class="num">%d</div>'
                              '<div class="grow"><h4>%s · %s</h4><div class="words">%s</div></div>'
                              '<span class="mark %s">%s</span></a>'
@@ -244,7 +265,7 @@ def setup(app, *, cur, seed_dir, devices, active, log=None):
                           % (attr(mac), " checked" if len(devs) == 1 else "", esc(name), esc(st)))
         if not radios:
             radios.append('<div class="muted">Chưa có máy nào.</div>')
-        sheet = ('<div class="sheet" id="pick" data-lesson="%s" hidden><b>Cú Bông dạy “%s”?</b>'
+        sheet = ('<div class="sheet" id="pick" data-lesson="%s" hidden><b id="pick-title">Cú Bông dạy “%s”?</b>'
                  '<div class="muted">Chọn máy:</div>%s'
                  '<div class="card note">Máy đổi sang bài này <b>ngay</b> (đang học thì đổi giữa buổi) và các buổi sau vẫn dạy '
                  'bài này tới khi bấm <b>Bỏ ghim</b>. Từ đã dạy vẫn ghi vào tiến độ.</div>'
@@ -253,8 +274,15 @@ def setup(app, *, cur, seed_dir, devices, active, log=None):
                  '<button class="btn full" type="button" data-cancel>Hủy</button></div>'
                  % (attr(unit_id), esc(u.get("theme", "")), "".join(radios)))
         sessions = plan_sections(unit_id)
-        plan = "".join('<details data-session><summary>%s</summary><div class="md">%s</div></details>' % (esc(h), b)
-                       for h, b in sessions)
+        details_list = []
+        for h, b in sessions:
+            m = re.match(r"^Buổi\s*(\d+)", h)
+            btn_session = ""
+            if m:
+                n_sess = m.group(1)
+                btn_session = f'<button class="btn" type="button" data-pin-session="{n_sess}">📌 Cú Bông dạy buổi này</button>'
+            details_list.append(f'<details data-session><summary>{esc(h)}</summary>{btn_session}<div class="md">{b}</div></details>')
+        plan = "".join(details_list)
         plan_card = '<div class="card"><b>Giáo án cho người dạy</b>%s</div>' % (plan or '<div class="muted">Chưa có giáo án.</div>')
         body = ('<header class="top"><a class="muted" href="/curriculum">← %s</a><span class="muted">U%d / %d</span></header>'
                 '<h2>%s · %s</h2><div class="muted">%s · %s · %s buổi × %s phút</div>'
@@ -326,11 +354,20 @@ def setup(app, *, cur, seed_dir, devices, active, log=None):
         devs = devices()
         if mac not in devs:
             return web.json_response({"ok": False, "error": "device"}, status=400)
+        session = d.get("session")
+        if "session" in d and session is not None and type(session) is not int:
+            return web.json_response({"ok": False, "error": "session"}, status=400)
         try:
-            lid = cur.pin(mac, lesson)
+            lid = cur.pin(mac, lesson, session=session)
         except ValueError:
+            if session is not None:
+                try:
+                    cur.resolve_lesson(lesson)
+                    return web.json_response({"ok": False, "error": "session"}, status=400)
+                except ValueError:
+                    return web.json_response({"ok": False, "error": "lesson"}, status=400)
             return web.json_response({"ok": False, "error": "lesson"}, status=400)
-        say("[CURRICULUM] ghim %s %s" % (mac, lid))
+        say("[CURRICULUM] ghim %s %s%s" % (mac, lid, " buoi %d" % session if session is not None else ""))
         pushed = False
         sess = active(mac)
         if sess is not None:
@@ -342,7 +379,10 @@ def setup(app, *, cur, seed_dir, devices, active, log=None):
                     pushed = True
             except Exception as e:  # noqa: BLE001
                 say("[CURRICULUM] day bai vao may loi %s" % type(e).__name__)
-        return web.json_response({"ok": True, "lesson_id": lid, "pushed": pushed})
+        resp = {"ok": True, "lesson_id": lid, "pushed": pushed}
+        if session is not None:
+            resp["session"] = session
+        return web.json_response(resp)
 
     async def h_unpin(request):
         g = gate(request, post=True, api=True)

@@ -142,8 +142,8 @@ async def web_tests():
 
         r = await c.get("/curriculum")
         t = await r.text()
-        units = set(re.findall(r'data-unit="(s[1-3]-u[1-8])"', t))
-        ok(len(units) == 24, "danh sach du 24 unit (co %d)" % len(units))
+        units = set(re.findall(r'data-unit="(s[1-3]-u\d{1,2})"', t))
+        ok(len(units) == 36, "danh sach du 36 unit (24 Core + 12 mo rong 2026-11-17) (co %d)" % len(units))
         ok(all(f'data-level="{lv}"' in t for lv in ("s1", "s2", "s3")), "3 tab data-level s1/s2/s3")
         ok(f'data-device="{DEV}"' in t, "o may data-device")
         ok("<b>x</b>" not in t and "&lt;b&gt;x&lt;/b&gt;" in t, "ten may duoc escape HTML")

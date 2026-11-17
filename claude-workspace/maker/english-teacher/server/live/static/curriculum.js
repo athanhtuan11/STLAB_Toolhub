@@ -24,26 +24,57 @@
 
   var sheet = document.getElementById("pick");
   var dim = document.getElementById("dim");
+  var pickTitle = document.getElementById("pick-title");
+  var defaultTitle = pickTitle ? pickTitle.textContent : "";
+  var currentSession = null;
+
   function show(on) {
     if (sheet) { sheet.hidden = !on; }
     if (dim) { dim.hidden = !on; }
   }
+
   var pinBtn = document.querySelector("[data-pin]");
   if (pinBtn && sheet) {
-    pinBtn.addEventListener("click", function () { show(true); });
-    if (dim) { dim.addEventListener("click", function () { show(false); }); }
-    sheet.querySelector("[data-cancel]").addEventListener("click", function () { show(false); });
-    sheet.querySelector("[data-confirm]").addEventListener("click", function () {
-      var msg = document.getElementById("pick-msg");
-      var sel = sheet.querySelector("input[name=device]:checked");
-      msg.hidden = true;
-      if (!sel) { msg.textContent = "Hãy chọn một máy."; msg.hidden = false; return; }
-      post("/curriculum/api/pin", { device: sel.value, lesson: sheet.getAttribute("data-lesson") }).then(function (j) {
-        if (j.ok) { window.location.href = "/curriculum"; return; }
-        msg.textContent = j.status === 401 ? "Hết phiên đăng nhập, tải lại trang." : "Không ghim được (mã " + j.status + ").";
-        msg.hidden = false;
-      }).catch(function () { msg.textContent = "Không kết nối được máy chủ."; msg.hidden = false; });
+    pinBtn.addEventListener("click", function () {
+      currentSession = null;
+      if (pickTitle) { pickTitle.textContent = defaultTitle; }
+      show(true);
     });
+  }
+
+  document.querySelectorAll("[data-pin-session]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var s = parseInt(btn.getAttribute("data-pin-session"), 10);
+      currentSession = s;
+      if (pickTitle) {
+        pickTitle.textContent = defaultTitle.replace(/\?$/, "") + " · Buổi " + s + "?";
+      }
+      show(true);
+    });
+  });
+
+  if (sheet) {
+    if (dim) { dim.addEventListener("click", function () { show(false); }); }
+    var cancelBtn = sheet.querySelector("[data-cancel]");
+    if (cancelBtn) { cancelBtn.addEventListener("click", function () { show(false); }); }
+    var confirmBtn = sheet.querySelector("[data-confirm]");
+    if (confirmBtn) {
+      confirmBtn.addEventListener("click", function () {
+        var msg = document.getElementById("pick-msg");
+        var sel = sheet.querySelector("input[name=device]:checked");
+        msg.hidden = true;
+        if (!sel) { msg.textContent = "Hãy chọn một máy."; msg.hidden = false; return; }
+        var payload = { device: sel.value, lesson: sheet.getAttribute("data-lesson") };
+        if (currentSession !== null && !isNaN(currentSession)) {
+          payload.session = currentSession;
+        }
+        post("/curriculum/api/pin", payload).then(function (j) {
+          if (j.ok) { window.location.href = "/curriculum"; return; }
+          msg.textContent = j.status === 401 ? "Hết phiên đăng nhập, tải lại trang." : "Không ghim được (mã " + j.status + ").";
+          msg.hidden = false;
+        }).catch(function () { msg.textContent = "Không kết nối được máy chủ."; msg.hidden = false; });
+      });
+    }
   }
 
   document.querySelectorAll("[data-unpin]").forEach(function (b) {
