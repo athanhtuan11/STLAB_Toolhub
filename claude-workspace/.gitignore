@@ -81,6 +81,13 @@ credentials*.json
 /maker/**/out/*.3mf
 /maker/**/out/*.sc
 /maker/**/out/asm/
+# 2026-11-17: thu muc out-<bien the>/ (vd english-teacher/cad/out-s3) cung la file sinh; gcode cat lop chi tren may
+/maker/**/out-*/*.sc
+/maker/**/out-*/asm/
+/maker/**/*.gcode
+# elephant-backpack-clicker: file nang chi de tren may (README "khong len git")
+/maker/elephant-backpack-clicker/blender/elephant-backpack-color.blend
+/maker/elephant-backpack-clicker/blender/out/
 /maker/*/marketing/stills/raw/
 /maker/*/marketing/stills/assets/
 

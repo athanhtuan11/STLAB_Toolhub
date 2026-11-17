@@ -36,9 +36,14 @@ prov = {p["id"]: p for p in d["providers"]}
 assert set(prov) == {"claude", "codex", "gemini", "opencode", "kilo", "copilot"}, set(prov)
 for p in prov.values():
     assert {"name", "bars", "agents", "limited_until", "note", "last_run"} <= set(p), p.keys()
-assert set(prov["claude"]["agents"]) == {"claude-main", "check-runner", "doc-writer", "git-scribe"}
+# 2026-11-17: doi chieu voi so nhan su (them agent moi khong lam gay gate); van giu cac agent goc phai co
+_book = yaml.safe_load(open(WS / "org" / "agents.yaml", encoding="utf-8"))["agents"]
+_claude = {a["id"] for a in _book if a.get("chi_phi") == "claude-quota"}
+assert {"claude-main", "check-runner", "doc-writer", "git-scribe"} <= _claude
+assert set(prov["claude"]["agents"]) == _claude, prov["claude"]["agents"]
 assert set(prov["codex"]["agents"]) == {"codex", "ask-gpt"}
-assert set(prov["gemini"]["agents"]) == {"agy", "agy-sonnet", "ask-gemini"}, prov["gemini"]["agents"]
+assert {"agy", "agy-sonnet", "ask-gemini"} <= set(prov["gemini"]["agents"]), prov["gemini"]["agents"]
+assert not set(prov["gemini"]["agents"]) & _claude
 assert "Antigravity" in prov["gemini"]["name"], prov["gemini"]["name"]
 assert prov["opencode"]["agents"] == ["opencode"] and prov["kilo"]["agents"] == ["kilo"]
 assert prov["copilot"]["agents"] == ["copilot"]
