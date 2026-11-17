@@ -140,7 +140,7 @@ def setup(app, *, cur, seed_dir, devices, active, log=None):
         body = ('<header class="top"><b>🦉 Giáo trình Cú Bông</b></header>'
                 '<form class="card" method="post" action="/curriculum/login">%s'
                 '<label for="pin">Nhập mã PIN của người lớn</label>'
-                '<input id="pin" name="pin" type="password" inputmode="numeric" autocomplete="current-password" required>'
+                '<input id="pin" name="pin" type="password" autocomplete="current-password" required>'
                 '<button class="btn pri full" type="submit">Vào</button></form>' % m)
         return page("Giáo trình Cú Bông", body, status)
 
