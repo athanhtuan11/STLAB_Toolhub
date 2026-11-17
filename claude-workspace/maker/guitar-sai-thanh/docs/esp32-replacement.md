@@ -1,5 +1,13 @@
 # Thay nRF52832 bằng ESP32 được không? (phân tích 2026-11-17)
 
+> **Cập nhật 2026-11-17 (ảnh mặt sau rõ):** bo **đã có sẵn ESP32-PICO-D4** (anten ANT1) + **TI PCM5100** (DAC I2S stereo).
+> Kiến trúc thật (suy luận): **nRF52832 = BLE với app**, **ESP32-PICO-D4 = xử lý âm thanh số + Wi-Fi ("Cấu hình AI")** → PCM5100 → ampli U12
+> (HTSSOP + 2 cuộn 10 µH, mã `TODO`). U8 (TSSOP lớn, có thể ADC/codec – `TODO`), HT918xx (14 chân, có thể tiền khuếch đại – `TODO`),
+> BC142 (SOT-223, ổn áp?), A4468 + R068 + cuộn (tăng áp / sạc pin 3 cell?).
+> → **Không cần module ESP32 ngoài.** Hướng mới: (1) sao lưu flash ESP32 bằng esptool qua UART (chỉ đọc), (2) bắt UART nRF ↔ ESP32 bằng
+> máy phân tích logic, (3) quyết giữ nguyên + thêm tính năng Wi-Fi, hay viết firmware ESP32 mới gộp BLE (bỏ nRF). Phần dưới là phân tích
+> trước khi biết có ESP32, giữ để tham khảo.
+
 Dựa trên: ảnh bo (`photos/`), giao thức đã giải mã (`ble-protocol.md`). Chưa đo mạch thật → các chỗ ghi `TODO`.
 
 ## 1. nRF52832 đang làm gì (suy ra từ giao thức + ảnh)
