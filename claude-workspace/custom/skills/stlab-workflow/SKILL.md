@@ -12,6 +12,8 @@ Sổ nhân sự `org/agents.yaml` là nguồn duy nhất về agent; file này c
 - Đọc memory liên quan (MEMORY.md đã nạp sẵn). Nhiều hướng → nêu khuyến nghị + đánh đổi, hỏi Tuan một lần.
 - "Nghiên cứu / rà soát xem cần cải thiện gì" = **báo cáo trước, không tự sửa**. Tuan chốt rồi mới làm.
 - Dự án mới / tính năng có giao diện → bước 0 "giao diện trước": mockup, duyệt bằng ảnh.
+- **Dự án mới → đọc `community/reserve.tsv`** (repo cộng đồng dự phòng, cột `dung_khi`) xem tận dụng được gì (Tuan 2026-11-17).
+  Dùng tới thì bỏ dòng khỏi reserve.tsv + thêm links.tsv. Cần nguồn cộng đồng mới chưa có → báo Tuan, không tự clone.
 
 ## 1. Phân việc – trước mỗi lệnh hỏi "đây có phải quyết định / CAD / an toàn không?"
 | Việc | Ai |

@@ -8,7 +8,7 @@
 # Lenh:
 #   status                 diem ghim, HEAD thuc te, working tree co sach khong
 #   clone                  clone repo con thieu, dung o diem ghim (may moi)
-#   check [ten] [--auto]   fetch, so sanh voi ban moi nhat, ghi reports/YYYY-MM-DD.md
+#   check [ten] [--auto] [--all]  fetch, so sanh voi ban moi nhat, ghi reports/YYYY-MM-DD.md (bo qua repo du phong trong reserve.tsv tru --all)
 #   apply <ten> <ref>      chuyen diem ghim sang tag/SHA <ref> (luu ghim cu de rollback)
 #   rollback <ten>         quay ve diem ghim truoc
 #   link                   tao symlink theo links.tsv (khong ghi de file/thu muc that)
@@ -152,8 +152,9 @@ rollback_one() {
 }
 
 cmd_check() {
-  local only="" auto=0 out r n part
-  for a in "$@"; do case "$a" in --auto) auto=1 ;; *) only=$a ;; esac; done
+  local only="" auto=0 all=0 out r n part skipped=0
+  for a in "$@"; do case "$a" in --auto) auto=1 ;; --all) all=1 ;; *) only=$a ;; esac; done
+  # 2026-11-17 Tuan: repo DU PHONG (reserve.tsv) giu clone + ghim nhung khong kiem hang ngay; goi ten rieng hoac --all de kiem
   mkdir -p "$REPORTS"; out="$REPORTS/$(date +%F).md"; part="$(mktemp)"
   {
     echo "# Bao cao nguon cong dong $(date '+%F %H:%M')"; echo
@@ -162,6 +163,9 @@ cmd_check() {
   while IFS= read -r r; do
     n=$(fld "$r" 1)
     [ -z "$only" ] || [ "$only" = "$n" ] || continue
+    if [ -z "$only" ] && [ $all = 0 ] && [ -f "$COMM/reserve.tsv" ] && cut -f1 "$COMM/reserve.tsv" | tr -d '' | grep -qx "$n"; then
+      skipped=$((skipped + 1)); continue
+    fi
     # Khong pipe check_one: no phai chay trong shell hien tai de giu CAND_SHA/SENS cho buoc --auto.
     CAND_SHA="" SENS=""
     check_one "$r" >"$part" || echo "## $n: LOI khi kiem (vd. fetch that bai) - chay lai: check $n" >>"$part"
@@ -175,6 +179,7 @@ cmd_check() {
     fi
   done < <(rows)
   rm -f "$part"
+  [ $skipped = 0 ] || echo "Du phong (khong kiem): $skipped repo - danh sach community/reserve.tsv, kiem bang: check <ten> hoac check --all" | tee -a "$out"
   echo "Da ghi: $out"
 }
 

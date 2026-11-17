@@ -1,0 +1,41 @@
+# Repo DU PHONG (Tuan 2026-11-17): chua du an nao dung (khong co link trong links.tsv, khong du an nao tro toi).
+# Van giu clone + diem ghim trong pins.tsv; update-community.sh check BO QUA (kiem rieng: check <ten> hoac check --all).
+# DU AN MOI -> doc file nay, cot "dung_khi" de xem tan dung duoc gi; dung toi thi xoa dong o day + them links.tsv.
+# ten	nhom	dung_khi
+shanraisshan-claude-code-best-practice	claude-code	Doi cau truc CLAUDE.md/agent/skill cua workspace (mau quy uoc dang dung, chi tham khao)
+homeassistant-ai-ha-mcp	smart-home	Du an nha thong minh Home Assistant can Claude dieu khien thiet bi qua MCP
+drfenixion-freecad-robotcad	cad-robot	Robot can xuat URDF/mo phong ROS (FreeCAD da thanh legacy, can chuyen sang SolidCraft)
+abpy-fujifilm-camera-profiles	anh	Photo AI/LightCraft mo lai (dang tam dung): profile mau Fujifilm
+cedeber-hald-clut	anh	Photo AI/LightCraft, video-ai: LUT mau .cube/HaldCLUT
+peva3-lightroom-presets	anh	Photo AI/LightCraft: preset XMP cong dong
+cyberbrick-official-controller-core	robot	Mo lai cyberbrick-car/cyberbrick-arm (dang tam dung): firmware tay cam CyberBrick chinh hang
+earthtojake-text-to-cad	cad	Tao CAD tu mo ta chu / mach dien tu (eurorack, macropad) khi SolidCraft chua du
+nextlevelbuilder-ui-ux-pro-max-skill	ui	Trang web/app moi can goi y bo cuc, bang mau UI
+voltagent-awesome-design-md	ui	Can mau DESIGN.md (he thiet ke) cho app/web moi
+nexu-io-open-design	ui	Cong cu thiet ke giao dien mo (thay Figma) cho mockup app
+leonxlnx-taste-skill	ui	Skill cham "gu" giao dien khi duyet mockup
+pbakaus-impeccable	ui	Skill soat chi tiet giao dien (khoang cach, chu, tuong phan)
+davidhdev-react-bits	ui	App React can component hieu ung san (nen dong, chu dong)
+emilkowalski-skills	ui	Hieu ung chuyen dong/animation UI tinh te
+nutlope-hallmark	ui	Mau landing page / trang gioi thieu san pham
+google-labs-code-design-md	ui	Chuan DESIGN.md cua Google cho he thiet ke
+greensock-gsap-skills	ui-video	Animation web phuc tap (GSAP) cho trang gioi thieu, HyperFrames
+oso95-scroll-world	ui	Trang web cuon ke chuyen (scrollytelling) gioi thieu du an
+davidhdev-canvas-ui	ui	Ve UI tren canvas (bang trang, mo phong) cho app hoc
+anthropics-knowledge-work-plugins	claude-code	Plugin cong viec van phong (tai lieu, bang tinh) khi can quy trinh moi
+multica-ai-andrej-karpathy-skills	claude-code	Bo skill lap trinh/hoc may tham khao
+comfy-org-comfyui	ai-anh	Tao anh AI tai may (khi may du GPU) cho marketing/hoc lieu
+akitaonrails-ai-memory	claude-code	He thong nho dai han cho agent neu memory hien tai khong du
+ruvnet-ruflo	claude-code	Dieu phoi nhieu agent (swarm) neu delegate.py khong du
+cadquery-cadquery	cad	CAD tham so bang Python neu can thay/ho tro SolidCraft
+gumyr-build123d	cad	CAD tham so bang Python (build123d) neu can thay/ho tro SolidCraft
+pan-chera-multi-agent-cad	cad	Mau nhieu agent dung CAD
+orcaslicer-orcaslicer	in-3d	Cat lop thay Bambu Studio / doc profile may in khac
+anthropics-claude-plugins-official	claude-code	Tim plugin chinh hang Claude Code cho viec moi
+matt1398-claude-devtools	claude-code	Cong cu xem/go loi phien Claude Code
+hoangsonww-claude-code-agent-monitor	claude-code	Bang theo doi agent dang chay
+kibitzsh-kibitz	claude-code	Xem/chia se phien Claude Code
+getagentseal-codeburn	claude-code	Do token/chi phi theo phien
+dagoste-squadra	claude-code	Dieu phoi doi agent
+makifbaysal-tasktrooper	claude-code	Quan ly viec cho agent
+3dpcalc	in-3d	Doi chieu cong thuc bao gia in 3D (Toolhub dung printcalc)
