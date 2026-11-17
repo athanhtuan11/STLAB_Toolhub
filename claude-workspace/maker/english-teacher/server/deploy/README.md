@@ -59,4 +59,5 @@ Chép `setup-vps.sh` + `nginx-engteacher.conf` (đuôi dòng LF) lên VPS, chạ
   `/root/backup/engteacher.<giờ>`), `nginx -t` OK, reload; web trả 503 "Trang giáo trình chưa bật" cho tới khi có PIN.
 - **Không chép đè** file trên VPS bằng `nginx-engteacher.conf` của repo: bản trên VPS có thêm khối SSL + chuyển 80→443 do certbot
   ghi, chép đè sẽ mất HTTPS. Sửa thì chèn đúng khối cần đổi, giữ dòng `# managed by Certbot`.
-- Còn lại (Tuan): `setx STLAB_CURRICULUM_PIN <mã>` trên máy lab rồi khởi động lại bridge, mở `https://engteacher.mamnoncaynho.com/curriculum`.
+- **Đã bật 2026-11-17:** `setx STLAB_CURRICULUM_PIN <mã>` (biến môi trường User trên máy lab, mã Tuan giữ) + chạy lại task
+  `STLab xiaozhi server` (setx không vào tiến trình đang chạy → phải dừng/chạy lại cả task, không chỉ bridge). Trang trả 200.
