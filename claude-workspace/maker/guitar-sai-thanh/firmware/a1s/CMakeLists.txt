@@ -1,0 +1,5 @@
+# Firmware thu dan GUITAR UMI tren ESP32-A1S (ESP-IDF 5.5.4, target esp32)
+cmake_minimum_required(VERSION 3.16)
+set(PROJECT_VER "0.1.0")
+include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+project(guitar_a1s)
