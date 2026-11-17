@@ -18,21 +18,23 @@ Số liệu có nguồn ghi ở cột Nguồn; chưa có → `TODO`. Giá: TODO 
 | 3 | Mạch ULN2003 cho 28BYJ-48 | 2 | ~35 × 31 mm, 4 lỗ Ø3,2 (tùy hãng – `TODO` đo) | TI ULN2003A; Reichelt ME016 |
 | 4 | Mạch buck-boost ra 5 V, vào ~3–6 V, ≥ 1 A | 1 | **Ưu tiên Pololu S9V11F5** (2026-11-17): Vin 2–16 V (khởi động ≥ 3 V), 1,5 A khi Vin ≥ Vout, có chân EN, 7,6 × 11,4 × 3,8 mm, hiệu suất 85–95 %. Dự phòng **S13V20F5** (Vin 2,8–22 V, 1–2,5 A tùy Vin, 8,9 × 12,1 × 5,6 mm, không có EN). Không dùng S7V8F5 (> 500 mA, không chắc đủ 1 A). Module TPS63020 chỉ dùng khi có datasheet của chính module đó. `TODO` đọc đồ thị dòng ra ở Vin 4,5 V (đang boost) trước khi chốt mua | [pololu.com/product/2836](https://www.pololu.com/product/2836), [/4085](https://www.pololu.com/product/4085), [/2123](https://www.pololu.com/product/2123/specs) |
 | 5 | Hộp pin 4 × AA có nắp vặn vít + 4 pin AA NiMH | 1 | 4,8 V danh định | Panasonic eneloop (1,2 V/cell) |
-| 6 | Công tắc gạt nguồn (giấu dưới đáy) | 1 | `TODO` mã | – |
-| 7 | Cầu chì tự phục hồi (PTC) dây dương pin | 1 | `TODO` dòng giữ ~1 A theo dòng đo thật | – |
-| 8 | LED WS2812B (mắt) | 2 | nối chuỗi, cấp 5 V | TODO datasheet WS2812B |
-| 9 | IC đệm 74AHCT125 (nâng mức 3,3 → 5 V cho dây dữ liệu LED) | 1 | Dữ liệu WS2812 ở 5 V cần mức cao ~0,7·VDD > 3,3 V – `TODO` xác nhận datasheet | TODO |
+| 6 | Công tắc gạt nguồn (giấu dưới đáy) | 1 | Cần định mức DC ≥ 2 A. **Không dùng SS12D00** (chỉ 0,5 A). Có nguồn: C&K 7201 (gạt cần, 5 A @ 28 VDC) nhưng to; công tắc trượt nhỏ ≥ 2 A: `TODO` mã | [C&K 7000](https://www.ckswitches.de/media/1453/7000rocker.pdf) |
+| 7 | Cầu chì tự phục hồi (PTC) dây dương pin | 1 | **Bourns MF-R135** (giữ 1,35 A, ngắt 2,70 A, 30 V). Dòng phía pin lớn hơn phía 5 V khi boost (≈ 5 V × I_ra / (V_pin × hiệu suất)) nên MF-R110 (giữ 1,10 A) dễ ngắt nhầm khi pin yếu. `TODO` đo dòng pin thật, nếu < 0,9 A thì MF-R110 cũng được | [Bourns MF-R](https://www.bourns.com/docs/Product-Datasheets/mfr.pdf) |
+| 8 | LED WS2812B (mắt) | 2 | nối chuỗi, cấp 5 V; chân DIN cần mức cao ≥ 0,7 × VDD = 3,5 V → phải qua 74AHCT125 | [Worldsemi WS2812B v1.4](https://docid81hrs3j1.cloudfront.net/medialibrary/2018/10/WS2812B_V1.4_EN_18090714224701.pdf) |
+| 9 | IC đệm 74AHCT125 (nâng mức 3,3 → 5 V cho dây dữ liệu LED) | 1 | Đã xác nhận: VIH = 2 V @ VCC 5 V (GPIO 3,3 V đủ), VOH ≥ 4,4 V (> 3,5 V của WS2812B), trễ 5–10 ns | [TI SN74AHCT125](https://www.ti.com/lit/ds/symlink/sn74ahct125.pdf) |
 | 10 | Ampli I2S MAX98357A + loa 4 Ω nhỏ | 1 | cùng loại Cú Bông S3 | `maker/english-teacher/hardware/wiring-s3.yaml` |
 | 11 | Tụ 1000 µF 16 V (sát VIN ampli) + tụ 470 µF 16 V (đầu ra buck-boost) | 1+1 | chống sụt áp khi stepper đổi pha | – |
-| 12 | Switch bàn phím **MX** (loại lắp không PCB) cho nút **Dừng** + mũ đỏ in 3D Ø24 (gờ Ø32 dưới nóc, không rút ra được) | 1 | nối GPIO13 ↔ GND; `TODO` chọn loại switch (lực nhấn) | fit-library `catpaw/mx-socket` 14,0 |
+| 12 | Switch bàn phím **MX** (loại lắp không PCB) cho nút **Dừng** + mũ đỏ in 3D Ø24 (gờ Ø32 dưới nóc, không rút ra được) | 1 | nối GPIO13 ↔ GND; chọn **Cherry MX Black** (60 cN ≈ 61 gf, nặng nhất trong loại đã kiểm; MX Red 45 cN) để bé khó bấm nhầm – `TODO` Tuan bấm thử | [Cherry MX2A Black](https://www.cherry.de/fileadmin/media/Industrial/Switch/MX_BLACK/Data_sheet_MX2A_Black.pdf) ·  fit-library `catpaw/mx-socket` 14,0 |
 | 13 | Điện trở 100 kΩ × 2 (chia áp đo pin) | 2 | pin → GPIO1 (ADC1) | – |
-| 14 | Bánh xe in 3D vành Ø45 + O-ring tiết diện 3,0 mm (ID ~40, `TODO` mã) → Ø48 | 2 | chu vi 150,8 mm ≈ 1 ô | `solidcraft/params.json` |
+| 14 | Bánh xe in 3D vành Ø45 + O-ring **NBR 40 × 3 mm** (ID × tiết diện, cỡ ISO 3601 có bán sẵn) → Ø48 | 2 | chu vi 150,8 mm ≈ 1 ô | `solidcraft/params.json` |
 | 15 | (bỏ) – chân trượt vòm in liền đế thay bi đỡ | – | trẻ không nuốt được bi rời | – |
 | 16 | Dây Dupont, ốc M3 | – | – | – |
 
 ## Dòng điện ước tính (tính từ datasheet, `TODO` đo thật)
 - 1 cuộn 28BYJ-48 ở 5 V qua ULN2003: (5 − ~0,9 V sụt Vce(sat) @100 mA) / 50 Ω ≈ 82 mA.
-- Nửa bước, tối đa 2 cuộn/motor × 2 motor ≈ 330 mA cho động cơ. ESP32-S3 Wi-Fi + loa + LED: `TODO` đo.
+- Nửa bước, tối đa 2 cuộn/motor × 2 motor ≈ 330 mA cho động cơ.
+- ESP32-S3 phát Wi-Fi: đỉnh 340 mA (802.11b @ 21 dBm), 283–291 mA (g/n) – [Espressif datasheet](https://documentation.espressif.com/esp32-s3_datasheet_en.pdf). MAX98357A tĩnh 2,4 mA; dòng khi phát vào 4 Ω: `TODO` (ADI chỉ công bố hiệu suất cho 8 Ω). LED: `TODO` đo.
+- Cộng phần có nguồn: ≈ 0,67 A đỉnh ở 5 V, chưa tính loa + LED.
 - → buck-boost ≥ 1 A ra là đủ dư. Firmware **nhả cuộn khi đứng yên** (giảm nóng + tiết kiệm pin).
 
 ## Tốc độ (giới hạn của 28BYJ-48)
