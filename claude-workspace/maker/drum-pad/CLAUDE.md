@@ -16,4 +16,5 @@ Tuan bắt đầu 2026-11-17 (hướng B cho bo ESP32-A1S rảnh sau khi Cú Bô
 - Đầu vào pad piezo có thể sinh điện áp đỉnh cao khi gõ mạnh → bắt buộc mạch bảo vệ (điện trở + diode kẹp) trước codec/ADC.
 
 ## Trạng thái
-- 2026-11-17: tạo dự án, brief bước 0; RudeBox ghim vào community (chỉ đọc). Đang: 3 dáng hộp (product-designer).
+- 2026-11-17: tạo dự án, brief bước 0; RudeBox ghim vào community (chỉ đọc). 3 dáng xong → **Tuan chọn B – Vòng quanh loa** (232 × 220 × 67).
+- 2026-11-17: GĐ1 bản giấy `hardware/BOM.md`: Audio Kit V2.2 không còn ADC1 trống → **ADS7830 chung I2C codec (32/33)**, mỗi pad mạch kẹp + giữ đỉnh (đề xuất, chưa thử), 4 WS2812 GPIO15 qua 74AHCT125, mẫu trống trong flash (bỏ thẻ SD). Tiếp: Tuan mua linh kiện → thử breadboard 1 pad; firmware v0.1 + CAD hộp B song song.
