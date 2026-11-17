@@ -16,7 +16,7 @@ Số liệu có nguồn ghi ở cột Nguồn; chưa có → `TODO`. Giá: TODO 
 | 1 | ESP32-S3-DevKitC-1 v1.1 N16R8 (hoặc bo tương thích N16R8) | 1 | Bo 25,4 × 62,74 mm; bản clone `TODO` đo lại | parts-library `esp32-s3-devkitc-1` |
 | 2 | Động cơ bước 28BYJ-48 **5 V** | 2 | 50 Ω/cuộn, hộp số 64:1 danh định (đo thực ~63,68:1 → hiệu chỉnh bước/ô), mô-men kéo vào 300 gf·cm | Kiatronics datasheet |
 | 3 | Mạch ULN2003 cho 28BYJ-48 | 2 | ~35 × 31 mm, 4 lỗ Ø3,2 (tùy hãng – `TODO` đo) | TI ULN2003A; Reichelt ME016 |
-| 4 | Mạch buck-boost ra 5 V, vào ~3–6 V, ≥ 1 A | 1 | Gợi ý dòng Pololu S9V11F5 / tương đương – `TODO` chọn mã theo hàng có + datasheet | TODO |
+| 4 | Mạch buck-boost ra 5 V, vào ~3–6 V, ≥ 1 A | 1 | **Ưu tiên Pololu S9V11F5** (2026-11-17): Vin 2–16 V (khởi động ≥ 3 V), 1,5 A khi Vin ≥ Vout, có chân EN, 7,6 × 11,4 × 3,8 mm, hiệu suất 85–95 %. Dự phòng **S13V20F5** (Vin 2,8–22 V, 1–2,5 A tùy Vin, 8,9 × 12,1 × 5,6 mm, không có EN). Không dùng S7V8F5 (> 500 mA, không chắc đủ 1 A). Module TPS63020 chỉ dùng khi có datasheet của chính module đó. `TODO` đọc đồ thị dòng ra ở Vin 4,5 V (đang boost) trước khi chốt mua | [pololu.com/product/2836](https://www.pololu.com/product/2836), [/4085](https://www.pololu.com/product/4085), [/2123](https://www.pololu.com/product/2123/specs) |
 | 5 | Hộp pin 4 × AA có nắp vặn vít + 4 pin AA NiMH | 1 | 4,8 V danh định | Panasonic eneloop (1,2 V/cell) |
 | 6 | Công tắc gạt nguồn (giấu dưới đáy) | 1 | `TODO` mã | – |
 | 7 | Cầu chì tự phục hồi (PTC) dây dương pin | 1 | `TODO` dòng giữ ~1 A theo dòng đo thật | – |
