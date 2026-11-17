@@ -71,10 +71,11 @@ for lv in data["levels"]:
             if len(rows) < 5:
                 err(f"buoi {n}: can >= 5 buoc")
         bodies = {n: b for n, (_, b) in sessions.items()}
-        for w in u["core"]:
+        # 2026-11-17: chu de mo rong (ext) khong co Core -> tu Plus la tu chinh, cung can >= 3 buoi
+        for w in (u["plus"] if u.get("ext") else u["core"]):
             k = sum(has(w, b) for b in bodies.values())
             if k < 3:
-                err(f"tu Core '{w}' chi co o {k} buoi (can >= 3)")
+                err(f"tu chinh '{w}' chi co o {k} buoi (can >= 3)")
         for w in u["plus"]:
             if not any(has(w, b) for b in bodies.values()):
                 err(f"tu Plus '{w}' khong co trong buoi nao")

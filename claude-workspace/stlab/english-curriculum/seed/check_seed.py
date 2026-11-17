@@ -17,13 +17,17 @@ fails, prev_count = [], 0
 
 for lv in data["levels"]:
     units = lv["units"]
-    if len(units) != 8:
-        fails.append(f"{lv['id']}: phai co 8 chu de, dang co {len(units)}")
+    # 2026-11-17 Tuan: 8 chu de Core + chu de mo rong (ext: true, Core rong, 4-5 tu Plus) dat SAU 8 chu de Core
+    base = [u for u in units if not u.get("ext")]
+    if len(base) != 8 or any(u.get("ext") for u in units[:8]):
+        fails.append(f"{lv['id']}: phai co 8 chu de Core dung dau (dang co {len(base)}), chu de ext dat sau")
     seen, core_n, plus_n = {}, 0, 0
     for i, u in enumerate(units, 1):
         for f in FIELDS:
-            if not u.get(f):
+            if not u.get(f) and not (f == "core" and u.get("ext")):
                 fails.append(f"{u.get('id', '?')}: thieu '{f}'")
+        if u.get("ext") and (u.get("core") or not 4 <= len(u.get("plus", [])) <= 5):
+            fails.append(f"{u.get('id')}: chu de ext phai co core rong va 4-5 tu Plus")
         if u.get("id") != f"{lv['id']}-u{i}":
             fails.append(f"{u.get('id')}: id phai la {lv['id']}-u{i}")
         if u.get("make_needs") and not u.get("make_fallback"):

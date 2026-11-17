@@ -13,7 +13,7 @@ levels:
     age: "3–4 tuổi"
     count_to: 3
     core_target: 35
-    plus_target: 16
+    plus_target: 28
     units:
       - id: s1-u1
         theme: Hello!
@@ -96,12 +96,47 @@ levels:
         tell: "Chỉ vào tranh: sun, tree, flower"
         can_do: ["Chỉ đúng 4 thứ ngoài trời khi nghe tên", "Nói tên 2 thứ mình thấy ngoài cửa sổ"]
 
+      # --- Mở rộng 2026-11-17 (Tuan duyệt, báo cáo docs/research-notes/education/cu-bong-mo-rong-giao-trinh.md):
+      # ext: true = chủ đề mở rộng, Core giữ nguyên mức cũ, toàn bộ từ là Plus; máy học sau phần Core của cấp.
+      - id: s1-u9
+        ext: true
+        theme: Family meal
+        theme_vi: Bữa ăn gia đình
+        core: []
+        plus: [cup, plate, spoon, glass]
+        patterns: ["I drink water.", "Here you are! – Thank you."]
+        song: "Chant tự soạn 'Cup, cup, I drink from my cup'"
+        make: "Bộ chén đĩa giấy – bé tô màu đĩa và cốc giấy giáo viên cắt sẵn"
+        tell: "Bày bàn ăn, nói: This is my cup. This is my plate."
+        can_do: ["Gọi tên 3 đồ dùng bữa ăn", "Đưa đồ và nói 'Here you are!'"]
+      - id: s1-u10
+        ext: true
+        theme: Vietnamese fruit
+        theme_vi: Trái cây Việt Nam
+        core: []
+        plus: [coconut, papaya, durian, jackfruit]
+        patterns: ["I like papaya.", "It's big!"]
+        song: "Chant tự soạn 'Coconut, coconut, big and round'"
+        make: "Giỏ trái cây đất nặn – bé nặn 1 trái cây mình thích"
+        tell: "Giơ trái cây nặn, nói: I like coconut."
+        can_do: ["Gọi tên 2–3 trái cây Việt Nam", "Nói mình thích trái nào"]
+      - id: s1-u11
+        ext: true
+        theme: Playground
+        theme_vi: Sân chơi
+        core: []
+        plus: [swing, slide, sand, bubble]
+        patterns: ["Go on the swing!", "Let's play!"]
+        song: "Chant tự soạn 'Up the slide, down the slide'"
+        make: "Sân chơi mini bằng ống hút và giấy – cầu trượt, xích đu dán trên tấm bìa"
+        tell: "Chỉ vào mô hình: This is the slide. Let's play!"
+        can_do: ["Gọi tên 3 trò chơi ở sân chơi", "Rủ bạn chơi bằng 'Let's play!'"]
   - id: s2
     name: Seed 2
     age: "4–5 tuổi"
     count_to: 5
     core_target: 70
-    plus_target: 30
+    plus_target: 52
     units:
       - id: s2-u1
         theme: How are you?
@@ -184,12 +219,68 @@ levels:
         tell: "Quay kim, nói: It's sunny. It's hot."
         can_do: ["Hỏi và trả lời về thời tiết hôm nay", "Gọi tên 3 phương tiện"]
 
+      # --- Mở rộng 2026-11-17 (ext: true, toàn bộ từ là Plus) ---
+      - id: s2-u9
+        ext: true
+        theme: Tet holiday
+        theme_vi: Tết
+        core: []
+        plus: [new year, gift, lucky money, dragon, peach blossom]
+        patterns: ["Happy new year!", "I have a gift."]
+        song: "Chant tự soạn 'Happy, happy new year'"
+        make: "Bao lì xì giấy đỏ – bé dán hình hoa và con rồng"
+        tell: "Tặng bao lì xì cho bạn: Happy new year! This is lucky money."
+        can_do: ["Chúc 'Happy new year!'", "Gọi tên 3 thứ ngày Tết"]
+      - id: s2-u10
+        ext: true
+        theme: Mid-Autumn festival
+        theme_vi: Trung thu
+        core: []
+        plus: [moon, lantern, mooncake, bright]
+        patterns: ["Look at the moon!", "My lantern is bright."]
+        song: "Chant tự soạn 'Moon, moon, round and bright'"
+        make: "Lồng đèn giấy gấp – bé tô màu và gắn quai"
+        tell: "Giơ lồng đèn, nói: This is my lantern. It's bright!"
+        can_do: ["Gọi tên 3 thứ ngày Trung thu", "Nói 'Look at the moon!'"]
+      - id: s2-u11
+        ext: true
+        theme: Da Lat pine forest
+        theme_vi: Đà Lạt và rừng thông
+        core: []
+        plus: [pine tree, mist, lake, flower garden]
+        patterns: ["The pine tree is tall.", "I see a lake."]
+        song: "Chant tự soạn 'Tall, tall pine tree'"
+        make: "Bức tranh rừng thông – bé dán quả thông, lá thông thật (người lớn nhặt sẵn) lên giấy"
+        tell: "Chỉ tranh: This is a pine tree. It's tall."
+        can_do: ["Gọi tên 3 cảnh ở Đà Lạt", "Tả cây bằng tall / small"]
+      - id: s2-u12
+        ext: true
+        theme: Vegetable garden
+        theme_vi: Vườn rau
+        core: []
+        plus: [cabbage, corn, pumpkin, onion, peas]
+        patterns: ["I like corn.", "It's a big pumpkin!"]
+        song: "Chant tự soạn 'Corn, corn, yellow corn'"
+        make: "Vườn rau trong khay – bé gieo hạt đậu vào cốc đất, dán nhãn tên rau"
+        tell: "Chỉ cốc hạt: These are peas. I like peas."
+        can_do: ["Gọi tên 3 loại rau", "Nói mình thích rau nào"]
+      - id: s2-u13
+        ext: true
+        theme: In the kitchen
+        theme_vi: Trong bếp
+        core: []
+        plus: [pot, pan, bowl, chopsticks]
+        patterns: ["Pass the bowl, please.", "I eat with chopsticks."]
+        song: "Chant tự soạn 'Bowl and chopsticks, let's eat'"
+        make: "Đôi đũa trang trí – bé dán sticker lên đũa tre (đầu đũa tròn, không nhọn)"
+        tell: "Cầm đũa và bát, nói: Pass the bowl, please."
+        can_do: ["Gọi tên 3 đồ dùng nhà bếp", "Xin đồ lịch sự bằng 'please'"]
   - id: s3
     name: Seed 3
     age: "5–6 tuổi"
     count_to: 10
     core_target: 100
-    plus_target: 50
+    plus_target: 68
     units:
       - id: s3-u1
         theme: My day
@@ -275,3 +366,50 @@ levels:
         make_fallback: "Đẩy xe in 3D bằng tay theo lệnh của bạn"
         tell: "Chỉ đường trên bản đồ: Go. Turn right. Stop. It's the park!"
         can_do: ["Hỏi và trả lời nơi chốn bằng near / far", "Chỉ đường bằng 3 lệnh"]
+      # --- Mở rộng 2026-11-17 (ext: true, toàn bộ từ là Plus) ---
+      - id: s3-u9
+        ext: true
+        theme: Craft class
+        theme_vi: Lớp học thủ công
+        core: []
+        plus: [scissors, glue, paint, paper, sticker]
+        patterns: ["Can you cut the paper?", "I need glue, please."]
+        song: "Chant tự soạn 'Cut, cut, cut the paper'"
+        make: "Tấm thiệp tự làm – cắt giấy bằng kéo đầu tròn, dán và tô màu"
+        tell: "Giới thiệu thiệp: I cut the paper. I use glue and paint."
+        can_do: ["Gọi tên 4 đồ dùng thủ công", "Xin đồ dùng bằng 'I need …, please'"]
+      - id: s3-u10
+        ext: true
+        theme: Vietnam nature
+        theme_vi: Thiên nhiên Việt Nam
+        core: []
+        plus: [field, bamboo, waterfall, hill, cave]
+        patterns: ["Is it tall or short?", "I see a waterfall."]
+        song: "Chant tự soạn 'Up the hill, down the hill'"
+        make: "Sa bàn thiên nhiên – đồi bằng giấy vò, thác bằng giấy bạc, tre bằng que"
+        tell: "Chỉ sa bàn: This is a hill. This is a waterfall."
+        can_do: ["Gọi tên 4 cảnh thiên nhiên", "Hỏi và trả lời tall or short"]
+      - id: s3-u11
+        ext: true
+        theme: Road safety
+        theme_vi: Đường an toàn
+        core: []
+        plus: [traffic light, helmet, taxi, zebra crossing]
+        patterns: ["Wear a helmet!", "Stop at the red light."]
+        song: "Chant tự soạn 'Red light stop, green light go'"
+        make: "Đèn giao thông giấy 3 màu + vạch qua đường trên thảm; robot thẻ lệnh dừng ở đèn đỏ"
+        make_needs: card-coding-robot
+        make_fallback: "Bé tự đi trên vạch, dừng khi bạn giơ đèn đỏ"
+        tell: "Giơ đèn: Red light – stop! Green light – go!"
+        can_do: ["Nói luật đèn giao thông bằng stop / go", "Nhắc người lớn 'Wear a helmet!'"]
+      - id: s3-u12
+        ext: true
+        theme: Big feelings
+        theme_vi: Cảm xúc nâng cao
+        core: []
+        plus: [worried, surprised, proud, bored]
+        patterns: ["I'm proud of my robot.", "Are you worried? – Yes, a little."]
+        song: "Chant tự soạn 'Proud, proud, I am proud'"
+        make: "Mặt nạ cảm xúc đĩa giấy – mỗi mặt một cảm xúc"
+        tell: "Giơ mặt nạ, nói: I'm surprised! / I'm proud of my picture."
+        can_do: ["Gọi tên 4 cảm xúc mới", "Nói mình tự hào về sản phẩm của mình"]

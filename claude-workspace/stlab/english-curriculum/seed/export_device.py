@@ -45,8 +45,10 @@ def unit_md(level, unit):
     k = lid.rsplit("-u", 1)[1]
     theme = str(unit["theme"])
     theme_vi = str(unit["theme_vi"])
-    core = ", ".join(str(w) for w in unit["core"])
-    plus = ", ".join(str(w) for w in unit.get("plus") or [])
+    # 2026-11-17: chu de mo rong (ext) khong co Core -> tu Plus la tu vung chinh cua bai tren may
+    main = unit["core"] or (unit.get("plus") if unit.get("ext") else []) or []
+    core = ", ".join(str(w) for w in main)
+    plus = ", ".join(str(w) for w in (unit.get("plus") or []) if w not in main) or "none"
     patterns = " · ".join(str(p) for p in unit.get("patterns") or [])
     can_do = "; ".join(str(c) for c in unit.get("can_do") or [])
     song = dot(unit.get("song", ""))
@@ -90,7 +92,7 @@ def roadmap_rows(units):
     rows = []
     for u in units:
         lid = lesson_id(u)
-        core = [str(w).lower() for w in u["core"]]
+        core = [str(w).lower() for w in (u["core"] or (u.get("plus") if u.get("ext") else []) or [])]
         for i in range(0, len(core), 2):
             chunk = core[i:i + 2]
             new = [w for w in chunk if w not in seen]
@@ -118,7 +120,7 @@ def roadmap_md(by_id):
         "",
         "Nguồn: stlab/english-curriculum/seed/units.yaml (export_device.py). Bé 2–3 tuổi học Seed 1; "
         "bé 4–5 tuổi học Seed 2 rồi Seed 3.",
-        "Mỗi hàng 2 từ Core mới theo đúng thứ tự trong units.yaml; tiến độ theo con trỏ từ của máy chủ.",
+        "Mỗi hàng 2 từ Core mới theo đúng thứ tự trong units.yaml (chủ đề mở rộng ext: từ Plus, học sau Core của cấp); tiến độ theo con trỏ từ của máy chủ.",
         "",
         "## Lịch tuần 2–3 tuổi (máy đọc)",
         "",
