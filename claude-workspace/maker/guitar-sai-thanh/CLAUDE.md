@@ -18,3 +18,4 @@ Tuan đưa vào 2026-11-17: đàn guitar có mạch thu âm từ dây đàn rồ
 ## Trạng thái
 - 2026-11-17: giải mã gần đủ khung 129 byte (âm lượng, âm sắc, echo, độ nhạy mic, mức nhạy dây, cân bằng, 3D, ngõ ra âm ly, LED, pin ×0,1 V). Phân tích ESP32: `docs/esp32-replacement.md` – thay thẳng chip KHÔNG được; gắn module ESP32 ngoài giữ mạch tiếng ĐƯỢC (cần ảnh chip DSP + máy phân tích logic bắt I2C).
 - 2026-11-17: ảnh mặt sau → có sẵn ESP32-PICO-D4 + PCM5100. Hướng: sao lưu flash ESP32 (esptool, USB–UART 3,3 V, chỉ đọc) + bắt UART nRF↔ESP32; chờ Tuan có USB–UART / máy phân tích logic.
+- 2026-11-17: umi_set.py điều khiển đàn từ PC qua BLE OK (âm lượng 20→10→20). Thử Wi-Fi "Cấu hình AI" bằng điểm phát PC (UMI-K9-2026, 2,4 GHz) – đàn không vào mạng (PC đang ở 5 GHz ch60, nghi điểm phát bị kéo 5 GHz). **Tuan: Wi-Fi không cần → bỏ qua.** Tiếp: trang web điều khiển qua Web Bluetooth.
