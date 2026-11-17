@@ -3,3 +3,7 @@ managed_components/
 sdkconfig
 sdkconfig.old
 *.log
+*.wav
+sdkconfig
+sdkconfig.old
+__pycache__/

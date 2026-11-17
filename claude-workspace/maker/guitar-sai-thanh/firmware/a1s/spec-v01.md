@@ -6,15 +6,15 @@ nhạy dây, tự cân bằng, 3D) → ES8388 DAC → loa (ampli trên bo, PA GP
 
 ## Thư mục / build
 - `maker/guitar-sai-thanh/firmware/a1s/` – ESP-IDF **5.5.4**, target `esp32`, project name `guitar_a1s` → `build/guitar_a1s.bin`.
-- `build.ps1` theo mẫu `maker/english-teacher/firmware/probe-a1s/build.ps1` (IdfId `esp-idf-20ee62e792ea89630ac6a777ab3ebc57`, xóa biến MSYS,
+- `build.ps1` theo mẫu `tools/esp32-a1s/probe/build.ps1` (IdfId `esp-idf-20ee62e792ea89630ac6a777ab3ebc57`, xóa biến MSYS,
   xóa .bin cũ trước khi build). Bảng phân vùng: app ≥ 1,94 MB (vd `partitions.csv` 1 factory 0x1F0000 + nvs), flash 4 MB.
 - `sdkconfig.defaults`: NimBLE (`CONFIG_BT_ENABLED=y`, `CONFIG_BT_NIMBLE_ENABLED=y`, tắt Bluedroid), PSRAM tắt được (v0.1 không cần).
 - Gate: `..\..\..\block-coding-car\firmware\.venv-host\Scripts\python.exe tests\test_gate.py` (đặt `GATE_NO_BUILD=1` khi lặp nhanh, gate
   cuối phải có build). **Không sửa** `tests/`.
 
-## Phần cứng A1S (đã dò thật 2026-11-05, `maker/english-teacher/CLAUDE.md`)
+## Phần cứng A1S (đã dò thật 2026-11-05, `tools/esp32-a1s/README.md`)
 - ES8388 @0x10, I2C SCL32 SDA33; I2S MCLK0 BCK27 WS25 DOUT26 DIN35; PA GPIO21; nút KEY1–6 = GPIO36,13,19,23,18,5; LED GPIO22.
-- Khởi tạo ES8388: dùng lại trình tự thanh ghi trong `maker/english-teacher/firmware/probe-a1s/main/probe_a1s_main.c` (đã phát + thu được trên
+- Khởi tạo ES8388: dùng lại trình tự thanh ghi trong `tools/esp32-a1s/probe/main/probe_a1s_main.c` (đã phát + thu được trên
   bo này). Thêm: chọn ngõ vào ADC bằng hằng `GUITAR_ADC_INPUT` (1 = LIN1/RIN1, 2 = LIN2/RIN2; mặc định **1** – line-in; `TODO` xác nhận khi
   thử). **Không** dùng/không chép mã RudeBox (không license).
 - I2S std **44100 Hz**, 16 bit, stereo, song công (tx + rx), MCLK 256·fs. Khung xử lý 256 mẫu.

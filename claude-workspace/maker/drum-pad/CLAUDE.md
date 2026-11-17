@@ -3,7 +3,7 @@
 Tuan bắt đầu 2026-11-17 (hướng B cho bo ESP32-A1S rảnh sau khi Cú Bông chuyển S3). Brief: `design/brief.md`.
 
 ## Đã chốt (2026-11-17)
-- Bo **ESP32-A1S Audio Kit V2.2** (ES8388) – thông số đã dò ở `maker/english-teacher/CLAUDE.md` (bộ chân "ES8388 v1": I2C 32/33,
+- Bo **ESP32-A1S Audio Kit V2.2** (ES8388) – thông số đã dò ở `tools/esp32-a1s/README.md` (bộ chân "ES8388 v1": I2C 32/33,
   I2S 0/27/25/26/35, PA GPIO21, LED 22, nút 36,13,19,23,18,5; PSRAM 8 MB; flash 4 MB; mic trên bo = LIN2/RIN2).
 - **Lớp 2–5**, **4 pad**, **âm mẫu trống thật** (không synth).
 - Tham khảo chỉ đọc: `community/jakubthedeveloper-rudebox` (không license → không chép mã; tự viết firmware).

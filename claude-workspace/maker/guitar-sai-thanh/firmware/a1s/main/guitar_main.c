@@ -1,6 +1,6 @@
 // Firmware v0.1: thay the mach dan GUITAR UMI tren ESP32-A1S (LINE IN -> ES8388 -> DSP -> loa/tai nghe),
 // gia lap giao thuc BLE cua dan goc de app Umi Music ket noi duoc. Xem ../spec-v01.md.
-// Khong dung ma RudeBox. Trinh tu ES8388 lay lai tu maker/english-teacher/firmware/probe-a1s.
+// Khong dung ma RudeBox. Trinh tu ES8388 lay lai tu tools/esp32-a1s/probe.
 #include <stdio.h>
 #include <string.h>
 #include <math.h>

@@ -11,11 +11,11 @@ import sys
 from pathlib import Path
 
 CLI = os.environ.get("SOLIDCRAFT_CLI", r"C:\Program Files\SolidCraft\solidcraft-cli.exe")
-OUT = Path(sys.argv[1] if len(sys.argv) > 1 else "out").resolve()
+OUT = Path(sys.argv[1] if len(sys.argv) > 1 else "out-s3").resolve()   # 2026-11-17: ban A1S (out) da vao backup
 ASM = OUT / "asm"
 stls = sorted(ASM.glob("*.stl"))
 if not stls:
-    sys.exit(f"Khong co {ASM}\\*.stl - chay build_owl.py truoc")
+    sys.exit(f"Khong co {ASM}\\*.stl - chay build_owl_s3.py truoc")
 cmds = [{"command": "file.insert_mesh", "params": {"path": str(f).replace(os.sep, "/")}} for f in stls]
 script = OUT / "owl-assembly.script.json"
 script.write_text(json.dumps({"commands": cmds}, indent=1), encoding="utf-8")

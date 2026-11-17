@@ -1,6 +1,0 @@
-build-src/
-build-src
-build.log
-gate.out
-.mc-cache/
-boot-log*.txt
