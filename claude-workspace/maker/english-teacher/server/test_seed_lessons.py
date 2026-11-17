@@ -32,9 +32,14 @@ clock = [dt.datetime(2026, 11, 16, 8, 0)]
 data = Path(tempfile.mkdtemp(prefix="stlab-seed-")) / "learners.json"
 cur = Curriculum(data, LS, now=lambda: clock[0])
 
-# 2. du 24 bai, ten file bat dau bang id chu de, vocab = core dung thu tu
+# 2. du bai (24 Core + 12 mo rong ext tu 2026-11-17), ten file bat dau bang id chu de, vocab = core (bai ext: plus) dung thu tu
+N_UNITS = sum(len(us) for us in units.values())
+
+def main_words(u):
+    return list(u["core"]) or (list(u["plus"]) if u.get("ext") else [])
+
 ids = cur.lesson_ids()
-ok(len(ids) == 24, f"24 bai co '{HEADING}' ({len(ids)})")
+ok(len(ids) == N_UNITS == 36, f"36 bai co '{HEADING}' ({len(ids)}/{N_UNITS})")
 for lv, us in units.items():
     for u in us:
         lid = next((i for i in ids if i.startswith(u["id"] + "-")), None)
@@ -42,7 +47,7 @@ for lv, us in units.items():
             ok(False, f"thieu file bai {u['id']}")
             continue
         voc = cur.vocabulary(lid)
-        ok(voc == [str(w).lower() for w in u["core"]], f"{lid}: Vocabulary = core ({len(voc)}/{len(u['core'])})")
+        ok(voc == [str(w).lower() for w in main_words(u)], f"{lid}: Vocabulary = core/ext-plus ({len(voc)}/{len(main_words(u))})")
         txt = (LS / (lid + ".md")).read_text(encoding="utf-8")
         ok(all(str(p).lower() in txt.lower() for p in u["plus"]), f"{lid}: co tu Plus (tu mo rong, sau tu Core)")
         ok(u["patterns"][0].split("–")[0].split("/")[0].strip()[:12].lower() in txt.lower(), f"{lid}: co mau cau")
@@ -52,7 +57,7 @@ def seq(levels):
     out = []
     for lv in levels:
         for u in units[lv]:
-            for w in u["core"]:
+            for w in main_words(u):
                 w = str(w).lower()
                 if w not in out:
                     out.append(w)
