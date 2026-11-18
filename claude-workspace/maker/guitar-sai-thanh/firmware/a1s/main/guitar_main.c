@@ -29,8 +29,8 @@
 
 // ---- cau hinh ----
 #define GUITAR_BLE_NAME      "GUITAR UMI"
-#define GUITAR_ADC_INPUT     1        // 1 = LIN1/RIN1 (line-in), 2 = LIN2/RIN2. TODO: xac nhan khi thu tren mach
-#define GUITAR_ADC_PGA       0x00     // ADCCONTROL1: 0 dB hai kenh (line-in). TODO: chinh khi noi pickup
+#define GUITAR_ADC_INPUT     2        // 2026-11-18 Tuan: mic tren bo (LIN2/RIN2) mac dinh; 1 = LINE IN. Lenh IN luu NVS
+#define GUITAR_ADC_GAIN      8        // PGA nac 3 dB (0..8). Mic tren bo +24 dB (nhu firmware do). Lenh GAIN luu NVS
 #define GUITAR_OUT_MAX       0.7f     // tran an toan tai/loa, nhan sau am luong (ap o tang ghi I2S)
 #define GUITAR_BATT_DV       120      // TODO: A1S khong do duoc pin -> 12,0 V co dinh
 #define SAMPLE_RATE          44100
@@ -99,6 +99,7 @@ static volatile int s_tone_frames;     // so khung con phat sine thu loa
 // chan doan (lenh LVL, 2026-11-17): dinh vao trai/phai, so vong, doc thieu, thoi gian xu ly lon nhat (us)
 static volatile int s_pk_l, s_pk_r, s_loops, s_short, s_maxus;
 static volatile int s_adc_in = GUITAR_ADC_INPUT;
+static volatile int s_adc_gain = GUITAR_ADC_GAIN;
 
 static uint16_t s_conn = BLE_HS_CONN_HANDLE_NONE;
 static uint16_t s_h_2b10, s_h_2b16;
@@ -122,9 +123,6 @@ static void es_set_gain(int g)
 static void es_select_input(int in)
 {
     es_write(ES_ADCCONTROL2, in == 2 ? 0x50 : 0x00);
-    if (in == 2) {
-        es_set_gain(8);
-    }
 }
 
 static int es_init_regs(void)
@@ -151,8 +149,8 @@ static int es_init_regs(void)
     W(ES_LOUT2VOL, OUT_VOL_REG);
     W(ES_ROUT2VOL, OUT_VOL_REG);
     W(ES_ADCPOWER, 0xFF);
-    W(ES_ADCCONTROL1, GUITAR_ADC_PGA);
-    W(ES_ADCCONTROL2, GUITAR_ADC_INPUT == 2 ? 0x50 : 0x00);
+    W(ES_ADCCONTROL1, (uint8_t)((s_adc_gain << 4) | s_adc_gain));   // ngo vao + PGA da nap tu NVS
+    W(ES_ADCCONTROL2, s_adc_in == 2 ? 0x50 : 0x00);
     W(ES_ADCCONTROL3, 0x02);
     W(ES_ADCCONTROL4, 0x0C);      // I2S, 16-bit
     W(ES_ADCCONTROL5, 0x02);      // ty le 256
@@ -250,6 +248,8 @@ static void nvs_save_state(void)
     xSemaphoreGive(s_mtx);
     if (nvs_open("guitar", NVS_READWRITE, &h) == ESP_OK) {
         nvs_set_blob(h, "p", blob, sizeof blob);
+        nvs_set_u8(h, "in", (uint8_t)s_adc_in);
+        nvs_set_u8(h, "gain", (uint8_t)s_adc_gain);
         nvs_commit(h);
         nvs_close(h);
         LOG("da luu cai dat vao NVS");
@@ -266,6 +266,13 @@ static void nvs_load_state(void)
         if (nvs_get_blob(h, "p", blob, &len) == ESP_OK && len == sizeof blob) {
             memcpy(s_state.p + 8, blob, sizeof blob);
             LOG("nap cai dat tu NVS");
+        }
+        uint8_t v;
+        if (nvs_get_u8(h, "in", &v) == ESP_OK && (v == 1 || v == 2)) {
+            s_adc_in = v;
+        }
+        if (nvs_get_u8(h, "gain", &v) == ESP_OK && v <= 8) {
+            s_adc_gain = v;
         }
         nvs_close(h);
     }
@@ -587,7 +594,7 @@ static void print_stat(void)
         s_state.p[15], s_state.p[19], s_state.p[27], s_state.p[25], s_state.p[20], s_state.p[21],
         s_state.p[22], s_state.p[45], s_state.p[8], s_state.p[11]);
     xSemaphoreGive(s_mtx);
-    LOG("ngo vao ADC = %d, BLE %s", (int)s_adc_in, s_conn == BLE_HS_CONN_HANDLE_NONE ? "chua ket noi" : "da ket noi");
+    LOG("ngo vao ADC = %d, PGA %d dB, BLE %s", (int)s_adc_in, (int)s_adc_gain * 3, s_conn == BLE_HS_CONN_HANDLE_NONE ? "chua ket noi" : "da ket noi");
 }
 
 static void uart_cmd_line(const char *line)
@@ -609,13 +616,18 @@ static void uart_cmd_line(const char *line)
         print_stat();
     } else if (sscanf(line, "IN %d", &in) == 1 && (in == 1 || in == 2)) {
         s_adc_in = in;
+        s_adc_gain = in == 2 ? 8 : 0;   // mic tren bo +24 dB, LINE IN 0 dB; GAIN de chinh lai
         if (s_codec_ready) {
             es_select_input(in);
+            es_set_gain(s_adc_gain);
         }
-        LOG("ngo vao ADC = %d (%s)", in, in == 1 ? "LIN1/RIN1" : "LIN2/RIN2");
+        schedule_save();
+        LOG("ngo vao ADC = %d (%s), PGA %d dB - se luu NVS", in, in == 1 ? "LIN1/RIN1" : "LIN2/RIN2", s_adc_gain * 3);
     } else if (sscanf(line, "GAIN %d", &val) == 1) {
-        es_set_gain(val);
-        LOG("PGA ngo vao = %d dB (nac %d)", (val < 0 ? 0 : val > 8 ? 8 : val) * 3, val);
+        s_adc_gain = val < 0 ? 0 : val > 8 ? 8 : val;
+        es_set_gain(s_adc_gain);
+        schedule_save();
+        LOG("PGA ngo vao = %d dB (nac %d) - se luu NVS", s_adc_gain * 3, s_adc_gain);
     } else if (strncmp(line, "LVL", 3) == 0) {
         s_pk_l = s_pk_r = s_loops = s_short = s_maxus = 0;
         vTaskDelay(pdMS_TO_TICKS(1000));
