@@ -565,6 +565,174 @@
    "confidence": 0.5,
    "verified": false,
    "note": "STEP hang don gian hoa: lo hub tron D4,30 sau 2,30, KHONG co rang -> khong dung lam so ep cho ban in (dung sg90-horn/spline-taper-bore). Lo vit D2,50, hoc dau D4,90 sau 1,10, hub OD 7,26."
+  },
+  {
+   "id": "ddw-kart/technic-pin-printed",
+   "interface": "technic-pin-printed-8mm",
+   "fit": "clearance",
+   "hole_mm": 4.92,
+   "shaft_mm": 4.6,
+   "clearance_mm": 0.32,
+   "nominal_mm": 4.8,
+   "source": {
+    "model": "makerworld-ddwmaker-modular-bricks-kart-mecanum",
+    "parts": "pin x80 (in nam ngang) trong khung CH1/CH2/CH3/RB/FB/SEAT/SS/SHx2",
+    "method": "stl-fit",
+    "ref": "docs/research-notes/ddwmaker-mecanum-kart-fits.md"
+   },
+   "print": {
+    "printer": "Bambu A1 mini 0.4, lop 0.2",
+    "material": "Bambu PLA Basic",
+    "xy_hole_compensation": 0,
+    "proven": "san pham hoan thien, tac gia in + chay that"
+   },
+   "confidence": 0.9,
+   "verified": false,
+   "note": "Khung kieu Technic: pitch 8, day 8; lo O4,92 xuyen + bac O6,1 sau ~0,9 (bien the 0,7) o 2 mat. Chot in NAM NGANG: than O4,6 vat 2 mat con 3,8; go giua O5,6 dai ~1,5 nam trong bac O6,1; 2 dau co nganh O5,84 + khe xe doc (rong 2,4-3,0) de bop lot qua lo O4,92 roi bung ra o bac mat kia. Dai 15,7 = 2 tam day 8. 76 chot + 4 du. Co dung cu nho chot (pin puller)."
+  },
+  {
+   "id": "ddw-kart/roller-bush-on-dowel",
+   "interface": "roller-bush-on-2mm-dowel",
+   "fit": "rotate",
+   "hole_mm": 2.44,
+   "shaft_mm": 2.0,
+   "clearance_mm": 0.44,
+   "nominal_mm": 2.0,
+   "source": {
+    "model": "makerworld-ddwmaker-modular-bricks-kart-mecanum",
+    "parts": "BUSH64 (PLA) quay tren truc dong 2x33 DA006",
+    "method": "stl-fit",
+    "ref": "docs/research-notes/ddwmaker-mecanum-kart-fits.md"
+   },
+   "print": {
+    "printer": "Bambu A1 mini 0.4, lop 0.2",
+    "material": "Bambu PLA Basic",
+    "xy_hole_compensation": 0,
+    "proven": "san pham hoan thien, tac gia in + chay that"
+   },
+   "confidence": 0.9,
+   "verified": false,
+   "note": "Bac PLA lo O2,44 quay tren truc dong O2 -> khe 0,44 (rong, quay tron con lan). 2 bac/con lan."
+  },
+  {
+   "id": "ddw-kart/bush-in-tpu-roller",
+   "interface": "pla-bush-in-tpu-roller",
+   "fit": "press",
+   "hole_mm": 4.02,
+   "shaft_mm": 3.96,
+   "clearance_mm": 0.06,
+   "nominal_mm": 4.0,
+   "source": {
+    "model": "makerworld-ddwmaker-modular-bricks-kart-mecanum",
+    "parts": "BUSH64 than O3,96 dai 5,0 + vanh O6,4x0,4 ep vao ROLL32 (TPU 90A) lo O4,02",
+    "method": "stl-fit",
+    "ref": "docs/research-notes/ddwmaker-mecanum-kart-fits.md"
+   },
+   "print": {
+    "printer": "Bambu A1 mini 0.4, lop 0.2",
+    "material": "Bambu PLA Basic (bac) + Bambu TPU 90A (con lan)",
+    "xy_hole_compensation": 0,
+    "proven": "san pham hoan thien, tac gia in + chay that"
+   },
+   "confidence": 0.85,
+   "verified": false,
+   "note": "Ghep 'gan bang' 0,06 nhung con lan TPU 90A mem nen giu bang ma sat. Con lan O10,6 x 25,4, lo xuyen O4,02; in TPU 0% infill, 3 vach, day/mat 4 lop concentric."
+  },
+  {
+   "id": "ddw-kart/dowel-2mm-in-hub",
+   "interface": "dowel-2mm-blind-hole",
+   "fit": "clearance",
+   "hole_mm": 2.2,
+   "shaft_mm": 2.0,
+   "clearance_mm": 0.2,
+   "nominal_mm": 2.0,
+   "source": {
+    "model": "makerworld-ddwmaker-modular-bricks-kart-mecanum",
+    "parts": "WIA/WIB/WOA/WOB: 16 lo O2,2 sau 2,9 nghieng 45 do giu dau truc dong",
+    "method": "stl-fit",
+    "ref": "docs/research-notes/ddwmaker-mecanum-kart-fits.md"
+   },
+   "print": {
+    "printer": "Bambu A1 mini 0.4, lop 0.2",
+    "material": "Bambu PLA Basic",
+    "xy_hole_compensation": 0,
+    "proven": "san pham hoan thien, tac gia in + chay that"
+   },
+   "confidence": 0.9,
+   "verified": false,
+   "note": "Truc dong O2 nam trong lo mu O2,2 (khe 0,2) - KHONG ep, bi kep giua 2 nua vanh banh khi siet 3 vit M2.5. Lo nghieng 45 do in khong support (vanh in dung truc)."
+  },
+  {
+   "id": "ddw-kart/m2.5-self-tap",
+   "interface": "screw-M2.5",
+   "fit": "self-tap",
+   "hole_mm": 2.3,
+   "shaft_mm": null,
+   "clearance_mm": null,
+   "nominal_mm": 2.5,
+   "source": {
+    "model": "makerworld-ddwmaker-modular-bricks-kart-mecanum",
+    "parts": "nua vanh 19,2: 3 lo O2,3 sau 4,6 (mieng vat O2,7)",
+    "method": "stl-fit",
+    "ref": "docs/research-notes/ddwmaker-mecanum-kart-fits.md"
+   },
+   "print": {
+    "printer": "Bambu A1 mini 0.4, lop 0.2",
+    "material": "Bambu PLA Basic",
+    "xy_hole_compensation": 0,
+    "proven": "san pham hoan thien, tac gia in + chay that"
+   },
+   "confidence": 0.9,
+   "verified": false,
+   "note": "Cung khoang 2,2 (mec1) - 2,4 (tipflow). Vit M2.5x6 BHCS."
+  },
+  {
+   "id": "ddw-kart/m2.5-clearance",
+   "interface": "screw-M2.5-clearance",
+   "fit": "clearance",
+   "hole_mm": 2.9,
+   "shaft_mm": null,
+   "clearance_mm": null,
+   "nominal_mm": 2.5,
+   "source": {
+    "model": "makerworld-ddwmaker-modular-bricks-kart-mecanum",
+    "parts": "nua vanh 14,8: 3 lo O2,9 + bac dau O5,2 sau ~5,2",
+    "method": "stl-fit",
+    "ref": "docs/research-notes/ddwmaker-mecanum-kart-fits.md"
+   },
+   "print": {
+    "printer": "Bambu A1 mini 0.4, lop 0.2",
+    "material": "Bambu PLA Basic",
+    "xy_hole_compensation": 0,
+    "proven": "san pham hoan thien, tac gia in + chay that"
+   },
+   "confidence": 0.9,
+   "verified": false,
+   "note": "Lo tam truc banh O2,8 (vit M2.5 vao khop servo). Bac dau BHCS O5,2."
+  },
+  {
+   "id": "ddw-kart/wheel-hex-socket",
+   "interface": "hex-coupling-6mm",
+   "fit": "unknown",
+   "hole_mm": 6.12,
+   "shaft_mm": null,
+   "clearance_mm": null,
+   "nominal_mm": null,
+   "source": {
+    "model": "makerworld-ddwmaker-modular-bricks-kart-mecanum",
+    "parts": "nua vanh 14,8: hoc luc giac doi canh ~6,12 (goc r 3,53) sau ~6",
+    "method": "stl-fit",
+    "ref": "docs/research-notes/ddwmaker-mecanum-kart-fits.md"
+   },
+   "print": {
+    "printer": "Bambu A1 mini 0.4, lop 0.2",
+    "material": "Bambu PLA Basic",
+    "xy_hole_compensation": 0,
+    "proven": "san pham hoan thien, tac gia in + chay that"
+   },
+   "confidence": 0.6,
+   "verified": false,
+   "note": "Khop luc giac banh <-> dau ra Servo-360 Brick. Chi tiet khop servo nam trong bo 'Basic Modular Bricks' CHUA tai -> chua ghep cap duoc, TODO."
   }
  ]
 }

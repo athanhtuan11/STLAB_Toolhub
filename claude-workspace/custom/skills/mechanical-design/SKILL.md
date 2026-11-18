@@ -66,6 +66,16 @@ thay vì tự nghĩ cách mới:
   rồi côn tới Ø4,64 ở sâu 2,70, ép thẳng lên trục khía (Print2Drive, A1 + PETG, vừa SG90/MG90/PG001/PG002). Vít Ø2,70 +
   loe 90° lên Ø5,00. Lỗ arm in ≥ Ø1,2 (Ø1,0 đúc của CyberBrick in ra bít). Dáng tương thích CyberBrick: fit-library
   `cyberbrick-horn/link-hole`. Cần arm servo → copy `params.json` dự án này, đừng vẽ lại hub.
+- **Khung kiểu Technic, lắp không vít (2026-11-18, DDWMAKER Modular Bricks Kart, `ddwmaker-mecanum-kart-fits.md`):**
+  dầm pitch 8, dày 8, lỗ Ø4,92 xuyên + bậc Ø6,1 sâu ~0,9 hai mặt. **Chốt in nằm ngang** Ø4,6 vát 2 mặt còn 3,8, gờ giữa
+  Ø5,6 (nằm trong bậc), 2 đầu ngạnh Ø5,84 + khe xẻ dọc 2,4–3,0 để bóp lọt rồi bung → bấm được, rút được bằng dụng cụ
+  nhổ chốt in kèm. Vỏ mô-đun (receiver, pin, servo) có lỗ Technic → ráp như xếp gạch; in dư ~5 % số chốt. fit-library
+  `ddw-kart/technic-pin-printed`.
+- **Bánh mecanum in (cùng nguồn):** Ø48,2, 8 con lăn TPU 90A Ø10,6×25,4 (lỗ Ø4,02, in 0 % infill 3 vách) + 2 bạc PLA
+  Ø3,96 có vành Ø6,4 ép 2 đầu, bạc lỗ Ø2,44 quay trên **trục đồng Ø2×33** (khe 0,44). Đầu trục nằm trong lỗ mù Ø2,2
+  nghiêng 45° của 2 nửa vành, bị kẹp khi siết 3 vít M2.5 (tự ren Ø2,3, xuyên Ø2,9 + bậc Ø5,2) – không ép trục, không keo.
+  Bánh A/B đối xứng gương, có khắc chữ. Khớp lục giác ~6,12 vào servo 360° (PG002) – 4 servo thay 4 motor vì receiver
+  CyberBrick chỉ có 2 cổng motor nhưng 4 cổng servo.
 - **Support:** tác giả chỉ bật cho 1–2 khung lớn; còn lại thiết kế để in không support (đúng luật Tuan: không vẽ support vào STL).
 
 ## Chốt / trục khớp quay (cập nhật 2026-10-25 – Tuan: chốt pushrod-arm "quá khít", "rỗng sẽ yếu lực")
