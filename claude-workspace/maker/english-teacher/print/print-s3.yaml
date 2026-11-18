@@ -15,6 +15,6 @@ plates:
   # mau KEM: bung (khoet lo vanh loa) + vanh mat + tam de
   D_cream: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%", brim_type: outer_only, brim_width: "5"}, stl: ["belly.stl", "eye-ring.stl", "base-plate.stl"]}
   # mau BO: mo + nap nut dau (MX)
-  E_butter: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%"}, stl: ["beak.stl", "button-cap.stl"]}
+  E_butter: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%"}, stl: ["beak.stl", "button-cap.stl", "mx-cross-gauge.stl"]}
   # PETG TRANG tu nhien: tam tan sang mat LED
   F_white: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "2", sparse_infill_density: "20%"}, stl: ["eye-diffuser.stl"]}

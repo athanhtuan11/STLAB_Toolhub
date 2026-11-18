@@ -14,7 +14,7 @@
   {
    "center": [
     0.0,
-    -42.8,
+    -41.6,
     48.0
    ],
    "axis": "y"
@@ -35,6 +35,20 @@
   -12.0,
   18.0
  ],
+ "amp_pcb": {
+  "center": [
+   0.0,
+   -11.7,
+   13.8
+  ],
+  "box": [
+   18.0,
+   19.4,
+   1.6
+  ],
+  "parts_h": 3.0,
+  "note": "clone Shopee 18x19 / Adafruit 19,4x17,8; parts_h TODO do"
+ },
  "amp_box": [
   22.0,
   22.0,
@@ -61,7 +75,7 @@
   "axis": "y",
   "tube": {
    "od": 7.0,
-   "id": 3.0,
+   "id": 4.0,
    "gap_to_wall": 0.3,
    "wall_y": -45.4
   },
@@ -69,6 +83,17 @@
    "type": "labyrinth",
    "depth": 1.0,
    "clearance": 0.15
+  },
+  "pcb": {
+   "center": [
+    0.0,
+    -37.35,
+    115.9
+   ],
+   "d": 15.0,
+   "t": 1.6,
+   "axis": "y",
+   "note": "INMP441 Shopee tron ~O15 (ShillehTek); day PCB TODO"
   }
  },
  "pcb_usb": {
@@ -102,17 +127,10 @@
   "gasket_t": 1.5,
   "body_d_max": 39.0,
   "ring_t": 2.4,
-  "ring_id": 42.0,
+  "ring_id": 47.0,
   "gasket_locked": 1.2,
   "gasket_slot_kept": true,
-  "petg_spring": {
-   "n": 4,
-   "t": 1.2,
-   "len": 8.5,
-   "width": 3.5,
-   "preload": 1.5,
-   "bump_r": 1.0
-  },
+  "gasket_note": "bang xop 2 mm dan vong mat loa (khong con lay PETG, 2026-11-18)",
   "bayonet": {
    "n": 3,
    "twist": 30.0,

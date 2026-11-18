@@ -138,8 +138,17 @@ if bm:
         sd = sorted(float(x) for x in ad)
         if sd[0] < 10 or sd[1] < 22 or sd[2] < 22:
             fails.append(f"amp_box phai >= 22 x 22 x 10, dang {ad}")
-        elif tree.overlap(dummy("box", amp, ad)):
+        elif not p.get("amp_pcb") and tree.overlap(dummy("box", amp, ad)):
             fails.append("khoi ampli cham vo tai amp_center")
+    # 2026-11-18 (Tuan han day thang, module Shopee co so): kiem MODULE THAT nam trong khay khong cham gi
+    ap_ = p.get("amp_pcb")
+    if ap_:
+        c_, b_ = ap_["center"], ap_["box"]
+        if tree.overlap(dummy("box", c_, (b_[0] - 0.1, b_[1] - 0.1, b_[2] - 0.1))):
+            fails.append("PCB ampli (18 x 19,4 x 1,6) cham khay/vo")
+        hp = float(ap_.get("parts_h", 3.0))
+        if tree.overlap(dummy("box", (c_[0], c_[1], c_[2] + b_[2] / 2 + hp / 2 + 0.05), (b_[0] - 3.0, b_[1] - 0.1, hp))):
+            fails.append("vung linh kien tren PCB ampli cham khay/vo")
     # mic INMP441 (PCB tron ~14-15 / vuong 14 x 14; nguon: ask-gpt 2026-11-12) -> o giu cho >= 17 x 17 x 8 sau lo tran
     mic = p.get("mic") or {}
     mc, mb = mic.get("center"), mic.get("box")
@@ -149,8 +158,12 @@ if bm:
         sd = sorted(float(x) for x in mb)
         if sd[0] < 8 or sd[1] < 17 or sd[2] < 17:
             fails.append(f"mic.box phai >= 17 x 17 x 8, dang {mb}")
-        elif tree.overlap(dummy("box", mc, mb)):
+        elif not mic.get("pcb") and tree.overlap(dummy("box", mc, mb)):
             fails.append("o mic cham vo tai mic.center")
+        mp_ = mic.get("pcb")
+        if mp_:   # 2026-11-18: PCB INMP441 tron O15 x 1,6 nam trong kep khong cham gi
+            if tree.overlap(dummy("cyl", mp_["center"], (float(mp_["d"]) - 0.1, float(mp_["t"]) - 0.1))):
+                fails.append("PCB mic O15 x 1,6 cham kep/vo")
         if mc[1] > Y0 - 20 or mc[2] < 100 or abs(float(mc[0])) > 1.0:
             fails.append(f"mic phai o MAT TRUOC, chinh giua (|x| <= 1), tran z >= 100: {mc}")
         if mic.get("axis", "y") != "y":
@@ -195,6 +208,20 @@ else:
     if sc_.get("gasket_slot_kept") is not True: fails.append("giu ranh ron (gasket_slot_kept: true) de sau nay lap ron TPU khong ve lai")
     if sc_["ring_id"] <= sc_["body_d_max"]: fails.append("lo vong ep phai lon hon than loa")
     if sc_["ring_id"] >= 52.0 - 2 * 2.0: fails.append("vong ep phai de len mep loa >= 2 mm moi ben")
+
+# 2026-11-18: kep mic + khay ampli (vi tri lap) khong cham vo / vanh / vong ep / nap
+_shell = bmesh.new()
+for _n in ("shell-front", "shell-back", "belly", "beak", "speaker-bezel", "speaker-ring", "button-cap"):
+    _m = load(OUT / "asm" / f"{_n}.stl")
+    if _m:
+        _me = bpy.data.meshes.new("t"); _m.to_mesh(_me); _shell.from_mesh(_me)
+_sh_tree = BVHTree.FromBMesh(_shell)
+for _n in ("mic-clamp", "amp-tray"):
+    _m = load(OUT / "asm" / f"{_n}.stl")
+    if not _m:
+        fails.append(f"thieu asm/{_n}.stl")
+    elif _sh_tree.overlap(BVHTree.FromBMesh(_m)):
+        fails.append(f"{_n} cham vo/vanh/nap o vi tri lap")
 
 # ngam xoay lap duoc that: dung out-s3/asm (vi tri lap that), loa bung truc y, mat ra -y
 bay = (sc_ or {}).get("bayonet")

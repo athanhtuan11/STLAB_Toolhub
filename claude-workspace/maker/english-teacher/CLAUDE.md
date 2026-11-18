@@ -66,3 +66,4 @@ un.ps1` → giữ KEY4 nói thử tiếng Việt + tiếng Anh, nghe 2 loa; nghe
   (nghe xanh dương / nói vàng / khen hồng / ngủ tím mờ), nút "nói" Ø50 trên đỉnh, **2 loa trái + phải ở 2 sườn** (Tuan đổi 2026-11-05; trước: 1 loa ở bụng), 3 màu (mơ/kem/bơ – tách part, hạn chế AMS).
   Cần: LED RGB (vd. WS2812) + chân trống trên Audio Kit (TODO); Tuan đo bo Audio Kit + độ sâu loa Ø52 trước khi CAD; pin hay USB: chưa chốt.
 - 2026-11-05: tạo dự án, đọc chip qua esptool. Đang: firmware dò + bước 0 dáng sản phẩm.
+- 2026-11-18: **bàn in thử S3 v2** theo góp ý Tuan (bezel đạt; ring/nắp nút/kẹp mic/khay ampli làm lại; hàn dây thẳng, không jack) – chi tiết `cad/README.md` mục "Bàn in thử v2". `print/plates-s3-test/p1-fit-test/p1-fit-test.3mf` PASS 73 ph 34,2 g (5 chi tiết + bộ thử chữ thập). Gate CAD thêm kiểm module thật + kẹp/khay không chạm vỏ. Cần băng xốp 2 mm (loa) + 2 vít M2.5 × 6 (khay ampli). Chờ Tuan in thử.

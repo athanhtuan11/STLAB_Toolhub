@@ -150,3 +150,13 @@ A 1.5 h 23 g; B 4.6 h 143 g; C 5.1 h 169 g; D 1.2 h 37 g; E 0.7 h 24 g; F 0.1 h 
 - Hướng lỗ âm INMP441; kín tiếng mic chỉ bằng gờ lõm PETG (chưa đo).
 - Lẫy lò xo PETG: lực thực tế + nứt mỏi chưa thử.
 - Lệch spec đã báo: mic z 115,4 / y −34,5 (trần hốc trán z = 124; vách trán cong dạng mái 45°); loa y −42,8 (mặt loa ì vành).
+
+## Bàn in thử v2 (2026-11-18, theo góp ý Tuan sau lần in thử 1)
+Tuan: bezel **đạt**; eye-diffuser không góp ý (bỏ khỏi bàn thử). Đi dây **hàn thẳng toàn bộ**, không jack/cầu đấu.
+| Chi tiết | Lỗi lần 1 | Sửa v2 |
+|---|---|---|
+| speaker-ring | loa không chui qua lỗ Ø42 (4 lẫy PETG ở r 21,9–25,4 chắn thêm) | lỗ **Ø47** (môi đè mép loa 2,5/bên), **bỏ 4 lẫy**; ép loa bằng **băng xốp 2 mm** dán vòng mặt loa (khe 1,5 → khóa còn 1,2). Ngàm xoay 3 chốt giữ nguyên → bezel không in lại |
+| button-cap | không ép được chân switch MX | chữ thập 4,19 × 1,25 nằm trong **ống nhún Ø5,71** + rãnh vòng Ø9,2 sâu 4 (như mẫu catpaw); kèm **`mx-cross-gauge.stl`** 3 khe 1,25 / 1,35 / 1,45 (1/2/3 chấm) – nắp lỏng/chặt thì báo số chấm vừa nhất |
+| mic-clamp | không hợp module | INMP441 Shopee **PCB tròn ~Ø15** (ShillehTek manual), hốc Ø15,6, rãnh dày 1,9, **nhét từ trên xuống**, mặt sau hở giữa (hàn dây + chip), ống dẫn âm lỗ Ø4; mặt PHẲNG (không chip) hướng ra trán |
+| amp-tray | tạm, chưa tối ưu, đặt chạm đáy vỏ | MAX98357A clone **18 × 19** / Adafruit 19,4 × 17,8: PCB **trượt vào 2 ray rãnh** (rãnh 2,0), gờ khóa 0,4 + vấu chặn, 2 đầu trống cho dây I2S + dây loa, gầm hở 3 mm + khe thoáng; đặt trên đáy hốc thật z 7,3 (đo ray_cast) – bắt **2 vít M2.5 × 6** xuyên đáy vỏ trước xuống tấm đế (lỗ mồi Ø2,2 đã khoét) |
+Gate `gate_owl_s3.py` thêm: PCB mic/ampli thật không chạm kẹp/khay/vỏ; kẹp + khay không chạm vỏ. TODO đo: độ dày PCB 2 module, chiều cao linh kiện ampli, vị trí lỗ âm INMP441.

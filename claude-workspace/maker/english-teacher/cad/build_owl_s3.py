@@ -18,7 +18,7 @@ SPEAKER_D, SPEAKER_L = 52.0, 26.0
 # an vong ep vao (ep them ron) roi xoay BAY_TWIST, nha ra -> ron day vong ep lui, mat tren chot ty vao vach ranh -> khoa.
 FLANGE_T, GASKET_T = 5.0, 1.5          # GASKET_T: khe danh nghia mat luoi - mat loa khi chua ep them
 BODY_D_MAX = 39.0                      # than loa < O39
-SRING_T, RING_ID = 2.4, 42.0           # vong ep loa
+SRING_T, RING_ID = 2.4, 47.0           # vong ep loa. 2026-11-18 Tuan: loa khong chui qua lo O42 -> O47 (moi de mep loa 2,5/ben), bo 4 lay PETG
 BAY_ANG = (90.0, 210.0, 330.0)         # goc 3 chot (vi tri da khoa)
 BAY_TWIST = 30.0                       # goc xoay khoa
 BPIN_W, BPIN_H, BPIN_T = 4.0, 1.1, 1.5 # chot: rong tiep tuyen, nho ra, day doc truc
@@ -53,7 +53,11 @@ MC_W, MC_T, MC_H = 24.0, 2.5, 17.0   # nap kep: truot vao 2 ranh o 2 tru, ep mod
 MC_BACK_GAP = 1.4                    # mat sau o giu cho -> mat truoc tam kep (pad 1,2 + ho 0,2)
 # Ong dan am (liền nap kep): OD 7, ID 3, tu mat module toi cach vach trong tran MIC_TUBE_GAP
 MIC_TUBE_DZ = 1.0                    # tam ong cao hon tam module 1,0 de tranh mat sau mo (z <= 113,5)
-MIC_TUBE_OD, MIC_TUBE_ID, MIC_TUBE_GAP = 7.0, 3.0, 0.3   # GAP: khe day go lom - mut ong
+MIC_TUBE_OD, MIC_TUBE_ID, MIC_TUBE_GAP = 7.0, 4.0, 0.3   # GAP: khe day go lom - mut ong. ID 4: lo am module lech tam chua ro
+# 2026-11-18 Tuan: kep mic cu khong hop module. INMP441 Shopee = PCB TRON ~O15, header 6 chan 2,54 (ShillehTek manual, ask-gpt);
+# han day thang (bo header). Hoc tron O15,6 (0,3/ben) nhet tu TREN xuong, mat sau ho de han day.
+MIC_PCB_D, MIC_PCB_CLR, MIC_PCB_SLOT = 15.0, 0.3, 1.9   # SLOT: be day PCB (TODO do: PCB 1,0-1,6 -> long thi cham keo nong)
+MIC_PCB_ZC = 0.5                    # tam PCB cao hon MIC_CENTER 0,5 (dinh PCB z 123,7 <= hop giu cho 123,9)
 MIC_WALL_Y0 = -45.4                  # vach trong tran o x = 0..2 (do tren mesh)
 YOKE_T, YOKE_BACK = 1.5, -9.6        # yoke dung truoc mat module (mat module o ly = -9,4), cach 0,2
 
@@ -61,7 +65,7 @@ YOKE_T, YOKE_BACK = 1.5, -9.6        # yoke dung truoc mat module (mat module o 
 SPK_Z = 48.0
 SPK_CY = -41.6
 SPK_CENTER = [0.0, SPK_CY, SPK_Z]       # diem dat vanh/vong (co dinh)
-SPK_LOA_Y = SPK_CY - 1.2                # tam loa that: mat loa ap sat vanh (lay PETG day loa ve phia vanh 1,2 mm)
+SPK_LOA_Y = SPK_CY                      # 2026-11-18: bo lay PETG; mep loa ep bang moi vong (LIP_PRE) len bang xop 2 mm dan mat loa
 SPEAKERS = [{"center": SPK_CENTER, "axis": "y"}]
 
 FIT, SLIDE = 0.3, 0.2
@@ -91,6 +95,10 @@ MX_HOLE, MX_DEPTH, MX_STEM_L, MX_STEM_W, MX_STEM_H = 14.0, 8.58, 4.19, 1.25, 3.6
 MX_BODY_UP, MX_BODY_W, MX_HOUSING_H = 15.6, 5.0, 3.0
 MX_GROOVE = (1.94, 2.69, 3.44, 15.44)
 MX_INSERT, MX_TRAVEL = 1.2, 2.4
+# 2026-11-18 Tuan: button-cap khong nhet duoc chan switch (chu thap khoet thang vao khoi dac, PETG co lo). Theo mau catpaw: chu thap
+# nam trong ONG NHUN O5,71, ranh vong quanh ong de ong gian nhe khi ep. Kem bo thu chu thap 3 co (mx-cross-gauge.stl).
+MX_TUBE_OD, MX_RELIEF_R, MX_RELIEF_H = 5.71, 4.6, 4.0
+MX_GAUGE_W = (1.25, 1.35, 1.45)
 REST_UP = 0.2
 CONE_CLR_KEY = 0.3
 
@@ -456,6 +464,9 @@ for sx in (-SCREW_X, SCREW_X):
     for sy in (-SCREW_Y, SCREW_Y):
         diff(PLATE, cyl('plh', (sx, sy, -1), (sx, sy, 5), M3_CLEAR_D / 2, seg=24))
         diff(PLATE, cyl('plc', (sx, sy, -1), (sx, sy, 2.8), 4.5, seg=40))
+# 2026-11-18: 2 lo moi O2,2 sau 3,5 cho vit M2.5 bat khay ampli (tam de z 0..4)
+for _sx in (-8.75, 8.75):
+    diff(PLATE, cyl('plamp', (_sx, AMP_CENTER[1], FLOOR_CUT - 3.5), (_sx, AMP_CENTER[1], FLOOR_CUT + 1.0), 1.1, seg=20))
 
 # ============================================================ BO PHAN RIENG
 # --- Tam bung (belly): khoet lo vua vanh loa (khe truot 0,2-0,3)
@@ -521,20 +532,8 @@ def sector(name, r0, r1, z0, z1, a0, a1, n=16):
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     return new_obj(name, bm)
 
-# --- Vong ep ngam xoay 1 cai (speaker-ring) + LAY LO XO PETG (chua co TPU: mep loa ti thang vao vanh, lay de len mat sau mep loa)
-SPR_N, SPR_T, SPR_LEN, SPR_W, SPR_PRE, SPR_BUMP_R = 4, 1.2, 8.5, 3.5, 1.5, 1.0
-SPR_R0, SPR_R1 = 21.9, 21.9 + SPR_W            # ban kinh tam lay (vanh ep r 21..26)
-SPR_ANG = (45.0, 135.0, 225.0, 315.0)
-SPR_RISE = 5.7                                 # tu mat sau vong (zB) toi dinh lay tu do (= mat sau mep loa + preload)
-def spring_poly(zB, locked):
-    """Lay = thanh dau tren 45 do (mat duoi tu dung khi in) roi doan phang 4 mm, day doc 1,2 (vuong goc) ~1,7. Toa do (u doc lay, z).
-    locked=True: dau lay bi ep xuong SPR_PRE (xap xi: co chieu cao theo ti le) de kiem lap + vi tri loa."""
-    k = (SPR_RISE - SPR_PRE) / SPR_RISE if locked else 1.0
-    P = [(-1.0, 0.0), (0.0, 0.0), (4.0, 4.0), (8.5, 4.0), (8.5, 5.2), (3.5, 5.2), (0.0, 1.7), (-1.0, 1.7)]
-    return [(u - 4.25, zB + (z * k if u > 0.5 else z)) for (u, z) in P]
-M_FMAP2 = Matrix.Identity(4)
-M_FMAP = Matrix(((0, 0, 1, 0), (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 0, 1)))   # (u, z, radial) -> (x radial, y tang, z)
-
+# --- Vong ep ngam xoay 1 cai (speaker-ring). 2026-11-18: BO 4 lay PETG (chan loa chui qua) - moi vong ep thang len mep loa,
+# bang xop 2 mm dan vong mat loa (khe GASKET_T 1,5 -> khoa con GASKET_T - LIP_PRE = 1,2) lam lo xo.
 def make_clamp_ring(locked=False):
     zB = CUP_END - OUT_GAP - SRING_T; zL = CUP_END + LIP_PRE; zO = CUP_END - OUT_GAP
     rl = SPEAKER_POCKET_D / 2 - 0.3; rsi = CUP_OR + SLEEVE_CLR; rso = rsi + SLEEVE_T; ztop = CUP_END + SLEEVE_LEN
@@ -546,25 +545,11 @@ def make_clamp_ring(locked=False):
         g0, g1 = pz0 - GROOVE_CLR, pz1
         diff(r, sector('gh', rsi - 0.5, rg, g0, g1, a - BAY_TWIST - half, a + half, 12))
         diff(r, sector('gv', rsi - 0.5, rg, g0, ztop + 0.5, a - BAY_TWIST - half, a - BAY_TWIST + half, 4))
-    for a0 in SPR_ANG:
-        R = Matrix.Rotation(math.radians(a0), 4, 'Z')
-        # cua so sau lay (mo ra phia sau de lay uon xuong), tu goc lay toi het lay + 1 mm
-        win = box('spw', (20.0, -4.25, zB - 1.0), (25.5, 4.25 + 1.0, zL + 0.2)); win.data.transform(R)
-        diff(r, win)
-        f = extrude('finger', spring_poly(zB, locked), SPR_R0, SPR_R1, R @ M_FMAP)
-        # go tron R1 o dau tu (nhô 0,5 len mat tren), tru truc huong tam, chi giu nua tren
-        k_ = (SPR_RISE - SPR_PRE) / SPR_RISE if locked else 1.0
-        cz = zB + (SPR_RISE - (SPR_PRE if locked else 0.0)) - SPR_BUMP_R
-        bump = cyl('bump', Vector((SPR_R0, 3.0 - 0.25, cz)), Vector((SPR_R1, 3.0 - 0.25, cz)), SPR_BUMP_R, seg=24)
-        bump.data.transform(R @ M_FMAP2)
-        inter(bump, box('bk', (-40, -40, zB + 3.9 * k_), (40, 40, zB + 9.0)))
-        union(f, bump)
-        union(r, f)
     return r
 
 BEZEL_LOCAL, GRILLE_N = make_bezel()
 SRING_LOCAL = make_clamp_ring(False)       # ban in (lay o trang thai tu do)
-SRING_LOCKED = make_clamp_ring(True)       # ban lap (lay bi ep SPR_PRE) cho kiem ngam xoay + loa
+SRING_LOCKED = SRING_LOCAL                 # khong con lay -> ban lap = ban in
 
 # Toa do lap rap world cua loa bung:
 # local z -> world -y
@@ -572,41 +557,72 @@ M_spk_world = Matrix.Translation(SPK_CENTER) @ Matrix.Rotation(math.radians(90),
 BEZEL_W = cp(BEZEL_LOCAL, 'bezel_w'); BEZEL_W.data.transform(M_spk_world)
 SRING_W = cp(SRING_LOCKED, 'sring_w'); SRING_W.data.transform(M_spk_world)
 
-# --- Khay ampli MAX98357A (amp-tray.stl)
-AMP_FEET_H = AMP_CENTER[2] - AMP_BOX[2] / 2 - 2.4 - 4.0   # chan tu san z = 4 len mat khay
+# --- Khay ampli MAX98357A (amp-tray.stl). 2026-11-18 Tuan: "tam tam, khong toi uu", han day thang (khong cau dau/jack).
+# Module Shopee clone tim 18 x 19 (Phipps listing, ask-gpt) / Adafruit 3006 19,4 x 17,8 x 3,0. PCB truot doc y vao 2 RAY RANH giu 2 mep
+# (canh ~18 nam ngang x), vau chan dau +y, go khoa 0,4 dau -y; 2 dau PCB de trong cho day I2S + day loa; gam ho 3 mm + khe thoang.
+# Bat xuong tam de bang 2 vit M2.5 x 6 (lo xuyen O2,8 + hoc dau O5,2; tam de co lo moi O2,2).
+AMP_FEET_H = AMP_CENTER[2] - AMP_BOX[2] / 2 - 2.4 - 4.0   # (giu ten cu) 6,6
+AMP_PCB_W, AMP_PCB_L = 18.0, 19.4                     # x (giua 2 ray), y (doc ray); TODO do module that
+AMP_RAIL_CLR, AMP_SLOT = 0.25, 2.0                    # khe ngang moi ben; be ranh (PCB 1,6 + 0,4; TODO do day PCB)
+AMP_GAP_UNDER = 3.0                                   # gam ho duoi PCB
+AMP_SCREW_X = 8.75
+AMP_BASE_T = 2.5
+AMP_TRAY_Z = 7.3                                      # day hoc vo truoc tai khay: z 6,4-7,1 (do ray_cast 2026-11-18) + 0,2
 def make_amp_tray():
-    w_x, d_y, h_base = 28.0, 22.0, 2.2   # dinh khay 12,8 (cach day module 0,2)
-    z0 = AMP_FEET_H
-    tray = box('at_base', (-w_x / 2, -d_y / 2, 0.0), (w_x / 2, d_y / 2, z0 + h_base))   # khoi dac tu san len (in khong support)
-    for s in (-1, 1):
-        wall_x = box('at_w', (s * 11.4 if s > 0 else s * 14.0, -d_y / 2, z0 + h_base),
-                             (s * 14.0 if s > 0 else s * 11.4, d_y / 2, z0 + h_base + 9.0))
-        union(tray, wall_x)
-    for dx in (-6.0, 0.0, 6.0):
-        diff(tray, box('vent_h', (dx - 1.5, -5.0, -0.5), (dx + 1.5, 5.0, z0 + h_base + 0.5)))
+    zt = AMP_BASE_T                                   # mat tren de (local); day khay dat tren day hoc vo z 7,3
+    z_pcb = zt + AMP_GAP_UNDER                        # mat duoi PCB 11,8
+    xi = AMP_PCB_W / 2 - 1.0                          # mep trong ray (PCB an vao ranh 1,0)
+    xg = AMP_PCB_W / 2 + AMP_RAIL_CLR                 # day ranh
+    xo = xg + 2.0                                     # mat ngoai ray
+    L = AMP_PCB_L + 3.0; y0, y1 = -L / 2, L / 2       # go 1,6 + vau 1,0 + khe 0,4 -> cho PCB 19,8
+    tray = box('at_base', (-xo, y0, 0.0), (xo, y1, zt))
+    for dx in (-4.0, 0.0, 4.0):                       # khe thoang xuyen de (giua 2 lo vit)
+        diff(tray, box('vent', (dx - 1.2, y0 + 3.0, -0.5), (dx + 1.2, y1 - 3.0, zt + 0.5)))
+    for dx in (-AMP_SCREW_X, AMP_SCREW_X):            # vit M2.5 x 6: 3 mm trong khay + 3 mm vao tam de
+        diff(tray, cyl('at_hole', (dx, 0, -0.5), (dx, 0, zt + 0.5), 1.4, seg=24))
+    for s_ in (-1, 1):
+        xa, xb = sorted((s_ * xi, s_ * xo))
+        rail = box('at_rail', (xa, y0, zt - 0.2), (xb, y1, z_pcb + AMP_SLOT + 1.2))
+        ga, gb = sorted((s_ * (xi - 0.5), s_ * xg))
+        diff(rail, box('at_slot', (ga, y0 - 1, z_pcb), (gb, y1 + 1, z_pcb + AMP_SLOT)))
+        union(tray, rail)
+        # go khoa dau -y: PCB truot qua (vat 45 do), bat xuong sau go
+        ba, bb = sorted((s_ * (xi - 1.2), s_ * xi))
+        bump = extrude('at_bump', [(y0 + 0.2, z_pcb - 0.01), (y0 + 1.6, z_pcb - 0.01), (y0 + 1.6, z_pcb + 0.4), (y0 + 1.2, z_pcb + 0.4)],
+                       ba, bb, Matrix(((0, 0, 1, 0), (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 0, 1))))
+        union(tray, bump)
+    # vau chan dau +y: chi cao 0,8 qua mat duoi PCB (day han o mat tren di qua)
+    union(tray, box('at_stop', (-xi, y1 - 1.0, zt - 0.2), (xi, y1, z_pcb + 0.8)))
     return tray
 
 AMP_TRAY_LOCAL = make_amp_tray()
-M_amp_tray_w = Matrix.Translation((AMP_CENTER[0], AMP_CENTER[1], AMP_CENTER[2] - AMP_BOX[2] / 2 - 2.4 - AMP_FEET_H))
+M_amp_tray_w = Matrix.Translation((AMP_CENTER[0], AMP_CENTER[1], AMP_TRAY_Z))
+for _sx in (-AMP_SCREW_X, AMP_SCREW_X):   # lo moi O2,2 xuyen day vo truoc (vit M2.5 x 6 xuong tam de)
+    diff(A, cyl('amppilot', (_sx, AMP_CENTER[1], FLOOR_CUT - 0.5), (_sx, AMP_CENTER[1], AMP_TRAY_Z + 0.5), 1.1, seg=20))
 AMP_TRAY_W = cp(AMP_TRAY_LOCAL, 'amp_tray_w'); AMP_TRAY_W.data.transform(M_amp_tray_w)
 
-# --- Kep mic INMP441 (mic-clamp.stl)
+# --- Kep mic INMP441 (mic-clamp.stl). 2026-11-18 lam lai cho PCB TRON O15 (Shopee), han day thang.
+# Local: y = 0 mat truoc tam truot (vao ranh vo), -y ra tran; z = 0 o MIC_CENTER z. In DUNG (z len) nhu khi lap.
 def make_mic_clamp():
-    clamp = box('mc_base', (-MC_W / 2, 0.0, -9.9), (MC_W / 2, MC_T, MC_H / 2))   # day tam keo dai xuong -9,9 de noi thanh duoi
-    pad = box('mc_pad', (-7.0, -1.2, -7.0), (7.0, 0.01, 7.0))
-    union(clamp, pad)
-    notch = box('mc_notch', (-5.0, -1.5, -10.4), (5.0, MC_T + 0.5, -4.9))   # 6 day header ra duoi
-    diff(clamp, notch)
-    yf = YOKE_BACK - YOKE_T                                  # mat truoc yoke
-    zb0, zb1 = -9.9, -MIC_BOX[2] / 2 - 0.2              # thanh duoi nam duoi o module
-    for sx in (-1, 1):                                       # 2 thanh noi tam kep -> yoke, ngoai vung rach day
-        xa, xb = sorted((sx * 5.3, sx * 8.3))
-        union(clamp, box('mc_bar', (xa, yf, zb0), (xb, 0.5, zb1)))
-    union(clamp, box('mc_strip', (-8.3, yf, zb0), (8.3, YOKE_BACK, zb1)))
-    union(clamp, box('mc_yoke', (-5.5, yf, zb0), (5.5, YOKE_BACK, MIC_TUBE_DZ + 4.5)))
+    rp = MIC_PCB_D / 2 + MIC_PCB_CLR                 # 7,8
+    zc = MIC_PCB_ZC
+    yf_pcb = YOKE_BACK + 0.5                          # mat truoc PCB (local) -9,1
+    yr_pcb = yf_pcb + MIC_PCB_SLOT                    # mat sau PCB -7,2
+    clamp = box('mc_base', (-MC_W / 2, 0.0, -9.9), (MC_W / 2, MC_T, MC_H / 2))      # tam truot vao 2 ranh vo
+    diff(clamp, box('mc_win', (-6.0, -1.0, -4.0), (6.0, MC_T + 1.0, MC_H / 2 + 1.0)))   # cua so day ra sau
+    ub = box('mc_u', (-9.0, yf_pcb - 0.1, -9.9), (9.0, yr_pcb + 1.8, zc + 4.5))      # khoi U giu PCB
+    diff(ub, cyl('mc_pocket', (0, yf_pcb, zc), (0, yr_pcb, zc), rp, seg=72))           # hoc tron O15,6
+    diff(ub, box('mc_slot', (-rp, yf_pcb, zc), (rp, yr_pcb, zc + 20)))                 # mo tren -> nhet tu tren xuong
+    diff(ub, box('mc_back', (-5.5, yr_pcb - 0.01, -11.0), (5.5, yr_pcb + 2.0, zc + 6.0)))   # mat sau ho giua: han day + chip
+    union(clamp, ub)
+    for sx in (-1, 1):                                # 2 thanh noi khoi U -> tam truot (trong ray vo |x| 10,2)
+        xa, xb = sorted((sx * 8.3, sx * 10.0))
+        union(clamp, box('mc_bar', (xa, yr_pcb, -9.9), (xb, 0.2, zc + 4.5)))
+    yfy = YOKE_BACK - YOKE_T + 0.5                    # mat truoc yoke
+    union(clamp, box('mc_yoke', (-5.5, yfy, -9.9), (5.5, yf_pcb, MIC_TUBE_DZ + 5.5)))   # |x| 5,5: vach tran cong
     y_end = (MIC_WALL_Y0 - MIC_SEAL_DEPTH + MIC_TUBE_GAP) - (MIC_CENTER[1] + MIC_BOX[1] / 2 + MC_BACK_GAP)   # mut ong (local y)
-    union(clamp, cyl('mc_tube', (0, yf + 0.3, MIC_TUBE_DZ), (0, y_end, MIC_TUBE_DZ), MIC_TUBE_OD / 2, seg=48))
-    diff(clamp, cyl('mc_bore', (0, YOKE_BACK + 0.5, MIC_TUBE_DZ), (0, y_end - 0.5, MIC_TUBE_DZ), MIC_TUBE_ID / 2, seg=32))
+    union(clamp, cyl('mc_tube', (0, yfy + 0.3, MIC_TUBE_DZ), (0, y_end, MIC_TUBE_DZ), MIC_TUBE_OD / 2, seg=48))
+    diff(clamp, cyl('mc_bore', (0, yf_pcb + 0.5, MIC_TUBE_DZ), (0, y_end - 0.5, MIC_TUBE_DZ), MIC_TUBE_ID / 2, seg=32))
     return clamp
 
 MIC_CLAMP_LOCAL = make_mic_clamp()
@@ -632,8 +648,32 @@ def cross_cutters(M, u_open, depth, dirn, angs=(45.0, 135.0)):
 cp_ = [(0, BTN_TOP), (19, BTN_TOP)] + arc(19, BTN_TOP - 6, 6, 90, 0, 8)[1:]
 cp_ += [(25.0, SEAT_Z + REST_UP + 0.1), (TALK_FLANGE_R, SEAT_Z + REST_UP + 0.1 - (TALK_FLANGE_R - 25.0)), (TALK_FLANGE_R, TALK_ZB + REST_UP), (0, TALK_ZB + REST_UP)]
 CAP = lathe('cap', cp_, seg=96, M=Matrix.Translation((0, Y0, 0)))
-for o_ in cross_cutters(Matrix.Translation((0, Y0, TALK_ZB + REST_UP)), 0.0, MX_STEM_H, 1):
+# ranh vong quanh ong chu thap (ong O5,71 nhun duoc nhu catpaw), roi khoet chu thap
+_zc = TALK_ZB + REST_UP
+_rel = cyl('caprel', (0, Y0, _zc - 0.5), (0, Y0, _zc + MX_RELIEF_H), MX_RELIEF_R, seg=64)
+diff(_rel, cyl('captube', (0, Y0, _zc - 1.0), (0, Y0, _zc + MX_RELIEF_H + 1.0), MX_TUBE_OD / 2, seg=48))
+diff(CAP, _rel)
+for o_ in cross_cutters(Matrix.Translation((0, Y0, _zc)), 0.0, MX_STEM_H, 1):
     diff(CAP, o_)
+
+# --- Bo thu chu thap (mx-cross-gauge.stl): 3 khoi, khe 1,25 / 1,35 / 1,45; so cham canh truoc = thu tu (1, 2, 3 cham)
+def make_cross_gauge():
+    g = box('gbase', (-17.0, -6.0, 0.0), (17.0, 6.0, 1.2))
+    for i, w in enumerate(MX_GAUGE_W):
+        cx = (i - 1) * 11.5
+        blk = box('gblk', (cx - 5.2, -5.2, 0.0), (cx + 5.2, 5.2, 7.0))
+        rel = cyl('grel', (cx, 0, 7.0 - MX_RELIEF_H), (cx, 0, 7.5), MX_RELIEF_R, seg=48)
+        diff(rel, cyl('gtube', (cx, 0, 2.0), (cx, 0, 8.0), MX_TUBE_OD / 2, seg=48))
+        diff(blk, rel)
+        for ang in (45.0, 135.0):
+            c_ = box('gcr', (-MX_STEM_L / 2, -w / 2, 7.0 - 4.5), (MX_STEM_L / 2, w / 2, 7.5))
+            c_.data.transform(Matrix.Translation((cx, 0, 0)) @ Matrix.Rotation(math.radians(ang), 4, 'Z'))
+            diff(blk, c_)
+        for k in range(i + 1):
+            diff(blk, cyl('gdot', (cx - 2.0 + 2.0 * k, -5.8, 4.0), (cx - 2.0 + 2.0 * k, -4.6, 4.0), 0.6, seg=12))
+        union(g, blk)
+    return g
+GAUGE = make_cross_gauge()
 
 
 # --- Kinh khuech tan mat (diffuser)
@@ -711,6 +751,7 @@ export_obj(MIC_CLAMP_LOCAL, T_mic_clamp, OUT / "mic-clamp.stl")
 
 # amp-tray: in day khay xuong ban (z_min = 0)
 export_obj(AMP_TRAY_LOCAL, Matrix.Identity(4), OUT / "amp-tray.stl")
+export_obj(GAUGE, Matrix.Identity(4), OUT / "mx-cross-gauge.stl")
 
 # Cac chi tiet bo sung (tấm đế, vòng mắt, pod)
 export_obj(PLATE, Mx(((1, 0, 0, 0), (0, -1, 0, 0), (0, 0, -1, FLOOR_CUT), (0, 0, 0, 1))), OUT / "base-plate.stl")
@@ -762,10 +803,14 @@ params = dict(
     pcb_center=PCB_CENTER,
     pcb_box=list(PCB_BOX),
     amp_center=AMP_CENTER,
+    amp_pcb=dict(center=[0.0, round(AMP_CENTER[1] + 0.3, 2), round(AMP_TRAY_Z + AMP_BASE_T + AMP_GAP_UNDER + 0.2 + 0.8, 2)],
+                 box=[AMP_PCB_W, AMP_PCB_L, 1.6], parts_h=3.0, note="clone Shopee 18x19 / Adafruit 19,4x17,8; parts_h TODO do"),
     amp_box=list(AMP_BOX),
     mic=dict(center=MIC_CENTER, box=list(MIC_BOX), holes=3, hole_x=[-1.5, 0.0, 1.5], hole_z=round(MIC_CENTER[2] + MIC_TUBE_DZ, 2), axis="y",
              tube=dict(od=MIC_TUBE_OD, id=MIC_TUBE_ID, gap_to_wall=MIC_TUBE_GAP, wall_y=MIC_WALL_Y0),
-             seal=dict(type="labyrinth", depth=MIC_SEAL_DEPTH, clearance=MIC_SEAL_CLR)),
+             seal=dict(type="labyrinth", depth=MIC_SEAL_DEPTH, clearance=MIC_SEAL_CLR),
+             pcb=dict(center=[0.0, round(MIC_CENTER[1] + MIC_BOX[1] / 2 + MC_BACK_GAP + YOKE_BACK + 0.5 + 0.85, 2), round(MIC_CENTER[2] + MIC_PCB_ZC, 2)],
+                      d=MIC_PCB_D, t=1.6, axis="y", note="INMP441 Shopee tron ~O15 (ShillehTek); day PCB TODO")),
     pcb_usb=dict(center=[PCB_CENTER[0], PCB_Y_USB, PCB_CENTER[2]], dir="+y"),
     cable_slot=dict(side="back", w=CABLE_W, h=CABLE_H, r=CABLE_R, center=[PCB_CENTER[0], round(Y_ROOF + CABLE_WALL_T / 2, 2), PCB_CENTER[2]], wall_t=round(CABLE_WALL_T, 2)),
     split_plane_y=Y0,
@@ -779,7 +824,7 @@ params = dict(
         ring_id=RING_ID,
         gasket_locked=round(GASKET_T - LIP_PRE, 3),
         gasket_slot_kept=True,   # ranh ron giu nguyen cho ron TPU 2 mm sau nay
-        petg_spring=dict(n=SPR_N, t=SPR_T, len=SPR_LEN, width=SPR_W, preload=SPR_PRE, bump_r=SPR_BUMP_R),
+        gasket_note="bang xop 2 mm dan vong mat loa (khong con lay PETG, 2026-11-18)",
         bayonet=dict(
             n=len(BAY_ANG),
             twist=BAY_TWIST,

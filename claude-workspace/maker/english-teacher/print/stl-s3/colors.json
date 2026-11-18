@@ -11,5 +11,6 @@
   "base-plate.stl": "#FFF3DF",
   "beak.stl": "#FFC857",
   "button-cap.stl": "#FFC857",
-  "eye-diffuser.stl": "#FFFFFF"
+  "eye-diffuser.stl": "#FFFFFF",
+  "mx-cross-gauge.stl": "#FFC857"
 }
