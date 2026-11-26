@@ -60,9 +60,20 @@ Nguồn chân: `wiring-s3.yaml` (Toolhub vẽ hình từ file này). Đổi châ
 - **Chân khởi động:** GPIO0, 3, 45, 46. GPIO0 chỉ dùng nút BOOT có sẵn.
 - **Bo clone:** đọc chữ in cạnh chân trước khi hàn; vị trí chân có thể khác bo gốc.
 
-## 4. Đấu từng module
+## 4. Sơ đồ đấu dây (hình)
 
-### 4.1 INMP441 (mic)
+Vẽ tự động từ `wiring-s3.yaml` (giống trang Toolhub). Vị trí chân trên hình là sơ đồ nguyên lý – khi hàn đọc chữ in cạnh chân trên bo.
+
+![Dây nguồn (mic + ampli 1)](images/wiring-s3-nguon.svg)
+![Mic INMP441](images/wiring-s3-mic.svg)
+![Ampli 1 – loa trái](images/wiring-s3-ampli.svg)
+![Ampli 2 – loa phải](images/wiring-s3-ampli2.svg)
+![Màn TFT 2,8" cảm ứng](images/wiring-s3-man.svg)
+![Nút nói](images/wiring-s3-nut.svg)
+
+## 5. Đấu từng module
+
+### 5.1 INMP441 (mic)
 
 | INMP441 | ESP32-S3 | Ghi chú |
 |---|---|---|
@@ -73,7 +84,7 @@ Nguồn chân: `wiring-s3.yaml` (Toolhub vẽ hình từ file này). Đổi châ
 | SCK | GPIO5 | |
 | SD | GPIO6 | |
 
-### 4.2 MAX98357A – ampli 1, loa TRÁI
+### 5.2 MAX98357A – ampli 1, loa TRÁI
 
 | MAX98357A | ESP32-S3 / loa | Ghi chú |
 |---|---|---|
@@ -86,7 +97,7 @@ Nguồn chân: `wiring-s3.yaml` (Toolhub vẽ hình từ file này). Đổi châ
 | SD | để trống | |
 | Loa + / Loa − | 2 dây loa trái | **KHÔNG nối GND** |
 
-### 4.3 MAX98357A – ampli 2, loa PHẢI
+### 5.3 MAX98357A – ampli 2, loa PHẢI
 
 | MAX98357A | ESP32-S3 / loa | Ghi chú |
 |---|---|---|
@@ -99,7 +110,7 @@ Nguồn chân: `wiring-s3.yaml` (Toolhub vẽ hình từ file này). Đổi châ
 | SD | để trống | |
 | Loa + / Loa − | 2 dây loa phải | **KHÔNG nối GND** |
 
-### 4.4 Tụ 1000 µF 16 V (mỗi ampli 1 tụ)
+### 5.4 Tụ 1000 µF 16 V (mỗi ampli 1 tụ)
 
 Hàn tụ sát chân VIN và GND của module MAX98357A (không đặt ở đầu bo ESP32):
 
@@ -115,7 +126,7 @@ Hàn tụ sát chân VIN và GND của module MAX98357A (không đặt ở đầ
 
 - Ngược cực = tụ có thể phồng, nổ. Kiểm vạch trắng nằm phía GND trước khi cắm điện.
 
-### 4.5 Màn TFT 2,8" MSP2807
+### 5.5 Màn TFT 2,8" MSP2807
 
 Header 14 chân bước 2,54 mm nằm ở đầu phía +x của màn.
 
@@ -137,13 +148,13 @@ Header 14 chân bước 2,54 mm nằm ở đầu phía +x của màn.
 | T_CS | GPIO17 | |
 | T_IRQ | GPIO18 | |
 
-### 4.6 Nút nói
+### 5.6 Nút nói
 
 - Switch MX: GPIO1 → nút → GND. Chạm để bắt đầu/kết thúc nói; chạm lúc cô đang nói là ngắt lời; giữ 5 s là ngủ.
 - Nút BOOT GPIO0 dùng để thử trên bàn. Khi lắp vào vỏ, BOOT bị che.
 - Vỏ không có nút âm lượng (GPIO39/40 bỏ). Chỉnh âm lượng bằng giọng nói.
 
-## 5. Vị trí trong vỏ
+## 6. Vị trí trong vỏ
 
 Số đo lấy từ `cad/README.md`, mục "Bản có màn + 2 loa".
 
@@ -154,23 +165,23 @@ Số đo lấy từ `cad/README.md`, mục "Bản có màn + 2 loa".
 - **Bo S3**: nằm ngang, cổng USB-C ra lưng.
 - **Đi dây**: dây I2S ≤ 15 cm; dây SPI màn ≤ 10 cm (nhiễu → hạ xung SPI 40 → 20 MHz). Dây loa chạy dọc sàn, không kẹp vào mặt ráp 2 nửa vỏ.
 
-## 6. Nguồn
+## 7. Nguồn
 
 - Hiện dùng sạc qua cổng USB-C của bo. Cần ≥ 2 A.
 - TODO: kiểm diode trên đường 5V của bo S3. Nếu bo tự khởi động lại khi loa to (log `brownout`), cấp 5 V cho 2 ampli thẳng từ nguồn ngoài, GND chung.
 - Pin sạc sau này: chưa thiết kế (cell có mạch bảo vệ, mạch sạc/tăng áp 5 V, ngăn pin bắt vít).
 
-## 7. Kiểm tra trước khi cắm điện
+## 8. Kiểm tra trước khi cắm điện
 
 1. Đồng hồ thang thông mạch: **5V – GND** và **3V3 – GND** phải **không** kêu.
-2. Kiểm từng dây theo bảng mục 4 (đầu này – đầu kia kêu).
+2. Kiểm từng dây theo bảng mục 5 (đầu này – đầu kia kêu).
 3. Loa + / Loa − không thông với GND.
 4. J1 trên màn đang hở.
 5. Mỗi ampli đúng 1 loa.
 6. Chân tín hiệu màn không chạm 5V.
 7. Cắm USB: đèn nguồn bo sáng, không mùi khét, linh kiện không nóng tay. Bất thường → rút ngay.
 
-## 8. Thử
+## 9. Thử
 
 - Bấm BOOT → cô chào → nói "Hello" → cô trả lời.
 - Lúc cô đang nói, nói chen "Cô ơi!" → cô dừng và nghe.

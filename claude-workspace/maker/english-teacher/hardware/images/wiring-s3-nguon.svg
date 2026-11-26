@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100%"
+ viewBox="0.00 0.00 812.00 532.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 527.75)">
+<polygon fill="#ffffff" stroke="none" points="-4,4 -4,-527.75 807.75,-527.75 807.75,4 -4,4"/>
+<g id="node1" class="node">
+<title>mic</title>
+<polygon fill="#ffffff" stroke="black" points="152.5,-436.88 15,-436.88 15,-341.88 152.5,-341.88 152.5,-436.88"/>
+<polygon fill="none" stroke="black" points="15,-413.12 15,-436.88 152.5,-436.88 152.5,-413.12 15,-413.12"/>
+<text xml:space="preserve" text-anchor="start" x="72.88" y="-420.12" font-family="arial" font-size="14.00">mic</text>
+<polygon fill="none" stroke="black" points="15,-389.38 15,-413.12 114.5,-413.12 114.5,-389.38 15,-389.38"/>
+<text xml:space="preserve" text-anchor="start" x="19" y="-396.38" font-family="arial" font-size="14.00">INMP441 (mic)</text>
+<polygon fill="none" stroke="black" points="114.5,-389.38 114.5,-413.12 152.5,-413.12 152.5,-389.38 114.5,-389.38"/>
+<text xml:space="preserve" text-anchor="start" x="118.5" y="-396.38" font-family="arial" font-size="14.00">2-pin</text>
+<polygon fill="none" stroke="black" points="15,-365.62 15,-389.38 95.38,-389.38 95.38,-365.62 15,-365.62"/>
+<text xml:space="preserve" text-anchor="start" x="40.94" y="-372.62" font-family="arial" font-size="14.00">VDD</text>
+<polygon fill="none" stroke="black" points="95.38,-365.62 95.38,-389.38 152.5,-389.38 152.5,-365.62 95.38,-365.62"/>
+<text xml:space="preserve" text-anchor="start" x="120.19" y="-372.62" font-family="arial" font-size="14.00">1</text>
+<polygon fill="none" stroke="black" points="15,-341.88 15,-365.62 95.38,-365.62 95.38,-341.88 15,-341.88"/>
+<text xml:space="preserve" text-anchor="start" x="39.81" y="-348.88" font-family="arial" font-size="14.00">GND</text>
+<polygon fill="none" stroke="black" points="95.38,-341.88 95.38,-365.62 152.5,-365.62 152.5,-341.88 95.38,-341.88"/>
+<text xml:space="preserve" text-anchor="start" x="120.19" y="-348.88" font-family="arial" font-size="14.00">2</text>
+</g>
+<g id="node4" class="node">
+<title>W1</title>
+<polygon fill="#ffffff" stroke="black" points="497.88,-523.75 318.62,-523.75 318.62,-411 497.88,-411 497.88,-523.75"/>
+<polygon fill="none" stroke="black" points="318.62,-500 318.62,-523.75 497.88,-523.75 497.88,-500 318.62,-500"/>
+<text xml:space="preserve" text-anchor="start" x="397.75" y="-507" font-family="arial" font-size="14.00">W1</text>
+<polygon fill="none" stroke="black" points="318.62,-476.25 318.62,-500 380.38,-500 380.38,-476.25 318.62,-476.25"/>
+<text xml:space="preserve" text-anchor="start" x="342.38" y="-483.25" font-family="arial" font-size="14.00">1x</text>
+<polygon fill="none" stroke="black" points="380.38,-476.25 380.38,-500 450.38,-500 450.38,-476.25 380.38,-476.25"/>
+<text xml:space="preserve" text-anchor="start" x="404.12" y="-483.25" font-family="arial" font-size="14.00">OG</text>
+<polygon fill="#ff8000" stroke="none" points="450.38,-476.25 450.38,-500 497.88,-500 497.88,-476.25 450.38,-476.25"/>
+<polygon fill="none" stroke="black" points="450.38,-476.25 450.38,-500 497.88,-500 497.88,-476.25 450.38,-476.25"/>
+<text xml:space="preserve" text-anchor="start" x="351.38" y="-461.5" font-family="arial" font-size="14.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="320.62" y="-441.75" font-family="arial" font-size="14.00">mic:1:VDD</text>
+<text xml:space="preserve" text-anchor="start" x="389.88" y="-441.75" font-family="arial" font-size="14.00"> &#160;&#160;&#160;&#160;1 &#160;&#160;&#160;</text>
+<text xml:space="preserve" text-anchor="start" x="435.12" y="-441.75" font-family="arial" font-size="14.00">esp:1:3V3</text>
+<polygon fill="#000000" stroke="none" points="318.62,-434.75 318.62,-436.75 497.88,-436.75 497.88,-434.75 318.62,-434.75"/>
+<polygon fill="#ffffff" stroke="none" points="318.62,-432.75 318.62,-434.75 497.88,-434.75 497.88,-432.75 318.62,-432.75"/>
+<polygon fill="#000000" stroke="none" points="318.62,-430.75 318.62,-432.75 497.88,-432.75 497.88,-430.75 318.62,-430.75"/>
+<text xml:space="preserve" text-anchor="start" x="351.38" y="-416" font-family="arial" font-size="14.00"> </text>
+</g>
+<g id="edge1" class="edge">
+<title>mic:e--W1:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M153.5,-375.5C232.58,-377.15 242.49,-433.4 317.62,-431.75"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M153.5,-377.5C230.61,-377.5 240.52,-433.75 317.62,-433.75"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M153.5,-379.5C228.64,-377.85 238.55,-434.1 317.62,-435.75"/>
+</g>
+<g id="node5" class="node">
+<title>W2</title>
+<polygon fill="#ffffff" stroke="black" points="502.38,-386.75 314.12,-386.75 314.12,-274 502.38,-274 502.38,-386.75"/>
+<polygon fill="none" stroke="black" points="314.12,-363 314.12,-386.75 502.38,-386.75 502.38,-363 314.12,-363"/>
+<text xml:space="preserve" text-anchor="start" x="397.75" y="-370" font-family="arial" font-size="14.00">W2</text>
+<polygon fill="none" stroke="black" points="314.12,-339.25 314.12,-363 380.38,-363 380.38,-339.25 314.12,-339.25"/>
+<text xml:space="preserve" text-anchor="start" x="340.12" y="-346.25" font-family="arial" font-size="14.00">1x</text>
+<polygon fill="none" stroke="black" points="380.38,-339.25 380.38,-363 450.38,-363 450.38,-339.25 380.38,-339.25"/>
+<text xml:space="preserve" text-anchor="start" x="406.38" y="-346.25" font-family="arial" font-size="14.00">BK</text>
+<polygon fill="#000000" stroke="none" points="450.38,-339.25 450.38,-363 502.38,-363 502.38,-339.25 450.38,-339.25"/>
+<polygon fill="none" stroke="black" points="450.38,-339.25 450.38,-363 502.38,-363 502.38,-339.25 450.38,-339.25"/>
+<text xml:space="preserve" text-anchor="start" x="348" y="-324.5" font-family="arial" font-size="14.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="316.12" y="-304.75" font-family="arial" font-size="14.00">mic:2:GND</text>
+<text xml:space="preserve" text-anchor="start" x="387.62" y="-304.75" font-family="arial" font-size="14.00"> &#160;&#160;&#160;&#160;1 &#160;&#160;&#160;</text>
+<text xml:space="preserve" text-anchor="start" x="432.88" y="-304.75" font-family="arial" font-size="14.00">esp:3:GND</text>
+<polygon fill="#000000" stroke="none" points="314.12,-297.75 314.12,-299.75 502.38,-299.75 502.38,-297.75 314.12,-297.75"/>
+<polygon fill="#ffffff" stroke="none" points="314.12,-295.75 314.12,-297.75 502.38,-297.75 502.38,-295.75 314.12,-295.75"/>
+<polygon fill="#000000" stroke="none" points="314.12,-293.75 314.12,-295.75 502.38,-295.75 502.38,-293.75 314.12,-293.75"/>
+<text xml:space="preserve" text-anchor="start" x="348" y="-279" font-family="arial" font-size="14.00"> </text>
+</g>
+<g id="edge3" class="edge">
+<title>mic:e--W2:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M153.5,-351.75C226.86,-353.44 235.82,-296.44 313.12,-294.75"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M153.5,-353.75C228.83,-353.75 237.79,-296.75 313.12,-296.75"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M153.5,-355.75C230.81,-354.06 239.77,-297.06 313.12,-298.75"/>
+</g>
+<g id="node2" class="node">
+<title>esp</title>
+<polygon fill="#ffffff" stroke="black" points="803.75,-322.75 649,-322.75 649,-204 803.75,-204 803.75,-322.75"/>
+<polygon fill="none" stroke="black" points="649,-299 649,-322.75 803.75,-322.75 803.75,-299 649,-299"/>
+<text xml:space="preserve" text-anchor="start" x="715.5" y="-306" font-family="arial" font-size="14.00">esp</text>
+<polygon fill="none" stroke="black" points="649,-275.25 649,-299 765.75,-299 765.75,-275.25 649,-275.25"/>
+<text xml:space="preserve" text-anchor="start" x="653" y="-282.25" font-family="arial" font-size="14.00">ESP32-S3 N16R8</text>
+<polygon fill="none" stroke="black" points="765.75,-275.25 765.75,-299 803.75,-299 803.75,-275.25 765.75,-275.25"/>
+<text xml:space="preserve" text-anchor="start" x="769.75" y="-282.25" font-family="arial" font-size="14.00">3-pin</text>
+<polygon fill="none" stroke="black" points="649,-251.5 649,-275.25 714.75,-275.25 714.75,-251.5 649,-251.5"/>
+<text xml:space="preserve" text-anchor="start" x="678.12" y="-258.5" font-family="arial" font-size="14.00">1</text>
+<polygon fill="none" stroke="black" points="714.75,-251.5 714.75,-275.25 803.75,-275.25 803.75,-251.5 714.75,-251.5"/>
+<text xml:space="preserve" text-anchor="start" x="747.25" y="-258.5" font-family="arial" font-size="14.00">3V3</text>
+<polygon fill="none" stroke="black" points="649,-227.75 649,-251.5 714.75,-251.5 714.75,-227.75 649,-227.75"/>
+<text xml:space="preserve" text-anchor="start" x="678.12" y="-234.75" font-family="arial" font-size="14.00">2</text>
+<polygon fill="none" stroke="black" points="714.75,-227.75 714.75,-251.5 803.75,-251.5 803.75,-227.75 714.75,-227.75"/>
+<text xml:space="preserve" text-anchor="start" x="751" y="-234.75" font-family="arial" font-size="14.00">5V</text>
+<polygon fill="none" stroke="black" points="649,-204 649,-227.75 714.75,-227.75 714.75,-204 649,-204"/>
+<text xml:space="preserve" text-anchor="start" x="678.12" y="-211" font-family="arial" font-size="14.00">3</text>
+<polygon fill="none" stroke="black" points="714.75,-204 714.75,-227.75 803.75,-227.75 803.75,-204 714.75,-204"/>
+<text xml:space="preserve" text-anchor="start" x="743.88" y="-211" font-family="arial" font-size="14.00">GND</text>
+</g>
+<g id="node3" class="node">
+<title>amp</title>
+<polygon fill="#ffffff" stroke="black" points="167.5,-162.88 0,-162.88 0,-67.88 167.5,-67.88 167.5,-162.88"/>
+<polygon fill="none" stroke="black" points="0,-139.12 0,-162.88 167.5,-162.88 167.5,-139.12 0,-139.12"/>
+<text xml:space="preserve" text-anchor="start" x="70.25" y="-146.12" font-family="arial" font-size="14.00">amp</text>
+<polygon fill="none" stroke="black" points="0,-115.38 0,-139.12 129.5,-139.12 129.5,-115.38 0,-115.38"/>
+<text xml:space="preserve" text-anchor="start" x="4" y="-122.38" font-family="arial" font-size="14.00">MAX98357A (ampli)</text>
+<polygon fill="none" stroke="black" points="129.5,-115.38 129.5,-139.12 167.5,-139.12 167.5,-115.38 129.5,-115.38"/>
+<text xml:space="preserve" text-anchor="start" x="133.5" y="-122.38" font-family="arial" font-size="14.00">2-pin</text>
+<polygon fill="none" stroke="black" points="0,-91.62 0,-115.38 95.38,-115.38 95.38,-91.62 0,-91.62"/>
+<text xml:space="preserve" text-anchor="start" x="36.44" y="-98.62" font-family="arial" font-size="14.00">VIN</text>
+<polygon fill="none" stroke="black" points="95.38,-91.62 95.38,-115.38 167.5,-115.38 167.5,-91.62 95.38,-91.62"/>
+<text xml:space="preserve" text-anchor="start" x="127.69" y="-98.62" font-family="arial" font-size="14.00">1</text>
+<polygon fill="none" stroke="black" points="0,-67.88 0,-91.62 95.38,-91.62 95.38,-67.88 0,-67.88"/>
+<text xml:space="preserve" text-anchor="start" x="32.31" y="-74.88" font-family="arial" font-size="14.00">GND</text>
+<polygon fill="none" stroke="black" points="95.38,-67.88 95.38,-91.62 167.5,-91.62 167.5,-67.88 95.38,-67.88"/>
+<text xml:space="preserve" text-anchor="start" x="127.69" y="-74.88" font-family="arial" font-size="14.00">2</text>
+</g>
+<g id="node6" class="node">
+<title>W3</title>
+<polygon fill="#ffffff" stroke="black" points="493.75,-249.75 322.75,-249.75 322.75,-137 493.75,-137 493.75,-249.75"/>
+<polygon fill="none" stroke="black" points="322.75,-226 322.75,-249.75 493.75,-249.75 493.75,-226 322.75,-226"/>
+<text xml:space="preserve" text-anchor="start" x="397.75" y="-233" font-family="arial" font-size="14.00">W3</text>
+<polygon fill="none" stroke="black" points="322.75,-202.25 322.75,-226 382.75,-226 382.75,-202.25 322.75,-202.25"/>
+<text xml:space="preserve" text-anchor="start" x="345.62" y="-209.25" font-family="arial" font-size="14.00">1x</text>
+<polygon fill="none" stroke="black" points="382.75,-202.25 382.75,-226 448,-226 448,-202.25 382.75,-202.25"/>
+<text xml:space="preserve" text-anchor="start" x="405.62" y="-209.25" font-family="arial" font-size="14.00">RD</text>
+<polygon fill="#ff0000" stroke="none" points="448,-202.25 448,-226 493.75,-226 493.75,-202.25 448,-202.25"/>
+<polygon fill="none" stroke="black" points="448,-202.25 448,-226 493.75,-226 493.75,-202.25 448,-202.25"/>
+<text xml:space="preserve" text-anchor="start" x="355.12" y="-187.5" font-family="arial" font-size="14.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="324.75" y="-167.75" font-family="arial" font-size="14.00">amp:1:VIN</text>
+<text xml:space="preserve" text-anchor="start" x="393.25" y="-167.75" font-family="arial" font-size="14.00"> &#160;&#160;&#160;&#160;1 &#160;&#160;&#160;</text>
+<text xml:space="preserve" text-anchor="start" x="438.5" y="-167.75" font-family="arial" font-size="14.00">esp:2:5V</text>
+<polygon fill="#000000" stroke="none" points="322.75,-160.75 322.75,-162.75 493.75,-162.75 493.75,-160.75 322.75,-160.75"/>
+<polygon fill="#ffffff" stroke="none" points="322.75,-158.75 322.75,-160.75 493.75,-160.75 493.75,-158.75 322.75,-158.75"/>
+<polygon fill="#000000" stroke="none" points="322.75,-156.75 322.75,-158.75 493.75,-158.75 493.75,-156.75 322.75,-156.75"/>
+<text xml:space="preserve" text-anchor="start" x="355.12" y="-142" font-family="arial" font-size="14.00"> </text>
+</g>
+<g id="edge5" class="edge">
+<title>amp:e--W3:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M167.5,-101.5C242.45,-103.21 250.76,-159.46 321.75,-157.75"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M167.5,-103.5C240.47,-103.5 248.78,-159.75 321.75,-159.75"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M167.5,-105.5C238.49,-103.79 246.8,-160.04 321.75,-161.75"/>
+</g>
+<g id="node7" class="node">
+<title>W4</title>
+<polygon fill="#ffffff" stroke="black" points="505,-112.75 311.5,-112.75 311.5,0 505,0 505,-112.75"/>
+<polygon fill="none" stroke="black" points="311.5,-89 311.5,-112.75 505,-112.75 505,-89 311.5,-89"/>
+<text xml:space="preserve" text-anchor="start" x="397.75" y="-96" font-family="arial" font-size="14.00">W4</text>
+<polygon fill="none" stroke="black" points="311.5,-65.25 311.5,-89 379.5,-89 379.5,-65.25 311.5,-65.25"/>
+<text xml:space="preserve" text-anchor="start" x="338.38" y="-72.25" font-family="arial" font-size="14.00">1x</text>
+<polygon fill="none" stroke="black" points="379.5,-65.25 379.5,-89 451.25,-89 451.25,-65.25 379.5,-65.25"/>
+<text xml:space="preserve" text-anchor="start" x="406.38" y="-72.25" font-family="arial" font-size="14.00">BK</text>
+<polygon fill="#000000" stroke="none" points="451.25,-65.25 451.25,-89 505,-89 505,-65.25 451.25,-65.25"/>
+<polygon fill="none" stroke="black" points="451.25,-65.25 451.25,-89 505,-89 505,-65.25 451.25,-65.25"/>
+<text xml:space="preserve" text-anchor="start" x="348" y="-50.5" font-family="arial" font-size="14.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="313.5" y="-30.75" font-family="arial" font-size="14.00">amp:2:GND</text>
+<text xml:space="preserve" text-anchor="start" x="390.25" y="-30.75" font-family="arial" font-size="14.00"> &#160;&#160;&#160;&#160;1 &#160;&#160;&#160;</text>
+<text xml:space="preserve" text-anchor="start" x="435.5" y="-30.75" font-family="arial" font-size="14.00">esp:3:GND</text>
+<polygon fill="#000000" stroke="none" points="311.5,-23.75 311.5,-25.75 505,-25.75 505,-23.75 311.5,-23.75"/>
+<polygon fill="#ffffff" stroke="none" points="311.5,-21.75 311.5,-23.75 505,-23.75 505,-21.75 311.5,-21.75"/>
+<polygon fill="#000000" stroke="none" points="311.5,-19.75 311.5,-21.75 505,-21.75 505,-19.75 311.5,-19.75"/>
+<text xml:space="preserve" text-anchor="start" x="348" y="-5" font-family="arial" font-size="14.00"> </text>
+</g>
+<g id="edge7" class="edge">
+<title>amp:e--W4:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M167.5,-77.75C234.34,-79.53 240.68,-22.53 311.5,-20.75"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M167.5,-79.75C236.33,-79.75 242.67,-22.75 311.5,-22.75"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M167.5,-81.75C238.32,-79.97 244.66,-22.97 311.5,-24.75"/>
+</g>
+<g id="edge2" class="edge">
+<title>W1:e--esp:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M498.88,-431.75C597.89,-434.33 546.16,-263.96 649,-261.38"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M498.88,-433.75C599.8,-433.75 548.08,-263.38 649,-263.38"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M498.88,-435.75C601.71,-433.17 549.99,-262.79 649,-265.37"/>
+</g>
+<g id="edge4" class="edge">
+<title>W2:e--esp:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M503.38,-294.75C575.41,-296.81 572.97,-215.94 649,-213.88"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M503.38,-296.75C577.41,-296.75 574.97,-215.88 649,-215.88"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M503.38,-298.75C579.41,-296.69 576.97,-215.81 649,-217.87"/>
+</g>
+<g id="edge6" class="edge">
+<title>W3:e--esp:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M494.75,-157.75C573.95,-159.75 573.8,-239.63 649,-237.63"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M494.75,-159.75C571.95,-159.75 571.8,-239.62 649,-239.63"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M494.75,-161.75C569.95,-159.75 569.8,-239.62 649,-241.62"/>
+</g>
+<g id="edge8" class="edge">
+<title>W4:e--esp:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M505,-20.75C613.95,-23.43 543.81,-216.56 649,-213.88"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M505,-22.75C612.07,-22.75 541.93,-215.88 649,-215.88"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M505,-24.75C610.19,-22.07 540.05,-215.19 649,-217.87"/>
+</g>
+</g>
+</svg>

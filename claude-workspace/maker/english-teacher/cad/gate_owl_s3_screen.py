@@ -272,8 +272,8 @@ if bm:
         for t_ in spk_trees:
             if mod.overlap(t_) or hdr.overlap(t_):
                 fails.append("man/header cham loa")
-        if mc and float(mc[2]) - (c.z + SCR_PCB[1] / 2) < 8.0:
-            fails.append(f"lo mic z {mc[2]} phai cao hon canh tren PCB man >= 8 mm (vien dia mat + 4 mm)")
+        if mc and float(mc[2]) - (c.z + SCR_PCB[1] / 2) < 7.0:   # 2026-11-26: ha 1 mm de nap nut di du hanh trinh
+            fails.append(f"lo mic z {mc[2]} phai cao hon canh tren PCB man >= 7 mm (vien dia mat + 3 mm)")
 
 # ---- co cau kep loa (giu so da kiem ban A1S)
 sc_ = p.get("speaker_clamp")
@@ -293,7 +293,7 @@ else:
         fails.append("speaker_clamp can bayonet (vong ep ngam xoay, khong vit)")
     else:
         if bay["n"] < 3: fails.append("ngam xoay can >= 3 chot")
-        if not 0.2 <= bay["sleeve_clr"] <= 0.35: fails.append("khe ong tay 0,2-0,35")
+        if not 0.2 <= bay["sleeve_clr"] <= 0.6: fails.append("khe ong tay 0,2-0,6 (2026-11-26 Tuan: 0,25 qua khit khong xoay duoc)")
         if bay["pin_clr"] < 0.2: fails.append("khe dau chot >= 0,2")
         if bay["pin_h"] < 0.8: fails.append("chot nho ra >= 0,8 mm")
         if not 20 <= bay["twist"] <= 45: fails.append("goc xoay khoa 20-45 do")

@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100%"
+ viewBox="0.00 0.00 953.00 1765.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1760.75)">
+<polygon fill="#ffffff" stroke="none" points="-4,4 -4,-1760.75 948.75,-1760.75 948.75,4 -4,4"/>
+<g id="node1" class="node">
+<title>tft</title>
+<polygon fill="#ffffff" stroke="black" points="262,-1141.5 0,-1141.5 0,-785.25 262,-785.25 262,-1141.5"/>
+<polygon fill="none" stroke="black" points="0,-1117.75 0,-1141.5 262,-1141.5 262,-1117.75 0,-1117.75"/>
+<text xml:space="preserve" text-anchor="start" x="125.38" y="-1124.75" font-family="arial" font-size="14.00">tft</text>
+<polygon fill="none" stroke="black" points="0,-1094 0,-1117.75 216.5,-1117.75 216.5,-1094 0,-1094"/>
+<text xml:space="preserve" text-anchor="start" x="4" y="-1101" font-family="arial" font-size="14.00">TFT 2,8&quot; SPI MSP2807 (cảm ứng)</text>
+<polygon fill="none" stroke="black" points="216.5,-1094 216.5,-1117.75 262,-1117.75 262,-1094 216.5,-1094"/>
+<text xml:space="preserve" text-anchor="start" x="220.5" y="-1101" font-family="arial" font-size="14.00">13-pin</text>
+<polygon fill="none" stroke="black" points="0,-1070.25 0,-1094 157.25,-1094 157.25,-1070.25 0,-1070.25"/>
+<text xml:space="preserve" text-anchor="start" x="64.38" y="-1077.25" font-family="arial" font-size="14.00">VCC</text>
+<polygon fill="none" stroke="black" points="157.25,-1070.25 157.25,-1094 262,-1094 262,-1070.25 157.25,-1070.25"/>
+<text xml:space="preserve" text-anchor="start" x="205.88" y="-1077.25" font-family="arial" font-size="14.00">1</text>
+<polygon fill="none" stroke="black" points="0,-1046.5 0,-1070.25 157.25,-1070.25 157.25,-1046.5 0,-1046.5"/>
+<text xml:space="preserve" text-anchor="start" x="63.25" y="-1053.5" font-family="arial" font-size="14.00">GND</text>
+<polygon fill="none" stroke="black" points="157.25,-1046.5 157.25,-1070.25 262,-1070.25 262,-1046.5 157.25,-1046.5"/>
+<text xml:space="preserve" text-anchor="start" x="205.88" y="-1053.5" font-family="arial" font-size="14.00">2</text>
+<polygon fill="none" stroke="black" points="0,-1022.75 0,-1046.5 157.25,-1046.5 157.25,-1022.75 0,-1022.75"/>
+<text xml:space="preserve" text-anchor="start" x="69.25" y="-1029.75" font-family="arial" font-size="14.00">CS</text>
+<polygon fill="none" stroke="black" points="157.25,-1022.75 157.25,-1046.5 262,-1046.5 262,-1022.75 157.25,-1022.75"/>
+<text xml:space="preserve" text-anchor="start" x="205.88" y="-1029.75" font-family="arial" font-size="14.00">3</text>
+<polygon fill="none" stroke="black" points="0,-999 0,-1022.75 157.25,-1022.75 157.25,-999 0,-999"/>
+<text xml:space="preserve" text-anchor="start" x="56.12" y="-1006" font-family="arial" font-size="14.00">RESET</text>
+<polygon fill="none" stroke="black" points="157.25,-999 157.25,-1022.75 262,-1022.75 262,-999 157.25,-999"/>
+<text xml:space="preserve" text-anchor="start" x="205.88" y="-1006" font-family="arial" font-size="14.00">4</text>
+<polygon fill="none" stroke="black" points="0,-975.25 0,-999 157.25,-999 157.25,-975.25 0,-975.25"/>
+<text xml:space="preserve" text-anchor="start" x="68.88" y="-982.25" font-family="arial" font-size="14.00">DC</text>
+<polygon fill="none" stroke="black" points="157.25,-975.25 157.25,-999 262,-999 262,-975.25 157.25,-975.25"/>
+<text xml:space="preserve" text-anchor="start" x="205.88" y="-982.25" font-family="arial" font-size="14.00">5</text>
+<polygon fill="none" stroke="black" points="0,-951.5 0,-975.25 157.25,-975.25 157.25,-951.5 0,-951.5"/>
+<text xml:space="preserve" text-anchor="start" x="44.88" y="-958.5" font-family="arial" font-size="14.00">SDI(MOSI)</text>
+<polygon fill="none" stroke="black" points="157.25,-951.5 157.25,-975.25 262,-975.25 262,-951.5 157.25,-951.5"/>
+<text xml:space="preserve" text-anchor="start" x="205.88" y="-958.5" font-family="arial" font-size="14.00">6</text>
+<polygon fill="none" stroke="black" points="0,-927.75 0,-951.5 157.25,-951.5 157.25,-927.75 0,-927.75"/>
+<text xml:space="preserve" text-anchor="start" x="64.75" y="-934.75" font-family="arial" font-size="14.00">SCK</text>
+<polygon fill="none" stroke="black" points="157.25,-927.75 157.25,-951.5 262,-951.5 262,-927.75 157.25,-927.75"/>
+<text xml:space="preserve" text-anchor="start" x="205.88" y="-934.75" font-family="arial" font-size="14.00">7</text>
+<polygon fill="none" stroke="black" points="0,-904 0,-927.75 157.25,-927.75 157.25,-904 0,-904"/>
+<text xml:space="preserve" text-anchor="start" x="65.5" y="-911" font-family="arial" font-size="14.00">LED</text>
+<polygon fill="none" stroke="black" points="157.25,-904 157.25,-927.75 262,-927.75 262,-904 157.25,-904"/>
+<text xml:space="preserve" text-anchor="start" x="205.88" y="-911" font-family="arial" font-size="14.00">8</text>
+<polygon fill="none" stroke="black" points="0,-880.25 0,-904 157.25,-904 157.25,-880.25 0,-880.25"/>
+<text xml:space="preserve" text-anchor="start" x="57.62" y="-887.25" font-family="arial" font-size="14.00">T_CLK</text>
+<polygon fill="none" stroke="black" points="157.25,-880.25 157.25,-904 262,-904 262,-880.25 157.25,-880.25"/>
+<text xml:space="preserve" text-anchor="start" x="205.88" y="-887.25" font-family="arial" font-size="14.00">9</text>
+<polygon fill="none" stroke="black" points="0,-856.5 0,-880.25 157.25,-880.25 157.25,-856.5 0,-856.5"/>
+<text xml:space="preserve" text-anchor="start" x="61.38" y="-863.5" font-family="arial" font-size="14.00">T_CS</text>
+<polygon fill="none" stroke="black" points="157.25,-856.5 157.25,-880.25 262,-880.25 262,-856.5 157.25,-856.5"/>
+<text xml:space="preserve" text-anchor="start" x="202.12" y="-863.5" font-family="arial" font-size="14.00">10</text>
+<polygon fill="none" stroke="black" points="0,-832.75 0,-856.5 157.25,-856.5 157.25,-832.75 0,-832.75"/>
+<text xml:space="preserve" text-anchor="start" x="59.12" y="-839.75" font-family="arial" font-size="14.00">T_DIN</text>
+<polygon fill="none" stroke="black" points="157.25,-832.75 157.25,-856.5 262,-856.5 262,-832.75 157.25,-832.75"/>
+<text xml:space="preserve" text-anchor="start" x="202.5" y="-839.75" font-family="arial" font-size="14.00">11</text>
+<polygon fill="none" stroke="black" points="0,-809 0,-832.75 157.25,-832.75 157.25,-809 0,-809"/>
+<text xml:space="preserve" text-anchor="start" x="60.25" y="-816" font-family="arial" font-size="14.00">T_DO</text>
+<polygon fill="none" stroke="black" points="157.25,-809 157.25,-832.75 262,-832.75 262,-809 157.25,-809"/>
+<text xml:space="preserve" text-anchor="start" x="202.12" y="-816" font-family="arial" font-size="14.00">12</text>
+<polygon fill="none" stroke="black" points="0,-785.25 0,-809 157.25,-809 157.25,-785.25 0,-785.25"/>
+<text xml:space="preserve" text-anchor="start" x="58.38" y="-792.25" font-family="arial" font-size="14.00">T_IRQ</text>
+<polygon fill="none" stroke="black" points="157.25,-785.25 157.25,-809 262,-809 262,-785.25 157.25,-785.25"/>
+<text xml:space="preserve" text-anchor="start" x="202.12" y="-792.25" font-family="arial" font-size="14.00">13</text>
+</g>
+<g id="node3" class="node">
+<title>W1</title>
+<polygon fill="#ffffff" stroke="black" points="603.25,-1756.75 442,-1756.75 442,-1644 603.25,-1644 603.25,-1756.75"/>
+<polygon fill="none" stroke="black" points="442,-1733 442,-1756.75 603.25,-1756.75 603.25,-1733 442,-1733"/>
+<text xml:space="preserve" text-anchor="start" x="512.12" y="-1740" font-family="arial" font-size="14.00">W1</text>
+<polygon fill="none" stroke="black" points="442,-1709.25 442,-1733 498.75,-1733 498.75,-1709.25 442,-1709.25"/>
+<text xml:space="preserve" text-anchor="start" x="463.25" y="-1716.25" font-family="arial" font-size="14.00">1x</text>
+<polygon fill="none" stroke="black" points="498.75,-1709.25 498.75,-1733 560.75,-1733 560.75,-1709.25 498.75,-1709.25"/>
+<text xml:space="preserve" text-anchor="start" x="520" y="-1716.25" font-family="arial" font-size="14.00">RD</text>
+<polygon fill="#ff0000" stroke="none" points="560.75,-1709.25 560.75,-1733 603.25,-1733 603.25,-1709.25 560.75,-1709.25"/>
+<polygon fill="none" stroke="black" points="560.75,-1709.25 560.75,-1733 603.25,-1733 603.25,-1709.25 560.75,-1709.25"/>
+<text xml:space="preserve" text-anchor="start" x="469.5" y="-1694.5" font-family="arial" font-size="14.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="444" y="-1674.75" font-family="arial" font-size="14.00">tft:1:VCC</text>
+<text xml:space="preserve" text-anchor="start" x="502.75" y="-1674.75" font-family="arial" font-size="14.00"> &#160;&#160;&#160;&#160;1 &#160;&#160;&#160;</text>
+<text xml:space="preserve" text-anchor="start" x="548" y="-1674.75" font-family="arial" font-size="14.00">esp:1:5V</text>
+<polygon fill="#000000" stroke="none" points="442,-1667.75 442,-1669.75 603.25,-1669.75 603.25,-1667.75 442,-1667.75"/>
+<polygon fill="#ffffff" stroke="none" points="442,-1665.75 442,-1667.75 603.25,-1667.75 603.25,-1665.75 442,-1665.75"/>
+<polygon fill="#000000" stroke="none" points="442,-1663.75 442,-1665.75 603.25,-1665.75 603.25,-1663.75 442,-1663.75"/>
+<text xml:space="preserve" text-anchor="start" x="469.5" y="-1649" font-family="arial" font-size="14.00"> </text>
+</g>
+<g id="edge1" class="edge">
+<title>tft:e--W1:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-1080.13C535.44,-1083.18 170.96,-1667.81 441,-1664.75"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M262,-1082.12C533.74,-1082.12 169.26,-1666.75 441,-1666.75"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-1084.12C532.04,-1081.07 167.56,-1665.69 441,-1668.75"/>
+</g>
+<g id="node4" class="node">
+<title>W2</title>
+<polygon fill="#ffffff" stroke="black" points="611.5,-1619.75 433.75,-1619.75 433.75,-1507 611.5,-1507 611.5,-1619.75"/>
+<polygon fill="none" stroke="black" points="433.75,-1596 433.75,-1619.75 611.5,-1619.75 611.5,-1596 433.75,-1596"/>
+<text xml:space="preserve" text-anchor="start" x="512.12" y="-1603" font-family="arial" font-size="14.00">W2</text>
+<polygon fill="none" stroke="black" points="433.75,-1572.25 433.75,-1596 496.5,-1596 496.5,-1572.25 433.75,-1572.25"/>
+<text xml:space="preserve" text-anchor="start" x="458" y="-1579.25" font-family="arial" font-size="14.00">1x</text>
+<polygon fill="none" stroke="black" points="496.5,-1572.25 496.5,-1596 563,-1596 563,-1572.25 496.5,-1572.25"/>
+<text xml:space="preserve" text-anchor="start" x="520.75" y="-1579.25" font-family="arial" font-size="14.00">BK</text>
+<polygon fill="#000000" stroke="none" points="563,-1572.25 563,-1596 611.5,-1596 611.5,-1572.25 563,-1572.25"/>
+<polygon fill="none" stroke="black" points="563,-1572.25 563,-1596 611.5,-1596 611.5,-1572.25 563,-1572.25"/>
+<text xml:space="preserve" text-anchor="start" x="462.38" y="-1557.5" font-family="arial" font-size="14.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="435.75" y="-1537.75" font-family="arial" font-size="14.00">tft:2:GND</text>
+<text xml:space="preserve" text-anchor="start" x="496.75" y="-1537.75" font-family="arial" font-size="14.00"> &#160;&#160;&#160;&#160;1 &#160;&#160;&#160;</text>
+<text xml:space="preserve" text-anchor="start" x="542" y="-1537.75" font-family="arial" font-size="14.00">esp:2:GND</text>
+<polygon fill="#000000" stroke="none" points="433.75,-1530.75 433.75,-1532.75 611.5,-1532.75 611.5,-1530.75 433.75,-1530.75"/>
+<polygon fill="#ffffff" stroke="none" points="433.75,-1528.75 433.75,-1530.75 611.5,-1530.75 611.5,-1528.75 433.75,-1528.75"/>
+<polygon fill="#000000" stroke="none" points="433.75,-1526.75 433.75,-1528.75 611.5,-1528.75 611.5,-1526.75 433.75,-1526.75"/>
+<text xml:space="preserve" text-anchor="start" x="462.38" y="-1512" font-family="arial" font-size="14.00"> </text>
+</g>
+<g id="edge3" class="edge">
+<title>tft:e--W2:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-1056.38C486.55,-1059.38 211.66,-1530.76 432.75,-1527.75"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M262,-1058.38C484.82,-1058.38 209.93,-1529.75 432.75,-1529.75"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-1060.37C483.09,-1057.37 208.2,-1528.74 432.75,-1531.75"/>
+</g>
+<g id="node5" class="node">
+<title>W3</title>
+<polygon fill="#ffffff" stroke="black" points="615.25,-1482.75 430,-1482.75 430,-1370 615.25,-1370 615.25,-1482.75"/>
+<polygon fill="none" stroke="black" points="430,-1459 430,-1482.75 615.25,-1482.75 615.25,-1459 430,-1459"/>
+<text xml:space="preserve" text-anchor="start" x="512.12" y="-1466" font-family="arial" font-size="14.00">W3</text>
+<polygon fill="none" stroke="black" points="430,-1435.25 430,-1459 495.25,-1459 495.25,-1435.25 430,-1435.25"/>
+<text xml:space="preserve" text-anchor="start" x="455.5" y="-1442.25" font-family="arial" font-size="14.00">1x</text>
+<polygon fill="none" stroke="black" points="495.25,-1435.25 495.25,-1459 564.25,-1459 564.25,-1435.25 495.25,-1435.25"/>
+<text xml:space="preserve" text-anchor="start" x="520.75" y="-1442.25" font-family="arial" font-size="14.00">YE</text>
+<polygon fill="#ffff00" stroke="none" points="564.25,-1435.25 564.25,-1459 615.25,-1459 615.25,-1435.25 564.25,-1435.25"/>
+<polygon fill="none" stroke="black" points="564.25,-1435.25 564.25,-1459 615.25,-1459 615.25,-1435.25 564.25,-1435.25"/>
+<text xml:space="preserve" text-anchor="start" x="452.62" y="-1420.5" font-family="arial" font-size="14.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="432" y="-1400.75" font-family="arial" font-size="14.00">tft:3:CS</text>
+<text xml:space="preserve" text-anchor="start" x="481" y="-1400.75" font-family="arial" font-size="14.00"> &#160;&#160;&#160;&#160;1 &#160;&#160;&#160;</text>
+<text xml:space="preserve" text-anchor="start" x="526.25" y="-1400.75" font-family="arial" font-size="14.00">esp:5:GPIO10</text>
+<polygon fill="#000000" stroke="none" points="430,-1393.75 430,-1395.75 615.25,-1395.75 615.25,-1393.75 430,-1393.75"/>
+<polygon fill="#ffffff" stroke="none" points="430,-1391.75 430,-1393.75 615.25,-1393.75 615.25,-1391.75 430,-1391.75"/>
+<polygon fill="#000000" stroke="none" points="430,-1389.75 430,-1391.75 615.25,-1391.75 615.25,-1389.75 430,-1389.75"/>
+<text xml:space="preserve" text-anchor="start" x="452.62" y="-1375" font-family="arial" font-size="14.00"> </text>
+</g>
+<g id="edge5" class="edge">
+<title>tft:e--W3:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-1032.63C439.4,-1035.54 255.16,-1393.66 429,-1390.75"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M262,-1034.63C437.62,-1034.62 253.38,-1392.75 429,-1392.75"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-1036.62C435.84,-1033.71 251.6,-1391.84 429,-1394.75"/>
+</g>
+<g id="node6" class="node">
+<title>W4</title>
+<polygon fill="#ffffff" stroke="black" points="624.62,-1345.75 420.62,-1345.75 420.62,-1233 624.62,-1233 624.62,-1345.75"/>
+<polygon fill="none" stroke="black" points="420.62,-1322 420.62,-1345.75 624.62,-1345.75 624.62,-1322 420.62,-1322"/>
+<text xml:space="preserve" text-anchor="start" x="512.12" y="-1329" font-family="arial" font-size="14.00">W4</text>
+<polygon fill="none" stroke="black" points="420.62,-1298.25 420.62,-1322 491.88,-1322 491.88,-1298.25 420.62,-1298.25"/>
+<text xml:space="preserve" text-anchor="start" x="449.12" y="-1305.25" font-family="arial" font-size="14.00">1x</text>
+<polygon fill="none" stroke="black" points="491.88,-1298.25 491.88,-1322 567.62,-1322 567.62,-1298.25 491.88,-1298.25"/>
+<text xml:space="preserve" text-anchor="start" x="520.38" y="-1305.25" font-family="arial" font-size="14.00">BN</text>
+<polygon fill="#895956" stroke="none" points="567.62,-1298.25 567.62,-1322 624.62,-1322 624.62,-1298.25 567.62,-1298.25"/>
+<polygon fill="none" stroke="black" points="567.62,-1298.25 567.62,-1322 624.62,-1322 624.62,-1298.25 567.62,-1298.25"/>
+<text xml:space="preserve" text-anchor="start" x="456.38" y="-1283.5" font-family="arial" font-size="14.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="422.62" y="-1263.75" font-family="arial" font-size="14.00">tft:4:RESET</text>
+<text xml:space="preserve" text-anchor="start" x="497.88" y="-1263.75" font-family="arial" font-size="14.00"> &#160;&#160;&#160;&#160;1 &#160;&#160;&#160;</text>
+<text xml:space="preserve" text-anchor="start" x="543.12" y="-1263.75" font-family="arial" font-size="14.00">esp:3:GPIO8</text>
+<polygon fill="#000000" stroke="none" points="420.62,-1256.75 420.62,-1258.75 624.62,-1258.75 624.62,-1256.75 420.62,-1256.75"/>
+<polygon fill="#ffffff" stroke="none" points="420.62,-1254.75 420.62,-1256.75 624.62,-1256.75 624.62,-1254.75 420.62,-1254.75"/>
+<polygon fill="#000000" stroke="none" points="420.62,-1252.75 420.62,-1254.75 624.62,-1254.75 624.62,-1252.75 420.62,-1252.75"/>
+<text xml:space="preserve" text-anchor="start" x="456.38" y="-1238" font-family="arial" font-size="14.00"> </text>
+</g>
+<g id="edge7" class="edge">
+<title>tft:e--W4:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-1008.88C393.28,-1011.64 292.04,-1256.51 419.62,-1253.75"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M262,-1010.88C391.43,-1010.88 290.19,-1255.75 419.62,-1255.75"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-1012.87C389.58,-1010.11 288.35,-1254.99 419.62,-1257.75"/>
+</g>
+<g id="node7" class="node">
+<title>W5</title>
+<polygon fill="#ffffff" stroke="black" points="611.88,-1208.75 433.38,-1208.75 433.38,-1096 611.88,-1096 611.88,-1208.75"/>
+<polygon fill="none" stroke="black" points="433.38,-1185 433.38,-1208.75 611.88,-1208.75 611.88,-1185 433.38,-1185"/>
+<text xml:space="preserve" text-anchor="start" x="512.12" y="-1192" font-family="arial" font-size="14.00">W5</text>
+<polygon fill="none" stroke="black" points="433.38,-1161.25 433.38,-1185 494.88,-1185 494.88,-1161.25 433.38,-1161.25"/>
+<text xml:space="preserve" text-anchor="start" x="457" y="-1168.25" font-family="arial" font-size="14.00">1x</text>
+<polygon fill="none" stroke="black" points="494.88,-1161.25 494.88,-1185 564.62,-1185 564.62,-1161.25 494.88,-1161.25"/>
+<text xml:space="preserve" text-anchor="start" x="518.5" y="-1168.25" font-family="arial" font-size="14.00">OG</text>
+<polygon fill="#ff8000" stroke="none" points="564.62,-1161.25 564.62,-1185 611.88,-1185 611.88,-1161.25 564.62,-1161.25"/>
+<polygon fill="none" stroke="black" points="564.62,-1161.25 564.62,-1185 611.88,-1185 611.88,-1161.25 564.62,-1161.25"/>
+<text xml:space="preserve" text-anchor="start" x="456.38" y="-1146.5" font-family="arial" font-size="14.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="435.38" y="-1126.75" font-family="arial" font-size="14.00">tft:5:DC</text>
+<text xml:space="preserve" text-anchor="start" x="485.12" y="-1126.75" font-family="arial" font-size="14.00"> &#160;&#160;&#160;&#160;1 &#160;&#160;&#160;</text>
+<text xml:space="preserve" text-anchor="start" x="530.38" y="-1126.75" font-family="arial" font-size="14.00">esp:4:GPIO9</text>
+<polygon fill="#000000" stroke="none" points="433.38,-1119.75 433.38,-1121.75 611.88,-1121.75 611.88,-1119.75 433.38,-1119.75"/>
+<polygon fill="#ffffff" stroke="none" points="433.38,-1117.75 433.38,-1119.75 611.88,-1119.75 611.88,-1117.75 433.38,-1117.75"/>
+<polygon fill="#000000" stroke="none" points="433.38,-1115.75 433.38,-1117.75 611.88,-1117.75 611.88,-1115.75 433.38,-1115.75"/>
+<text xml:space="preserve" text-anchor="start" x="456.38" y="-1101" font-family="arial" font-size="14.00"> </text>
+</g>
+<g id="edge9" class="edge">
+<title>tft:e--W5:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-985.13C359.66,-987.44 338.66,-1119.07 432.38,-1116.75"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M262,-987.12C357.69,-987.12 336.69,-1118.75 432.38,-1118.75"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-989.12C355.71,-986.81 334.71,-1118.43 432.38,-1120.75"/>
+</g>
+<g id="node8" class="node">
+<title>W6</title>
+<polygon fill="#ffffff" stroke="black" points="639.25,-1071.75 406,-1071.75 406,-959 639.25,-959 639.25,-1071.75"/>
+<polygon fill="none" stroke="black" points="406,-1048 406,-1071.75 639.25,-1071.75 639.25,-1048 406,-1048"/>
+<text xml:space="preserve" text-anchor="start" x="512.12" y="-1055" font-family="arial" font-size="14.00">W6</text>
+<polygon fill="none" stroke="black" points="406,-1024.25 406,-1048 487,-1048 487,-1024.25 406,-1024.25"/>
+<text xml:space="preserve" text-anchor="start" x="439.38" y="-1031.25" font-family="arial" font-size="14.00">1x</text>
+<polygon fill="none" stroke="black" points="487,-1024.25 487,-1048 572.5,-1048 572.5,-1024.25 487,-1024.25"/>
+<text xml:space="preserve" text-anchor="start" x="520.38" y="-1031.25" font-family="arial" font-size="14.00">BU</text>
+<polygon fill="#0066ff" stroke="none" points="572.5,-1024.25 572.5,-1048 639.25,-1048 639.25,-1024.25 572.5,-1024.25"/>
+<polygon fill="none" stroke="black" points="572.5,-1024.25 572.5,-1048 639.25,-1048 639.25,-1024.25 572.5,-1024.25"/>
+<text xml:space="preserve" text-anchor="start" x="453" y="-1009.5" font-family="arial" font-size="14.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="408" y="-989.75" font-family="arial" font-size="14.00">tft:6:SDI(MOSI)</text>
+<text xml:space="preserve" text-anchor="start" x="505.75" y="-989.75" font-family="arial" font-size="14.00"> &#160;&#160;&#160;&#160;1 &#160;&#160;&#160;</text>
+<text xml:space="preserve" text-anchor="start" x="551" y="-989.75" font-family="arial" font-size="14.00">esp:6:GPIO11</text>
+<polygon fill="#000000" stroke="none" points="406,-982.75 406,-984.75 639.25,-984.75 639.25,-982.75 406,-982.75"/>
+<polygon fill="#ffffff" stroke="none" points="406,-980.75 406,-982.75 639.25,-982.75 639.25,-980.75 406,-980.75"/>
+<polygon fill="#000000" stroke="none" points="406,-978.75 406,-980.75 639.25,-980.75 639.25,-978.75 406,-978.75"/>
+<text xml:space="preserve" text-anchor="start" x="453" y="-964" font-family="arial" font-size="14.00"> </text>
+</g>
+<g id="edge11" class="edge">
+<title>tft:e--W6:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-961.38C328.07,-962.11 343.03,-980.49 406,-979.75"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M262,-963.37C326.52,-963.38 341.48,-981.75 406,-981.75"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-965.37C324.97,-964.64 339.93,-983.01 406,-983.75"/>
+</g>
+<g id="node9" class="node">
+<title>W7</title>
+<polygon fill="#ffffff" stroke="black" points="619.75,-797.75 425.5,-797.75 425.5,-685 619.75,-685 619.75,-797.75"/>
+<polygon fill="none" stroke="black" points="425.5,-774 425.5,-797.75 619.75,-797.75 619.75,-774 425.5,-774"/>
+<text xml:space="preserve" text-anchor="start" x="512.12" y="-781" font-family="arial" font-size="14.00">W7</text>
+<polygon fill="none" stroke="black" points="425.5,-750.25 425.5,-774 492.75,-774 492.75,-750.25 425.5,-750.25"/>
+<text xml:space="preserve" text-anchor="start" x="452" y="-757.25" font-family="arial" font-size="14.00">1x</text>
+<polygon fill="none" stroke="black" points="492.75,-750.25 492.75,-774 566.75,-774 566.75,-750.25 492.75,-750.25"/>
+<text xml:space="preserve" text-anchor="start" x="519.25" y="-757.25" font-family="arial" font-size="14.00">GN</text>
+<polygon fill="#00ff00" stroke="none" points="566.75,-750.25 566.75,-774 619.75,-774 619.75,-750.25 566.75,-750.25"/>
+<polygon fill="none" stroke="black" points="566.75,-750.25 566.75,-774 619.75,-774 619.75,-750.25 566.75,-750.25"/>
+<text xml:space="preserve" text-anchor="start" x="452.62" y="-735.5" font-family="arial" font-size="14.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="427.5" y="-715.75" font-family="arial" font-size="14.00">tft:7:SCK</text>
+<text xml:space="preserve" text-anchor="start" x="485.5" y="-715.75" font-family="arial" font-size="14.00"> &#160;&#160;&#160;&#160;1 &#160;&#160;&#160;</text>
+<text xml:space="preserve" text-anchor="start" x="530.75" y="-715.75" font-family="arial" font-size="14.00">esp:7:GPIO12</text>
+<polygon fill="#000000" stroke="none" points="425.5,-708.75 425.5,-710.75 619.75,-710.75 619.75,-708.75 425.5,-708.75"/>
+<polygon fill="#ffffff" stroke="none" points="425.5,-706.75 425.5,-708.75 619.75,-708.75 619.75,-706.75 425.5,-706.75"/>
+<polygon fill="#000000" stroke="none" points="425.5,-704.75 425.5,-706.75 619.75,-706.75 619.75,-704.75 425.5,-704.75"/>
+<text xml:space="preserve" text-anchor="start" x="452.62" y="-690" font-family="arial" font-size="14.00"> </text>
+</g>
+<g id="edge13" class="edge">
+<title>tft:e--W7:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-937.63C385.98,-940.34 296.79,-708.47 424.5,-705.75"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M262,-939.62C387.84,-939.63 298.66,-707.75 424.5,-707.75"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-941.62C389.71,-938.91 300.52,-707.03 424.5,-709.75"/>
+</g>
+<g id="node10" class="node">
+<title>W8</title>
+<polygon fill="#ffffff" stroke="black" points="619,-386.75 426.25,-386.75 426.25,-274 619,-274 619,-386.75"/>
+<polygon fill="none" stroke="black" points="426.25,-363 426.25,-386.75 619,-386.75 619,-363 426.25,-363"/>
+<text xml:space="preserve" text-anchor="start" x="512.12" y="-370" font-family="arial" font-size="14.00">W8</text>
+<polygon fill="none" stroke="black" points="426.25,-339.25 426.25,-363 492.25,-363 492.25,-339.25 426.25,-339.25"/>
+<text xml:space="preserve" text-anchor="start" x="452.12" y="-346.25" font-family="arial" font-size="14.00">1x</text>
+<polygon fill="none" stroke="black" points="492.25,-339.25 492.25,-363 567.25,-363 567.25,-339.25 492.25,-339.25"/>
+<text xml:space="preserve" text-anchor="start" x="518.12" y="-346.25" font-family="arial" font-size="14.00">WH</text>
+<polygon fill="#ffffff" stroke="none" points="567.25,-339.25 567.25,-363 619,-363 619,-339.25 567.25,-339.25"/>
+<polygon fill="none" stroke="black" points="567.25,-339.25 567.25,-363 619,-363 619,-339.25 567.25,-339.25"/>
+<text xml:space="preserve" text-anchor="start" x="452.62" y="-324.5" font-family="arial" font-size="14.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="428.25" y="-304.75" font-family="arial" font-size="14.00">tft:8:LED</text>
+<text xml:space="preserve" text-anchor="start" x="484.75" y="-304.75" font-family="arial" font-size="14.00"> &#160;&#160;&#160;&#160;1 &#160;&#160;&#160;</text>
+<text xml:space="preserve" text-anchor="start" x="530" y="-304.75" font-family="arial" font-size="14.00">esp:9:GPIO14</text>
+<polygon fill="#000000" stroke="none" points="426.25,-297.75 426.25,-299.75 619,-299.75 619,-297.75 426.25,-297.75"/>
+<polygon fill="#ffffff" stroke="none" points="426.25,-295.75 426.25,-297.75 619,-297.75 619,-295.75 426.25,-295.75"/>
+<polygon fill="#000000" stroke="none" points="426.25,-293.75 426.25,-295.75 619,-295.75 619,-293.75 426.25,-293.75"/>
+<text xml:space="preserve" text-anchor="start" x="452.62" y="-279" font-family="arial" font-size="14.00"> </text>
+</g>
+<g id="edge15" class="edge">
+<title>tft:e--W8:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-913.88C544.9,-916.97 139.01,-297.85 425.25,-294.75"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M262,-915.88C546.57,-915.88 140.68,-296.75 425.25,-296.75"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-917.87C548.24,-914.78 142.35,-295.65 425.25,-298.75"/>
+</g>
+<g id="node11" class="node">
+<title>W9</title>
+<polygon fill="#ffffff" stroke="black" points="626.88,-660.75 418.38,-660.75 418.38,-548 626.88,-548 626.88,-660.75"/>
+<polygon fill="none" stroke="black" points="418.38,-637 418.38,-660.75 626.88,-660.75 626.88,-637 418.38,-637"/>
+<text xml:space="preserve" text-anchor="start" x="512.12" y="-644" font-family="arial" font-size="14.00">W9</text>
+<polygon fill="none" stroke="black" points="418.38,-613.25 418.38,-637 490.38,-637 490.38,-613.25 418.38,-613.25"/>
+<text xml:space="preserve" text-anchor="start" x="447.25" y="-620.25" font-family="arial" font-size="14.00">1x</text>
+<polygon fill="none" stroke="black" points="490.38,-613.25 490.38,-637 569.12,-637 569.12,-613.25 490.38,-613.25"/>
+<text xml:space="preserve" text-anchor="start" x="519.25" y="-620.25" font-family="arial" font-size="14.00">GN</text>
+<polygon fill="#00ff00" stroke="none" points="569.12,-613.25 569.12,-637 626.88,-637 626.88,-613.25 569.12,-613.25"/>
+<polygon fill="none" stroke="black" points="569.12,-613.25 569.12,-637 626.88,-637 626.88,-613.25 569.12,-613.25"/>
+<text xml:space="preserve" text-anchor="start" x="452.62" y="-598.5" font-family="arial" font-size="14.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="420.38" y="-578.75" font-family="arial" font-size="14.00">tft:9:T_CLK</text>
+<text xml:space="preserve" text-anchor="start" x="492.62" y="-578.75" font-family="arial" font-size="14.00"> &#160;&#160;&#160;&#160;1 &#160;&#160;&#160;</text>
+<text xml:space="preserve" text-anchor="start" x="537.88" y="-578.75" font-family="arial" font-size="14.00">esp:7:GPIO12</text>
+<polygon fill="#000000" stroke="none" points="418.38,-571.75 418.38,-573.75 626.88,-573.75 626.88,-571.75 418.38,-571.75"/>
+<polygon fill="#ffffff" stroke="none" points="418.38,-569.75 418.38,-571.75 626.88,-571.75 626.88,-569.75 418.38,-569.75"/>
+<polygon fill="#000000" stroke="none" points="418.38,-567.75 418.38,-569.75 626.88,-569.75 626.88,-567.75 418.38,-567.75"/>
+<text xml:space="preserve" text-anchor="start" x="452.62" y="-553" font-family="arial" font-size="14.00"> </text>
+</g>
+<g id="edge17" class="edge">
+<title>tft:e--W9:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-890.13C418.86,-893.02 256.94,-571.65 417.38,-568.75"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M262,-892.12C420.65,-892.12 258.72,-570.75 417.38,-570.75"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-894.12C422.44,-891.23 260.51,-569.85 417.38,-572.75"/>
+</g>
+<g id="node12" class="node">
+<title>W10</title>
+<polygon fill="#ffffff" stroke="black" points="628.38,-934.75 416.88,-934.75 416.88,-822 628.38,-822 628.38,-934.75"/>
+<polygon fill="none" stroke="black" points="416.88,-911 416.88,-934.75 628.38,-934.75 628.38,-911 416.88,-911"/>
+<text xml:space="preserve" text-anchor="start" x="508.38" y="-918" font-family="arial" font-size="14.00">W10</text>
+<polygon fill="none" stroke="black" points="416.88,-887.25 416.88,-911 490.62,-911 490.62,-887.25 416.88,-887.25"/>
+<text xml:space="preserve" text-anchor="start" x="446.62" y="-894.25" font-family="arial" font-size="14.00">1x</text>
+<polygon fill="none" stroke="black" points="490.62,-887.25 490.62,-911 568.88,-911 568.88,-887.25 490.62,-887.25"/>
+<text xml:space="preserve" text-anchor="start" x="520.38" y="-894.25" font-family="arial" font-size="14.00">BU</text>
+<polygon fill="#0066ff" stroke="none" points="568.88,-887.25 568.88,-911 628.38,-911 628.38,-887.25 568.88,-887.25"/>
+<polygon fill="none" stroke="black" points="568.88,-887.25 568.88,-911 628.38,-911 628.38,-887.25 568.88,-887.25"/>
+<text xml:space="preserve" text-anchor="start" x="453" y="-872.5" font-family="arial" font-size="14.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="418.88" y="-852.75" font-family="arial" font-size="14.00">tft:11:T_DIN</text>
+<text xml:space="preserve" text-anchor="start" x="494.88" y="-852.75" font-family="arial" font-size="14.00"> &#160;&#160;&#160;&#160;1 &#160;&#160;&#160;</text>
+<text xml:space="preserve" text-anchor="start" x="540.12" y="-852.75" font-family="arial" font-size="14.00">esp:6:GPIO11</text>
+<polygon fill="#000000" stroke="none" points="416.88,-845.75 416.88,-847.75 628.38,-847.75 628.38,-845.75 416.88,-845.75"/>
+<polygon fill="#ffffff" stroke="none" points="416.88,-843.75 416.88,-845.75 628.38,-845.75 628.38,-843.75 416.88,-843.75"/>
+<polygon fill="#000000" stroke="none" points="416.88,-841.75 416.88,-843.75 628.38,-843.75 628.38,-841.75 416.88,-841.75"/>
+<text xml:space="preserve" text-anchor="start" x="453" y="-827" font-family="arial" font-size="14.00"> </text>
+</g>
+<g id="edge19" class="edge">
+<title>tft:e--W10:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-842.63C330.4,-842.63 347.5,-842.75 415.88,-842.75"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M262,-844.62C330.39,-844.63 347.49,-844.75 415.88,-844.75"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-846.62C330.37,-846.62 347.47,-846.75 415.88,-846.75"/>
+</g>
+<g id="node13" class="node">
+<title>W11</title>
+<polygon fill="#ffffff" stroke="black" points="628,-523.75 417.25,-523.75 417.25,-411 628,-411 628,-523.75"/>
+<polygon fill="none" stroke="black" points="417.25,-500 417.25,-523.75 628,-523.75 628,-500 417.25,-500"/>
+<text xml:space="preserve" text-anchor="start" x="508.75" y="-507" font-family="arial" font-size="14.00">W11</text>
+<polygon fill="none" stroke="black" points="417.25,-476.25 417.25,-500 491.25,-500 491.25,-476.25 417.25,-476.25"/>
+<text xml:space="preserve" text-anchor="start" x="447.12" y="-483.25" font-family="arial" font-size="14.00">1x</text>
+<polygon fill="none" stroke="black" points="491.25,-476.25 491.25,-500 568.25,-500 568.25,-476.25 491.25,-476.25"/>
+<text xml:space="preserve" text-anchor="start" x="521.12" y="-483.25" font-family="arial" font-size="14.00">VT</text>
+<polygon fill="#8000ff" stroke="none" points="568.25,-476.25 568.25,-500 628,-500 628,-476.25 568.25,-476.25"/>
+<polygon fill="none" stroke="black" points="568.25,-476.25 568.25,-500 628,-500 628,-476.25 568.25,-476.25"/>
+<text xml:space="preserve" text-anchor="start" x="452.62" y="-461.5" font-family="arial" font-size="14.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="419.25" y="-441.75" font-family="arial" font-size="14.00">tft:12:T_DO</text>
+<text xml:space="preserve" text-anchor="start" x="493.75" y="-441.75" font-family="arial" font-size="14.00"> &#160;&#160;&#160;&#160;1 &#160;&#160;&#160;</text>
+<text xml:space="preserve" text-anchor="start" x="539" y="-441.75" font-family="arial" font-size="14.00">esp:8:GPIO13</text>
+<polygon fill="#000000" stroke="none" points="417.25,-434.75 417.25,-436.75 628,-436.75 628,-434.75 417.25,-434.75"/>
+<polygon fill="#ffffff" stroke="none" points="417.25,-432.75 417.25,-434.75 628,-434.75 628,-432.75 417.25,-432.75"/>
+<polygon fill="#000000" stroke="none" points="417.25,-430.75 417.25,-432.75 628,-432.75 628,-430.75 417.25,-430.75"/>
+<text xml:space="preserve" text-anchor="start" x="452.62" y="-416" font-family="arial" font-size="14.00"> </text>
+</g>
+<g id="edge21" class="edge">
+<title>tft:e--W11:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-818.88C445.46,-821.85 229.29,-434.73 416.25,-431.75"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M262,-820.88C447.21,-820.88 231.04,-433.75 416.25,-433.75"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-822.87C448.96,-819.9 232.79,-432.77 416.25,-435.75"/>
+</g>
+<g id="node14" class="node">
+<title>W12</title>
+<polygon fill="#ffffff" stroke="black" points="630.62,-249.75 414.62,-249.75 414.62,-137 630.62,-137 630.62,-249.75"/>
+<polygon fill="none" stroke="black" points="414.62,-226 414.62,-249.75 630.62,-249.75 630.62,-226 414.62,-226"/>
+<text xml:space="preserve" text-anchor="start" x="508.38" y="-233" font-family="arial" font-size="14.00">W12</text>
+<polygon fill="none" stroke="black" points="414.62,-202.25 414.62,-226 490.12,-226 490.12,-202.25 414.62,-202.25"/>
+<text xml:space="preserve" text-anchor="start" x="445.25" y="-209.25" font-family="arial" font-size="14.00">1x</text>
+<polygon fill="none" stroke="black" points="490.12,-202.25 490.12,-226 569.38,-226 569.38,-202.25 490.12,-202.25"/>
+<text xml:space="preserve" text-anchor="start" x="520.75" y="-209.25" font-family="arial" font-size="14.00">PK</text>
+<polygon fill="#ff66cc" stroke="none" points="569.38,-202.25 569.38,-226 630.62,-226 630.62,-202.25 569.38,-202.25"/>
+<polygon fill="none" stroke="black" points="569.38,-202.25 569.38,-226 630.62,-226 630.62,-202.25 569.38,-202.25"/>
+<text xml:space="preserve" text-anchor="start" x="448.88" y="-187.5" font-family="arial" font-size="14.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="416.62" y="-167.75" font-family="arial" font-size="14.00">tft:10:T_CS</text>
+<text xml:space="preserve" text-anchor="start" x="488.88" y="-167.75" font-family="arial" font-size="14.00"> &#160;&#160;&#160;&#160;1 &#160;&#160;&#160;</text>
+<text xml:space="preserve" text-anchor="start" x="534.12" y="-167.75" font-family="arial" font-size="14.00">esp:10:GPIO17</text>
+<polygon fill="#000000" stroke="none" points="414.62,-160.75 414.62,-162.75 630.62,-162.75 630.62,-160.75 414.62,-160.75"/>
+<polygon fill="#ffffff" stroke="none" points="414.62,-158.75 414.62,-160.75 630.62,-160.75 630.62,-158.75 414.62,-158.75"/>
+<polygon fill="#000000" stroke="none" points="414.62,-156.75 414.62,-158.75 630.62,-158.75 630.62,-156.75 414.62,-156.75"/>
+<text xml:space="preserve" text-anchor="start" x="448.88" y="-142" font-family="arial" font-size="14.00"> </text>
+</g>
+<g id="edge23" class="edge">
+<title>tft:e--W12:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-866.38C582.43,-869.52 89.91,-160.89 413.62,-157.75"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M262,-868.37C584.07,-868.38 91.55,-159.75 413.62,-159.75"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-870.37C585.72,-867.23 93.19,-158.61 413.62,-161.75"/>
+</g>
+<g id="node15" class="node">
+<title>W13</title>
+<polygon fill="#ffffff" stroke="black" points="633.25,-112.75 412,-112.75 412,0 633.25,0 633.25,-112.75"/>
+<polygon fill="none" stroke="black" points="412,-89 412,-112.75 633.25,-112.75 633.25,-89 412,-89"/>
+<text xml:space="preserve" text-anchor="start" x="508.38" y="-96" font-family="arial" font-size="14.00">W13</text>
+<polygon fill="none" stroke="black" points="412,-65.25 412,-89 488.5,-89 488.5,-65.25 412,-65.25"/>
+<text xml:space="preserve" text-anchor="start" x="443.12" y="-72.25" font-family="arial" font-size="14.00">1x</text>
+<polygon fill="none" stroke="black" points="488.5,-65.25 488.5,-89 571,-89 571,-65.25 488.5,-65.25"/>
+<text xml:space="preserve" text-anchor="start" x="519.62" y="-72.25" font-family="arial" font-size="14.00">GY</text>
+<polygon fill="#999999" stroke="none" points="571,-65.25 571,-89 633.25,-89 633.25,-65.25 571,-65.25"/>
+<polygon fill="none" stroke="black" points="571,-65.25 571,-89 633.25,-89 633.25,-65.25 571,-65.25"/>
+<text xml:space="preserve" text-anchor="start" x="449.25" y="-50.5" font-family="arial" font-size="14.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="414" y="-30.75" font-family="arial" font-size="14.00">tft:13:T_IRQ</text>
+<text xml:space="preserve" text-anchor="start" x="492.25" y="-30.75" font-family="arial" font-size="14.00"> &#160;&#160;&#160;&#160;1 &#160;&#160;&#160;</text>
+<text xml:space="preserve" text-anchor="start" x="537.5" y="-30.75" font-family="arial" font-size="14.00">esp:11:GPIO18</text>
+<polygon fill="#000000" stroke="none" points="412,-23.75 412,-25.75 633.25,-25.75 633.25,-23.75 412,-23.75"/>
+<polygon fill="#ffffff" stroke="none" points="412,-21.75 412,-23.75 633.25,-23.75 633.25,-21.75 412,-21.75"/>
+<polygon fill="#000000" stroke="none" points="412,-19.75 412,-21.75 633.25,-21.75 633.25,-19.75 412,-19.75"/>
+<text xml:space="preserve" text-anchor="start" x="449.25" y="-5" font-family="arial" font-size="14.00"> </text>
+</g>
+<g id="edge25" class="edge">
+<title>tft:e--W13:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-795.13C610.85,-798.29 58.89,-23.91 411,-20.75"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M262,-797.12C612.48,-797.12 60.52,-22.75 411,-22.75"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M262,-799.12C614.11,-795.96 62.15,-21.59 411,-24.75"/>
+</g>
+<g id="node2" class="node">
+<title>esp</title>
+<polygon fill="#ffffff" stroke="black" points="944.75,-1023.75 783.25,-1023.75 783.25,-715 944.75,-715 944.75,-1023.75"/>
+<polygon fill="none" stroke="black" points="783.25,-1000 783.25,-1023.75 944.75,-1023.75 944.75,-1000 783.25,-1000"/>
+<text xml:space="preserve" text-anchor="start" x="853.12" y="-1007" font-family="arial" font-size="14.00">esp</text>
+<polygon fill="none" stroke="black" points="783.25,-976.25 783.25,-1000 900,-1000 900,-976.25 783.25,-976.25"/>
+<text xml:space="preserve" text-anchor="start" x="787.25" y="-983.25" font-family="arial" font-size="14.00">ESP32-S3 N16R8</text>
+<polygon fill="none" stroke="black" points="900,-976.25 900,-1000 944.75,-1000 944.75,-976.25 900,-976.25"/>
+<text xml:space="preserve" text-anchor="start" x="904" y="-983.25" font-family="arial" font-size="14.00">11-pin</text>
+<polygon fill="none" stroke="black" points="783.25,-952.5 783.25,-976.25 846.38,-976.25 846.38,-952.5 783.25,-952.5"/>
+<text xml:space="preserve" text-anchor="start" x="811.06" y="-959.5" font-family="arial" font-size="14.00">1</text>
+<polygon fill="none" stroke="black" points="846.38,-952.5 846.38,-976.25 944.75,-976.25 944.75,-952.5 846.38,-952.5"/>
+<text xml:space="preserve" text-anchor="start" x="887.31" y="-959.5" font-family="arial" font-size="14.00">5V</text>
+<polygon fill="none" stroke="black" points="783.25,-928.75 783.25,-952.5 846.38,-952.5 846.38,-928.75 783.25,-928.75"/>
+<text xml:space="preserve" text-anchor="start" x="811.06" y="-935.75" font-family="arial" font-size="14.00">2</text>
+<polygon fill="none" stroke="black" points="846.38,-928.75 846.38,-952.5 944.75,-952.5 944.75,-928.75 846.38,-928.75"/>
+<text xml:space="preserve" text-anchor="start" x="880.19" y="-935.75" font-family="arial" font-size="14.00">GND</text>
+<polygon fill="none" stroke="black" points="783.25,-905 783.25,-928.75 846.38,-928.75 846.38,-905 783.25,-905"/>
+<text xml:space="preserve" text-anchor="start" x="811.06" y="-912" font-family="arial" font-size="14.00">3</text>
+<polygon fill="none" stroke="black" points="846.38,-905 846.38,-928.75 944.75,-928.75 944.75,-905 846.38,-905"/>
+<text xml:space="preserve" text-anchor="start" x="874.19" y="-912" font-family="arial" font-size="14.00">GPIO8</text>
+<polygon fill="none" stroke="black" points="783.25,-881.25 783.25,-905 846.38,-905 846.38,-881.25 783.25,-881.25"/>
+<text xml:space="preserve" text-anchor="start" x="811.06" y="-888.25" font-family="arial" font-size="14.00">4</text>
+<polygon fill="none" stroke="black" points="846.38,-881.25 846.38,-905 944.75,-905 944.75,-881.25 846.38,-881.25"/>
+<text xml:space="preserve" text-anchor="start" x="874.19" y="-888.25" font-family="arial" font-size="14.00">GPIO9</text>
+<polygon fill="none" stroke="black" points="783.25,-857.5 783.25,-881.25 846.38,-881.25 846.38,-857.5 783.25,-857.5"/>
+<text xml:space="preserve" text-anchor="start" x="811.06" y="-864.5" font-family="arial" font-size="14.00">5</text>
+<polygon fill="none" stroke="black" points="846.38,-857.5 846.38,-881.25 944.75,-881.25 944.75,-857.5 846.38,-857.5"/>
+<text xml:space="preserve" text-anchor="start" x="870.44" y="-864.5" font-family="arial" font-size="14.00">GPIO10</text>
+<polygon fill="none" stroke="black" points="783.25,-833.75 783.25,-857.5 846.38,-857.5 846.38,-833.75 783.25,-833.75"/>
+<text xml:space="preserve" text-anchor="start" x="811.06" y="-840.75" font-family="arial" font-size="14.00">6</text>
+<polygon fill="none" stroke="black" points="846.38,-833.75 846.38,-857.5 944.75,-857.5 944.75,-833.75 846.38,-833.75"/>
+<text xml:space="preserve" text-anchor="start" x="870.81" y="-840.75" font-family="arial" font-size="14.00">GPIO11</text>
+<polygon fill="none" stroke="black" points="783.25,-810 783.25,-833.75 846.38,-833.75 846.38,-810 783.25,-810"/>
+<text xml:space="preserve" text-anchor="start" x="811.06" y="-817" font-family="arial" font-size="14.00">7</text>
+<polygon fill="none" stroke="black" points="846.38,-810 846.38,-833.75 944.75,-833.75 944.75,-810 846.38,-810"/>
+<text xml:space="preserve" text-anchor="start" x="870.44" y="-817" font-family="arial" font-size="14.00">GPIO12</text>
+<polygon fill="none" stroke="black" points="783.25,-786.25 783.25,-810 846.38,-810 846.38,-786.25 783.25,-786.25"/>
+<text xml:space="preserve" text-anchor="start" x="811.06" y="-793.25" font-family="arial" font-size="14.00">8</text>
+<polygon fill="none" stroke="black" points="846.38,-786.25 846.38,-810 944.75,-810 944.75,-786.25 846.38,-786.25"/>
+<text xml:space="preserve" text-anchor="start" x="870.44" y="-793.25" font-family="arial" font-size="14.00">GPIO13</text>
+<polygon fill="none" stroke="black" points="783.25,-762.5 783.25,-786.25 846.38,-786.25 846.38,-762.5 783.25,-762.5"/>
+<text xml:space="preserve" text-anchor="start" x="811.06" y="-769.5" font-family="arial" font-size="14.00">9</text>
+<polygon fill="none" stroke="black" points="846.38,-762.5 846.38,-786.25 944.75,-786.25 944.75,-762.5 846.38,-762.5"/>
+<text xml:space="preserve" text-anchor="start" x="870.44" y="-769.5" font-family="arial" font-size="14.00">GPIO14</text>
+<polygon fill="none" stroke="black" points="783.25,-738.75 783.25,-762.5 846.38,-762.5 846.38,-738.75 783.25,-738.75"/>
+<text xml:space="preserve" text-anchor="start" x="807.31" y="-745.75" font-family="arial" font-size="14.00">10</text>
+<polygon fill="none" stroke="black" points="846.38,-738.75 846.38,-762.5 944.75,-762.5 944.75,-738.75 846.38,-738.75"/>
+<text xml:space="preserve" text-anchor="start" x="870.44" y="-745.75" font-family="arial" font-size="14.00">GPIO17</text>
+<polygon fill="none" stroke="black" points="783.25,-715 783.25,-738.75 846.38,-738.75 846.38,-715 783.25,-715"/>
+<text xml:space="preserve" text-anchor="start" x="807.69" y="-722" font-family="arial" font-size="14.00">11</text>
+<polygon fill="none" stroke="black" points="846.38,-715 846.38,-738.75 944.75,-738.75 944.75,-715 846.38,-715"/>
+<text xml:space="preserve" text-anchor="start" x="870.44" y="-722" font-family="arial" font-size="14.00">GPIO18</text>
+</g>
+<g id="edge2" class="edge">
+<title>W1:e--esp:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M604.25,-1664.75C924.73,-1667.85 459.44,-965.48 783.25,-962.38"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M604.25,-1666.75C926.39,-1666.75 461.11,-964.38 783.25,-964.38"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M604.25,-1668.75C928.06,-1665.65 462.77,-963.27 783.25,-966.37"/>
+</g>
+<g id="edge4" class="edge">
+<title>W2:e--esp:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M612.5,-1527.75C883.42,-1530.82 508.95,-941.7 783.25,-938.63"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M612.5,-1529.75C885.11,-1529.75 510.64,-940.62 783.25,-940.62"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M612.5,-1531.75C886.8,-1528.68 512.33,-939.55 783.25,-942.62"/>
+</g>
+<g id="edge6" class="edge">
+<title>W3:e--esp:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M616.25,-1390.75C858.71,-1393.8 537.38,-870.42 783.25,-867.38"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M616.25,-1392.75C860.42,-1392.75 539.08,-869.38 783.25,-869.38"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M616.25,-1394.75C862.12,-1391.7 540.79,-868.33 783.25,-871.37"/>
+</g>
+<g id="edge8" class="edge">
+<title>W4:e--esp:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M625.62,-1253.75C789.95,-1256.67 615.37,-917.79 783.25,-914.88"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M625.62,-1255.75C791.73,-1255.75 617.14,-916.88 783.25,-916.87"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M625.62,-1257.75C793.51,-1254.83 618.92,-915.96 783.25,-918.87"/>
+</g>
+<g id="edge10" class="edge">
+<title>W5:e--esp:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M612.88,-1116.75C736.65,-1119.43 655.71,-893.8 783.25,-891.13"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M612.88,-1118.75C738.53,-1118.75 657.59,-893.12 783.25,-893.12"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M612.88,-1120.75C740.41,-1118.07 659.48,-892.45 783.25,-895.12"/>
+</g>
+<g id="edge12" class="edge">
+<title>W6:e--esp:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M639.25,-979.75C725.37,-982.21 693.23,-846.08 783.25,-843.63"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M639.25,-981.75C727.32,-981.75 695.18,-845.63 783.25,-845.62"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M639.25,-983.75C729.27,-981.29 697.13,-845.17 783.25,-847.62"/>
+</g>
+<g id="edge14" class="edge">
+<title>W7:e--esp:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M620.75,-705.75C710.99,-707.99 696.98,-822.12 783.25,-819.88"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M620.75,-707.75C709,-707.75 695,-821.88 783.25,-821.87"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M620.75,-709.75C707.02,-707.51 693.01,-821.63 783.25,-823.87"/>
+</g>
+<g id="edge16" class="edge">
+<title>W8:e--esp:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M620,-294.75C846.05,-297.78 560.63,-775.4 783.25,-772.38"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M620,-296.75C844.33,-296.75 558.92,-774.38 783.25,-774.38"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M620,-298.75C842.62,-295.72 557.2,-773.35 783.25,-776.37"/>
+</g>
+<g id="edge18" class="edge">
+<title>W9:e--esp:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M627.88,-568.75C760.96,-571.53 653.84,-822.66 783.25,-819.88"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M627.88,-570.75C759.12,-570.75 652,-821.87 783.25,-821.87"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M627.88,-572.75C757.28,-569.97 650.16,-821.09 783.25,-823.87"/>
+</g>
+<g id="edge20" class="edge">
+<title>W10:e--esp:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M629.38,-842.75C697.87,-842.75 714.96,-843.63 783.25,-843.63"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M629.38,-844.75C697.76,-844.75 714.86,-845.62 783.25,-845.62"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M629.38,-846.75C697.66,-846.75 714.76,-847.62 783.25,-847.62"/>
+</g>
+<g id="edge22" class="edge">
+<title>W11:e--esp:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M629,-431.75C806.62,-434.7 609.15,-799.08 783.25,-796.13"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M629,-433.75C804.86,-433.75 607.39,-798.13 783.25,-798.12"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M629,-435.75C803.1,-432.8 605.63,-797.17 783.25,-800.12"/>
+</g>
+<g id="edge24" class="edge">
+<title>W12:e--esp:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M631.62,-157.75C904.41,-160.85 513.8,-751.73 783.25,-748.63"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M631.62,-159.75C902.74,-159.75 512.13,-750.62 783.25,-750.62"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M631.62,-161.75C901.08,-158.65 510.46,-749.52 783.25,-752.62"/>
+</g>
+<g id="edge26" class="edge">
+<title>W13:e--esp:w</title>
+<path fill="none" stroke="#000000" stroke-width="2" d="M634.25,-20.75C955.77,-23.89 465.02,-728.02 783.25,-724.88"/>
+<path fill="none" stroke="#ffffff" stroke-width="2" d="M634.25,-22.75C954.12,-22.75 463.38,-726.88 783.25,-726.87"/>
+<path fill="none" stroke="#000000" stroke-width="2" d="M634.25,-24.75C952.48,-21.61 461.73,-725.73 783.25,-728.87"/>
+</g>
+</g>
+</svg>

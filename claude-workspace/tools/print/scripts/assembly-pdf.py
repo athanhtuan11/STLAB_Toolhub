@@ -43,7 +43,7 @@ ul { margin: 1mm 0 2mm 5mm; padding-left: 4mm; }
 .imgs { flex-wrap: wrap; }
 .imgs figure { flex: 0 0 48%; box-sizing: border-box; }
 .imgs figure.one { flex: 0 0 100%; border: none; }
-.imgs figure.one img { max-height: 125mm; width: auto; max-width: 100%; margin: 0 auto; }  /* 2 anh / hang: to hon cho hoc sinh (3 anh / hang qua nho) */
+.imgs figure.one img { max-height: 160mm; width: auto; max-width: 100%; margin: 0 auto; }  /* 2 anh / hang: to hon cho hoc sinh (3 anh / hang qua nho) */
 ol { margin: 1mm 0 2mm 5mm; padding-left: 5mm; font-size: 11.5pt; }
 ol li { margin-bottom: 1.2mm; }
 p.check { background: #eaf6ea; border-left: 4px solid #2e8b3e; padding: 1.5mm 3mm; font-size: 11pt; }
@@ -64,12 +64,14 @@ def inline(s, goc):
     return s.replace("TODO", '<span class="todo">TODO</span>')
 
 
-def anh(rel, goc):
+def anh(rel, goc, alt=""):
     p = (goc / rel).resolve()
     if re.match(r".*step-\d+\.png$", str(p)):  # 1 anh "thao tac" lon / buoc (phong cach 2026-10-25)
         return (f'<div class="imgs"><figure class="one"><img src="{p.as_uri()}"><figcaption>Chi tiết mới màu vàng – '
                 f'lắp theo đường nét đứt</figcaption></figure></div>')
-    ds = [(p, "Toàn cảnh – chi tiết mới tô xanh")]
+    ds = [(p, alt or "Toàn cảnh – chi tiết mới tô xanh")]
+    if alt and not re.match(r".*step-\d+-[abc]\.png$", str(p)):  # 2026-11-26: anh thuong (vd. so do day) -> 1 anh lon, chu thich = alt
+        return f'<div class="imgs"><figure class="one"><img src="{p.as_uri()}"><figcaption>{html.escape(alt)}</figcaption></figure></div>'
     m = re.match(r"(.*step-\d+)-([abc])\.png$", str(p))
     if m:  # c (chi tiet can lay - neu co) + a (toan canh) + b (phong to) - render_assembly_steps.py 2026-10-25
         ds = [(Path(m.group(1) + "-c.png"), "Chuẩn bị – lấy các chi tiết này"),
@@ -99,7 +101,7 @@ def md_html(md, goc):
             buoc.append(ten)
             trong_step = True
         elif d.startswith("!["):
-            out.append(anh(re.search(r"\(([^)]+)\)", d).group(1), goc))
+            out.append(anh(re.search(r"\]\(([^)]+)\)", d).group(1), goc, re.match(r"!\[([^\]]*)\]", d).group(1)))
         elif d.startswith("|"):
             rows = []
             while i < len(dong) and dong[i].startswith("|"):
@@ -155,12 +157,23 @@ def main():
     cuoi = (sorted(goc.glob("*/images/assembly/cover.png"))  # anh bia rieng (2026-10-25); */ = freecad|solidcraft (2026-11-05)
             or sorted(goc.glob("*/images/assembly/step-*-a.png"))
             or sorted(goc.glob("*/images/assembly/step-*.png")))
-    bia_anh = f'<img src="{cuoi[-1].as_uri()}">' if cuoi else ""
+    la_lap_rap = src.name.upper() == "ASSEMBLY.MD"
+    rieng = [q for q in (src.with_suffix(".svg"), src.with_suffix(".png")) if q.exists()]  # 2026-11-26: vd. wiring-s3.svg (Toolhub ve tu yaml)
+    if not la_lap_rap:
+        cuoi = rieng
+    rong = "" if la_lap_rap else ' style="width:182mm"'
+    bia_anh = f'<img src="{cuoi[-1].as_uri()}"{rong}>' if cuoi else ""
     muc_luc = "".join(f"<div>{html.escape(b)}</div>" for b in buoc)
+    if la_lap_rap:
+        ghi_chu = "Ảnh render từ model CAD"
+    elif rieng:
+        ghi_chu = f"Hình: sơ đồ vẽ tự động từ {html.escape(src.stem)}.yaml (giống trang Toolhub)"
+    else:
+        ghi_chu = "Tài liệu kỹ thuật STLab"
     bia = (f'<section class="cover"><h1>{html.escape(tieu_de)}</h1>'
-           f'<div class="meta">STLab · {goc.name} · tạo {time.strftime("%Y-%m-%d")} từ ASSEMBLY.md</div>'
+           f'<div class="meta">STLab · {goc.name} · tạo {time.strftime("%Y-%m-%d")} từ {html.escape(src.name)}</div>'
            f'{bia_anh}<div class="toc">{muc_luc}</div>'
-           '<div class="footer-note">Ảnh render từ model CAD; mục đánh dấu TODO cần bổ sung khi lắp thật.</div>'
+           f'<div class="footer-note">{ghi_chu}; mục đánh dấu TODO cần bổ sung khi lắp thật.</div>'
            '</section>')
     doc = (f'<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>{html.escape(tieu_de)}</title>'
            f"<style>{CSS}</style></head><body>{bia}{than}</body></html>")
