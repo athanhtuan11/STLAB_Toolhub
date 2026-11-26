@@ -139,3 +139,11 @@ cánh dời lên z ≈ 112, bụng trơn) – không cần ảnh.
    - **Mỏ chồng mép dưới đĩa mặt** theo V2 (nằm trước đĩa, khe ≥ 0,3, đỉnh ≤ cửa sổ dưới − 1); nếu cửa sổ dưới z 78 không đủ chỗ thì báo số.
    - Cánh: nhỏ, sát thân, không đè vành loa.
 5. Mọi bàn in PASS không support, gate PASS, ảnh owl-preview/owl-exploded, .sc; README mục "Bản có màn + 2 loa" cập nhật vị trí cuối.
+
+## 12. Khung màn gọn (Tuan chọn 2026-11-26) – chỉ đổi phần NHÌN THẤY, giữ phần đã in đạt
+GIỮ NGUYÊN (đã in thử đạt): hốc kính 69,2 + 0,3/bên × 50 + 0,3/bên, kính lùi 1,5, viền cửa sổ 58,4 × 44,0 lệch −4,9, 4 trụ vít tự ren Ø2,4 tại lỗ PCB (±40, ±22), lắp từ trong + vành chặn + 4 vít góc.
+ĐỔI:
+1. **Bỏ "hộp nền" nhô vuông** trên shell-front: mặt nền chỉ là một vùng phẳng vừa đủ cho yên vát 45° của vành chặn; chuyển về vỏ cong bằng mặt cong liên tục (vai R ≥ 12 ở MỌI cạnh, không còn thành thẳng 15 mm ở góc). Nếu yên vát + vành chặn 104 × 68 làm không gọn được → **thu vành chặn** tối đa còn 100 × 64 (vẫn rộng hơn lỗ 94,6 × 58,6 đủ 2,7/bên cho yên vát) và dời 4 vít góc theo, vẫn vào phần đặc ≥ 6.
+2. **Đĩa mặt (face-plate phần thấy)**: góc bo trong mặt phẳng R ≥ 14, mép trước bo R ≥ 3 (+ vát 0,8 chỗ chạm bàn in), nhô khỏi mặt vỏ ~3–4 đều quanh viền.
+3. Mỏ chồng mép dưới đĩa như hiện tại (không hạ thêm).
+4. Gate PASS, bàn in PASS không support, ảnh owl-preview.png + 1 ảnh cận mặt trước + 1 ảnh nghiêng 45° thấy rõ chuyển tiếp khung màn → vỏ. README ghi trước/sau.

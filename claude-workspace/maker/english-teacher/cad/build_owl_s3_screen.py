@@ -84,10 +84,20 @@ YF = YS_OUT - 4.0                      # mat truoc dia nho 4 so voi nen
 GLASS_Y = YF + GLASS_RECESS
 SCR_PCB_Y = GLASS_Y + (SCR_T - SCR_PCB[2]) + SCR_PCB[2] / 2      # tam PCB (y)
 WIN = (58.4, 44.0, 2.5, -4.9)          # rong, cao, goc, lech x
-DISC = (47.0, 29.0, 10.0)              # nua rong, nua cao, goc R10
+DISC = (47.0, 29.0, 14.0)              # nua rong, nua cao, goc R14 (muc 12: dia mat bo R14 trong mat phang)
+DISC_YR = 10.0                         # goc R cua yen vat/vanh chan (giu nhu ban da in; vit goc o (45,5; 27,5) nam trong goc nay)
+YEN_TR = 1.7                           # chuyen R14 -> R10 bang 45 do (khong mai treo) truoc khi yen vat bat dau
+FR_R = 3.0                             # mep truoc dia bo R3 (+ vat 0,88 x 45 do cho cham ban in)
 T0, BEV, FL_T = 8.0, 5.0, 2.0          # nen thang sau 8; yen vat 45 do rong 5; vanh chan day 2,0
 FP_SHELL_GAP = 0.3
-PAD_W, PAD_H = 54.7, 36.7              # nua kich thuoc hop ngoai (lo 104,6 x 68,6 + thanh 2,4)
+PAD_W, PAD_H = 55.2, 37.2              # nua kich thuoc nen toi da (lo 104,6 x 68,6 + thanh >= 2,3)
+PAD_A = 6.4                            # vai ellip: lech ngang tu mep phang (48,8 x 30,8) ra thanh day du
+PAD_B = 26.0                           # vai ellip: sau (u 4 -> 30) toi cho gap vo cong (khong con thanh thang)
+YU0 = T0 + 4.0                         # u bat dau yen (12)
+YU1 = YU0 + YEN_TR                     # yen 45 do bat dau
+YU2 = YU1 + BEV                        # yen ket thuc
+U_END = YU2 + FL_T                     # mat sau vanh chan (20,7)
+HOLE_END = U_END + 2.0                 # lo vo ket thuc, pheu bat dau
 SCREW_FP = (45.5, 27.5)                # 4 vit M2.5 x 6 o 4 goc (xem README: doi khoi (49, 31) vi goc R15 cua vanh)
 
 FIT, SLIDE = 0.3, 0.2
@@ -414,15 +424,18 @@ diff(OUTER, box('flat', (-200, -200, -50), (200, 200, FLOOR_CUT)))
 OUTER_HEAD = cp(OUTER, 'outer_head')            # than dau truoc khi them hop man (de bao ve vach vo)
 
 # --- hop man: san phang thang dung YS_OUT (u = 4), thanh 2,4, ben ngoai thang roi thu nho 45 do ve than (khong mai treo)
-PAD_R = 17.7
+PAD_R = 18.2
 pad_rings = []
-for _d, _ins in ((0.0, 6.0), (0.6, 3.2), (1.5, 1.8), (3.0, 0.8), (6.0, 0.0)):
-    pad_rings.append((4.0 + _d, rr(PAD_W - _ins, PAD_H - _ins, PAD_R - _ins)))
-pad_rings.append((22.0, rr(PAD_W, PAD_H, PAD_R)))
+for _ph in (0, 4, 8, 13, 18, 24, 30, 37, 44, 52, 60, 68, 76, 84, 90):
+    _ins = PAD_A * (1.0 - math.sin(math.radians(_ph)))
+    _u = 4.0 + PAD_B * (1.0 - math.cos(math.radians(_ph)))
+    pad_rings.append((_u, rr(PAD_W - _ins, PAD_H - _ins, PAD_R - _ins)))
+_UPF = 4.0 + PAD_B
+pad_rings.append((_UPF + 6.0, rr(PAD_W, PAD_H, PAD_R)))
 for X in (6, 12, 18, 24, 30, 36):
-    pad_rings.append((22.0 + X, rr(PAD_W - X, PAD_H - X, PAD_R - X)))
+    pad_rings.append((_UPF + 6.0 + X, rr(PAD_W - X, PAD_H - X, PAD_R - X)))
 PADOUT = loft('padout', pad_rings, MS)
-FLATCUT = loft('flatcut', [(-14.0, rr(PAD_W - 6, PAD_H - 6, PAD_R - 6)), (4.0, rr(PAD_W - 6, PAD_H - 6, PAD_R - 6))], MS)
+FLATCUT = loft('flatcut', [(-14.0, rr(PAD_W - PAD_A, PAD_H - PAD_A, PAD_R - PAD_A)), (4.0, rr(PAD_W - PAD_A, PAD_H - PAD_A, PAD_R - PAD_A))], MS)
 diff(OUTER, FLATCUT)
 union(OUTER, PADOUT)
 
@@ -444,12 +457,14 @@ def make_bays():
     return inter(b, sup('inner2', (0, 0, BZ), (BR[0] - WALL, BR[1] - WALL, BR[2] - WALL), NT, NB, TAPER))
 
 # --- lo man hinh: lo nen + yen vat 45 do + hoc vanh chan (u theo he man hinh); phan phia sau thu nho 45 do (phuong an khong support)
-HOLE = loft('hole', [(0.0, rr(DISC[0] + 0.3, DISC[1] + 0.3, DISC[2] + 0.3)), (T0 + 4.0, rr(DISC[0] + 0.3, DISC[1] + 0.3, DISC[2] + 0.3)),
-                     (T0 + 4.0 + BEV, rr(DISC[0] + 0.3 + BEV, DISC[1] + 0.3 + BEV, DISC[2] + 0.3 + BEV)),
-                     (21.0, rr(DISC[0] + 0.3 + BEV, DISC[1] + 0.3 + BEV, DISC[2] + 0.3 + BEV))], MS)
-fun_rings = [(21.0, rr(DISC[0] + 0.3 + BEV, DISC[1] + 0.3 + BEV, DISC[2] + 0.3 + BEV))]
+_hx, _hz = DISC[0] + 0.3, DISC[1] + 0.3
+HOLE = loft('hole', [(0.0, rr(_hx, _hz, DISC[2] + 0.3)), (YU0, rr(_hx, _hz, DISC[2] + 0.3)),
+                     (YU1, rr(_hx, _hz, DISC_YR + 0.3)),
+                     (YU2, rr(_hx + BEV, _hz + BEV, DISC_YR + 0.3 + BEV)),
+                     (HOLE_END, rr(_hx + BEV, _hz + BEV, DISC_YR + 0.3 + BEV))], MS)
+fun_rings = [(HOLE_END, rr(_hx + BEV, _hz + BEV, DISC_YR + 0.3 + BEV))]
 for X in (6, 12, 18, 24, 28):
-    fun_rings.append((21.0 + X, rr(DISC[0] + 0.3 + BEV - X, DISC[1] + 0.3 + BEV - X, DISC[2] + 0.3 + BEV - X)))
+    fun_rings.append((HOLE_END + X, rr(_hx + BEV - X, _hz + BEV - X, DISC_YR + 0.3 + BEV - X)))
 FUNNEL = loft('funnel', fun_rings, MS)
 SKIN = cp(OUTER_HEAD, 'skin'); diff(SKIN, cavity())
 diff(FUNNEL, SKIN)
@@ -457,7 +472,7 @@ diff(S, HOLE); diff(S, FUNNEL)
 # lo mo cho 4 vit M2.5 x 6 (lo tu ren O2,4) xuyen vao phan dac o 4 goc vanh chan
 for sx in (-1, 1):
     for sz in (-1, 1):
-        diff(S, cyl('pilot', MS @ Vector((sx * SCREW_FP[0], sz * SCREW_FP[1], 2.3)), MS @ Vector((sx * SCREW_FP[0], sz * SCREW_FP[1], 14.0)), 1.2, seg=20))
+        diff(S, cyl('pilot', MS @ Vector((sx * SCREW_FP[0], sz * SCREW_FP[1], 9.0)), MS @ Vector((sx * SCREW_FP[0], sz * SCREW_FP[1], YU0 + 3.7)), 1.2, seg=20))
 
 # ---------------- chi tiet noi bo ----------------
 BEAK_Z = 63.4
@@ -817,8 +832,12 @@ GAUGE = make_cross_gauge()
 # He cuc bo (a, b, u): u = 0 mat truoc (in mat truoc xuong ban). Dung chong lai MS khi lap.
 def make_face_plate():
     hx, hz, r = DISC
-    fp = loft('fp', [(0.0, rr(hx - 0.8, hz - 0.8, r - 0.8)), (0.8, rr(hx, hz, r)), (T0 + 4.0, rr(hx, hz, r)),
-                     (T0 + 4.0 + BEV, rr(hx + BEV, hz + BEV, r + BEV)), (T0 + 4.0 + BEV + FL_T, rr(hx + BEV, hz + BEV, r + BEV))])
+    rings = [(0.0, rr(hx - 2 * 0.88, hz - 2 * 0.88, r - 2 * 0.88))]
+    for ph in (45, 52, 60, 68, 76, 84, 90):
+        ins = FR_R * (1.0 - math.sin(math.radians(ph))); uu = FR_R * (1.0 - math.cos(math.radians(ph)))
+        rings.append((uu, rr(hx - ins, hz - ins, r - ins)))
+    rings += [(YU0, rr(hx, hz, r)), (YU1, rr(hx, hz, DISC_YR)), (YU2, rr(hx + BEV, hz + BEV, DISC_YR + BEV)), (U_END, rr(hx + BEV, hz + BEV, DISC_YR + BEV))]
+    fp = loft('fp', rings)
     ww, wh, wr, wo = WIN
     win = [(a + wo, b) for (a, b) in rrect(ww, wh, wr, 8)]
     diff(fp, extrude('fp_win', win, -1.0, 2.0, Matrix.Identity(4)))
@@ -832,21 +851,21 @@ def make_face_plate():
     diff(fp, extrude('fp_gl', gl, u_glass, 5.7, Matrix.Identity(4)))
     # hoc PCB 86,4 x 50,6 tu u = 5,5 (mat truoc PCB) ra sau; header + day di ra sau
     u_pcb = GLASS_RECESS + (SCR_T - SCR_PCB[2])
-    diff(fp, extrude('fp_pcb', rrect(SCR_PCB[0] + 0.4, SCR_PCB[1] + 0.6, 0.6, 4), u_pcb, T0 + 4.0 + BEV + FL_T + 1.0, Matrix.Identity(4)))
+    diff(fp, extrude('fp_pcb', rrect(SCR_PCB[0] + 0.4, SCR_PCB[1] + 0.6, 0.6, 4), u_pcb, U_END + 1.0, Matrix.Identity(4)))
     # lom 1,6 mat truoc PCB cho moi han chan header (dai 6 x 38, x 38..43,2)
     hb = box('fp_hdr', (38.0, -19.0, u_pcb - 1.6), (43.3, 19.0, u_pcb + 0.1)); diff(fp, hb)
     # 4 lo mo O2,4 (vit tu ren) tai lo PCB (x -40,00 / +36,08 ; z +-22), tu mat truoc PCB lui vao 3,6
     for (px, pz) in ((-40.0, 22.0), (-40.0, -22.0), (40.0, 22.0), (40.0, -22.0)):
         diff(fp, cyl('fp_pil', (px, pz, u_pcb - 3.6), (px, pz, u_pcb + 0.3), 1.2, seg=20))
     # 4 lo vit M2.5 x 6 o 4 goc vanh chan: lo thong O2,8, mu chim O5,2 sau 3,5
-    u_end = T0 + 4.0 + BEV + FL_T
+    u_end = U_END
     for sx in (-1, 1):
         for sz in (-1, 1):
             px, pz = sx * SCREW_FP[0], sz * SCREW_FP[1]
             diff(fp, cyl('fp_th', (px, pz, T0 + 3.0), (px, pz, u_end + 0.5), 1.4, seg=20))
             diff(fp, cyl('fp_cb', (px, pz, u_end - 3.5), (px, pz, u_end + 0.5), 2.6, seg=24))
     # dau lap ▲ khac sau 0,6 mep duoi dia (net >= 0,8)
-    diff(fp, extrude('fp_tri', [(-2.5, -27.5), (2.5, -27.5), (0.0, -23.0)], -1.0, 0.6, Matrix.Identity(4)))
+    diff(fp, extrude('fp_tri', [(-2.2, -26.8), (2.2, -26.8), (0.0, -23.4)], -1.0, 0.6, Matrix.Identity(4)))
     return fp
 FP_LOCAL = make_face_plate()
 FP_W = cp(FP_LOCAL, 'fp_w'); FP_W.data.transform(MS); FP_W.data.flip_normals()

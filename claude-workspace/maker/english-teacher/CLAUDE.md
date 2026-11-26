@@ -39,13 +39,13 @@ Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\
 | PCB màn ↔ hốc | 86,0 × 50,0 | 86,4 × 50,6 | 0,2 (x) / 0,3 (z) | in thật ĐẠT (giữ) |
 | Vít PCB màn M2.5 tự ren | lỗ Ø2,4 | Ø2,4 | – | fit-library, in thật (ngoại lệ) |
 | Vít vành chặn M2.5 × 6 | Ø2,5 | lỗ thông Ø2,8 | 0,15 | fit-library (ngoại lệ) |
-| Đĩa face-plate ↔ lỗ vỏ | 94 × 58 R10 | lỗ +0,3 mỗi bên | 0,3 | gate PASS, in thật ĐẠT |
+| Đĩa face-plate ↔ lỗ vỏ | 94 × 58 R14 (đổi 2026-11-26, cạnh thẳng/khe không đổi) | lỗ +0,3 mỗi bên | 0,3 | gate PASS, in thật ĐẠT |
 | Vành chặn 104 × 68 ↔ hốc vỏ | 104 × 68 | hốc 104,6 × 68,6 | 0,3 | như trên |
 | Loa Ø52 ↔ hốc | Ø52 | Ø52,6 | 0,3 | đo thật 2026-11-06 |
 | Vòng ép loa ↔ thân loa | Ø52 (mép) | gờ giữ Ø48,0 | – (giữ mép 2,0/bên) | in thật ĐẠT 2026-11-26 |
 | Ngàm xoay vòng ép: ống tay / chốt / rãnh | – | 0,40 / 0,40 / 0,45 | 0,40–0,45 | in thật (vành loa lần 1) |
 | Nút nói ↔ lỗ vỏ | Ø50 | lỗ Ø50,8 | 0,4 | gate PASS |
-| Ổ switch MX | 14,00 | 14,00 + rãnh V | – | fit-library catpaw (ngoại lệ) |
+| Ổ switch MX | 14,00 | 14,00 + rãnh V | – | fit-library catpaw (ngoại lệ); **nút nói Tuan in thử 2026-11-26 ĐẠT "rất tốt" (p6-test-gon: mini-cap hốc 9,8)** |
 | Chữ thập 4,19 × 1,25, ống Ø5,71 | – | giữ | – | fit-library (ngoại lệ) |
 | PCB mic Ø15 × 1,6 ↔ hốc | Ø15 | hốc Ø16,4 | 0,7 | gate; **ron xốp 1,2 mm trong khe 1,0** (ép 0,2) |
 | PCB mic ↔ kẹp mic | Ø15 | Ø15,6 | 0,3 | gate PASS |

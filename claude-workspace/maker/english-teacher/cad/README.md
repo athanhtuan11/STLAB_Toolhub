@@ -18,13 +18,13 @@ Tuan in thử 2026-11-26: vòng ép loa + gờ Ø48 ĐẠT.
 ## Bản có màn + 2 loa (H0 ngang, 2026-11-26, gate PASS)
 Sinh bằng `build_owl_s3_screen.py` (Blender 5.2) → `out-s3-screen/` (STL, `asm/`, `owl-params.json`, ảnh, `owl-assembly.sc`);
 bàn in `print/print-s3-screen.yaml` → `print/plates-s3-screen/` (STL in ở `print/stl-s3-screen/`; `amp-tray` in 2 cái = `amp-tray.stl` + `amp-tray-2.stl`).
-Gate `gate_owl_s3_screen.py` PASS; 5 bàn PASS không support: A vỏ trước 304 ph 150 g, B vỏ sau 296 ph 157 g, C loa 166 ph 58 g, D kem 107 ph 52 g, E bơ 51 ph 25 g.
+Gate `gate_owl_s3_screen.py` PASS; 5 bàn PASS không support (khung màn gọn 2026-11-26): A vỏ trước 297 ph 149,1 g, B vỏ sau 294 ph 156,6 g, C loa 171 ph 61,6 g, D kem 109 ph 52,4 g, E bơ 44 ph 19,6 g.
 
 ### Vị trí cuối (mm; +Z lên, mặt trước −Y, mặt ráp y = 0,37)
 | Linh kiện | Tâm / số | Ghi chú |
 |---|---|---|
 | Màn MSP2807 | PCB (0; −50,7; 100), header +x, kính y −55,5 | lỗ PCB (±40; ±22) hàng thật V1.1; cửa sổ 58,4 × 44 lệch −4,9; viền đè 2,5; glass_recess 1,5 (viền 1,35) |
-| face-plate | đĩa 94 × 58 R10 nhô 4, yên vát 45° rộng 5, vành chặn 104 × 68 × 2 | lắp từ trong; 4 vít M2.5 × 6 ở (±45,5; ±27,5) (đổi từ (±49; ±31) vì góc vành R15) |
+| face-plate | đĩa 94 × 58 **R14** (mép trước R3 + vát 0,88), nhô 4, yên vát 45° rộng 5, vành chặn 104 × 68 × 2 | lắp từ trong; 4 vít M2.5 × 6 ở (±45,5; ±27,5) (đổi từ (±49; ±31) vì góc vành R15) |
 | Hộp nền màn | thẳng y −53, thành 2,4, mép trước bo 6, thu nhỏ 45° về thân | khe vành chặn 0,3; R plan 17,7 |
 | Loa L/R | (∓51,8; 0,37; 46), trục [∓1; 0; 0] | vành loa + yên nón 25° + hầm giọt nước như bản A1S; ngàm xoay + gờ Ø48; mặt vành x = ±69 |
 | Ampli ×2 | (−3; −13; 7,3) và (+3; +12,5; 7,3) | dưới bo S3 giữa 2 ray (khay v2), cách loa ≤ 70 |
@@ -34,8 +34,19 @@ Gate `gate_owl_s3_screen.py` PASS; 5 bàn PASS không support: A vỏ trước 3
 | Cánh | (±55; 14; 110) nhỏ 12 × 24 × 32, sát thân | không đè vành loa |
 | Bu-lông đế | (±24; ±14) như bản S3 | |
 
+### Khung màn gọn (Tuan chọn 2026-11-26, spec mục 12)
+| | Trước | Sau |
+|---|---|---|
+| Nền quanh màn | hộp nhô vuông: mép bo R6 rồi thành thẳng ~15–18 mm tới u 22 | vai ellip liên tục: lệch 6,4 mm × sâu 26 mm (u 4 → 30), không còn thành thẳng; nền rộng 110,4 × 74,4 (cũ 109,4 × 73,4) |
+| Đĩa mặt (phần thấy) | góc R10, mép trước R6/vát 0,8 | góc **R14**, mép trước **R3** + vát 0,88 × 45° (chỗ chạm bàn) |
+| Yên vát / vành chặn | R10 → R15, vát 5 | giữ (vành 104 × 68 × 2, vít (±45,5; ±27,5)); thêm đoạn chuyển R14 → R10 dài 1,7 mm (45°, không support); yên + vành lùi 1,7 mm |
+| Giữ nguyên (đã in đạt) | hốc kính 69,2 + 0,3, kính lùi 1,5, cửa sổ 58,4 × 44 lệch −4,9, trụ vít tự ren Ø2,4 tại (±40; ±22), nút nói (mini-cap hốc 9,8, ống Ø5,71, chữ thập 4,19 × 1,25 sâu 5,49, ổ switch 14,00 + rãnh V) | không đổi |
+Không thu vành chặn (vành 104 × 68 giữ để vít vào phần đặc ≥ 3,9 ở góc; thu còn 100 × 64 chưa cần). Hố vít dời mồi: lỗ mồi bắt đầu u 9 (tránh thủng vai).
+Ảnh: `out-s3-screen/owl-preview.png`, `owl-face-close.png`, `owl-face-45.png`.
+**Tuan in thử 2026-11-26: nút nói ĐẠT "rất tốt"** (mẫu p6-test-gon) – giữ nguyên số nút/ổ.
+
 ### TODO còn lại
-1. Dáng: hộp nền vẫn nhô khỏi thân (thành thẳng ~15 mm ở góc trên/dưới trước khi thu 45°); vai R ≥ 12 chỉ đạt ở góc mặt phẳng (R17,7), mép trước bo R6 (R12 làm mặt trước hẹp hơn lỗ 94,6) – cần Claude xem ảnh.
+1. Dáng: xem mục "Khung màn gọn" bên dưới. Vai R ≥ 12 KHÔNG đạt hết: lệch ngang tối đa 6,4 mm (mép phẳng 48,8 → thành 55,2) nên vai ellip 6,4 × 26 sâu, không phải R12 tròn; vành chặn chưa thu (giữ 104 × 68).
 2. Mỏ: hơi chồng đĩa 1 mm, chưa chồng ~4 mm như V2 (vành giữ mỏ chạm đĩa).
 3. Mic: ống dẫn âm = lỗ Ø4 trong vách vỏ; bịt bằng ron xốp 1,2 mm (xem "Mic dời + bịt kín"), chưa thử ron thật.
 4. Đo thật: PCB ampli / INMP441 (độ dày, linh kiện) như bản v2.
