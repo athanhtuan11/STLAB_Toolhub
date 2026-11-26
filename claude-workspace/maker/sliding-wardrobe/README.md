@@ -35,11 +35,11 @@ Script kiểm 17 điều kiện, tất cả đang PASS. Ảnh 3D tổng hợp: `
 
 ## Vì sao chọn "U dưới chịu tải + ray trên giữ đứng"
 
-Cánh khoảng **34 kg** (giả định 3 kg/tấm nhựa, `TODO` cân thật), **cao 2,90 m**. Tách việc cho hai ray:
+Cánh khoảng **39 kg** (tấm nhựa ~5 kg), **cao 2,90 m**. Tách việc cho hai ray:
 
 | Việc | Ai làm | Vì sao chắc |
 | --- | --- | --- |
-| Đỡ cánh ~34 kg | **4 bánh/cánh lăn trong lòng U chấn** (nên ≥ 13 kg/bánh) | Tải xuống thẳng sàn. Sàn đỡ suốt chiều dài U nên U không võng, bánh 608 dễ mua và rẻ |
+| Đỡ cánh ~39 kg | **4 bánh/cánh lăn trong lòng U chấn** (nên ≥ 15 kg/bánh) | Tải xuống thẳng sàn. Sàn đỡ suốt chiều dài U nên U không võng, bánh 608 dễ mua và rẻ |
 | Giữ chân cánh không lắc | **Thành U** ôm càng bánh | Càng 30 trong lòng U 36 → chân cánh chỉ lắc ±3 mm, 2 lớp cánh cách nhau 10 (khe) không cọ |
 | Giữ đầu cánh đứng thẳng | **Xe treo trong ray hộp 40 × 40** | Xe treo hở 3 mm trên mép ray nên không gánh tải; loại xe treo nào vừa ray cũng dùng được |
 | Chống nhấc cánh khỏi ray | Xe treo kín trong ray hộp | Nhấc cánh tối đa ~5 mm là xe treo chạm nóc ray; bánh cần nhấc 38 mm mới thoát được U (kiểm `chong_nhay`) |
@@ -84,7 +84,7 @@ Các bộ treo hãng đều kèm dẫn hướng sàn
 - **Chặn cuối cao su trong lòng U** ở 2 đầu (cụm bánh chạm thì dừng, mép cánh sát tường).
 - **Cụm bánh** (2 cụm/cánh, tâm cách mép cánh 110): càng thép rộng 30 hàn dưới viền dưới; 2 bánh 608 bọc POM Ø32 × 12 cách nhau 60,
   trục bu lông M8. Có vít chỉnh cao để cân cánh thẳng đứng.
-- **Tải mỗi bánh nên ≥ (khối lượng cánh ÷ 4) × 1,5 ≈ 13 kg** (cánh ~34 kg, giả định); Tuan tự chọn bánh phù hợp. Bạc đạn 608 trần chịu được nhiều hơn mức này; lớp POM bọc
+- **Tải mỗi bánh nên ≥ (khối lượng cánh ÷ 4) × 1,5 ≈ 15 kg** (cánh ~39 kg); Tuan tự chọn bánh phù hợp. Bạc đạn 608 trần chịu được nhiều hơn mức này; lớp POM bọc
   ngoài cần hỏi người bán tải/bánh (`TODO`, điền `wheel_kg`).
 
 ## Ray trên – ray hộp 40 × 40 (chỉ giữ đứng)
@@ -107,26 +107,29 @@ Các bộ treo hãng đều kèm dẫn hướng sàn
 - **Tấm = nhựa trong nhà 400 × 2900 × 10**, 4 tấm/cánh (x = 0–400, 400–800, 800–1200, 1200–1600), **bắt vít lên MẶT TRƯỚC khung cánh**.
   Tổng 8 tấm cho 2 cánh + **1 tấm** cắt thành 4 mảnh 1499,5 làm 2 tấm che ray (mỗi tấm 2 mảnh) → **mua 9 tấm**.
 - **Viền = sắt hộp 20 × 40 × 1,2 đặt nằm** (mặt 20 lộ ra trước, sâu 40): viền trên, viền dưới, 2 viền đứng; dài 1560 (ngang) và 2900 (đứng).
-- **3 sống đứng sắt hộp 20 × 40 đặt ĐỨNG** tại x = 400, 800, 1200 từ mép cánh (cao 66 → 2926, dài 2860/sống).
-  Bỏ 4 thanh giằng hộp 13 × 26 cũ.
+- Tấm có **hèm khóa bằng móc sắt** (Tuan 2026-11-26) → không cần sống đứng ở đường nối. Dùng **4 thanh ngang sắt hộp 20 × 40 đặt nằm**
+  (sâu 40 = dày khung, mặt 20 sát sau tấm), dài 1560, tâm cao **638 / 1210 / 1782 / 2354** từ sàn (chia đều ~572).
+  Móc hèm bắt vào viền trên/dưới + 4 thanh ngang. Bỏ 3 sống đứng và 4 giằng 13 × 26 cũ.
 - **Dày cánh 50** = tấm 10 + khung 40. Khe giữa 2 lớp cánh 10.
-- Khung cánh 20 × 40: 35 m (viền + sống đứng, cả 2 cánh; theo `bom.csv`).
+- Khung cánh 20 × 40: ~30 m (viền + thanh ngang, cả 2 cánh; theo `bom.csv`).
 - Dưới viền dưới hàn **2 càng bánh**; trên viền trên bắt **2 bát treo**.
-- Khối lượng cánh ≈ **~34 kg/cánh** với **GIẢ ĐỊNH 3 kg/tấm nhựa** (`panel_kg` trong `P`). `TODO`: cân 1 tấm thật rồi sửa `panel_kg`.
+- Khối lượng cánh ≈ **~39 kg/cánh** (tấm **~5 kg**, Tuan cân 2026-11-26) → bánh nên **≥ 15 kg/bánh**.
 - Chống vênh: hàn/ghép trên mặt phẳng, kẹp chặt, đính chéo góc, **2 đường chéo lệch ≤ 2** mới chốt.
 - Sơn: mài mối hàn → lót chống gỉ → đen mờ; sơn xong mới bắt tấm.
-- Phương án thay thế (**chưa làm**): nếu tấm nhựa có hèm khóa với nhau thì thay 3 sống đứng bằng 3–4 thanh ngang
-  (nhẹ hơn ~2,4 m sắt/cánh theo Tuan). Cần Tuan xác nhận loại tấm.
-- `TODO`: vẽ lại bản vẽ gia công cánh (bảng cắt tấm, viền, sống đứng, càng bánh, bát treo, lỗ khóa, khe tay nắm) sau khi anh duyệt
+- `TODO`: vẽ lại bản vẽ gia công cánh (bảng cắt tấm, viền, thanh ngang, càng bánh, bát treo, lỗ khóa, khe tay nắm) sau khi anh duyệt
   và có tấm nhựa thật.
 
 ## Khóa + tay nắm
 
-- **1 khóa ấn** ở chỗ chồng mí: thân khóa gắn trên tấm nhựa C1 tại **x = 1410** (cao ~1100); chốt Ø8 bắn ra sau qua khe 10
-  ăn sâu 4 vào lỗ trên tấm nhựa C2 (sau lỗ là viền đứng C2 ở x 1400–1420).
-  `TODO`: mua khóa có **hành trình chốt ≥ 14** (`plunger_travel` trong `P`).
-- **Khe nắm 30 × 200 xuyên tấm**, tâm **cao 950**, tâm cách mép cánh phía tường **300** (C1 ở x = 300, C2 ở x = 2700).
-  C2 lùa hết sang trái vẫn còn chỗ móc tay kéo về (kiểm `tay_nam_thay`).
+
+Tấm chỉ dày 10 → **mọi thứ chịu lực bắt vào sắt phía sau, không bắt vít chịu lực vào nhựa**.
+- **Tay nắm âm** (khay ép/vít vào lỗ khoét trên tấm, khay sâu ≤ 35 nằm gọn trong lòng khung 40) cho **cả 2 cánh**. Không dùng tay nắm
+  nổi: tay nắm nổi trên C2 sẽ quẹt vào C1 khi lùa (khe chỉ 10). Tâm **cao 950**, cách mép cánh phía tường **300** (C1 x = 300,
+  C2 x = 2700), cách viền và thanh ngang ≥ 30 (kiểm `tay_nam_ne`). C2 lùa hết sang trái vẫn còn chỗ móc tay (kiểm `tay_nam_thay`).
+  `TODO`: cỡ lỗ khoét theo tay nắm mua (model đang để 30 × 200).
+- **Khóa (tùy chọn)**: khóa ấn tủ cửa lùa ở chỗ chồng mí, nút xuyên tấm C1 tại x = 1410, cao 1160. **Thân khóa bắt lên ke L thép
+  vít vào thanh ngang** ngay trên (cách 15), không treo vào nhựa. Chốt bắn ra sau qua khe 10, ăn 4 vào lỗ tấm C2 (sau lỗ là viền đứng C2).
+  `TODO`: khóa mua cần **hành trình chốt ≥ 14**. Không cần khóa thì bỏ, chỉ giữ 2 tay nắm âm.
 
 ## Khung sắt (hộp 40 × 40 × 1,4)
 
@@ -139,7 +142,7 @@ Các bộ treo hãng đều kèm dẫn hướng sàn
 - **Cột sau** bắt **bát L 50 × 50 × 4** + nở M8 vào tường sau ở 2 độ cao **1500 và 2900** (10 bát cho 5 cột); Tuan xác nhận tường sau bắt nở được.
 - **Dầm đỉnh:** bỏ 2 dầm đầu 40 × 40 × 3000 (xem Ray trên).
 - Vật tư (`design/bom.csv`, tính lại 2026-11-26): hộp 40 × 40 **~47,6 m** (bớt ~12 m so với bản lam sóng, không kể 2 ray đã có),
-  hộp 20 × 40 **~35 m** cho khung cánh (viền + sống đứng) cộng **~12 m** cho bệ (3 dãn bệ + 1 hộp đứng giữa 2 U),
+  hộp 20 × 40 **~30 m** cho khung cánh (viền + thanh ngang) cộng **~12 m** cho bệ (3 dãn bệ + 1 hộp đứng giữa 2 U),
   U chấn 40 × 40 2 × 3 m, sắt **~139,5 kg** (theo độ dày giả định, `TODO` theo hàng mua).
 
 | Khoang | Lọt lòng | Ống Ø27 (cao từ sàn) |
@@ -153,14 +156,14 @@ Các bộ treo hãng đều kèm dẫn hướng sàn
 | --- | --- | --- | --- |
 | 1 | **Tấm nhựa trong nhà 400 × 2900 × 10** | **9 tấm** | 8 tấm làm 2 cánh (4/cánh) + 1 tấm cắt 4 mảnh 1499,5 làm 2 tấm che ray |
 | 2 | **Thép U chấn 40 × 40 × 2**, dài 3 m | 2 | ray dưới chịu tải |
-| 3 | **Bánh 608 bọc POM Ø32 × 12** (hoặc bánh ổ bi tương đương), bu lông trục M8 | 8 | Tuan tự chọn, nên ≥ 13 kg/bánh |
+| 3 | **Bánh 608 bọc POM Ø32 × 12** (hoặc bánh ổ bi tương đương), bu lông trục M8 | 8 | Tuan tự chọn, nên ≥ 15 kg/bánh |
 | 4 | Thép bản làm càng bánh (tự cắt hàn), rộng 30, vít chỉnh cao M8 | 4 cụm | `TODO` dày bản (bản cũ ghi 4–5 mm) |
 | 5 | Ray hộp 40 × 40 dài 3 m | 2 | anh đã có |
 | 6 | Xe treo vừa ray 40 × 40 (loại thường, không cần tải nặng) + bu lông treo | 4 | chỉ giữ đứng |
 | 7 | Chặn cuối: trong ray trên (2 có lẫy + 2 cao su) + cao su trong lòng U (4) | 8 | |
 | 8 | Vít 4 × 12 đầu dù (khoan mồi 3,3) bắt tấm che ray vào U/ray | 26 | ~250/vít, không dùng vít tự khoan |
 | 9 | Vít nở đầu bằng (khoan côn) bắt U xuống sàn | 16 | đầu vít chìm phẳng lòng U |
-| 10 | Khóa ấn tủ cửa lùa (push lock), hành trình chốt ≥ 14 | 1 | `TODO` chọn loại |
+| 10 | Tay nắm âm cửa lùa (khay sâu ≤ 35) + khóa ấn (tùy chọn, hành trình ≥ 14, bắt ke L vào thanh ngang) | 2 + 1 | `TODO` chọn loại |
 | 11 | Tán rút ren M8 (bát treo) + tán rút ren M5 (đầu 5 dầm đỉnh) + kìm rút | 4 + 5 | theo `bom.csv` |
 | 12 | Ron chổi chống bụi mép chồng mí | 2 × 2,9 m | |
 | 13 | Ống inox Ø27 + tai đỡ hàn (dài 698 mm/ống) | 8 ống | `TODO` dày ống: model ghi 1,0, bản cũ ghi 1,2 |
@@ -168,7 +171,7 @@ Các bộ treo hãng đều kèm dẫn hướng sàn
 | 15 | Bát L 50 × 50 × 4 + nở M8 bắt cột sau vào tường sau | 10 | 2 độ cao 1500 và 2900 × 5 cột |
 | 16 | Bản mã chêm 5 × 20 × 40 (nối U trong vào dãn bệ trước) | 7 | ~500/cái |
 | 17 | Sắt hộp 40 × 40 (cột, dầm, ngang) | ~47,6 m | 1,4 mm (giả định) |
-| 18 | Sắt hộp 20 × 40 khung cánh (viền + sống đứng, 2 cánh) | ~35 m | 1,2 mm |
+| 18 | Sắt hộp 20 × 40 khung cánh (viền + 4 thanh ngang, 2 cánh) | ~30 m | 1,2 mm |
 | 19 | Bệ tủ: sắt hộp 20 × 40 (3 dãn bệ 3 m + 1 hộp đứng giữa 2 U 3 m) | ~12 m | dãn bệ 1,4 mm |
 | 20 | Ván 18 chịu ẩm 3000 × 680 (mặt bệ, khoét lỗ chân cột) | 1 tấm | mặt ván = miệng U |
 
@@ -180,17 +183,16 @@ Mở `design/wardrobe.blend`, bấm **Space**: C1 lùa phải hết cỡ rồi �
 ## TODO
 
 - W thực tế.
-- Cân 1 tấm nhựa 400 × 2900 × 10 thật → sửa `panel_kg` (hiện 3 kg giả định, cánh ~34 kg) → kiểm bánh ≥ 13 kg.
+- Cân 1 tấm nhựa 400 × 2900 × 10 thật → sửa `panel_kg` (Tuan: ~5 kg, đã sửa; cân chính xác nếu cần).
 - Đo bánh POM (Ø, bề rộng, tải → `wheel_kg`), ray hộp (độ dày vách, khe đáy), xe treo (cao) → điền vào `P`, chạy lại.
-- Loại tấm nhựa: có hèm khóa không (quyết phương án 3–4 thanh ngang thay 3 sống đứng).
 - Dày ống inox Ø27: model 1,0, bản cũ 1,2 → xác nhận.
-- Bản vẽ gia công cánh tấm nhựa (bảng cắt, viền, sống đứng, càng bánh, bát treo, lỗ khóa).
+- Bản vẽ gia công cánh tấm nhựa (bảng cắt, viền, thanh ngang, càng bánh, bát treo, lỗ khóa).
 - Tường sau ẩm thì chừa khe ~20 sau quần áo hoặc ốp tấm chống ẩm.
 
 ## An toàn
 
-- Cánh **~34 kg (giả định), cao 2,90 m**: **2–3 người** dựng và lắp cánh. Lắp chặn cuối ở cả ray trên và U dưới trước khi lùa thử.
+- Cánh **~39 kg, cao 2,90 m**: **2–3 người** dựng và lắp cánh. Lắp chặn cuối ở cả ray trên và U dưới trước khi lùa thử.
 - Mép trước bệ cao 40 (như chân tủ) là tấm che ray dưới; lòng U nằm sau tấm che – hút bụi, không để vật cứng lọt vào.
 - Tấm nhựa 400 × 2900: cắt/khoan trên mặt phẳng, đeo kính; khoan mồi 3,3 trước khi bắt vít 4 × 12 vào U/ray.
 - Khung sắt **phải bắt nở vào tường** ở cả 3 phía + sàn. Khoan tường/sàn: dò đường điện, ống nước âm trước.
-- Trẻ nhỏ dễ kẹt tay ở chỗ chồng mí và mép cánh khi cánh chạy về tường; dặn không thò tay qua khe nắm khi đang lùa.
+- Trẻ nhỏ dễ kẹt tay ở chỗ chồng mí và mép cánh khi cánh chạy về tường; dặn không thò tay vào khe chồng mí khi đang lùa.

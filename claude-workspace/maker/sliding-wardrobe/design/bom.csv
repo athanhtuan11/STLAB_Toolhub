@@ -4,7 +4,7 @@ Chan cuoi cao su trong long U,,2 dau moi thanh U,4
 Ong inox tron Ø27,698.0,ong treo,8
 Sat hop 20x40,1560.0,vien-ngang-duoi,2
 Sat hop 20x40,1560.0,vien-ngang-tren,2
-Sat hop 20x40,2860,song-dung,6
+Sat hop 20x40,1560.0,thanh-ngang,8
 Sat hop 20x40,2900,vien-dung-trai,2
 Sat hop 20x40,2900,vien-dung-phai,2
 "Sat hop 20x40 (dan be, dat nam)",3000,be tu,3
@@ -39,5 +39,5 @@ Ron choi chong bui (mep chong mi),2900,1/canh,2
 No M8 xuyen dan be xuong san (thay ban de chan cot),,"3 dan be, ~600/cai",18
 "Vit 4x12 dau du (KHOAN MOI 3.3, khong dung vit tu khoan) bat tam che vao thanh U / ray",,~250/vit,26
 Tan rut ren M5 + vit M5 bat tam che tren vao dau 5 dam dinh (han bit dau),,5 dam dinh,5
-LUU Y,,tai moi banh >= (khoi luong canh / 4) x 1.5 = 13 kg (canh ~34 kg voi panel_kg=3.0 GIA DINH - TODO can tam that),
-Khoi luong sat uoc tinh (kg),139.5,do day 1.4/1.2 gia dinh,
+LUU Y,,tai moi banh >= (khoi luong canh / 4) x 1.5 = 15 kg (canh ~39 kg voi panel_kg=5.0),
+Khoi luong sat uoc tinh (kg),134.4,do day 1.4/1.2 gia dinh,

@@ -6,7 +6,7 @@
    "panel_w": 400,
    "panel_L": 2900,
    "panel_t": 10,
-   "panel_kg": 3.0,
+   "panel_kg": 5.0,
    "door_n": 2,
    "ov_min": 40,
    "ov_max": 200,
@@ -19,7 +19,8 @@
     40,
     1.2
    ],
-   "mullion": [
+   "h_rails": 4,
+   "h_rail": [
     40,
     20,
     1.2
@@ -61,10 +62,11 @@
    "plunger_d": 8,
    "plunger_travel": 14,
    "plunger_engage": 4,
-   "lock_z": 1100,
+   "lock_z": 1160,
    "handle_w": 30,
    "handle_h": 200,
    "handle_z": 950,
+   "handle_cup_depth": 25,
    "handle_off": 300,
    "handle_finger": 15,
    "DZ": 125,
@@ -112,7 +114,7 @@
     "x": 2700.0
    }
   ],
-  "Z_LOCK": 1100,
+  "Z_LOCK": 1160,
   "GAP_DOOR": 10,
   "DW": 1600,
   "DWS": [
@@ -157,13 +159,19 @@
   "DT": 50,
   "PT": 10,
   "PW": 400,
+  "HR_Z": [
+   638.0,
+   1210.0,
+   1782.0,
+   2354.0
+  ],
   "z_axle": 18.0,
   "U_IN": 36.0,
   "DOOR_KG": [
-   33.57753472,
-   33.57753472
+   39.03820416,
+   39.03820416
   ],
-  "WHEEL_NEED": 12.591575520000001,
+  "WHEEL_NEED": 14.63932656,
   "ROD": {
    "span": 700.0,
    "sigma": 67.05774081064702,
@@ -216,7 +224,7 @@
    ],
    "khoa_tren_tam": [
     true,
-    "than khoa xuyen tam nhua canh truoc, khong vuong vien/song dung"
+    "than khoa khong vuong vien/thanh ngang, cach thanh ngang 15 (<=30, de bat ke L vao thanh ngang, khong bat vao nhua)"
    ],
    "khoa_an_tam": [
     true,
@@ -224,7 +232,7 @@
    ],
    "tay_nam_ne": [
     true,
-    "khe tay nam + cho moc tay khong vuong vien/song dung sau tam"
+    "tay nam am (khay sau 25) nam trong long khung sau 40, cach vien/thanh ngang >= 30"
    ],
    "tay_nam_thay": [
     true,
@@ -2017,56 +2025,74 @@
    "Th": 20
   },
   {
-   "name": "C1-song-dung-1",
+   "name": "C1-thanh-ngang-1",
    "group": "Canh 1",
    "mat": "steel",
    "kind": "dframe",
    "spec": "20x40",
    "bbox": [
-    380.0,
-    420.0,
     20.0,
-    40.0,
-    66,
-    2926
+    1580.0,
+    20.0,
+    60.0,
+    628.0,
+    648.0
    ],
-   "L": 2860,
+   "L": 1560.0,
    "Wd": 40.0,
    "Th": 20.0
   },
   {
-   "name": "C1-song-dung-2",
+   "name": "C1-thanh-ngang-2",
    "group": "Canh 1",
    "mat": "steel",
    "kind": "dframe",
    "spec": "20x40",
    "bbox": [
-    780.0,
-    820.0,
     20.0,
-    40.0,
-    66,
-    2926
+    1580.0,
+    20.0,
+    60.0,
+    1200.0,
+    1220.0
    ],
-   "L": 2860,
+   "L": 1560.0,
    "Wd": 40.0,
    "Th": 20.0
   },
   {
-   "name": "C1-song-dung-3",
+   "name": "C1-thanh-ngang-3",
    "group": "Canh 1",
    "mat": "steel",
    "kind": "dframe",
    "spec": "20x40",
    "bbox": [
-    1180.0,
-    1220.0,
     20.0,
-    40.0,
-    66,
-    2926
+    1580.0,
+    20.0,
+    60.0,
+    1772.0,
+    1792.0
    ],
-   "L": 2860,
+   "L": 1560.0,
+   "Wd": 40.0,
+   "Th": 20.0
+  },
+  {
+   "name": "C1-thanh-ngang-4",
+   "group": "Canh 1",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    20.0,
+    1580.0,
+    20.0,
+    60.0,
+    2344.0,
+    2364.0
+   ],
+   "L": 1560.0,
    "Wd": 40.0,
    "Th": 20.0
   },
@@ -2279,8 +2305,8 @@
     1424.0,
     20.0,
     60.0,
-    1075,
-    1125
+    1135,
+    1185
    ],
    "L": 50,
    "Wd": 40.0,
@@ -2359,56 +2385,74 @@
    "Th": 20
   },
   {
-   "name": "C2-song-dung-1",
+   "name": "C2-thanh-ngang-1",
    "group": "Canh 2",
    "mat": "steel",
    "kind": "dframe",
    "spec": "20x40",
    "bbox": [
-    1780.0,
-    1820.0,
+    1420.0,
+    2980.0,
     80.0,
-    100.0,
-    66,
-    2926
+    120.0,
+    628.0,
+    648.0
    ],
-   "L": 2860,
+   "L": 1560.0,
    "Wd": 40.0,
    "Th": 20.0
   },
   {
-   "name": "C2-song-dung-2",
+   "name": "C2-thanh-ngang-2",
    "group": "Canh 2",
    "mat": "steel",
    "kind": "dframe",
    "spec": "20x40",
    "bbox": [
-    2180.0,
-    2220.0,
+    1420.0,
+    2980.0,
     80.0,
-    100.0,
-    66,
-    2926
+    120.0,
+    1200.0,
+    1220.0
    ],
-   "L": 2860,
+   "L": 1560.0,
    "Wd": 40.0,
    "Th": 20.0
   },
   {
-   "name": "C2-song-dung-3",
+   "name": "C2-thanh-ngang-3",
    "group": "Canh 2",
    "mat": "steel",
    "kind": "dframe",
    "spec": "20x40",
    "bbox": [
-    2580.0,
-    2620.0,
+    1420.0,
+    2980.0,
     80.0,
-    100.0,
-    66,
-    2926
+    120.0,
+    1772.0,
+    1792.0
    ],
-   "L": 2860,
+   "L": 1560.0,
+   "Wd": 40.0,
+   "Th": 20.0
+  },
+  {
+   "name": "C2-thanh-ngang-4",
+   "group": "Canh 2",
+   "mat": "steel",
+   "kind": "dframe",
+   "spec": "20x40",
+   "bbox": [
+    1420.0,
+    2980.0,
+    80.0,
+    120.0,
+    2344.0,
+    2364.0
+   ],
+   "L": 1560.0,
    "Wd": 40.0,
    "Th": 20.0
   },

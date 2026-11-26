@@ -102,7 +102,7 @@ def section():
     a_bot.text(-5, dz0 + 90, f"banh 608 POM O{P['wheel_d']}x{P['wheel_w']}, 2 cum x 2 banh / canh, can >= {meta['WHEEL_NEED']:.0f} kg/banh\n"
                f"cang {P['bogie_w']} trong long U {meta['U_IN']:.0f} -> chan canh lac +-{(meta['U_IN'] - P['bogie_w']) / 2:g} mm",
                fontsize=8)
-    fig.suptitle(f"Mat cat qua cum banh  |  khe giua 2 canh {meta['GAP_DOOR']:.0f}  |  canh ~{meta['DOOR_KG'][0]:.0f} kg (tam nhua {P['panel_kg']} kg/tam GIA DINH)",
+    fig.suptitle(f"Mat cat qua cum banh  |  khe giua 2 canh {meta['GAP_DOOR']:.0f}  |  canh ~{meta['DOOR_KG'][0]:.0f} kg (tam nhua {P['panel_kg']} kg/tam)",
                  fontsize=10)
     fig.tight_layout()
     fig.savefig(os.path.join(OUT, "12-mat-cat-ray.png"), dpi=150)

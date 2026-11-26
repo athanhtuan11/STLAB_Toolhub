@@ -95,14 +95,16 @@ def door_and_plan():
     PW = P["panel_w"]
     for j in range(k):
         a0.add_patch(Rectangle((j * PW, 0), PW, DHD, fc=C["lam"], ec="k", lw=0.6))
-    for x0_, w_ in [(0, FW), (DW - FW, FW)] + [(j * PW - P["mullion"][0] / 2, P["mullion"][0]) for j in range(1, k)]:
+    for x0_, w_ in [(0, FW), (DW - FW, FW)]:
         a0.add_patch(Rectangle((x0_, 0), w_, DHD, fc="none", ec="w", ls="--", lw=0.8))
+    for zr in m["HR_Z"]:
+        a0.add_patch(Rectangle((FW, zr - m["dz"][0] - P["h_rail"][1] / 2), DW - 2 * FW, P["h_rail"][1], fc="none", ec="w", ls="--", lw=0.8))
     a0.add_patch(Rectangle((0, 0), DW, FW, fc="none", ec="w", ls="--", lw=0.8))
     a0.add_patch(Rectangle((0, DHD - FW), DW, FW, fc="none", ec="w", ls="--", lw=0.8))
     dim(a0, 0, DHD, DW, DHD, f"{DW} = {k} tấm × {PW}", off=80, fs=7)
     dim(a0, 0, 0, 0, DHD, f"{DHD:.0f} = dài tấm nhựa", off=-60, vert=True, fs=7)
     a0.text(DW / 2, -150, f"Tấm nhựa {PW}×{P['panel_L']}×{P['panel_t']} bắt vít lên mặt trước khung\n"
-            f"khung: viền hộp 20×40 nằm + {k - 1} sống đứng 20×40 dựng (mặt 40) ở đường nối tấm\n"
+            f"khung: viền hộp 20×40 nằm + {P['h_rails']} thanh ngang 20×40 nằm (móc hèm bắt vào)\n"
             f"2 cánh giống nhau = {min(DWS)}; 2 cụm bánh dưới đáy", ha="center", fontsize=8)
     a0.set_xlim(-320, DW + 100); a0.set_ylim(-380, DHD + 250); a0.set_aspect("equal"); a0.axis("off")
     a0.set_title(f"CÁNH {k} TẤM NHỰA (nhìn trước)", fontsize=11)
@@ -219,7 +221,7 @@ def bom():
         w.writerow(["No M8 xuyen dan be xuong san (thay ban de chan cot)", "", "3 dan be, ~600/cai", 3 * (P["W"] // 600 + 1)])
         w.writerow(["Vit 4x12 dau du (KHOAN MOI 3.3, khong dung vit tu khoan) bat tam che vao thanh U / ray", "", "~250/vit", 2 * (P["W"] // 250 + 1)])
         w.writerow(["Tan rut ren M5 + vit M5 bat tam che tren vao dau 5 dam dinh (han bit dau)", "", "5 dam dinh", 5])
-        w.writerow(["LUU Y", "", f"tai moi banh >= (khoi luong canh / 4) x 1.5 = {m['WHEEL_NEED']:.0f} kg (canh ~{m['DOOR_KG'][0]:.0f} kg voi panel_kg={P['panel_kg']} GIA DINH - TODO can tam that)", ""])
+        w.writerow(["LUU Y", "", f"tai moi banh >= (khoi luong canh / 4) x 1.5 = {m['WHEEL_NEED']:.0f} kg (canh ~{m['DOOR_KG'][0]:.0f} kg voi panel_kg={P['panel_kg']})", ""])
         w.writerow(["Khoi luong sat uoc tinh (kg)", round(kg, 1), "do day 1.4/1.2 gia dinh", ""])
     tube_m = Counter()
     for pt in parts:
