@@ -62,7 +62,7 @@ for p in d["projects"]:
 check(rows["maker/pushrod-arm"]["cover"].endswith("/freecad/images/assembly/cover.png"), "pushrod-arm: cover assembly")
 check(rows["maker/sesame-quadruped"]["cover"].endswith("/print/plates/p1-body/preview.png"), "sesame: cover preview ban in")
 check(rows["maker/line-bot"]["cover"].endswith("/design/concepts/concept-a-3-4.png"), "line-bot: cover concept 3-4")
-check(rows["maker/uwb-drone-positioning"]["cover"] in ("", None), "uwb: khong co anh -> cover rong")
+check(rows["maker/guitar-sai-thanh"]["cover"] in ("", None), "guitar: khong co anh -> cover rong")
 check(rows["maker/sesame-quadruped"]["detail_url"] in ("", None), "sesame khong CLAUDE.md -> khong detail")
 check(rows["maker/pushrod-arm"]["assembly_pdf"] is True, "pushrod-arm co ASSEMBLY.pdf")
 

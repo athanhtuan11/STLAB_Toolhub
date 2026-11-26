@@ -68,14 +68,6 @@
       "group": "robotics"
     },
     {
-      "rel": "maker/uwb-drone-positioning",
-      "summary": "Định vị drone trong nhà bằng UWB.",
-      "audience": "",
-      "status": "y-tuong",
-      "next": "Chưa bắt đầu: bước 0 dáng sản phẩm + mockup.",
-      "group": "robotics"
-    },
-    {
       "rel": "maker/english-teacher",
       "group": "smart",
       "title": "Cú Bông – loa dạy tiếng Anh",
@@ -104,38 +96,6 @@
       "works_note": "chạy thật ~18 fps qua Wi-Fi 2026-11-03",
       "difficulty": "Không hàn",
       "duration": ""
-    },
-    {
-      "rel": "maker/smart-home",
-      "group": "smart",
-      "summary": "ESP32 + ESPHome + Home Assistant.",
-      "audience": "",
-      "status": "y-tuong",
-      "next": "Chốt phòng/thiết bị cần tự động hóa."
-    },
-    {
-      "rel": "maker/diy-audio-amp",
-      "group": "smart",
-      "summary": "Ampli tự làm – chưa chốt loại, công suất, nguồn.",
-      "audience": "",
-      "status": "y-tuong",
-      "next": "Chốt mục tiêu (README còn TODO)."
-    },
-    {
-      "rel": "maker/solar-battery",
-      "group": "smart",
-      "summary": "Hệ pin năng lượng mặt trời – chưa chốt tải.",
-      "audience": "",
-      "status": "y-tuong",
-      "next": "Chốt tải cần cấp (README còn TODO)."
-    },
-    {
-      "rel": "maker/pi4-dslr-control",
-      "group": "smart",
-      "summary": "Điều khiển máy ảnh DSLR từ Raspberry Pi 4.",
-      "audience": "",
-      "status": "y-tuong",
-      "next": "Chốt tính năng (README còn TODO)."
     },
     {
       "rel": "maker/brake-sensor-mount",
@@ -186,12 +146,31 @@
       "next": "Chờ Tuan mua phụ kiện + gửi số đo."
     },
     {
-      "rel": "maker/oss-toolkit",
-      "group": "tools",
-      "summary": "Bộ công cụ mã nguồn mở (README còn TODO).",
+      "rel": "maker/drum-pad",
+      "group": "robotics",
+      "title": "Bộ trống STEAM 4 pad",
+      "summary": "Hộp trống 4 pad ESP32-A1S cho lớp 2–5: gõ mạnh to hơn, LED theo nhịp.",
+      "audience": "Lớp 2–5",
+      "status": "tam-dung",
+      "next": "Bản giấy xong (ADS7830 chung I2C codec); chờ mua linh kiện thử breadboard."
+    },
+    {
+      "rel": "maker/guitar-sai-thanh",
+      "group": "client",
+      "title": "Mạch thay thế đàn GUITAR UMI",
+      "summary": "Firmware ESP32-A1S thay mạch nRF52832 của đàn: tiếng đàn ra loa ngay khi bật, mic IN2 +24 dB.",
       "audience": "",
-      "status": "y-tuong",
-      "next": "Chốt mô tả."
+      "status": "dang-lam",
+      "next": "Tuan gảy thử + kiểm hú; A2DP để v0.3."
+    },
+    {
+      "rel": "maker/elephant-backpack-clicker",
+      "group": "print",
+      "title": "Balô clicky voi STLAB",
+      "summary": "Mẫu MakerWorld đổi chữ STLAB / SMALL TREE, giữ màu 3mf gốc.",
+      "audience": "",
+      "status": "san-sang-in",
+      "next": "In thử 2 bàn (3 balô + 5 voi)."
     }
   ],
   "simulations": [

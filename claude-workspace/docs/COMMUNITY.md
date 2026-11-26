@@ -9,9 +9,9 @@ Sau mỗi lần `apply`/`rollback`, cập nhật cột "Ghim" và "Kiểm tra".
 |---|---|---|---|---|---|
 | [anthropics/skills](https://github.com/anthropics/skills) | `dbd4588f9e10` | Apache-2.0; docx/pdf/pptx/xlsx là source-available | **Chính thức** (allowlist) | 2026-10-21 | `docx`, `pptx`, `xlsx` → stlab |
 | [shanraisshan/claude-code-best-practice](https://github.com/shanraisshan/claude-code-best-practice) | `9f9f5d9faec1` (sparse: `.claude`, `best-practice`, `tips`) | MIT | Cộng đồng | 2026-10-21 | Mẫu cấu trúc `.claude`/CLAUDE.md (chỉ đọc) |
-| [mattpocock/skills](https://github.com/mattpocock/skills) | `v1.3.1` (`24fe0ef7737e`) | MIT | Cộng đồng | 2026-10-21 | `grill-me`, `handoff`, `diagnosing-bugs`, `research` (~/.claude); `pr` (oss-toolkit) |
+| [mattpocock/skills](https://github.com/mattpocock/skills) | `v1.3.1` (`24fe0ef7737e`) | MIT | Cộng đồng | 2026-10-21 | `grill-me`, `handoff`, `diagnosing-bugs`, `research` (~/.claude); `pr` gỡ 2026-11-26 cùng oss-toolkit |
 | [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) | `408d3c9eee2d` | MIT | Cộng đồng | 2026-10-21 | Agent `embedded-systems`, `iot-engineer`, `cpp-pro`, `python-pro` → maker |
-| [homeassistant-ai/skills](https://github.com/homeassistant-ai/skills) | `68f2690ff868` | MIT | Cộng đồng | 2026-10-21 | `home-assistant-best-practices` → smart-home |
+| [homeassistant-ai/skills](https://github.com/homeassistant-ai/skills) | `68f2690ff868` | MIT | Cộng đồng | 2026-10-21 | dự phòng (`reserve.tsv`, gỡ cùng smart-home rỗng 2026-11-26) |
 | [homeassistant-ai/ha-mcp](https://github.com/homeassistant-ai/ha-mcp) | `v8.7.0` (`a96752286be1`) | MIT | Cộng đồng | 2026-10-21 | MCP Home Assistant (**chưa bật**) |
 | [neka-nat/freecad-mcp](https://github.com/neka-nat/freecad-mcp) | `v0.1.27` (`78bf0230a033`) | MIT | Cộng đồng | 2026-10-21 | MCP FreeCAD → prompt-library |
 | GrabCAD – Tower Pro MG90S micro servo (snapshot 3, STEP) | file zip Tuan tải 2026-10-23 (đăng nhập GrabCAD) → `community/grabcad/towerpro-mg90s/` | Điều khoản GrabCAD (phi thương mại) – xem lại khi thương mại | Cộng đồng (không có SHA) | 2026-10-23: đo STEP khớp kích thước hãng công bố 32,2 × 12,15 × 28,3 | Servo lái MG90S → maker/cyberbrick-car |
