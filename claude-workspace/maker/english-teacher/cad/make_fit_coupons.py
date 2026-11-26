@@ -70,7 +70,7 @@ mz = Y0 - mic_c.y                  # z' cua mic
 # cua so da thu bang slicer (Bambu): XH < 26 -> 'floating' (mieng vom can vach hai suon de do), 26 PASS; khong de phang them vi de se roi roi voi mieng
 MTOP = float(os.environ.get('MTOP', 7.0)); MBASE = float(os.environ.get('MBASE', 0.0))
 XH = float(os.environ.get('XH', 26.0)); YLO = float(os.environ.get('YLO', 13.5)); YHI = float(os.environ.get('YHI', 13.5))
-cut = add_box((-XH, my - YLO, 0.0), (XH, my + YHI, mz + MTOP))
+cut = add_box((-XH, my - YLO, float(os.environ.get('MZLO', 0.0))), (XH, my + YHI, mz + MTOP))   # MZLO > 0: cat sat cho mic (Tuan: mau vua du)
 bool_op(sh, cut, "INTERSECT"); bpy.data.objects.remove(cut)
 if MBASE > 0:
     base = add_box((-XH, my - YLO, -MBASE), (XH, my + YHI, 0.05), "base")

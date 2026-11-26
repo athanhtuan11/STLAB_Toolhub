@@ -15,16 +15,12 @@ plates_dir: plates-s3-test
 partial: true   # ban thu: STL khac trong stl-s3-screen la co y khong xep
 common: {sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
 plates:
-  p1-fit-test: {process: 0.20mm Standard @BBL A1, color: "#FFF3DF", overrides: {wall_loops: "3", sparse_infill_density: "20%"},
-                stl: ["face-plate.stl", "speaker-ring-L.stl", "button-cap.stl"]}
-  p2-button: {process: 0.20mm Standard @BBL A1, color: "#FFF3DF", overrides: {wall_loops: "3", sparse_infill_density: "20%"},
-              stl: ["button-cap.stl", "mx-socket-test.stl", "speaker-ring-L.stl"]}
-  # 2026-11-26 toi: ban thu NHANH nut (Tuan: in nguyen de + nut rat lau) - chi khop chu thap + o switch (cad/make_button_coupon.py)
-  p3-button-quick: {process: 0.20mm Standard @BBL A1, color: "#FFF3DF", overrides: {wall_loops: "3", sparse_infill_density: "20%"},
-                    stl: ["mini-cap.stl", "mx-socket-coupon.stl"]}
-  # 2026-11-26 chieu: ban thu NHANH mic + ray bo S3 (cad/make_fit_coupons.py, CAT NGUYEN tu vo that): vung tran quanh mic + kep mic (dat module INMP441 O15 + ron xop 1,2),
-  #   doan ray giu bo ESP32-S3 (~22 mm mep PCB) + lo cap USB-C o lung. Bo S3 CHUA do so hang that: ray chua rong PCB 25,4-28,6 (khoi giu cho 72 x 29 x 16).
-  p4-mic-s3: {process: 0.20mm Standard @BBL A1, color: "#FFF3DF", overrides: {wall_loops: "2", sparse_infill_density: "10%"},
-              stl: ["mic-seat-coupon.stl", "mic-clamp.stl"]}
-  p5-s3-rail: {process: 0.20mm Standard @BBL A1, color: "#FFF3DF", overrides: {wall_loops: "2", sparse_infill_density: "10%"},
-               stl: ["s3-rail-coupon.stl"]}
+  # 2026-11-26 toi (Tuan: "mau in can nho gon vua du tung chi tiet"): GOP 1 ban, moi mau chi giu dung cho lap.
+  #   Da DAT, khong in lai: khung man (face-plate), go giu loa O48 + vanh loa. Ban cu p1..p5 -> print/backup/20261126-ban-thu-cu/.
+  #   mini-cap + mx-socket-coupon : khop chu thap + o switch MX (cad/make_button_coupon.py, chep mau clicky cat-paw)
+  #   speaker-ring-L               : vong ep loa noi khe ngam xoay 0,40/0,40/0,45 -> thu voi vanh loa da in
+  #   mic-seat-coupon + mic-clamp  : cho gan mic cat sat tu vo that (24 x 18 x 16) – dat INMP441 O15 + ron xop 1,2
+  #   s3-rail-coupon               : doan ray bo S3 + lo USB-C cat tu vo that (38 x 18 x 21) – truot bo vao, cam cap
+  #   (cad/make_fit_coupons.py, env XH=12 YLO=10 YHI=10 MZLO=<mic z'-9> RX=19 RYLO=36 RZT=9 RZB=9). Mau cat tu vo co the can support nho (slicer tu bat).
+  p6-test-gon: {process: 0.20mm Standard @BBL A1, color: "#FFF3DF", overrides: {wall_loops: "2", sparse_infill_density: "15%"},
+                stl: ["mini-cap.stl", "mx-socket-coupon.stl", "speaker-ring-L.stl", "mic-seat-coupon.stl", "mic-clamp.stl", "s3-rail-coupon.stl"]}
