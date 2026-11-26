@@ -74,8 +74,7 @@ def section():
         rect(ax, L0 + UB_ / 2, 0, L1 - L0 - UB_, UH_, STEEL, z=3)
         yb0 = L1 + UB_ / 2
         DZ = P["DZ"]
-        rect(ax, DZ, 0, 40, P["be_joist"][1], STEEL, z=3)                       # dan be truoc (dung hang cot)
-        rect(ax, yb0, 0, DZ - yb0, P["be_joist"][1], "#777", z=3)               # ban ma chem U - dan
+        rect(ax, yb0, 0, 40, P["be_joist"][1], STEEL, z=3)                      # dan be truoc ap sat U trong (han doc), do cot truoc
         rect(ax, DZ, P["be_joist"][1], 40, 200, STEEL, z=2)                     # cot truoc dung tren dan
         rect(ax, yb0, UH_ - P["be_board"], 140, P["be_board"], "#D9C7A6", z=3)
         # dau dam dinh keo dai (ray bat thang duoi) + tam che ray tren/duoi (cung mat canh ngoai)

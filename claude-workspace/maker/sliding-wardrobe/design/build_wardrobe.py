@@ -410,13 +410,11 @@ def build():
             box(f"Che-ray-{nm}-{h + 1}", "Che ray", xa, xb, fy0, fy1, z0f, z1f, "panel", "fascia",
                 f"tam nhua che ray {nm} {z1f - z0f:.0f} cao")
     jw, jh = p["be_joist"][0], p["be_joist"][1]
-    for n, yj in enumerate((y0i + TB / 2, y_mid, y1i - TB / 2)):     # dung 3 hang cot: cot dung len dan, dan bat no san
+    # dan truoc ap SAT canh sau U trong (han doc suot 3000) va lam chan 3 cot truoc -> U + dan + cot thanh 1 khoi
+    for n, yj in enumerate((yb0 + jw / 2, y_mid, y1i - TB / 2)):
         box(f"Be-dan-{n + 1}", "Be tu", 0, W, yj - jw / 2, yj + jw / 2, 0, jh, "steel", "be-joist", "20x40 nam")
-    nt = int(W // 500) + 1
-    for t in range(nt):                            # ban ma chem noi canh sau U trong -> dan be truoc (U dinh vao khung)
-        xt = 20 + t * (W - 40) / (nt - 1)
-        box(f"Be-ban-ma-U-{t + 1}", "Be tu", xt - 20, xt + 20, yb0, y0i, 0, jh, "steel", "tab",
-            f"ban ma chem {y0i - yb0:.0f}x20x40 han U trong - dan be")
+    CHECK["U_noi_khung"] = (abs((yb0 + jw) - (y0i + TB)) <= 5 and yb0 + jw > y0i,
+                            f"dan truoc y {yb0:.0f}..{yb0 + jw:.0f} ap sat U trong (han doc) va do cot truoc y {y0i}..{y0i + TB} (lech {y0i - yb0:.0f})")
     box("Be-van", "Be tu", 0, W, yb0, D, UH - p["be_board"], UH, "board", "be-board",
         f"van be {p['be_board']} (khoet lo cho chan cot)")
     # ---- canh: vien hop 20x40 + song dung 20x40 dat dung o duong noi + 4 tam nhua phu mat truoc + cum banh + bat treo

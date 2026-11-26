@@ -237,6 +237,10 @@
    "ong_vong": [
     true,
     "vong giua nhip 1.3 mm <= 3"
+   ],
+   "U_noi_khung": [
+    true,
+    "dan truoc y 120..160 ap sat U trong (han doc) va do cot truoc y 125..165 (lech 5)"
    ]
   },
   "x_lines": [
@@ -1755,8 +1759,8 @@
    "bbox": [
     0,
     3000,
-    125.0,
-    165.0,
+    120.0,
+    160.0,
     0,
     20
    ],
@@ -1799,132 +1803,6 @@
    "L": 3000,
    "Wd": 40.0,
    "Th": 20
-  },
-  {
-   "name": "Be-ban-ma-U-1",
-   "group": "Be tu",
-   "mat": "steel",
-   "kind": "tab",
-   "spec": "ban ma chem 5x20x40 han U trong - dan be",
-   "bbox": [
-    0.0,
-    40.0,
-    120.0,
-    125,
-    0,
-    20
-   ],
-   "L": 40.0,
-   "Wd": 20,
-   "Th": 5.0
-  },
-  {
-   "name": "Be-ban-ma-U-2",
-   "group": "Be tu",
-   "mat": "steel",
-   "kind": "tab",
-   "spec": "ban ma chem 5x20x40 han U trong - dan be",
-   "bbox": [
-    493.33333333333326,
-    533.3333333333333,
-    120.0,
-    125,
-    0,
-    20
-   ],
-   "L": 40.0,
-   "Wd": 20,
-   "Th": 5.0
-  },
-  {
-   "name": "Be-ban-ma-U-3",
-   "group": "Be tu",
-   "mat": "steel",
-   "kind": "tab",
-   "spec": "ban ma chem 5x20x40 han U trong - dan be",
-   "bbox": [
-    986.6666666666666,
-    1026.6666666666665,
-    120.0,
-    125,
-    0,
-    20
-   ],
-   "L": 40.0,
-   "Wd": 20,
-   "Th": 5.0
-  },
-  {
-   "name": "Be-ban-ma-U-4",
-   "group": "Be tu",
-   "mat": "steel",
-   "kind": "tab",
-   "spec": "ban ma chem 5x20x40 han U trong - dan be",
-   "bbox": [
-    1480.0,
-    1520.0,
-    120.0,
-    125,
-    0,
-    20
-   ],
-   "L": 40.0,
-   "Wd": 20,
-   "Th": 5.0
-  },
-  {
-   "name": "Be-ban-ma-U-5",
-   "group": "Be tu",
-   "mat": "steel",
-   "kind": "tab",
-   "spec": "ban ma chem 5x20x40 han U trong - dan be",
-   "bbox": [
-    1973.3333333333333,
-    2013.3333333333333,
-    120.0,
-    125,
-    0,
-    20
-   ],
-   "L": 40.0,
-   "Wd": 20,
-   "Th": 5.0
-  },
-  {
-   "name": "Be-ban-ma-U-6",
-   "group": "Be tu",
-   "mat": "steel",
-   "kind": "tab",
-   "spec": "ban ma chem 5x20x40 han U trong - dan be",
-   "bbox": [
-    2466.6666666666665,
-    2506.6666666666665,
-    120.0,
-    125,
-    0,
-    20
-   ],
-   "L": 40.0,
-   "Wd": 20,
-   "Th": 5.0
-  },
-  {
-   "name": "Be-ban-ma-U-7",
-   "group": "Be tu",
-   "mat": "steel",
-   "kind": "tab",
-   "spec": "ban ma chem 5x20x40 han U trong - dan be",
-   "bbox": [
-    2960.0,
-    3000.0,
-    120.0,
-    125,
-    0,
-    20
-   ],
-   "L": 40.0,
-   "Wd": 20,
-   "Th": 5.0
   },
   {
    "name": "Be-van",

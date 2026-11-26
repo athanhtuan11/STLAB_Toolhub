@@ -80,7 +80,7 @@ Các bộ treo hãng đều kèm dẫn hướng sàn
 - Bắt xuống sàn bằng **vít nở đầu bằng, khoan côn** cho đầu vít chìm phẳng lòng U (bánh lăn qua), khoảng 400 mm/vít. Sàn lệch thì
   chêm tôn dưới U cho thẳng và phẳng.
 - **Đỡ U từ dưới:** cột đứng trên 3 dãn bệ 20 × 40 nằm (xem Bệ tủ); dãn bệ bắt nở M8 xuống sàn ~600/cái (18 cái).
-  Thanh U trong nối vào dãn bệ trước bằng **7 bản mã chêm 5 × 20 × 40** (~500/cái). Bỏ 13 bản đế 60 × 60 × 4 cũ.
+  **Dãn bệ trước áp sát cạnh sau U trong, hàn dọc suốt 3000**, đồng thời là chân của 3 cột trước (cột đứng trên dãn, lệch 5 về sau) → 2 U + hộp đệm + dãn + cột thành một khối, dãn bắt nở M8 xuống sàn. Bỏ 13 bản đế 60 × 60 × 4 cũ.
 - **Chặn cuối cao su trong lòng U** ở 2 đầu (cụm bánh chạm thì dừng, mép cánh sát tường).
 - **Cụm bánh** (2 cụm/cánh, tâm cách mép cánh 110): càng thép rộng 30 hàn dưới viền dưới; 2 bánh 608 bọc POM Ø32 × 12 cách nhau 60,
   trục bu lông M8. Có vít chỉnh cao để cân cánh thẳng đứng.
@@ -167,7 +167,6 @@ Tấm chỉ dày 10 → **mọi thứ chịu lực bắt vào sắt phía sau, k
 | 13 | Ống inox Ø27 + tai đỡ hàn (dài 698 mm/ống) | 8 ống | `TODO` dày ống: model ghi 1,0, bản cũ ghi 1,2 |
 | 14 | Nở sắt M8 xuyên dãn bệ xuống sàn | 18 | ~600/cái |
 | 15 | Bát L 50 × 50 × 4 + nở M8 bắt cột sau vào tường sau | 10 | 2 độ cao 1500 và 2900 × 5 cột |
-| 16 | Bản mã chêm 5 × 20 × 40 (nối U trong vào dãn bệ trước) | 7 | ~500/cái |
 | 17 | Sắt hộp 40 × 40 (cột, dầm, ngang) | ~47,6 m | 1,4 mm (giả định) |
 | 18 | Sắt hộp 20 × 40 khung cánh (viền + 4 thanh ngang, 2 cánh) | ~30 m | 1,2 mm |
 | 19 | Bệ tủ: sắt hộp 20 × 40 (3 dãn bệ 3 m + 1 hộp đứng giữa 2 U 3 m) | ~12 m | dãn bệ 1,4 mm |
