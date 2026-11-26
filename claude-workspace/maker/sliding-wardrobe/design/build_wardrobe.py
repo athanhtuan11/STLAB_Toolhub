@@ -102,9 +102,9 @@ GAP_DOOR = p["door_gap"]
 YF = [p["front_gap"] + li * (DT + GAP_DOOR) for li in range(2)]   # mat truoc tam nhua tung lop canh
 LANES = [yf + PT + FDP / 2 for yf in YF]              # tam khung canh = tam U + tam ray
 z_axle = UT + p["wheel_d"] / 2                        # truc banh (banh lan tren long U)
-# Tuan 2026-11-26: 2 thanh U CHAP SAT NHAU (bo hop dem giua), han vao khung. U trong dung duoi tam khung C2;
-# U ngoai sat phia truoc -> cum banh C1 lech ra sau so voi tam khung C1 (cang lech), xe treo tren giu dung.
-UL = [LANES[1] - p["U"][0], LANES[1]]                  # tam 2 thanh U
+# Tuan 2026-11-26: giu THANH GIUA (hop 20x40 dung) han kep giua 2 U -> moi U dung duoi tam canh, khong lech
+# (thu chap sat 2 U thi cang C1 phai lech 20 - Tuan chon giu thanh giua).
+UL = list(LANES)                                       # tam 2 thanh U = tam 2 lop canh
 U_OFF = UL[0] - LANES[0]                               # do lech cum banh C1 so voi tam khung C1
 
 # ---- khoi luong canh (tu tiet dien sat + so thanh lam)
@@ -126,7 +126,7 @@ CHECK = dict(
     chong_mi=(p["ov_min"] <= OV <= p["ov_max"], f"chong mi {OV:.0f} trong {p['ov_min']}..{p['ov_max']} (ngoai khoang -> doi door_bars)"),
     vung_ray=(YF[1] + DT + 5 <= p["DZ"], f"canh trong (mat sau y={YF[1] + DT:.0f}) cach cot truoc (y={p['DZ']}) >= 5"),
     ray_vua=(p["track"][0] <= LANES[1] - LANES[0], "2 ray hop dat canh nhau vua khoang cach 2 lop canh"),
-    U_vua=(abs(UL[1] - UL[0] - p["U"][0]) < 0.01, f"2 thanh U chap sat nhau, han doc; cum banh C1 lech {U_OFF:.0f} ra sau tam khung"),
+    U_vua=(UL[1] - UL[0] - p["U"][0] >= 0 and abs(U_OFF) < 0.01, f"2 U + thanh giua {UL[1] - UL[0] - p['U'][0]:.0f} han kep, U dung duoi tam canh (lech {U_OFF:.0f})"),
     tam_kin_canh=(all(abs(KB[i] * PW - DWS[i]) < 0.5 for i in range(p["door_n"])), "tam nhua phu kin be rong canh"),
     che_ray=(p["fascia_gap"] >= 5 and YF[0] + PT <= LANES[0] - p["track"][0] / 2 + 0.01 and p["panel_L"] <= W,
              f"tam che tren cung mat canh ngoai; tam che duoi bat mat truoc U ngoai (chan tu lui {UL[0] - p['U'][0] / 2 - YF[0] - PT:.0f}); "
@@ -408,6 +408,8 @@ def build():
                 "chan cuoi cao su trong long U")
     # ---- be tu: thanh dem giua 2 U + dan sat + van, mat van = mieng U (U chim ngang mat be)
     yb0 = UL[1] + UB / 2                          # mep sau thanh U trong
+    box("Be-dem-giua-2-U", "Be tu", 0, W, UL[0] + UB / 2, UL[1] - UB / 2, 0, UH, "steel", "be-strip",
+        f"thanh giua hop {UL[1] - UL[0] - UB:.0f}x{UH} dat dung, han kep giua 2 U")
     # ---- 2 tam che ray (tam nhua 10 cat doc tu tam 400x2900): 1 tam nguyen 2900 tu tuong trai + 1 mau sat tuong phai
     #      tren: cung mat canh ngoai, bat dau dam dinh + mat truoc ray ngoai; duoi: bat mat truoc U ngoai (chan tu lui vao)
     yu0 = UL[0] - UB / 2

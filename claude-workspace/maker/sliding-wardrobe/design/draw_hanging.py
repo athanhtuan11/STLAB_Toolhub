@@ -75,6 +75,7 @@ def section():
             rect(ax, yc - 4, za - 4, 8, 8, "#DADDE0", z=6)
         # be tu: thanh dem giua 2 U + dan 20x40 nam + van, mat van = mieng U
         UB_, UH_, UT_ = P["U"]
+        rect(ax, meta["UL"][0] + UB_ / 2, 0, meta["UL"][1] - meta["UL"][0] - UB_, UH_, STEEL, z=3)   # thanh giua
         yb0 = meta["UL"][1] + UB_ / 2
         DZ = P["DZ"]
         rect(ax, yb0, 0, 40, P["be_joist"][1], STEEL, z=3)                      # dan be truoc ap sat U trong (han doc), do cot truoc
@@ -100,7 +101,7 @@ def section():
     a_top.text(0, zt1 + hh + 15, f"dinh dam {meta['H_TOP']:.0f} tu san; tam che ray (vang nhat) cung mat canh ngoai", fontsize=8)
     dim(a_bot, 150, 0, 150, UH, f"U cao {UH}", 2)
     dim(a_bot, 150, UH, 150, dz0, f"{P['u_gap']} ho", 2)
-    dim(a_bot, meta["UL"][0] - UB / 2, -12, meta["UL"][1] + UB / 2, -12, "2 U chap sat, han doc", 2, "h")
+    dim(a_bot, meta["UL"][0] - UB / 2, -12, meta["UL"][1] + UB / 2, -12, "2 U + thanh giua 20, han kep", 2, "h")
     a_bot.text(-5, dz0 + 90, f"banh 608 POM O{P['wheel_d']}x{P['wheel_w']}, 2 cum x 2 banh / canh, can >= {meta['WHEEL_NEED']:.0f} kg/banh\n"
                f"cang {P['bogie_w']} trong long U {meta['U_IN']:.0f} -> chan canh lac +-{(meta['U_IN'] - P['bogie_w']) / 2:g} mm",
                fontsize=8)

@@ -29,6 +29,7 @@ bat L 50x50x4 + no M8 bat cot sau vao tuong sau,,cot sau - tuong sau (2 do cao),
 chan cuoi cao su,,trong ray treo,2
 chan cuoi co lay giu canh dong,,trong ray treo,2
 ray hop 40x40,3000,ray treo (1 ray / lop canh),2
+"thanh giua hop 20x40 dat dung, han kep giua 2 U",3000,dem giua 2 thanh U (be tu),1
 
 Banh 608 boc POM O32x12 (hoac banh o bi tuong duong) + bulong truc M8,,4 banh/canh (2 cum x 2),8
 "Xe treo chay trong ray hop 40x40 - CHI GIU DUNG, khong chiu tai (loai nao vua ray)",,2 xe/canh,4

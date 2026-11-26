@@ -166,7 +166,7 @@
    2354.0
   ],
   "UL": [
-   60.0,
+   40.0,
    100.0
   ],
   "z_axle": 18.0,
@@ -196,7 +196,7 @@
    ],
    "U_vua": [
     true,
-    "2 thanh U chap sat nhau, han doc; cum banh C1 lech 20 ra sau tam khung"
+    "2 U + thanh giua 20 han kep, U dung duoi tam canh (lech 0)"
    ],
    "tam_kin_canh": [
     true,
@@ -204,11 +204,11 @@
    ],
    "che_ray": [
     true,
-    "tam che tren cung mat canh ngoai; tam che duoi bat mat truoc U ngoai (chan tu lui 20); moi tam = 1 tam nguyen 2900 + 1 mau 100 sat tuong phai"
+    "tam che tren cung mat canh ngoai; tam che duoi bat mat truoc U ngoai (chan tu lui 0); moi tam = 1 tam nguyen 2900 + 1 mau 100 sat tuong phai"
    ],
    "cang_lech": [
     true,
-    "cang banh C1 con >= 10 duoi khung C1 de han (lech 20); phan lech ra sau thap hon mieng U, khong cham tam C2"
+    "cang banh C1 con >= 10 duoi khung C1 de han (lech 0); phan lech ra sau thap hon mieng U, khong cham tam C2"
    ],
    "banh_long_U": [
     true,
@@ -1497,8 +1497,8 @@
    "bbox": [
     0,
     3000,
-    40.0,
-    80.0,
+    20.0,
+    60.0,
     0,
     2.0
    ],
@@ -1515,8 +1515,8 @@
    "bbox": [
     0,
     3000,
-    40.0,
-    42.0,
+    20.0,
+    22.0,
     2.0,
     40
    ],
@@ -1533,8 +1533,8 @@
    "bbox": [
     0,
     3000,
-    78.0,
-    80.0,
+    58.0,
+    60.0,
     2.0,
     40
    ],
@@ -1551,8 +1551,8 @@
    "bbox": [
     0,
     63.0,
-    42.0,
-    78.0,
+    22.0,
+    58.0,
     2.0,
     36
    ],
@@ -1569,8 +1569,8 @@
    "bbox": [
     2937.0,
     3000,
-    42.0,
-    78.0,
+    22.0,
+    58.0,
     2.0,
     36
    ],
@@ -1669,6 +1669,24 @@
    "Th": 34.0
   },
   {
+   "name": "Be-dem-giua-2-U",
+   "group": "Be tu",
+   "mat": "steel",
+   "kind": "be-strip",
+   "spec": "thanh giua hop 20x40 dat dung, han kep giua 2 U",
+   "bbox": [
+    0,
+    3000,
+    60.0,
+    80.0,
+    0,
+    40
+   ],
+   "L": 3000,
+   "Wd": 40,
+   "Th": 20.0
+  },
+  {
    "name": "Che-ray-tren-1",
    "group": "Che ray",
    "mat": "panel",
@@ -1713,8 +1731,8 @@
    "bbox": [
     0,
     2900,
-    30.0,
-    40.0,
+    10.0,
+    20.0,
     0,
     40
    ],
@@ -1731,8 +1749,8 @@
    "bbox": [
     2900.5,
     3000,
-    30.0,
-    40.0,
+    10.0,
+    20.0,
     0,
     40
    ],
@@ -2037,8 +2055,8 @@
    "bbox": [
     62.0,
     158.0,
-    45.0,
-    75.0,
+    25.0,
+    55.0,
     22.0,
     36
    ],
@@ -2055,13 +2073,13 @@
    "bbox": [
     62.0,
     158.0,
-    45.0,
-    60.0,
+    25.0,
+    55.0,
     36,
     46
    ],
    "L": 96.0,
-   "Wd": 15.0,
+   "Wd": 30.0,
    "Th": 10
   },
   {
@@ -2073,8 +2091,8 @@
    "bbox": [
     1442.0,
     1538.0,
-    45.0,
-    75.0,
+    25.0,
+    55.0,
     22.0,
     36
    ],
@@ -2091,13 +2109,13 @@
    "bbox": [
     1442.0,
     1538.0,
-    45.0,
-    60.0,
+    25.0,
+    55.0,
     36,
     46
    ],
    "L": 96.0,
-   "Wd": 15.0,
+   "Wd": 30.0,
    "Th": 10
   },
   {
