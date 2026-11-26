@@ -46,13 +46,14 @@ P = dict(
     be_joist=(40, 20, 1.4),     # dan hop 20x40 dat nam (rong 40, cao 20)
     be_runners=3,               # so dan chay doc chieu ngang tu
     # ---- ray TREN chi giu dung: ray hop 40x40 (Tuan co san) + xe treo khong chiu tai
-    track=(40, 40),             # ray hop (rong y, cao z)
-    track_wall=2,               # day vach ray (TODO do)
-    track_slot=14,              # khe day ray cho bulong di qua (TODO do)
-    hanger_gap=25,              # mep tren canh -> day ray (bat + bulong chinh, TODO theo xe treo)
-    trolley_in=110,             # tam xe treo cach mep canh
-    trolley_L=90, trolley_h=28, # than xe treo trong ray
-    trolley_play=3,             # chinh bulong de banh xe treo ho tren mep ray 3 -> xe treo khong do tai
+    # ---- ray TREN (Tuan 2026-11-26): U chan 40x40x2 UP NGUOC (cung loai ray duoi) + 2 banh 608 POM TRUC DUNG / canh
+    #      dan huong, khong chiu tai. Banh tren bat tren bulong M8 chinh cao (tan rut ren vien tren): ha xuong -> dung canh
+    #      vao cho, van bulong day banh len vao long U tren, khoa dai oc.
+    track=(40, 40),             # = U (rong y, cao z) - giu ten de cac kiem cu dung
+    hanger_gap=18,              # mep tren canh -> mieng U tren (banh ha het van nam duoi mieng U)
+    guide_in=110,               # tam banh dan huong cach mep canh
+    guide_top_gap=8,            # dinh banh dan huong -> day long U tren (= do nhac canh toi da)
+    guide_d=32, guide_w=12,     # banh 608 boc POM nhu banh duoi (TODO theo hang mua)
     # ---- khoa + tay nam
     lock_d=20, plunger_d=8, plunger_travel=14, plunger_engage=4, lock_z=1160,   # chot an vao lo tam nhua C2 (TODO hanh trinh khoa mua)
     handle_w=30, handle_h=200, handle_z=950,   # tam khe tu san (TODO chinh theo nguoi dung)
@@ -93,8 +94,10 @@ DHD = DH                                              # cao canh = dai tam nhua 
 UB, UH, UT = p["U"]
 dz0 = UH + p["u_gap"]                                 # day vien duoi canh (tren mieng U)
 dz1 = dz0 + DHD                                       # mep tren canh
-z_tr0 = dz1 + p["hanger_gap"]                         # day ray treo
-z_tr1 = z_tr0 + p["track"][1]                         # dinh ray = day dam dau cua
+z_tr0 = dz1 + p["hanger_gap"]                         # mieng U tren (up nguoc)
+z_tr1 = z_tr0 + p["track"][1]                         # lung U tren = day dau dam dinh
+z_g1 = z_tr1 - p["U"][2] - p["guide_top_gap"]         # dinh banh dan huong (lam viec)
+z_g0 = z_g1 - p["guide_w"]                            # day banh dan huong
 H_HEAD = TB                                           # dam dinh keo dai ra truoc, ray bat thang duoi
 H_TOP = z_tr1 + H_HEAD                                # dinh dam dinh
 DT = PT + FDP                                         # day canh = tam nhua + khung
@@ -125,7 +128,7 @@ WHEEL_NEED = max(DOOR_KG) / 4 * 1.5                   # tai 1 banh can (4 banh/c
 CHECK = dict(
     chong_mi=(p["ov_min"] <= OV <= p["ov_max"], f"chong mi {OV:.0f} trong {p['ov_min']}..{p['ov_max']} (ngoai khoang -> doi door_bars)"),
     vung_ray=(YF[1] + DT + 5 <= p["DZ"], f"canh trong (mat sau y={YF[1] + DT:.0f}) cach cot truoc (y={p['DZ']}) >= 5"),
-    ray_vua=(p["track"][0] <= LANES[1] - LANES[0], "2 ray hop dat canh nhau vua khoang cach 2 lop canh"),
+    ray_vua=(p["track"][0] <= LANES[1] - LANES[0], "2 U tren dat canh nhau vua khoang cach 2 lop canh"),
     U_vua=(UL[1] - UL[0] - p["U"][0] >= 0 and abs(U_OFF) < 0.01, f"2 U + thanh giua {UL[1] - UL[0] - p['U'][0]:.0f} han kep, U dung duoi tam canh (lech {U_OFF:.0f})"),
     tam_kin_canh=(all(abs(KB[i] * PW - DWS[i]) < 0.5 for i in range(p["door_n"])), "tam nhua phu kin be rong canh"),
     che_ray=(p["fascia_gap"] >= 5 and YF[0] + PT <= LANES[0] - p["track"][0] / 2 + 0.01 and p["panel_L"] <= W,
@@ -138,11 +141,13 @@ CHECK["cang_lech"] = (UL[0] - p["bogie_w"] / 2 < LANES[0] + FDP / 2 - 10,
 CHECK["banh_long_U"] = (p["wheel_w"] + 4 <= U_IN and p["bogie_w"] + 2 <= U_IN,
                         f"banh {p['wheel_w']} + cang {p['bogie_w']} lot long U {U_IN:.0f} (chan canh lac +-{(U_IN - p['bogie_w']) / 2:.1f})")
 CHECK["banh_duoi_mieng"] = (UT + p["wheel_d"] <= UH - 3, "dinh banh thap hon mieng U (banh nam han trong U)")
-_lift = p["track"][1] - 2 * p["track_wall"] - p["trolley_play"] - p["trolley_h"]   # nhac canh toi khi xe treo cham noc ray
-CHECK["chong_nhay"] = (_lift + 5 <= UH - UT, f"nhac canh toi da {_lift:.0f} mm (xe treo cham noc ray) < {UH - UT:.0f} can de banh thoat U")
+_lift = p["guide_top_gap"]                            # nhac canh toi khi banh dan huong cham lung U tren
+CHECK["chong_nhay"] = (_lift + 5 <= UH - UT, f"nhac canh toi da {_lift:.0f} mm (banh tren cham lung U) < {UH - UT:.0f} can de banh duoi thoat U")
+CHECK["dan_huong"] = (p["guide_d"] + 2 <= UB - 2 * UT and z_g0 >= z_tr0 + 10,
+                      f"banh tren O{p['guide_d']} trong long U {UB - 2 * UT:.0f} (lac +-{(UB - 2 * UT - p['guide_d']) / 2:g}), an sau {z_g1 - z_tr0:.0f} vao U, day banh cao hon mieng U {z_g0 - z_tr0:.0f}")
+CHECK["lap_canh"] = (dz1 + p["guide_w"] + 2 <= z_tr0, f"banh tren ha het (nam tren dinh canh) thap hon mieng U {z_tr0 - dz1 - p['guide_w']:.0f} -> dung canh vao cho roi van banh len {z_g0 - dz1:.0f}")
 CHECK["be_phang"] = (p["be_joist"][1] + p["be_board"] <= UH <= p["be_joist"][1] + p["be_board"] + 3,
                      f"dan {p['be_joist'][1]} + van {p['be_board']} (+ chem <= 3) = mieng U {UH}: mat be phang voi U")
-CHECK["xe_treo_ho"] = (p["trolley_play"] > 0, "xe treo ho tren mep ray -> khong do tai, chi giu dung")
 if p["wheel_kg"]:
     CHECK["tai_banh"] = (p["wheel_kg"] >= WHEEL_NEED, f"banh {p['wheel_kg']} kg >= can {WHEEL_NEED:.0f} kg")
 
@@ -376,22 +381,21 @@ def build():
             parts.append(dict(name=f"K{b + 1}-ong-{zr}", group="Ong treo", mat="rod", kind="rod",
                               spec=f"Ø{p['rod_d']}", bbox=[xa, xb, y_mid - 13.5, y_mid + 13.5, zr - 13.5, zr + 13.5],
                               L=round(xb - xa - 2, 1), Wd=p["rod_d"], Th=p["rod_d"]))
-    # ---- ray treo hop 40x40 (ve: 3 vach + day co khe) bat duoi moi dam dau cua
+    # ---- ray TREN: U chan 40x40x2 up nguoc, han/bat duoi dau 5 dam dinh (cung loai U duoi)
     tw, th = p["track"]
     for li, yc in enumerate(LANES):
         g = "Ray"
-        box(f"Ray-treo-{li + 1}-tren", g, 0, W, yc - tw / 2, yc + tw / 2, z_tr1 - 2, z_tr1, "alu", "track", f"ray hop {tw}x{th}")
+        box(f"Ray-Utren-{li + 1}-long", g, 0, W, yc - UB / 2, yc + UB / 2, z_tr1 - UT, z_tr1, "steel", "utrack-top",
+            f"U chan {UB}x{UH}x{UT}")
         for sgn in (-1, 1):
-            box(f"Ray-treo-{li + 1}-vach{'ab'[sgn > 0]}", g, 0, W, yc + sgn * tw / 2 - (2 if sgn > 0 else 0),
-                yc + sgn * tw / 2 + (0 if sgn > 0 else 2), z_tr0, z_tr1, "alu", "track", f"ray hop {tw}x{th}")
-            ys0 = yc + sgn * p["track_slot"] / 2
-            box(f"Ray-treo-{li + 1}-day{'ab'[sgn > 0]}", g, 0, W, min(ys0, yc + sgn * tw / 2), max(ys0, yc + sgn * tw / 2),
-                z_tr0, z_tr0 + 2, "alu", "track", f"ray hop {tw}x{th}")
-        # chan cuoi: dau dong cua co LAY GIU (thay chot bi), dau kia cao su
-        st = p["trolley_in"] - p["trolley_L"] / 2 - 1
+            yw = yc + sgn * UB / 2
+            box(f"Ray-Utren-{li + 1}-canh{'ab'[sgn > 0]}", g, 0, W, min(yw, yw - sgn * UT), max(yw, yw - sgn * UT),
+                z_tr0, z_tr1 - UT, "steel", "utrack-side", f"U chan {UB}x{UH}x{UT}")
+        # chan cuoi: dau dong cua co LAY GIU, dau kia cao su (banh dan huong cham)
+        st = p["guide_in"] - p["guide_d"] / 2 - 1
         closed_left = li % 2 == 0          # C1 dong o tuong trai, C2 dong o tuong phai
         for xa, xb, latch in ((0, st, closed_left), (W - st, W, not closed_left)):
-            box(f"Chan-cuoi-R{li + 1}-{int(xa)}", g, xa, xb, yc - tw / 2 + 3, yc + tw / 2 - 3, z_tr0 + 3, z_tr1 - 3,
+            box(f"Chan-cuoi-R{li + 1}-{int(xa)}", g, xa, xb, yc - UB / 2 + UT, yc + UB / 2 - UT, z_tr0 + 3, z_tr1 - UT,
                 "rubber", "stop", "chan cuoi co lay giu canh dong" if latch else "chan cuoi cao su")
     # ---- ray DUOI chiu tai: U chan 40x40 nam ngua, tuong -> tuong, moi lop canh 1 thanh (canh che kin khi dong)
     for li, yc in enumerate(UL):
@@ -460,16 +464,11 @@ def build():
             for dx in (-p["bogie_pitch"] / 2, p["bogie_pitch"] / 2):
                 cyl(pre + f"banh-duoi-{side}-{int(dx)}", g, p["wheel_d"] / 2, p["wheel_w"], (xb_ + dx, yu, z_axle),
                     (math.pi / 2, 0, 0), "nylon")
-        # 2 bat treo + bulong + xe treo trong ray
-        for side, xt in (("trai", x0 + p["trolley_in"]), ("phai", x0 + dw - p["trolley_in"])):
-            box(pre + f"bat-treo-{side}", g, xt - 30, xt + 30, yc - 15, yc + 15, dz1, dz1 + 6, "steel", "hw",
-                "bat treo bat vien tren (tan rut ren M8)")
-            cyl(pre + f"bulong-treo-{side}", g, 4, z_tr0 + 8 - dz1 - 6, (xt, yc, (dz1 + 6 + z_tr0 + 8) / 2), (0, 0, 0), "rod")
-            zt0 = z_tr0 + 4
-            box(pre + f"xe-treo-{side}", g, xt - p["trolley_L"] / 2, xt + p["trolley_L"] / 2, yc - 8, yc + 8,
-                zt0, zt0 + p["trolley_h"], "steel", "hw", "xe treo (theo bo ray)")
-            for dx in (-p["trolley_L"] / 3, p["trolley_L"] / 3):
-                cyl(pre + f"banh-treo-{side}-{int(dx)}", g, 8, 30, (xt + dx, yc, zt0 + 10), (math.pi / 2, 0, 0), "nylon")
+        # 2 banh dan huong truc dung tren dinh canh: bulong M8 vit vao tan rut ren vien tren, chinh cao + dai oc khoa
+        for side, xt in (("trai", x0 + p["guide_in"]), ("phai", x0 + dw - p["guide_in"])):
+            cyl(pre + f"bulong-dan-huong-{side}", g, 4, z_g1 + 2 - dz1, (xt, yc, (dz1 + z_g1 + 2) / 2), (0, 0, 0), "rod")
+            cyl(pre + f"dai-oc-khoa-{side}", g, 6.5, 6, (xt, yc, dz1 + 3), (0, 0, 0), "rod")
+            cyl(pre + f"banh-dan-huong-{side}", g, p["guide_d"] / 2, p["guide_w"], (xt, yc, (z_g0 + z_g1) / 2), (0, 0, 0), "nylon")
         for L in LOCKS:
             if L["front"] == i:
                 cyl(pre + f"khoa-an-{int(L['x'])}", g, p["lock_d"] / 2, PT + 4,
@@ -483,7 +482,7 @@ def build():
                     (L["x"], yp0 - 0.4, Z_LOCK), (math.pi / 2, 0, 0), "dark")
     return dict(P=P, TRAVEL=TRAVEL, LOCKS=LOCKS, HANDLES=HANDLES, Z_LOCK=Z_LOCK, GAP_DOOR=GAP_DOOR, DW=max(DWS), DWS=DWS,
                 DX0=DX0, OPEN=OPEN, KB=KB, OV=OV, k=max(KB), DH=DH, DHD=DHD, FW=FW, FDP=FDP, H_TOP=H_TOP, LANES=LANES,
-                dz=[dz0, dz1], z_track=[z_tr0, z_tr1], YF=YF, DT=DT, PT=PT, PW=PW, HR_Z=HR_Z, UL=UL, z_axle=z_axle, U_IN=U_IN, DOOR_KG=DOOR_KG, WHEEL_NEED=WHEEL_NEED,
+                dz=[dz0, dz1], z_track=[z_tr0, z_tr1], z_guide=[z_g0, z_g1], YF=YF, DT=DT, PT=PT, PW=PW, HR_Z=HR_Z, UL=UL, z_axle=z_axle, U_IN=U_IN, DOOR_KG=DOOR_KG, WHEEL_NEED=WHEEL_NEED,
                 ROD=ROD, CHECK={kk: [bool(v[0]), v[1]] for kk, v in CHECK.items()},
                 x_lines=x_lines, X_FULL=X_FULL, X_HALF=X_HALF, BAYS=BAYS, y_mid=y_mid)
 

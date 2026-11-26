@@ -10,17 +10,18 @@ Sat hop 20x40,2900,vien-dung-phai,2
 "Sat hop 20x40 (dan be, dat nam)",3000,be tu,3
 Sat hop 40x40,105.0,dam-dinh-dau,5
 Sat hop 40x40,2240,cot-giua,5
-Sat hop 40x40,2991,cot-truoc,3
-Sat hop 40x40,2991,cot-sau,5
+Sat hop 40x40,2984,cot-truoc,3
+Sat hop 40x40,2984,cot-sau,5
 Sat hop 40x40,3000,ke-truoc,1
 Sat hop 40x40,3000,dinh-truoc,1
 Sat hop 40x40,595,dam-ke,5
 Sat hop 40x40,595,dam-dinh,5
 Tam che ray (cat doc tu tam nhua 400x2900),2900 x 40,che ray tren/duoi: 1 tam nguyen 2900 + 1 mau sat tuong phai,1
-Tam che ray (cat doc tu tam nhua 400x2900),2900 x 99,che ray tren/duoi: 1 tam nguyen 2900 + 1 mau sat tuong phai,1
+Tam che ray (cat doc tu tam nhua 400x2900),2900 x 92,che ray tren/duoi: 1 tam nguyen 2900 + 1 mau sat tuong phai,1
 Tam che ray (cat doc tu tam nhua 400x2900),99.5 x 40,che ray tren/duoi: 1 tam nguyen 2900 + 1 mau sat tuong phai,1
-Tam che ray (cat doc tu tam nhua 400x2900),99.5 x 99,che ray tren/duoi: 1 tam nguyen 2900 + 1 mau sat tuong phai,1
+Tam che ray (cat doc tu tam nhua 400x2900),99.5 x 92,che ray tren/duoi: 1 tam nguyen 2900 + 1 mau sat tuong phai,1
 Tam nhua trong nha 400x2900x10,2900,"mat canh (nguyen tam, khong cat)",8
+U chan 40x40x2.0,3000,"ray TREN up nguoc, dan huong (bat duoi 5 dau dam dinh)",2
 U chan 40x40x2.0,3000,"ray duoi CHIU TAI, nam ngua, vit dau bang + no xuong san",2
 Van be 18,3000 x 680.0,mat be tu (khoet lo chan cot),1
 Van ke 17,720.0 x 675,ke hop noc,2
@@ -28,12 +29,11 @@ Van ke 17,740.0 x 675,ke hop noc,2
 bat L 50x50x4 + no M8 bat cot sau vao tuong sau,,cot sau - tuong sau (2 do cao),10
 chan cuoi cao su,,trong ray treo,2
 chan cuoi co lay giu canh dong,,trong ray treo,2
-ray hop 40x40,3000,ray treo (1 ray / lop canh),2
 "thanh giua hop 20x40 dat dung, han kep giua 2 U",3000,dem giua 2 thanh U (be tu),1
 
-Banh 608 boc POM O32x12 (hoac banh o bi tuong duong) + bulong truc M8,,4 banh/canh (2 cum x 2),8
-"Xe treo chay trong ray hop 40x40 - CHI GIU DUNG, khong chiu tai (loai nao vua ray)",,2 xe/canh,4
-Bat treo (bat vien tren bang tan rut ren M8) + bulong chinh,,2/canh,4
+Banh 608 boc POM O32x12 (hoac banh o bi tuong duong),,4 duoi (truc ngang) + 2 tren (truc dung) / canh,12
+Bulong truc M8 banh duoi,,4/canh,8
+"Bulong M8 dai ~60 + dai oc khoa + tan rut ren M8 (banh dan huong tren, chinh cao)",,2/canh,4
 "Vit no dau bang (khoan con) bat U xuong san, ~400 mm/vit",,2 thanh U,16
 Khoa an tu cua lua (push lock),,cho chong mi,1
 Ron choi chong bui (mep chong mi),2900,1/canh,2
@@ -41,9 +41,9 @@ No M8 xuyen dan be xuong san (thay ban de chan cot),,"3 dan be, ~600/cai",18
 "Vit 4x12 dau du (KHOAN MOI 3.3, khong dung vit tu khoan) bat tam che vao thanh U / ray",,~250/vit,26
 Tan rut ren M5 + vit M5 bat tam che tren vao dau 5 dam dinh (han bit dau),,5 dam dinh,5
 LUU Y,,tai moi banh >= (khoi luong canh / 4) x 1.5 = 15 kg (canh ~39 kg voi panel_kg=5.0),
-Khoi luong sat uoc tinh (kg),134.4,do day 1.4/1.2 gia dinh,
+Khoi luong sat uoc tinh (kg),145.2,do day 1.4/1.2 gia dinh,
 
 "TONG HOP CAY 6 M (xep cat FFD, mach cat 3, cat chi tiet Tuan tu theo ban ve)",,chi tiet cat,so cay 6 m
 Sat hop 20x40,42.3,3000+2900 | 3000+2900 | 3000+2900 | 3000+2900 | 3x1560 | 3x1560 | 3x1560 | 3x1560,8
-Sat hop 40x40,47.6,3000+2991 | 3000+2991 | 2x2991 | 2x2991 | 2x2991 | 2x2240+2x595+2x105 | 2x2240+2x595+2x105 | 2240+6x595+105,8
-U chan 40x40x2.0,6.0,3000 | 3000,2
+Sat hop 40x40,47.5,3000+2984 | 3000+2984 | 2x2984 | 2x2984 | 2x2984 | 2x2240+2x595+2x105 | 2x2240+2x595+2x105 | 2240+6x595+105,8
+U chan 40x40x2.0,12.0,3000 | 3000 | 3000 | 3000,4

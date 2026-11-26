@@ -51,13 +51,11 @@
     40,
     40
    ],
-   "track_wall": 2,
-   "track_slot": 14,
-   "hanger_gap": 25,
-   "trolley_in": 110,
-   "trolley_L": 90,
-   "trolley_h": 28,
-   "trolley_play": 3,
+   "hanger_gap": 18,
+   "guide_in": 110,
+   "guide_top_gap": 8,
+   "guide_d": 32,
+   "guide_w": 12,
    "lock_d": 20,
    "plunger_d": 8,
    "plunger_travel": 14,
@@ -139,7 +137,7 @@
   "DHD": 2900,
   "FW": 20,
   "FDP": 40,
-  "H_TOP": 3051,
+  "H_TOP": 3044,
   "LANES": [
    40.0,
    100.0
@@ -149,8 +147,12 @@
    2946
   ],
   "z_track": [
-   2971,
-   3011
+   2964,
+   3004
+  ],
+  "z_guide": [
+   2982.0,
+   2994.0
   ],
   "YF": [
    10,
@@ -192,7 +194,7 @@
    ],
    "ray_vua": [
     true,
-    "2 ray hop dat canh nhau vua khoang cach 2 lop canh"
+    "2 U tren dat canh nhau vua khoang cach 2 lop canh"
    ],
    "U_vua": [
     true,
@@ -220,15 +222,19 @@
    ],
    "chong_nhay": [
     true,
-    "nhac canh toi da 5 mm (xe treo cham noc ray) < 38 can de banh thoat U"
+    "nhac canh toi da 8 mm (banh tren cham lung U) < 38 can de banh duoi thoat U"
+   ],
+   "dan_huong": [
+    true,
+    "banh tren O32 trong long U 36 (lac +-2), an sau 30 vao U, day banh cao hon mieng U 18"
+   ],
+   "lap_canh": [
+    true,
+    "banh tren ha het (nam tren dinh canh) thap hon mieng U 6 -> dung canh vao cho roi van banh len 36"
    ],
    "be_phang": [
     true,
     "dan 20 + van 18 (+ chem <= 3) = mieng U 40: mat be phang voi U"
-   ],
-   "xe_treo_ho": [
-    true,
-    "xe treo ho tren mep ray -> khong do tai, chi giu dung"
    ],
    "khoa_tren_tam": [
     true,
@@ -312,9 +318,9 @@
     125.0,
     165.0,
     20,
-    3011
+    3004
    ],
-   "L": 2991,
+   "L": 2984,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -330,9 +336,9 @@
     760.0,
     800.0,
     20,
-    3011
+    3004
    ],
-   "L": 2991,
+   "L": 2984,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -383,8 +389,8 @@
     40.0,
     165,
     760,
-    3011.0,
-    3051.0
+    3004.0,
+    3044.0
    ],
    "L": 595,
    "Wd": 40.0,
@@ -401,8 +407,8 @@
     40.0,
     20.0,
     125,
-    3011.0,
-    3051.0
+    3004.0,
+    3044.0
    ],
    "L": 105.0,
    "Wd": 40.0,
@@ -456,9 +462,9 @@
     760.0,
     800.0,
     20,
-    3011
+    3004
    ],
-   "L": 2991,
+   "L": 2984,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -509,8 +515,8 @@
     780.0,
     165,
     760,
-    3011.0,
-    3051.0
+    3004.0,
+    3044.0
    ],
    "L": 595,
    "Wd": 40.0,
@@ -527,8 +533,8 @@
     780.0,
     20.0,
     125,
-    3011.0,
-    3051.0
+    3004.0,
+    3044.0
    ],
    "L": 105.0,
    "Wd": 40.0,
@@ -582,9 +588,9 @@
     125.0,
     165.0,
     20,
-    3011
+    3004
    ],
-   "L": 2991,
+   "L": 2984,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -600,9 +606,9 @@
     760.0,
     800.0,
     20,
-    3011
+    3004
    ],
-   "L": 2991,
+   "L": 2984,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -653,8 +659,8 @@
     1520.0,
     165,
     760,
-    3011.0,
-    3051.0
+    3004.0,
+    3044.0
    ],
    "L": 595,
    "Wd": 40.0,
@@ -671,8 +677,8 @@
     1520.0,
     20.0,
     125,
-    3011.0,
-    3051.0
+    3004.0,
+    3044.0
    ],
    "L": 105.0,
    "Wd": 40.0,
@@ -726,9 +732,9 @@
     760.0,
     800.0,
     20,
-    3011
+    3004
    ],
-   "L": 2991,
+   "L": 2984,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -779,8 +785,8 @@
     2260.0,
     165,
     760,
-    3011.0,
-    3051.0
+    3004.0,
+    3044.0
    ],
    "L": 595,
    "Wd": 40.0,
@@ -797,8 +803,8 @@
     2260.0,
     20.0,
     125,
-    3011.0,
-    3051.0
+    3004.0,
+    3044.0
    ],
    "L": 105.0,
    "Wd": 40.0,
@@ -852,9 +858,9 @@
     125.0,
     165.0,
     20,
-    3011
+    3004
    ],
-   "L": 2991,
+   "L": 2984,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -870,9 +876,9 @@
     760.0,
     800.0,
     20,
-    3011
+    3004
    ],
-   "L": 2991,
+   "L": 2984,
    "Wd": 40.0,
    "Th": 40.0
   },
@@ -923,8 +929,8 @@
     3000.0,
     165,
     760,
-    3011.0,
-    3051.0
+    3004.0,
+    3044.0
    ],
    "L": 595,
    "Wd": 40.0,
@@ -941,8 +947,8 @@
     3000.0,
     20.0,
     125,
-    3011.0,
-    3051.0
+    3004.0,
+    3044.0
    ],
    "L": 105.0,
    "Wd": 40.0,
@@ -1013,8 +1019,8 @@
     3000,
     125.0,
     165.0,
-    3011.0,
-    3051.0
+    3004.0,
+    3044.0
    ],
    "L": 3000,
    "Wd": 40.0,
@@ -1237,94 +1243,58 @@
    "Th": 27
   },
   {
-   "name": "Ray-treo-1-tren",
+   "name": "Ray-Utren-1-long",
    "group": "Ray",
-   "mat": "alu",
-   "kind": "track",
-   "spec": "ray hop 40x40",
+   "mat": "steel",
+   "kind": "utrack-top",
+   "spec": "U chan 40x40x2.0",
    "bbox": [
     0,
     3000,
     20.0,
     60.0,
-    3009,
-    3011
+    3002.0,
+    3004
    ],
    "L": 3000,
    "Wd": 40.0,
-   "Th": 2
+   "Th": 2.0
   },
   {
-   "name": "Ray-treo-1-vacha",
+   "name": "Ray-Utren-1-canha",
    "group": "Ray",
-   "mat": "alu",
-   "kind": "track",
-   "spec": "ray hop 40x40",
+   "mat": "steel",
+   "kind": "utrack-side",
+   "spec": "U chan 40x40x2.0",
    "bbox": [
     0,
     3000,
     20.0,
     22.0,
-    2971,
-    3011
+    2964,
+    3002.0
    ],
    "L": 3000,
-   "Wd": 40,
+   "Wd": 38.0,
    "Th": 2.0
   },
   {
-   "name": "Ray-treo-1-daya",
+   "name": "Ray-Utren-1-canhb",
    "group": "Ray",
-   "mat": "alu",
-   "kind": "track",
-   "spec": "ray hop 40x40",
-   "bbox": [
-    0,
-    3000,
-    20.0,
-    33.0,
-    2971,
-    2973
-   ],
-   "L": 3000,
-   "Wd": 13.0,
-   "Th": 2
-  },
-  {
-   "name": "Ray-treo-1-vachb",
-   "group": "Ray",
-   "mat": "alu",
-   "kind": "track",
-   "spec": "ray hop 40x40",
+   "mat": "steel",
+   "kind": "utrack-side",
+   "spec": "U chan 40x40x2.0",
    "bbox": [
     0,
     3000,
     58.0,
     60.0,
-    2971,
-    3011
+    2964,
+    3002.0
    ],
    "L": 3000,
-   "Wd": 40,
+   "Wd": 38.0,
    "Th": 2.0
-  },
-  {
-   "name": "Ray-treo-1-dayb",
-   "group": "Ray",
-   "mat": "alu",
-   "kind": "track",
-   "spec": "ray hop 40x40",
-   "bbox": [
-    0,
-    3000,
-    47.0,
-    60.0,
-    2971,
-    2973
-   ],
-   "L": 3000,
-   "Wd": 13.0,
-   "Th": 2
   },
   {
    "name": "Chan-cuoi-R1-0",
@@ -1334,123 +1304,87 @@
    "spec": "chan cuoi co lay giu canh dong",
    "bbox": [
     0,
-    64.0,
-    23.0,
-    57.0,
-    2974,
-    3008
+    93.0,
+    22.0,
+    58.0,
+    2967,
+    3002.0
    ],
-   "L": 64.0,
-   "Wd": 34.0,
-   "Th": 34
+   "L": 93.0,
+   "Wd": 36.0,
+   "Th": 35.0
   },
   {
-   "name": "Chan-cuoi-R1-2936",
+   "name": "Chan-cuoi-R1-2907",
    "group": "Ray",
    "mat": "rubber",
    "kind": "stop",
    "spec": "chan cuoi cao su",
    "bbox": [
-    2936.0,
+    2907.0,
     3000,
-    23.0,
-    57.0,
-    2974,
-    3008
+    22.0,
+    58.0,
+    2967,
+    3002.0
    ],
-   "L": 64.0,
-   "Wd": 34.0,
-   "Th": 34
+   "L": 93.0,
+   "Wd": 36.0,
+   "Th": 35.0
   },
   {
-   "name": "Ray-treo-2-tren",
+   "name": "Ray-Utren-2-long",
    "group": "Ray",
-   "mat": "alu",
-   "kind": "track",
-   "spec": "ray hop 40x40",
+   "mat": "steel",
+   "kind": "utrack-top",
+   "spec": "U chan 40x40x2.0",
    "bbox": [
     0,
     3000,
     80.0,
     120.0,
-    3009,
-    3011
+    3002.0,
+    3004
    ],
    "L": 3000,
    "Wd": 40.0,
-   "Th": 2
+   "Th": 2.0
   },
   {
-   "name": "Ray-treo-2-vacha",
+   "name": "Ray-Utren-2-canha",
    "group": "Ray",
-   "mat": "alu",
-   "kind": "track",
-   "spec": "ray hop 40x40",
+   "mat": "steel",
+   "kind": "utrack-side",
+   "spec": "U chan 40x40x2.0",
    "bbox": [
     0,
     3000,
     80.0,
     82.0,
-    2971,
-    3011
+    2964,
+    3002.0
    ],
    "L": 3000,
-   "Wd": 40,
+   "Wd": 38.0,
    "Th": 2.0
   },
   {
-   "name": "Ray-treo-2-daya",
+   "name": "Ray-Utren-2-canhb",
    "group": "Ray",
-   "mat": "alu",
-   "kind": "track",
-   "spec": "ray hop 40x40",
-   "bbox": [
-    0,
-    3000,
-    80.0,
-    93.0,
-    2971,
-    2973
-   ],
-   "L": 3000,
-   "Wd": 13.0,
-   "Th": 2
-  },
-  {
-   "name": "Ray-treo-2-vachb",
-   "group": "Ray",
-   "mat": "alu",
-   "kind": "track",
-   "spec": "ray hop 40x40",
+   "mat": "steel",
+   "kind": "utrack-side",
+   "spec": "U chan 40x40x2.0",
    "bbox": [
     0,
     3000,
     118.0,
     120.0,
-    2971,
-    3011
+    2964,
+    3002.0
    ],
    "L": 3000,
-   "Wd": 40,
+   "Wd": 38.0,
    "Th": 2.0
-  },
-  {
-   "name": "Ray-treo-2-dayb",
-   "group": "Ray",
-   "mat": "alu",
-   "kind": "track",
-   "spec": "ray hop 40x40",
-   "bbox": [
-    0,
-    3000,
-    107.0,
-    120.0,
-    2971,
-    2973
-   ],
-   "L": 3000,
-   "Wd": 13.0,
-   "Th": 2
   },
   {
    "name": "Chan-cuoi-R2-0",
@@ -1460,33 +1394,33 @@
    "spec": "chan cuoi cao su",
    "bbox": [
     0,
-    64.0,
-    83.0,
-    117.0,
-    2974,
-    3008
+    93.0,
+    82.0,
+    118.0,
+    2967,
+    3002.0
    ],
-   "L": 64.0,
-   "Wd": 34.0,
-   "Th": 34
+   "L": 93.0,
+   "Wd": 36.0,
+   "Th": 35.0
   },
   {
-   "name": "Chan-cuoi-R2-2936",
+   "name": "Chan-cuoi-R2-2907",
    "group": "Ray",
    "mat": "rubber",
    "kind": "stop",
    "spec": "chan cuoi co lay giu canh dong",
    "bbox": [
-    2936.0,
+    2907.0,
     3000,
-    83.0,
-    117.0,
-    2974,
-    3008
+    82.0,
+    118.0,
+    2967,
+    3002.0
    ],
-   "L": 64.0,
-   "Wd": 34.0,
-   "Th": 34
+   "L": 93.0,
+   "Wd": 36.0,
+   "Th": 35.0
   },
   {
    "name": "Ray-U-1-long",
@@ -1691,17 +1625,17 @@
    "group": "Che ray",
    "mat": "panel",
    "kind": "fascia",
-   "spec": "tam nhua che ray tren 99 cao",
+   "spec": "tam nhua che ray tren 92 cao",
    "bbox": [
     0,
     2900,
     10,
     20,
     2952,
-    3051
+    3044
    ],
    "L": 2900,
-   "Wd": 99,
+   "Wd": 92,
    "Th": 10
   },
   {
@@ -1709,17 +1643,17 @@
    "group": "Che ray",
    "mat": "panel",
    "kind": "fascia",
-   "spec": "tam nhua che ray tren 99 cao",
+   "spec": "tam nhua che ray tren 92 cao",
    "bbox": [
     2900.5,
     3000,
     10,
     20,
     2952,
-    3051
+    3044
    ],
    "L": 99.5,
-   "Wd": 99,
+   "Wd": 92,
    "Th": 10
   },
   {
@@ -2119,78 +2053,6 @@
    "Th": 10
   },
   {
-   "name": "C1-bat-treo-trai",
-   "group": "Canh 1",
-   "mat": "steel",
-   "kind": "hw",
-   "spec": "bat treo bat vien tren (tan rut ren M8)",
-   "bbox": [
-    80.0,
-    140.0,
-    25.0,
-    55.0,
-    2946,
-    2952
-   ],
-   "L": 60.0,
-   "Wd": 30.0,
-   "Th": 6
-  },
-  {
-   "name": "C1-xe-treo-trai",
-   "group": "Canh 1",
-   "mat": "steel",
-   "kind": "hw",
-   "spec": "xe treo (theo bo ray)",
-   "bbox": [
-    65.0,
-    155.0,
-    32.0,
-    48.0,
-    2975,
-    3003
-   ],
-   "L": 90.0,
-   "Wd": 28,
-   "Th": 16.0
-  },
-  {
-   "name": "C1-bat-treo-phai",
-   "group": "Canh 1",
-   "mat": "steel",
-   "kind": "hw",
-   "spec": "bat treo bat vien tren (tan rut ren M8)",
-   "bbox": [
-    1460.0,
-    1520.0,
-    25.0,
-    55.0,
-    2946,
-    2952
-   ],
-   "L": 60.0,
-   "Wd": 30.0,
-   "Th": 6
-  },
-  {
-   "name": "C1-xe-treo-phai",
-   "group": "Canh 1",
-   "mat": "steel",
-   "kind": "hw",
-   "spec": "xe treo (theo bo ray)",
-   "bbox": [
-    1445.0,
-    1535.0,
-    32.0,
-    48.0,
-    2975,
-    3003
-   ],
-   "L": 90.0,
-   "Wd": 28,
-   "Th": 16.0
-  },
-  {
    "name": "C1-than-khoa-1410",
    "group": "Canh 1",
    "mat": "steel",
@@ -2495,78 +2357,6 @@
    "L": 96.0,
    "Wd": 30.0,
    "Th": 10
-  },
-  {
-   "name": "C2-bat-treo-trai",
-   "group": "Canh 2",
-   "mat": "steel",
-   "kind": "hw",
-   "spec": "bat treo bat vien tren (tan rut ren M8)",
-   "bbox": [
-    1480.0,
-    1540.0,
-    85.0,
-    115.0,
-    2946,
-    2952
-   ],
-   "L": 60.0,
-   "Wd": 30.0,
-   "Th": 6
-  },
-  {
-   "name": "C2-xe-treo-trai",
-   "group": "Canh 2",
-   "mat": "steel",
-   "kind": "hw",
-   "spec": "xe treo (theo bo ray)",
-   "bbox": [
-    1465.0,
-    1555.0,
-    92.0,
-    108.0,
-    2975,
-    3003
-   ],
-   "L": 90.0,
-   "Wd": 28,
-   "Th": 16.0
-  },
-  {
-   "name": "C2-bat-treo-phai",
-   "group": "Canh 2",
-   "mat": "steel",
-   "kind": "hw",
-   "spec": "bat treo bat vien tren (tan rut ren M8)",
-   "bbox": [
-    2860.0,
-    2920.0,
-    85.0,
-    115.0,
-    2946,
-    2952
-   ],
-   "L": 60.0,
-   "Wd": 30.0,
-   "Th": 6
-  },
-  {
-   "name": "C2-xe-treo-phai",
-   "group": "Canh 2",
-   "mat": "steel",
-   "kind": "hw",
-   "spec": "xe treo (theo bo ray)",
-   "bbox": [
-    2845.0,
-    2935.0,
-    92.0,
-    108.0,
-    2975,
-    3003
-   ],
-   "L": 90.0,
-   "Wd": 28,
-   "Th": 16.0
   },
   {
    "name": "San",

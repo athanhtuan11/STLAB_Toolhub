@@ -163,7 +163,7 @@ def bars_6m(stock=6000, kerf=3):
         k = pt["kind"]
         spec = ("Sat hop " + pt["spec"]) if k in ("steel", "dframe") else \
                "Sat hop 20x40" if k in ("be-joist", "be-strip") else \
-               f"U chan {P['U'][0]}x{P['U'][1]}x{P['U'][2]}" if k == "utrack" else None
+               f"U chan {P['U'][0]}x{P['U'][1]}x{P['U'][2]}" if k in ("utrack", "utrack-top") else None
         if spec:
             cuts.setdefault(spec, []).append(pt["L"])
     out = {}
@@ -205,9 +205,10 @@ def bom():
             rows[(pt["spec"], "", "cot sau - tuong sau (2 do cao)")] += 1
         elif pt["kind"] == "tab":
             rows[(pt["spec"], "", "noi U vao dan be truoc ~500/cai")] += 1
-        elif pt["kind"] == "track":
-            if pt["name"].endswith("-tren"):     # ray hop ve bang 5 manh -> dem 1 lan / ray
-                rows[(pt["spec"], pt["L"], "ray treo (1 ray / lop canh)")] += 1
+        elif pt["kind"] == "utrack-top":
+            UB, UH, UT = P["U"]
+            rows[(pt["spec"], pt["L"], "ray TREN up nguoc, dan huong (bat duoi 5 dau dam dinh)")] += 1
+            kg += (UB + 2 * (UH - UT)) * UT * 7.85e-3 * pt["L"] / 1000
         elif pt["kind"] == "stop":
             rows[(pt["spec"], "", "trong ray treo")] += 1
         elif pt["kind"] == "eprof":
@@ -240,9 +241,9 @@ def bom():
         for (a, L, v), q in sorted(rows.items(), key=lambda r: (r[0][0], str(r[0][1]))):
             w.writerow([a, L, v, q])
         w.writerow([])
-        w.writerow(["Banh 608 boc POM O32x12 (hoac banh o bi tuong duong) + bulong truc M8", "", "4 banh/canh (2 cum x 2)", 4 * P["door_n"]])
-        w.writerow(["Xe treo chay trong ray hop 40x40 - CHI GIU DUNG, khong chiu tai (loai nao vua ray)", "", "2 xe/canh", 2 * P["door_n"]])
-        w.writerow(["Bat treo (bat vien tren bang tan rut ren M8) + bulong chinh", "", "2/canh", 2 * P["door_n"]])
+        w.writerow(["Banh 608 boc POM O32x12 (hoac banh o bi tuong duong)", "", "4 duoi (truc ngang) + 2 tren (truc dung) / canh", 6 * P["door_n"]])
+        w.writerow(["Bulong truc M8 banh duoi", "", "4/canh", 4 * P["door_n"]])
+        w.writerow(["Bulong M8 dai ~60 + dai oc khoa + tan rut ren M8 (banh dan huong tren, chinh cao)", "", "2/canh", 2 * P["door_n"]])
         w.writerow(["Vit no dau bang (khoan con) bat U xuong san, ~400 mm/vit", "", "2 thanh U", 2 * (P["W"] // 400 + 1)])
         w.writerow(["Khoa an tu cua lua (push lock)", "", "cho chong mi", len(m["LOCKS"])])
         w.writerow(["Ron choi chong bui (mep chong mi)", m["DH"], "1/canh", P["door_n"]])

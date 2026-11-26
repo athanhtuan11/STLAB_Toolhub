@@ -41,7 +41,7 @@ def section():
     PT = meta["PT"]
     fig, (a_top, a_bot) = plt.subplots(2, 1, figsize=(8.5, 11))
     UB, UH, UT = P["U"]
-    for ax, (zlo, zhi), title in ((a_top, (dz1 - 120, zt1 + hh + 30), "TREN: dau dam dinh 40x40 + ray hop 40x40 + xe treo (CHI GIU DUNG) + tam che ray"),
+    for ax, (zlo, zhi), title in ((a_top, (dz1 - 120, zt1 + hh + 30), "TREN: dau dam dinh + U chan 40x40 UP NGUOC + banh 608 truc dung (CHI DAN HUONG) + tam che ray"),
                                   (a_bot, (-25, dz0 + 110), "DUOI: BE TU 40 - U chan chim + cum banh 608 POM (CHIU TAI) + tam che ray")):
         for li, yc in enumerate((L0, L1)):
             yf0 = yc - FDP / 2
@@ -51,13 +51,15 @@ def section():
             rect(ax, yf0 - PT, dz0, PT, dz1 - dz0, LAM, z=3)
             ax.text(yc, (zlo + zhi) / 2, f"C{li + 1}", ha="center", va="center", fontsize=11, color="white", zorder=4,
                     fontweight="bold")
-            # ray hop + dam
-            rect(ax, yc - tw / 2, zt0, tw, th, "none", ec=ALU, lw=2.2, z=3)
-            # xe treo + bulong + bat
-            rect(ax, yc - 8, zt0 + 4, 16, P["trolley_h"], "#555", z=4)
-            ax.add_patch(Circle((yc, zt0 + 14), 7, fc=NYL, ec="black", lw=0.6, zorder=5))
-            rect(ax, yc - 4, dz1 + 6, 8, zt0 + 8 - dz1 - 6, "#DADDE0", z=4)
-            rect(ax, yc - 15, dz1, 30, 6, STEEL, z=4)
+            # U tren up nguoc + banh dan huong truc dung (mat cat qua truc: banh = chu nhat O x day) + bulong M8
+            UB_t, UH_t, UT_t = P["U"]
+            rect(ax, yc - UB_t / 2, zt1 - UT_t, UB_t, UT_t, STEEL, z=3)
+            rect(ax, yc - UB_t / 2, zt0, UT_t, UH_t, STEEL, z=3)
+            rect(ax, yc + UB_t / 2 - UT_t, zt0, UT_t, UH_t, STEEL, z=3)
+            g0, g1 = meta["z_guide"]
+            rect(ax, yc - P["guide_d"] / 2, g0, P["guide_d"], g1 - g0, NYL, z=5)
+            rect(ax, yc - 4, dz1, 8, g1 + 2 - dz1, "#DADDE0", z=4)
+            rect(ax, yc - 6.5, dz1, 13, 6, "#999", z=4)
             # U chan nam ngua + cang banh + banh (mat cat qua truc banh: banh thay rong wheel_w, cao wheel_d)
             yk = yc
             yc = meta["UL"][li]
@@ -95,8 +97,8 @@ def section():
         ax.set_xlabel("sau tu (mm, truoc -> sau)")
         ax.grid(alpha=0.2)
     # kich thuoc
-    dim(a_top, 150, dz1, 150, zt0, f"{P['hanger_gap']} khe chinh cao (TODO)", 2)
-    dim(a_top, 150, zt0, 150, zt1, f"ray {th}", 2)
+    dim(a_top, 150, dz1, 150, zt0, f"{P['hanger_gap']} (banh ha het nam duoi)", 2)
+    dim(a_top, 150, zt0, 150, zt1, f"U tren {th}, nhac toi da {P['guide_top_gap']}", 2)
     dim(a_top, 150, zt1, 150, zt1 + hh, f"dam dinh {hh}", 2)
     a_top.text(0, zt1 + hh + 15, f"dinh dam {meta['H_TOP']:.0f} tu san; tam che ray (vang nhat) cung mat canh ngoai", fontsize=8)
     dim(a_bot, 150, 0, 150, UH, f"U cao {UH}", 2)

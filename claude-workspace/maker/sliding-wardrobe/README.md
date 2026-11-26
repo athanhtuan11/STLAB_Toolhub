@@ -6,9 +6,11 @@ Mặt trước là **2 cánh lùa**. Mỗi cánh ghép từ **4 tấm nhựa tro
 
 **Hệ lùa (Tuan 2026-11-11, bản cuối):** có **bệ tủ cao 40** phủ cả lòng tủ, 2 thanh U nằm **chìm ngang mặt bệ** → sàn ngoài phẳng, không vấp.
 - **Dưới chịu tải:** 2 thanh **thép U chấn 40 × 40** nằm ngửa trên sàn (vật tư dễ mua). Mỗi cánh có 4 bánh 608 bọc POM chạy trong lòng U.
-- **Trên giữ đứng:** **ray hộp 40 × 40** anh đã có, cùng xe treo. Xe treo **không chịu tải**, chỉ giữ cánh đứng thẳng và chống nhảy ray.
+- **Trên dẫn hướng (Tuan 2026-11-26):** **cùng loại U chấn 40 × 40 úp ngược** + 2 bánh 608 POM **trục đứng**/cánh. Bánh trên
+  **không chịu tải**, chỉ giữ cánh đứng thẳng và chống nhảy ray. Cả tủ chỉ dùng 1 loại ray + 1 loại bánh (nơi Tuan mua chỉ có loại này).
 
 Lịch sử phương án:
+- `backup/2026-11-26-truoc-u-tren/`: ray trên là ray hộp 40 × 40 có khe + xe treo. Đổi sang U úp ngược vì chỉ mua được U.
 - `backup/2026-11-26-truoc-tam-nhua/`: bản lam sóng 220 × 2900 × 26 (7 thanh/cánh, viền 20 × 40 không sống đứng, 2 dầm đầu
   40 × 40 ở ray trên, 13 bản đế 60 × 60 × 4). Bỏ vì Tuan đổi cánh sang tấm nhựa 400 × 2900 × 10 (2026-11-26).
 - `backup/2026-11-11-truoc-2-canh-treo/`: bản 4 cánh, bánh đỡ dưới.
@@ -31,9 +33,9 @@ python draw_plans.py       # 10 khung sắt, 11 cánh + mặt bằng + mặt c�
 ```
 
 Sửa `P` trong `build_wardrobe.py` (W sau khi đo, `panel_kg` sau khi cân 1 tấm nhựa, số đo U/bánh/ray thật) rồi chạy lại.
-Script kiểm 17 điều kiện, tất cả đang PASS. Ảnh 3D tổng hợp: `design/renders/00-3d-tong-hop.png`.
+Script kiểm 18 điều kiện, tất cả đang PASS. Ảnh 3D tổng hợp: `design/renders/00-3d-tong-hop.png`.
 
-## Vì sao chọn "U dưới chịu tải + ray trên giữ đứng"
+## Vì sao chọn "U dưới chịu tải + U trên dẫn hướng"
 
 Cánh khoảng **39 kg** (tấm nhựa ~5 kg), **cao 2,90 m**. Tách việc cho hai ray:
 
@@ -41,15 +43,15 @@ Cánh khoảng **39 kg** (tấm nhựa ~5 kg), **cao 2,90 m**. Tách việc cho 
 | --- | --- | --- |
 | Đỡ cánh ~39 kg | **4 bánh/cánh lăn trong lòng U chấn** (nên ≥ 15 kg/bánh) | Tải xuống thẳng sàn. Sàn đỡ suốt chiều dài U nên U không võng, bánh 608 dễ mua và rẻ |
 | Giữ chân cánh không lắc | **Thành U** ôm càng bánh | Càng 30 trong lòng U 36 → chân cánh chỉ lắc ±3 mm, 2 lớp cánh cách nhau 10 (khe) không cọ |
-| Giữ đầu cánh đứng thẳng | **Xe treo trong ray hộp 40 × 40** | Xe treo hở 3 mm trên mép ray nên không gánh tải; loại xe treo nào vừa ray cũng dùng được |
-| Chống nhấc cánh khỏi ray | Xe treo kín trong ray hộp | Nhấc cánh tối đa ~5 mm là xe treo chạm nóc ray; bánh cần nhấc 38 mm mới thoát được U (kiểm `chong_nhay`) |
+| Giữ đầu cánh đứng thẳng | **2 bánh 608 trục đứng trong U trên úp ngược** | Bánh Ø32 trong lòng U 36 → đầu cánh lắc ±2; bánh không đỡ tải (kiểm `dan_huong`) |
+| Chống nhấc cánh khỏi ray | Bánh trên ăn sâu 30 vào U trên, hở 8 tới lưng U | Nhấc cánh tối đa 8 mm là bánh chạm lưng U; bánh dưới cần nhấc 38 mm mới thoát U (kiểm `chong_nhay`) |
 
 Nghiên cứu trước đó (vẫn đúng): cánh **chỉ treo trên mà không có gì giữ chân thì đung đưa như con lắc**
 ([Pinky's Iron Doors](https://pinkysirondoors.com/blogs/specialty-doors/bottom-track-for-sliding-barn-doors-a-must-have-or-a-nice-to-have)).
 Các bộ treo hãng đều kèm dẫn hướng sàn
 ([Hager](https://www.hagerco.com/Files/Images/Images/Instructions/9613RS%20&%209614RS%20[60lb%20By-Pass%20Sliding%20Door%20Hardware%20Set%20Installation%20Instructions]%20[4].pdf),
 [Häfele EKU Porta 100 kg](https://www.build.com/hafele-941-00-005/s387211); Häfele chỉ cho cánh cao ≤ 2,7 m).
-Ở bản này tải nằm ở U dưới, xe treo trên chỉ giữ đứng.
+Ở bản này tải nằm ở U dưới, bánh trên chỉ dẫn hướng.
 
 ## Bệ tủ – che ray và bánh (Tuan 2026-11-11: "U trên sàn đi lại dễ vấp")
 
@@ -70,9 +72,8 @@ Các bộ treo hãng đều kèm dẫn hướng sàn
 - Lùa 1 cánh hết cỡ: **mở nửa trái 1400** hoặc **mở nửa phải 1400**.
 - **Dày cánh 50** (tấm 10 + khung 40); khe giữa 2 lớp cánh **10**; mặt trước cánh ngoài lùi vào 10 so với mép tường;
   cột trước lùi về y = 125.
-- Cao độ từ sàn: miệng U 40 · đáy cánh 46 (hở 6) · đỉnh cánh 2946 · đáy ray trên 2971 · đỉnh ray 3011 · **đỉnh tủ (dầm đỉnh) 3051**
-  (trước 3094).
-- Tấm che ray: **trên** cao 99 (2952 → 3051), **dưới** cao 40 (0 → 40); cách mép cánh 6 (cánh chỉnh cao không cọ).
+- Cao độ từ sàn: miệng U 40 · đáy cánh 46 (hở 6) · đỉnh cánh 2946 · miệng U trên 2964 · lưng U trên 3004 · **đỉnh tủ (dầm đỉnh) 3044**.
+- Tấm che ray: **trên** cao 92 (2952 → 3044), **dưới** cao 40 (0 → 40); cách mép cánh 6 (cánh chỉnh cao không cọ).
   Mỗi tấm = **1 tấm nguyên 2900 từ tường trái + 1 mẩu 100 sát tường phải** (không nối giữa).
 
 ## Ray dưới – U chấn 40 × 40 (chịu tải)
@@ -89,20 +90,23 @@ Các bộ treo hãng đều kèm dẫn hướng sàn
 - **Tải mỗi bánh nên ≥ (khối lượng cánh ÷ 4) × 1,5 ≈ 15 kg** (cánh ~39 kg); Tuan tự chọn bánh phù hợp. Bạc đạn 608 trần chịu được nhiều hơn mức này; lớp POM bọc
   ngoài cần hỏi người bán tải/bánh (`TODO`, điền `wheel_kg`).
 
-## Ray trên – ray hộp 40 × 40 (chỉ giữ đứng)
+## Ray trên – U chấn 40 × 40 úp ngược (chỉ dẫn hướng, Tuan 2026-11-26)
 
-- **BỎ 2 dầm đầu 40 × 40 × 3000 + bắt dầm** (bản cũ). Nay **5 dầm đỉnh 40 × 40** (cao 3011 → 3051) kéo dài ra trước: đoạn đầu
-  dài **105** tới mặt trước ray ngoài; nhịp đỡ ~740 (x = 20, 760, 1500, 2240, 2980).
-- 2 ray hộp 40 × 40 × 3000 (anh đã có), mỗi lớp cánh 1 ray, **bắt thẳng dưới 5 dầm đỉnh** (ray cao 2971 → 3011, đỉnh tủ 3051).
-- 2 xe treo/cánh, bu lông treo xuống bát treo bắt trên viền trên (tán rút ren M8). **Chỉnh đai ốc để bánh xe treo hở 3 mm trên mép ray**:
-  xe treo không gánh tải, chỉ giữ đầu cánh.
-- **Tấm che ray trên** (nhựa 10, cao 99 = 2952 → 3051, cùng mặt phẳng cánh ngoài): 1 tấm nguyên 2900 + 1 mẩu 100 sát tường phải,
-  bắt vào đầu 5 dầm đỉnh (hàn bịt đầu + tán rút ren M5) và thanh trước ray.
-- **An toàn lắp:** thành ray dày 2, cạnh thanh ~3 → **KHOAN MỒI 3,3 + vít 4 × 12 đầu dù**, KHÔNG dùng vít tự khoan (mũi khoan lọt
-  vào lòng U/ray làm chạm bánh).
-- **Chặn cuối trong ray**: đầu cánh đóng (C1 ở tường trái, C2 ở tường phải) dùng **chặn có lẫy** giữ cánh đóng, đầu kia chặn cao su.
-- **Lắp:** bắt U xuống sàn + dầm + ray trên → luồn xe treo vào ray → dựng cánh, đặt 4 bánh vào lòng U → nối bu lông xe treo với bát treo
-  → chỉnh vít cụm bánh cho cánh đứng thẳng → chỉnh đai ốc xe treo hở 3 → lắp chặn cuối.
+- **5 dầm đỉnh 40 × 40** (cao 3004 → 3044) kéo dài ra trước: đoạn đầu dài **105** tới mặt trước U ngoài; nhịp đỡ ~740
+  (x = 20, 760, 1500, 2240, 2980). Bỏ 2 dầm đầu cửa cũ.
+- 2 thanh **U chấn 40 × 40 × 2 × 3000 úp ngược** (cùng loại U dưới), mỗi lớp cánh 1 thanh, **hàn/bắt thẳng dưới 5 đầu dầm đỉnh**,
+  thẳng đứng trên U dưới cùng cánh (dọi dây). Miệng U trên cao 2964, lưng U 3004.
+- **2 bánh dẫn hướng/cánh** (tâm cách mép cánh 110): bánh 608 bọc POM Ø32 × 12 **trục đứng**, lắp trên **bu lông M8 dài ~60**
+  vặn vào **tán rút ren M8 ở viền trên** + **đai ốc khóa**. Bánh làm việc: đáy bánh cao hơn miệng U 18, đỉnh bánh cách lưng U 8.
+- **Chống nhảy ray:** nhấc cánh tối đa 8 mm là bánh trên chạm lưng U; bánh dưới cần nhấc 38 mới thoát U (kiểm `chong_nhay`).
+- **Tấm che ray trên** (nhựa 10, cao 92 = 2952 → 3044, cùng mặt phẳng cánh ngoài): 1 tấm nguyên 2900 + 1 mẩu 100 sát tường phải,
+  bắt vào đầu 5 dầm đỉnh (hàn bịt đầu + tán rút ren M5) và **dải dưới 15 mm của thành trước U trên** (thấp hơn vùng bánh lăn).
+- **An toàn lắp:** thành U dày 2, bánh/càng cách thành 2–3 → **KHOAN MỒI 3,3 + vít 4 × 12 đầu dù**, KHÔNG dùng vít tự khoan (mũi khoan lọt
+  vào lòng U làm chạm bánh).
+- **Chặn cuối trong U trên**: đầu cánh đóng (C1 ở tường trái, C2 ở tường phải) dùng **chặn có lẫy** giữ cánh đóng, đầu kia chặn cao su.
+- **Lắp cánh** (kiểm `lap_canh`): vặn **hạ hết 2 bánh trên** (bánh nằm sát đỉnh cánh, thấp hơn miệng U trên 6) → dựng cánh, đặt 4 bánh
+  dưới vào lòng U dưới, đẩy đầu cánh vào dưới U trên → **vặn bánh trên lên ~36** vào lòng U, khóa đai ốc → chỉnh vít cụm bánh dưới
+  cho cánh đứng thẳng → lắp chặn cuối. Tháo cánh: làm ngược lại.
 
 ## Cánh tấm nhựa (Tuan 2026-11-26)
 
@@ -114,11 +118,11 @@ Các bộ treo hãng đều kèm dẫn hướng sàn
   Móc hèm bắt vào viền trên/dưới + 4 thanh ngang. Bỏ 3 sống đứng và 4 giằng 13 × 26 cũ.
 - **Dày cánh 50** = tấm 10 + khung 40. Khe giữa 2 lớp cánh 10.
 - Khung cánh 20 × 40: ~30 m (viền + thanh ngang, cả 2 cánh; theo `bom.csv`).
-- Dưới viền dưới hàn **2 càng bánh**; trên viền trên bắt **2 bát treo**.
+- Dưới viền dưới hàn **2 càng bánh**; trên viền trên bắt **2 tán rút ren M8** cho bánh dẫn hướng.
 - Khối lượng cánh ≈ **~39 kg/cánh** (tấm **~5 kg**, Tuan cân 2026-11-26) → bánh nên **≥ 15 kg/bánh**.
 - Chống vênh: hàn/ghép trên mặt phẳng, kẹp chặt, đính chéo góc, **2 đường chéo lệch ≤ 2** mới chốt.
 - Sơn: mài mối hàn → lót chống gỉ → đen mờ; sơn xong mới bắt tấm.
-- `TODO`: vẽ lại bản vẽ gia công cánh (bảng cắt tấm, viền, thanh ngang, càng bánh, bát treo, lỗ khóa) sau khi anh duyệt
+- `TODO`: vẽ lại bản vẽ gia công cánh (bảng cắt tấm, viền, thanh ngang, càng bánh, tán rút ren bánh trên, lỗ khóa) sau khi anh duyệt
   và có tấm nhựa thật.
 
 ## Khóa + tay nắm
@@ -136,7 +140,7 @@ Tấm chỉ dày 10 → **mọi thứ chịu lực bắt vào sắt phía sau, k
 - **3 khung đầy đủ** (cột trước + sau suốt sàn → đỉnh, cột giữa đỡ ống, dầm kệ, dầm đỉnh) ở x = 20, 1500, 2980.
   Cột trước ở y = 125 (sau mặt sau C2 y = 120), cột sau ở y = 760–800.
 - **2 khung lửng** (không cột trước) ở x = 760 và 2240, để ống treo chỉ nhịp 700 (40 kg/ống: 67 MPa, võng 1,3 mm, PASS).
-- **Ngang tường – tường:** chỉ còn kê trước và đỉnh trước 3000 (z 2260 và 3011). **Bỏ kê sau và đỉnh sau (2026-11-26)**:
+- **Ngang tường – tường:** chỉ còn kê trước và đỉnh trước 3000 (z 2260 và 3004). **Bỏ kê sau và đỉnh sau (2026-11-26)**:
   cột sau đã bắt bát L vào tường sau nên 2 thanh này trùng việc.
 - **Chân cột:** 3 dãn bệ 20 × 40 đặt nằm dưới hàng cột (nở M8 ~600/cái). **Bỏ 13 bản đế 60 × 60 × 4.**
 - **Cột sau** bắt **bát L 50 × 50 × 4** + nở M8 vào tường sau ở 2 độ cao **1500 và 2900** (10 bát cho 5 cột); Tuan xác nhận tường sau bắt nở được.
@@ -156,15 +160,15 @@ Tấm chỉ dày 10 → **mọi thứ chịu lực bắt vào sắt phía sau, k
 | --- | --- | --- | --- |
 | 1 | **Tấm nhựa trong nhà 400 × 2900 × 10** | **9 tấm** | 8 tấm làm 2 cánh (4/cánh) + 1 tấm xẻ dọc làm 2 tấm che ray (dải 2900 + mẩu 100) |
 | 2 | **Thép U chấn 40 × 40 × 2**, dài 3 m | 2 | ray dưới chịu tải |
-| 3 | **Bánh 608 bọc POM Ø32 × 12** (hoặc bánh ổ bi tương đương), bu lông trục M8 | 8 | Tuan tự chọn, nên ≥ 15 kg/bánh |
+| 3 | **Bánh 608 bọc POM Ø32 × 12** (hoặc bánh ổ bi tương đương) | **12** | 8 bánh dưới (trục ngang, ≥ 15 kg/bánh) + 4 bánh trên (trục đứng) |
 | 4 | Thép bản làm càng bánh (tự cắt hàn), rộng 30, vít chỉnh cao M8 | 4 cụm | `TODO` dày bản (bản cũ ghi 4–5 mm) |
-| 5 | Ray hộp 40 × 40 dài 3 m | 2 | anh đã có |
-| 6 | Xe treo vừa ray 40 × 40 (loại thường, không cần tải nặng) + bu lông treo | 4 | chỉ giữ đứng |
+| 5 | **U chấn 40 × 40 × 2** làm ray TRÊN (úp ngược), dài 3 m | 2 | cùng loại ray dưới |
+| 6 | Bu lông M8 dài ~60 + đai ốc khóa (bánh trên) + bu lông trục M8 (bánh dưới) | 4 + 8 | |
 | 7 | Chặn cuối: trong ray trên (2 có lẫy + 2 cao su) + cao su trong lòng U (4) | 8 | |
 | 8 | Vít 4 × 12 đầu dù (khoan mồi 3,3) bắt tấm che ray vào U/ray | 26 | ~250/vít, không dùng vít tự khoan |
 | 9 | Vít nở đầu bằng (khoan côn) bắt U xuống sàn | 16 | đầu vít chìm phẳng lòng U |
 | 10 | Khóa ấn (tùy chọn, hành trình ≥ 14, bắt ke L vào thanh ngang); tay nắm Tuan tự lắp | 1 | `TODO` chọn loại |
-| 11 | Tán rút ren M8 (bát treo) + tán rút ren M5 (đầu 5 dầm đỉnh) + kìm rút | 4 + 5 | theo `bom.csv` |
+| 11 | Tán rút ren M8 (bánh trên, viền trên) + tán rút ren M5 (đầu 5 dầm đỉnh) + kìm rút | 4 + 5 | theo `bom.csv` |
 | 12 | Ron chổi chống bụi mép chồng mí | 2 × 2,9 m | |
 | 13 | Ống inox Ø27 + tai đỡ hàn (dài 698 mm/ống) | 8 ống | `TODO` dày ống: model ghi 1,0, bản cũ ghi 1,2 |
 | 14 | Nở sắt M8 xuyên dãn bệ xuống sàn | 18 | ~600/cái |
@@ -183,9 +187,9 @@ Mở `design/wardrobe.blend`, bấm **Space**: C1 lùa phải hết cỡ rồi �
 
 - W thực tế.
 - Cân 1 tấm nhựa 400 × 2900 × 10 thật → sửa `panel_kg` (Tuan: ~5 kg, đã sửa; cân chính xác nếu cần).
-- Đo bánh POM (Ø, bề rộng, tải → `wheel_kg`), ray hộp (độ dày vách, khe đáy), xe treo (cao) → điền vào `P`, chạy lại.
+- Đo bánh POM (Ø, bề rộng, tải → `wheel_kg`), U chấn thật (rộng lòng, dày) → điền vào `P`, chạy lại.
 - Dày ống inox Ø27: model 1,0, bản cũ 1,2 → xác nhận.
-- Bản vẽ gia công cánh tấm nhựa (bảng cắt, viền, thanh ngang, càng bánh, bát treo, lỗ khóa).
+- Bản vẽ gia công cánh tấm nhựa (bảng cắt, viền, thanh ngang, càng bánh, tán rút ren bánh trên, lỗ khóa).
 - Tường sau ẩm thì chừa khe ~20 sau quần áo hoặc ốp tấm chống ẩm.
 
 ## An toàn
