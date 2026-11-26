@@ -84,6 +84,7 @@ Các bộ treo hãng đều kèm dẫn hướng sàn
   chêm tôn dưới U cho thẳng và phẳng.
 - **Đỡ U từ dưới:** cột đứng trên 3 dãn bệ 20 × 40 nằm (xem Bệ tủ); dãn bệ bắt nở M8 xuống sàn ~600/cái (18 cái).
   **Dãn bệ trước áp sát cạnh sau U trong, hàn dọc suốt 3000**, đồng thời là chân của 3 cột trước (cột đứng trên dãn, lệch 5 về sau) → 2 U + thanh giữa + dãn + cột thành một khối, dãn bắt nở M8 xuống sàn. Bỏ 13 bản đế 60 × 60 × 4 cũ.
+  Khe 5 giữa thành sau U trong và mặt trước 3 cột trước được lấp bằng **3 bản mã chêm 5 × 40 × 20** (z 20 → 40, thấp hơn đáy cánh 46), hàn 2 phía → U nối thẳng vào cột (kiểm `U_noi_cot`). Cột phải lùi 5 vì phía trên đáy cánh, cánh trong chạy sát mặt cột.
 - **Chặn cuối cao su trong lòng U** ở 2 đầu (cụm bánh chạm thì dừng, mép cánh sát tường).
 - **Cụm bánh** (2 cụm/cánh, tâm cách mép cánh 110): càng thép rộng 30 hàn dưới viền dưới; 2 bánh 608 bọc POM Ø32 × 12 cách nhau 60,
   trục bu lông M8. Có vít chỉnh cao để cân cánh thẳng đứng.

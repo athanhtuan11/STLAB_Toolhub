@@ -252,6 +252,10 @@
     true,
     "vong giua nhip 1.3 mm <= 3"
    ],
+   "U_noi_cot": [
+    true,
+    "cot truoc noi thang U trong bang ban ma chem 5 (z 20..40, thap hon day canh 46)"
+   ],
    "U_noi_khung": [
     true,
     "dan truoc y 120..160 ap sat U trong (han doc) va do cot truoc y 125..165 (lech 5)"
@@ -323,6 +327,24 @@
    "L": 2984,
    "Wd": 40.0,
    "Th": 40.0
+  },
+  {
+   "name": "KD0-chem-U-cot",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "tab",
+   "spec": "ban ma chem 5x40x20 han U trong - cot truoc",
+   "bbox": [
+    0.0,
+    40.0,
+    120.0,
+    125,
+    20,
+    40
+   ],
+   "L": 40.0,
+   "Wd": 20,
+   "Th": 5.0
   },
   {
    "name": "KD0-cot-sau",
@@ -595,6 +617,24 @@
    "Th": 40.0
   },
   {
+   "name": "KD2-chem-U-cot",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "tab",
+   "spec": "ban ma chem 5x40x20 han U trong - cot truoc",
+   "bbox": [
+    1480.0,
+    1520.0,
+    120.0,
+    125,
+    20,
+    40
+   ],
+   "L": 40.0,
+   "Wd": 20,
+   "Th": 5.0
+  },
+  {
    "name": "KD2-cot-sau",
    "group": "Khung sat",
    "mat": "steel",
@@ -863,6 +903,24 @@
    "L": 2984,
    "Wd": 40.0,
    "Th": 40.0
+  },
+  {
+   "name": "KD4-chem-U-cot",
+   "group": "Khung sat",
+   "mat": "steel",
+   "kind": "tab",
+   "spec": "ban ma chem 5x40x20 han U trong - cot truoc",
+   "bbox": [
+    2960.0,
+    3000.0,
+    120.0,
+    125,
+    20,
+    40
+   ],
+   "L": 40.0,
+   "Wd": 20,
+   "Th": 5.0
   },
   {
    "name": "KD4-cot-sau",

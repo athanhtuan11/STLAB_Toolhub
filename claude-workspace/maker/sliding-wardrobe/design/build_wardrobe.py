@@ -357,6 +357,10 @@ def build():
         zc0 = p["be_joist"][1]                       # cot dung tren dan be (dan be nam dung hang cot, bat no xuong san)
         if full:
             steel(f"{n}-cot-truoc", "z", zc0, z_rail_top, xl, y0i + TB / 2)
+            # ban ma chem: lap khe giua canh sau U trong (y = U2 sau) va mat truoc cot truoc, han 2 phia (duoi mieng U, canh khong cham)
+            yu2 = UL[1] + p["U"][0] / 2
+            box(f"{n}-chem-U-cot", "Khung sat", xl - TB / 2, xl + TB / 2, yu2, y0i, zc0, p["U"][1], "steel", "tab",
+                f"ban ma chem {y0i - yu2:.0f}x40x{p['U'][1] - zc0:.0f} han U trong - cot truoc")
         steel(f"{n}-cot-sau", "z", zc0, z_rail_top, xl, y1i - TB / 2)
         steel(f"{n}-cot-giua", "z", zc0, zs - TB, xl, y_mid)
         # khung lung: dam ke + dam dinh gac len thanh ngang truoc (khong cot truoc -> khong can loi lay do)
@@ -425,6 +429,8 @@ def build():
     # dan truoc ap SAT canh sau U trong (han doc suot 3000) va lam chan 3 cot truoc -> U + dan + cot thanh 1 khoi
     for n, yj in enumerate((yb0 + jw / 2, y_mid, y1i - TB / 2)):
         box(f"Be-dan-{n + 1}", "Be tu", 0, W, yj - jw / 2, yj + jw / 2, 0, jh, "steel", "be-joist", "20x40 nam")
+    CHECK["U_noi_cot"] = (y0i - (UL[1] + UB / 2) <= 10 and UH <= dz0 - 5,
+                          f"cot truoc noi thang U trong bang ban ma chem {y0i - (UL[1] + UB / 2):.0f} (z {jh}..{UH}, thap hon day canh {dz0:.0f})")
     CHECK["U_noi_khung"] = (abs((yb0 + jw) - (y0i + TB)) <= 5 and yb0 + jw > y0i,
                             f"dan truoc y {yb0:.0f}..{yb0 + jw:.0f} ap sat U trong (han doc) va do cot truoc y {y0i}..{y0i + TB} (lech {y0i - yb0:.0f})")
     box("Be-van", "Be tu", 0, W, yb0, D, UH - p["be_board"], UH, "board", "be-board",

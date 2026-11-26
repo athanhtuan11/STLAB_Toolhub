@@ -204,7 +204,7 @@ def bom():
         elif pt["kind"] == "wallbracket":
             rows[(pt["spec"], "", "cot sau - tuong sau (2 do cao)")] += 1
         elif pt["kind"] == "tab":
-            rows[(pt["spec"], "", "noi U vao dan be truoc ~500/cai")] += 1
+            rows[(pt["spec"], "", "noi U trong vao 3 cot truoc (duoi mieng U)")] += 1
         elif pt["kind"] == "utrack-top":
             UB, UH, UT = P["U"]
             rows[(pt["spec"], pt["L"], "ray TREN up nguoc, dan huong (bat duoi 5 dau dam dinh)")] += 1
