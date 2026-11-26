@@ -41,8 +41,8 @@ def section():
     PT = meta["PT"]
     fig, (a_top, a_bot) = plt.subplots(2, 1, figsize=(8.5, 11))
     UB, UH, UT = P["U"]
-    for ax, (zlo, zhi), title in ((a_top, (dz1 - 120, zt1 + hh + 30), "TREN: dau dam dinh + U chan 40x40 UP NGUOC + banh 608 truc dung (CHI DAN HUONG) + tam che ray"),
-                                  (a_bot, (-25, dz0 + 110), "DUOI: BE TU 40 - U chan chim + cum banh 608 POM (CHIU TAI) + tam che ray")):
+    for ax, (zlo, zhi), title in ((a_top, (dz1 - 120, zt1 + hh + 30), "TREN: dau dam dinh + U chan 40x40 UP NGUOC + banh 608 truc dung (CHI DAN HUONG) (son den, de lo)"),
+                                  (a_bot, (-25, dz0 + 110), "DUOI: BE TU 40 - U chan chim + cum banh 608 POM (CHIU TAI) (son den, de lo)")):
         for li, yc in enumerate((L0, L1)):
             yf0 = yc - FDP / 2
             # canh: vien hop 20x40 (mat cat: 40 sau x 20 cao) + tam nhua 10 phu mat truoc
@@ -83,11 +83,8 @@ def section():
         rect(ax, yb0, 0, 40, P["be_joist"][1], STEEL, z=3)                      # dan be truoc ap sat U trong (han doc), do cot truoc
         rect(ax, DZ, P["be_joist"][1], 40, 200, STEEL, z=2)                     # cot truoc dung tren dan
         rect(ax, yb0, UH_ - P["be_board"], 140, P["be_board"], "#D9C7A6", z=3)
-        # dau dam dinh keo dai (ray bat thang duoi) + tam che ray tren/duoi (cung mat canh ngoai)
+        # dau dam dinh keo dai (ray bat thang duoi)
         rect(ax, L0 - tw / 2, zt1, DZ + 40 - (L0 - tw / 2), hh, STEEL, z=3, hatch="//")
-        yfa = meta["YF"][0]
-        rect(ax, yfa, dz1 + P["fascia_gap"], PT, zt1 + hh - dz1 - P["fascia_gap"], "#C9A27E", z=5)
-        rect(ax, meta["UL"][0] - UB_ / 2 - PT, 0, PT, UH_, "#C9A27E", z=5)
         ax.text(yb0 + 4, UH_ - P["be_board"] / 2, "van be", fontsize=7, va="center", zorder=6)
         rect(ax, -10, -25, 185, 25, "#CFC8BC", ec="none", z=0, hatch="..")    # san
         ax.set_xlim(-10, 175)
@@ -100,7 +97,7 @@ def section():
     dim(a_top, 150, dz1, 150, zt0, f"{P['hanger_gap']} (banh ha het nam duoi)", 2)
     dim(a_top, 150, zt0, 150, zt1, f"U tren {th}, nhac toi da {P['guide_top_gap']}", 2)
     dim(a_top, 150, zt1, 150, zt1 + hh, f"dam dinh {hh}", 2)
-    a_top.text(0, zt1 + hh + 15, f"dinh dam {meta['H_TOP']:.0f} tu san; tam che ray (vang nhat) cung mat canh ngoai", fontsize=8)
+    a_top.text(0, zt1 + hh + 15, f"dinh dam {meta['H_TOP']:.0f} tu san; ray son den, khong che", fontsize=8)
     dim(a_bot, 150, 0, 150, UH, f"U cao {UH}", 2)
     dim(a_bot, 150, UH, 150, dz0, f"{P['u_gap']} ho", 2)
     dim(a_bot, meta["UL"][0] - UB / 2, -12, meta["UL"][1] + UB / 2, -12, "2 U + thanh giua 20, han kep", 2, "h")

@@ -27,7 +27,6 @@
    ],
    "front_gap": 10,
    "door_gap": 10,
-   "fascia_gap": 6,
    "U": [
     40,
     40,
@@ -204,9 +203,9 @@
     true,
     "tam nhua phu kin be rong canh"
    ],
-   "che_ray": [
+   "ray_son_den": [
     true,
-    "tam che tren cung mat canh ngoai; tam che duoi bat mat truoc U ngoai (chan tu lui 0); moi tam = 1 tam nguyen 2900 + 1 mau 100 sat tuong phai"
+    "KHONG tam che ray (Tuan 2026-11-26): U tren + U duoi son den, de lo"
    ],
    "cang_lech": [
     true,
@@ -1677,78 +1676,6 @@
    "L": 3000,
    "Wd": 40,
    "Th": 20.0
-  },
-  {
-   "name": "Che-ray-tren-1",
-   "group": "Che ray",
-   "mat": "panel",
-   "kind": "fascia",
-   "spec": "tam nhua che ray tren 92 cao",
-   "bbox": [
-    0,
-    2900,
-    10,
-    20,
-    2952,
-    3044
-   ],
-   "L": 2900,
-   "Wd": 92,
-   "Th": 10
-  },
-  {
-   "name": "Che-ray-tren-2",
-   "group": "Che ray",
-   "mat": "panel",
-   "kind": "fascia",
-   "spec": "tam nhua che ray tren 92 cao",
-   "bbox": [
-    2900.5,
-    3000,
-    10,
-    20,
-    2952,
-    3044
-   ],
-   "L": 99.5,
-   "Wd": 92,
-   "Th": 10
-  },
-  {
-   "name": "Che-ray-duoi-1",
-   "group": "Che ray",
-   "mat": "panel",
-   "kind": "fascia",
-   "spec": "tam nhua che ray duoi 40 cao",
-   "bbox": [
-    0,
-    2900,
-    10.0,
-    20.0,
-    0,
-    40
-   ],
-   "L": 2900,
-   "Wd": 40,
-   "Th": 10.0
-  },
-  {
-   "name": "Che-ray-duoi-2",
-   "group": "Che ray",
-   "mat": "panel",
-   "kind": "fascia",
-   "spec": "tam nhua che ray duoi 40 cao",
-   "bbox": [
-    2900.5,
-    3000,
-    10.0,
-    20.0,
-    0,
-    40
-   ],
-   "L": 99.5,
-   "Wd": 40,
-   "Th": 10.0
   },
   {
    "name": "Be-dan-1",

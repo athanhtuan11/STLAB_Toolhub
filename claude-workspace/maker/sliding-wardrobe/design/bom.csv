@@ -16,10 +16,6 @@ Sat hop 40x40,3000,ke-truoc,1
 Sat hop 40x40,3000,dinh-truoc,1
 Sat hop 40x40,595,dam-ke,5
 Sat hop 40x40,595,dam-dinh,5
-Tam che ray (cat doc tu tam nhua 400x2900),2900 x 40,che ray tren/duoi: 1 tam nguyen 2900 + 1 mau sat tuong phai,1
-Tam che ray (cat doc tu tam nhua 400x2900),2900 x 92,che ray tren/duoi: 1 tam nguyen 2900 + 1 mau sat tuong phai,1
-Tam che ray (cat doc tu tam nhua 400x2900),99.5 x 40,che ray tren/duoi: 1 tam nguyen 2900 + 1 mau sat tuong phai,1
-Tam che ray (cat doc tu tam nhua 400x2900),99.5 x 92,che ray tren/duoi: 1 tam nguyen 2900 + 1 mau sat tuong phai,1
 Tam nhua trong nha 400x2900x10,2900,"mat canh (nguyen tam, khong cat)",8
 U chan 40x40x2.0,3000,"ray TREN up nguoc, dan huong (bat duoi 5 dau dam dinh)",2
 U chan 40x40x2.0,3000,"ray duoi CHIU TAI, nam ngua, vit dau bang + no xuong san",2
@@ -39,8 +35,6 @@ Bulong truc M8 banh duoi,,4/canh,8
 Khoa an tu cua lua (push lock),,cho chong mi,1
 Ron choi chong bui (mep chong mi),2900,1/canh,2
 No M8 xuyen dan be xuong san (thay ban de chan cot),,"3 dan be, ~600/cai",18
-"Vit 4x12 dau du (KHOAN MOI 3.3, khong dung vit tu khoan) bat tam che vao thanh U / ray",,~250/vit,26
-Tan rut ren M5 + vit M5 bat tam che tren vao dau 5 dam dinh (han bit dau),,5 dam dinh,5
 LUU Y,,tai moi banh >= (khoi luong canh / 4) x 1.5 = 15 kg (canh ~39 kg voi panel_kg=5.0),
 Khoi luong sat uoc tinh (kg),145.2,do day 1.4/1.2 gia dinh,
 

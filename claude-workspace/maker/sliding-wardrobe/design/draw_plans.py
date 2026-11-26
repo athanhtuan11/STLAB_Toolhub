@@ -248,8 +248,6 @@ def bom():
         w.writerow(["Khoa an tu cua lua (push lock)", "", "cho chong mi", len(m["LOCKS"])])
         w.writerow(["Ron choi chong bui (mep chong mi)", m["DH"], "1/canh", P["door_n"]])
         w.writerow(["No M8 xuyen dan be xuong san (thay ban de chan cot)", "", "3 dan be, ~600/cai", 3 * (P["W"] // 600 + 1)])
-        w.writerow(["Vit 4x12 dau du (KHOAN MOI 3.3, khong dung vit tu khoan) bat tam che vao thanh U / ray", "", "~250/vit", 2 * (P["W"] // 250 + 1)])
-        w.writerow(["Tan rut ren M5 + vit M5 bat tam che tren vao dau 5 dam dinh (han bit dau)", "", "5 dam dinh", 5])
         w.writerow(["LUU Y", "", f"tai moi banh >= (khoi luong canh / 4) x 1.5 = {m['WHEEL_NEED']:.0f} kg (canh ~{m['DOOR_KG'][0]:.0f} kg voi panel_kg={P['panel_kg']})", ""])
         w.writerow(["Khoi luong sat uoc tinh (kg)", round(kg, 1), "do day 1.4/1.2 gia dinh", ""])
         w.writerow([])
@@ -279,7 +277,7 @@ def contact():
         x, y = (i % 3) * tw, (i // 3) * th + 40
         sheet.paste(im, (x + (tw - im.width) // 2, y + 25))
         dr.text((x + 10, y + 2), n, fill="black", font=font)
-    dr.text((10, 8), f"Tủ âm tường cửa lùa 2 cánh – bệ 40 + U chấn chịu tải, ray hộp 40x40 bắt dưới đầu dầm đỉnh – cánh tấm nhựa {P['panel_w']}x{P['panel_L']}x{P['panel_t']} + tấm che ray – "
+    dr.text((10, 8), f"Tủ âm tường cửa lùa 2 cánh – bệ 40 + U chấn chịu tải, ray hộp 40x40 bắt dưới đầu dầm đỉnh – cánh tấm nhựa {P['panel_w']}x{P['panel_L']}x{P['panel_t']} – ray U sơn đen – "
             f"W={W}, cánh {'-'.join(map(str, KB))} tấm ({'/'.join(map(str, DWS))}), chồng mí {OV:.0f}", fill="black", font=font)
     sheet.save(os.path.join(OUT, "00-contact-sheet.png"))
 

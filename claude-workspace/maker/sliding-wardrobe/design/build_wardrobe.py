@@ -6,7 +6,7 @@ Ray hop 40x40 tren + xe treo CHI GIU CANH DUNG, khong chiu tai; xe treo kin tron
 Tuan (sau): U tren san de vap -> lam BE TU cao bang mieng U (dan sat hop 20x40 nam + van 18) phu ca long tu; 2 thanh U nam CHIM
 ngang mat be o mep truoc, giua 2 U co thanh dem 8 -> mat be phang, khong con go noi. Mat truoc be = canh U son den (nhu chan tu).
 Tuan 2026-11-26: mat canh = TAM NHUA trong nha 400x2900x10 (thay lam song), 4 tam/canh bat vit len mat truoc khung;
-2 tam che ray tren + duoi cung loai nhua, cung mat phang voi canh ngoai (lui 10 so voi mep tuong); ray tren bat thang duoi
+(2026-11-26 sau: BO tam che ray, ray son den) ray tren bat thang duoi
 dau 5 dam dinh keo dai (bo 2 dam dau cua); U noi vao dan be tren hang cot truoc; bo ngang ke sau + ngang dinh sau (cot sau
 bat L + no vao tuong sau); cot dung tren 3 dan be (bo ban de). Ban lam song: backup/2026-11-26-truoc-tam-nhua/.
 Ban treo + dan huong giua: backup/2026-11-11-truoc-ray-u-duoi/. Ban 4 canh: backup/2026-11-11-truoc-2-canh-treo/.
@@ -30,9 +30,8 @@ P = dict(
     door_frame=(20, 40, 1.2),
     h_rails=4,                  # Tuan 2026-11-26: tam co hem khoa moc sat -> thanh ngang (bo song dung)
     h_rail=(40, 20, 1.2),       # thanh ngang hop 20x40 dat nam (sau 40 = day khung, cao 20 do moc hem)
-    front_gap=10,               # mep tuong (y=0) -> mat truoc canh ngoai + 2 tam che ray (lui vao 10)
+    front_gap=10,               # mep tuong (y=0) -> mat truoc canh ngoai (lui vao 10)
     door_gap=10,                # khe giua 2 lop canh (=> dem giua 2 U = hop 20x40 dat dung)
-    fascia_gap=6,               # mep canh -> tam che ray tren/duoi (canh chinh cao +-, khong co)
     # ---- ray DUOI chiu tai (Tuan 2026-11-11): U chan 40x40 nam ngua, bat vit dau bang xuong san
     U=(40, 40, 2.0),            # (rong = day canh, cao canh, day ton) - Tuan 2026-11-11: U chan day 2
     wheel_d=32, wheel_w=12,     # banh = bac dan 608 boc POM (TODO theo hang mua)
@@ -131,9 +130,7 @@ CHECK = dict(
     ray_vua=(p["track"][0] <= LANES[1] - LANES[0], "2 U tren dat canh nhau vua khoang cach 2 lop canh"),
     U_vua=(UL[1] - UL[0] - p["U"][0] >= 0 and abs(U_OFF) < 0.01, f"2 U + thanh giua {UL[1] - UL[0] - p['U'][0]:.0f} han kep, U dung duoi tam canh (lech {U_OFF:.0f})"),
     tam_kin_canh=(all(abs(KB[i] * PW - DWS[i]) < 0.5 for i in range(p["door_n"])), "tam nhua phu kin be rong canh"),
-    che_ray=(p["fascia_gap"] >= 5 and YF[0] + PT <= LANES[0] - p["track"][0] / 2 + 0.01 and p["panel_L"] <= W,
-             f"tam che tren cung mat canh ngoai; tam che duoi bat mat truoc U ngoai (chan tu lui {UL[0] - p['U'][0] / 2 - YF[0] - PT:.0f}); "
-             f"moi tam = 1 tam nguyen {p['panel_L']} + 1 mau {W - p['panel_L']} sat tuong phai"),
+    ray_son_den=(True, "KHONG tam che ray (Tuan 2026-11-26): U tren + U duoi son den, de lo"),
 )
 U_IN = UB - 2 * UT                                     # long U
 CHECK["cang_lech"] = (UL[0] - p["bogie_w"] / 2 < LANES[0] + FDP / 2 - 10,
@@ -418,13 +415,6 @@ def build():
     yb0 = UL[1] + UB / 2                          # mep sau thanh U trong
     box("Be-dem-giua-2-U", "Be tu", 0, W, UL[0] + UB / 2, UL[1] - UB / 2, 0, UH, "steel", "be-strip",
         f"thanh giua hop {UL[1] - UL[0] - UB:.0f}x{UH} dat dung, han kep giua 2 U")
-    # ---- 2 tam che ray (tam nhua 10 cat doc tu tam 400x2900): 1 tam nguyen 2900 tu tuong trai + 1 mau sat tuong phai
-    #      tren: cung mat canh ngoai, bat dau dam dinh + mat truoc ray ngoai; duoi: bat mat truoc U ngoai (chan tu lui vao)
-    yu0 = UL[0] - UB / 2
-    for nm, y0f, z0f, z1f in (("tren", YF[0], dz1 + p["fascia_gap"], H_TOP), ("duoi", yu0 - PT, 0, UH)):
-        for h, (xa, xb) in enumerate(((0, p["panel_L"]), (p["panel_L"] + 0.5, W))):
-            box(f"Che-ray-{nm}-{h + 1}", "Che ray", xa, xb, y0f, y0f + PT, z0f, z1f, "panel", "fascia",
-                f"tam nhua che ray {nm} {z1f - z0f:.0f} cao")
     jw, jh = p["be_joist"][0], p["be_joist"][1]
     # dan truoc ap SAT canh sau U trong (han doc suot 3000) va lam chan 3 cot truoc -> U + dan + cot thanh 1 khoi
     for n, yj in enumerate((yb0 + jw / 2, y_mid, y1i - TB / 2)):
