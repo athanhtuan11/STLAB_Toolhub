@@ -129,3 +129,100 @@ Nếu sau cần "mặt biểu cảm", đổi sang B không đổi bố trí loa/
 
 - Chân Audio Kit/CLAUDE.md dự án; hình khối là thiết kế mới, **không** chép sản phẩm thương mại (không dùng tên/logo hãng).
 - Chưa có nguồn cộng đồng cho kích thước bo (xem mục 1).
+
+## 10. A2 – Cú Bông có màn (2026-11-26, product-designer)
+
+Tuan chốt 2026-11-26: thay 2 vành mắt LED (eye-ring Ø54 + eye-diffuser) bằng **1 màn TFT 2,8" SPI cảm ứng** làm "mắt động"; bé chạm mặt cú bằng ngón tay; **không tấm che trước kính**.
+Ảnh duyệt: `contact-sheet-screen.png`, `concepts/a2-cu-bong-screen-{v1,v2}-{hero,side,state-listen|speak|praise|sleep}.png`, mockup UI phẳng `concepts/a2-cu-bong-screen-ui.png`. Dựng lại: `python make_screen_concepts.py` rồi `python make_sheet_screen.py`.
+Ngôn ngữ: giữ khối trứng mềm của A, thêm "đĩa mặt" kem bo lớn ôm màn như đĩa mặt chim cú. Từ khóa: **ấm · tròn · biết chớp mắt**.
+
+### 10.1 Số liệu (nguồn / TODO)
+| Mục | Giá trị | Nguồn |
+|---|---|---|
+| PCB | 50,0 × 86,0 mm, đặt NGANG (86 rộng × 50 cao) | LCDWiki MSP2807 |
+| Vùng hiển thị | 57,6 rộng × 43,2 cao mm (320 × 240 ngang) | LCDWiki MSP2807 |
+| Số CHÍNH THỨC (cập nhật 2026-11-26, thay ô giữ chỗ 62 × 47 – xem 10.9) | PCB 50,00 × 86,00 × 1,60; kính TP 50,00 × 69,20, cách mép trên PCB 6,40; AA lệch trong kính: trên 2,90 / dưới (phía header, FPC) 8,70 / hai bên 3,40; dày 5,60 không header, 12,78 có header; 4 lỗ Ø3,20 cách tâm 44,00 × 76,08 | bản vẽ LCDWiki MSP2807, `tools/parts-library/components.yaml` id `tft-2-8-spi-ili9341-touch` |
+| Vị trí cổ kết nối/khe SD | TODO (lấy từ ảnh/bản vẽ khi dựng CAD) | |
+| Ảnh render 10.2/x-ray | vẫn dùng ô 62 × 47 + hộp PCB dày 8: chỉ khác nhỏ, an toàn hơn (dày hơn thật); chưa render lại | |
+
+### 10.2 Hình khối đĩa mặt (cùng cho V1/V2; số trong ảnh, kỹ sư dựng theo khi có số đo)
+- **Đĩa mặt** (kem `#FFF3DF`, part riêng, lồng từ trong như eye-ring cũ): 94 × 58 mm (PCB 86 × 50 + thành ≥ 3,5 mm mỗi bên), bo cạnh trước **R ≥ 9 mm** (ảnh dùng 12), nhô khỏi thân ~4 mm ở tâm; phía sau chạm thân phẳng – **thân vỏ trước phải có mặt phẳng nền (hơi nghiêng theo vách ~ 8–10°) dưới đĩa**, chuyển về mặt cong bằng vai R ≥ 8; trong ảnh đã làm đầu "vuông hơn" (n 2,2 → 3,4) để đĩa không nhô quá ~8 mm ở hai mép (xem ảnh cạnh bên). Mép đáy đĩa nằm trên mặt phẳng ráp/tựa in (không support – kỹ sư kiểm bằng slice).
+- **Cửa sổ**: 58,4 × 44,0 mm (vùng hiển thị + 0,4 mm mỗi bên; TODO khớp mép kính thật), góc R 2,5. **Viền đè lên kính ≥ 1,2 mm** ngoài vùng hiển thị (kính phải rộng hơn hiển thị ≥ 1,2 mm mỗi bên – TODO kiểm kính thật), **mặt kính lùi 1,0 mm** so mặt viền, mép kính + mép PCB nằm kín sau viền (không lộ), không góc nhọn.
+- Thành đĩa ≥ 1,6 mm; ngàm giữ màn + khe theo `fit-library` (không tự đặt khe); khay bắt PCB bằng trụ vít M2 – TODO vì chưa có lỗ bắt. Dây FPC/jumper không ép mép nhựa (rãnh luồn dây bo R ≥ 1).
+- Cảm ứng: kính phải bị viền đè nhẹ nhưng không ép (ép làm lệch/vỡ cảm ứng) – TODO đo độ dày để chốt khe; ngón bé chạm vùng 58 × 43 là vùng chạm.
+- Tránh vùng mic: tâm mic phải z ≥ 100; **cạnh trên đĩa cách tâm lỗ mic ≥ 4 mm (ảnh: ≥ 5 mm)** – mic dời LÊN so concept cũ (xem 10.4).
+- Khắc dấu lắp: ▲ khắc sâu 0,6 mm (nét ≥ 0,8) ở mép dưới đĩa, cạnh mỏ/giữa; STLAB khắc nổi mặt dưới như cũ.
+
+### 10.3 Hai phương án vị trí mỏ
+| | **V1 – màn cao, mỏ DƯỚI màn** | **V2 – màn thấp, mỏ CHỒNG mép dưới viền** (KHUYẾN NGHỊ) |
+|---|---|---|
+| Tâm màn (z thân) | 112 (gần chỗ mắt cũ 108) | 104 (thấp 8 so V1) |
+| Mỏ | dựng trên đỉnh bụng, khoảng trống giữa viền và bụng (tâm z ≈ 74), tách hẳn màn | treo lên mép dưới đĩa, tâm cách tâm màn 31 mm, đè viền ~2 mm, không che vùng hiển thị (mỏ cách cửa sổ ≥ 1 mm) |
+| Bụng/loa | hạ thấp: lưới Ø56 tâm z ≈ 42 (cũ 54), tấm bụng thấp 8–12 mm | hạ ít: tâm z ≈ 48, hạ ~6 mm |
+| Mic | tâm z ≈ 148 (dời lên ~ +16, vùng trán dốc ~ 45°) | tâm z ≈ 141 (+9) |
+| Đánh đổi | đẹp "đúng mặt cú", mỏ hở dễ thấy; nhưng đụng vào loa/bụng, mic lên cao sát tai/nút → ảnh hưởng hú + đường dây; ống/khoang loa phải dời | mặt cú gọn, ít dời linh kiện; mỏ nhìn như "cằm" giữ nhận diện cú; mỏ chồng viền nên cần tách part bơ gắn lên viền (hai part chạm nhau, kiểm AMS) |
+**Khuyến nghị V2**: dời ít nhất (bụng/loa/mic chỉ dời 6–9 mm), vẫn giữ mỏ làm mốc nhận diện cú, ít rủi ro với loa Ø52 và mic xa loa. V1 chỉ nếu Tuan muốn mỏ tách hẳn khỏi màn.
+
+### 10.4 Mockup UI (màn 320 × 240 ngang, nền #0A0F18, mắt to 2 bên; chi tiết ở `a2-cu-bong-screen-ui.png`)
+| Trạng thái | Màu | Hình mắt | Động |
+|---|---|---|---|
+| Nghe | xanh dương `#4FC3F7` | tròn to + con ngươi + điểm sáng, vòng cung phía trên | vòng cung "thở" 1 Hz |
+| Nói | vàng `#FFC83D` | hơi cao, con ngươi to, điểm sáng | chớp/co theo biên độ giọng |
+| Khen | hồng `#FF7FB0` | mắt cười ^ ^ + má hồng + 3 sao lấp lánh | 2 nhấp rồi giữ 2 s |
+| Ngủ | tím `#A99BE0`, mờ ~ 35 % | mắt nhắm ∪ + "z z" | thở rất chậm; **chạm mặt = thức dậy** |
+Chạm khi Nghe = chớp mắt vui; chạm khi Nói = tạm lặng (TODO firmware quyết). Độ sáng nền trần thấp (mắt bé; TODO nit), tự dim sau thời gian không chạm.
+
+### 10.5 CMF (giữ 3 màu, hạn chế AMS)
+Thân mơ + đĩa mặt/bụng kem + mỏ, nút bơ (cuộn Bambu PETG Basic: tên màu TODO). Kính màn đen = màn tắt, không thêm màu. Bề mặt: đáy Textured PEI; đĩa mặt in **mặt trước phẳng xuống bàn** (mặt tiếp kính hướng lên) – chưa có support; bo R9 mặt trước chạm bàn nên cần vát 0,8 thay bo tại tiếp xúc – kỹ sư kiểm.
+
+### 10.6 Cần quyết
+1. Chọn V1 hay V2 (khuyến nghị V2).
+2. Tuan đo: độ dày tổng màn + khoảng cách lỗ bắt vít, vị trí cổ nối/khe SD, kích thước kính thật; chốt chiều đặt (ngang đã chốt) và hướng cổ nối (xuống dưới, phía bụng?).
+3. Dời mic lên (+9 mm V2 / +16 mm V1) và hạ bụng/loa: phiên chính chấp nhận đổi CAD (đây là đề xuất, chưa đổi gì).
+4. Mất đèn LED mắt → bỏ eye-ring/eye-diffuser và dây WS2812 mắt (nút đầu/LED khác nếu có thì giữ?).
+5. Vỏ trước cần mặt phẳng nền (hoặc đĩa mặt chấp nhận nhô ≤ 8 mm ở hai mép).
+6. An toàn: màn nóng ít; cạnh viền chỉ cạnh bo; vỏ bé < 3 tuổi chạm màn → không tấm che nên kính phải được viền đè chắc (không bong), kiểm lực kéo 10 N sau khi có số.
+
+### 10.7 Việc kỹ sư dựng (sau khi chọn)
+`face-plate` (kem) + cửa sổ 58,4 × 44,0 + ô giữ màn (TODO số); mặt phẳng nền trên vỏ trước; dời mic/loa/bụng theo phương án; bỏ eye-ring + eye-diffuser; rãnh dây màn; ▲ + khắc STLAB; slice kiểm không support.
+
+### 10.8 Đã sửa gì sau khi nhìn ảnh
+- Bản 1: đĩa mặt như tấm ốp 90° (bo 9) nhìn như tivi → bo 12, mắt lớn hơn (r 13,5, tâm ±15).
+- Cạnh bên: đĩa nhô ~13 mm ở hai mép vì thân cong → làm thân vuông hơn ở phần đầu (n 3,4) → còn ~8 mm; ghi yêu cầu "mặt phẳng nền" cho CAD.
+- Mỏ V2 ban đầu đè lên vùng hiển thị → dời tâm mỏ xuống −31 mm so tâm màn.
+
+### 10.9 V2-2L – 2 loa ở 2 sườn (Tuan chốt 2026-11-26: V2 + 2 loa)
+Ảnh duyệt: `contact-sheet-screen-2l.png`, `concepts/a2-cu-bong-screen-v2-2l-{h0,h25}-{hero,side,back,xray-front,xray-top}.png`. Dựng lại: `python make_screen_2l.py` rồi `python make_sheet_screen_2l.py`. Không sửa CAD.
+
+**Hình khối.** Giữ V2 (màn tâm z=104, mỏ chồng viền, mic tâm z=141). Bụng hết loa: tấm kem trơn + 12 vạch lông vũ nhẹ (khắc nông, nét 1,2) + logo STLAB khắc sâu 0,6 ở z≈22 (chữ ≥ 0,8 nét; ảnh chỉ là khối giữ chỗ). Canh đổi: dời LÊN z≈112, ra sau (y≈+22), nhỏ lại (20 × 44 × 56) để nhường bezel loa – chỉ trang trí, phiên chính xác nhận.
+
+**2 loa** (Ø52 × 26: mặt trước 5 mm Ø52, thân sau Ø38 dài 21), tâm z=50, 2 bezel/lưới Ø56 (lỗ Ø2,8 bước 5,6, speaker-bezel 86 × 86 × 15 giữ nguyên, cone nằm trong vỏ). Bezel 86 × 86 phủ z 7–93 → không chạm sàn; trên cùng z=93 vẫn dưới cánh (đáy cánh z≈84 ở khối concept, lệch về sau y > −2 nên không đè). Concept dùng vành kem Ø68 nhô 1,5 (H0) / 3,5 (H25) chỉ để vẽ; CAD cắt phẳng vuông góc trục loa, nhô ≤ 2 mm, vát 0,8.
+
+| | **H0 – ngang 0°** (KHUYẾN NGHỊ) | **H25 – chếch trước 25°** |
+|---|---|---|
+| Trục loa | ±X | (±cos25°, −sin25°) |
+| Mặt loa | nhìn thẳng ngang, chỉ thấy rõ từ cạnh/chéo | lộ ra ở ảnh 3/4 trước, mắt bé thấy lưới → "có loa" rõ hơn, âm hướng về bé |
+| Tâm mic (z=141) → tâm khối loa / → tâm lưới | 113,5 / 122,1 mm (≥ 60 ✓) | 104,0 / 109,9 mm (≥ 60 ✓) |
+| Nội thất | thoáng, thân sau 2 loa cách nhau ~73 mm | khối loa chạy chéo, thân sau (x 33–49, y −37…−1) tiến gần sau màn (≥ 25 mm) |
+| Khó dựng | bezel gần phẳng, vỏ đơn giản | bezel nghiêng 25° trên mặt cong → phải cắt phẳng nghiêng + gờ khóa nghiêng; ống ôm loa dựng khó hơn |
+Khuyến nghị H0: gọn, ít rủi ro CAD, đã đủ xa mic; H25 chỉ nếu Tuan thích nhìn lưới từ phía trước.
+
+**Bố trí bên trong (ảnh x-ray, hệ trục thân: x phải, y sau, z lên).** Vỏ trước+sau dày 2,4 → lòng rộng 129,6 (thân 134,4 giữ nguyên, **KHÔNG cần nới**), sâu ~112.
+- Loa: mặt tại |x|≈62,4 (H0), thân sau tới |x|≈36,4; hai loa không chạm nhau (khe giữa hai thân sau ≈ 73 mm).
+- Bo S3: pcb_box 29 × 16 × 72 dựng đứng, tâm (0, +34, 64): z 28–100, chân USB ở lưng-dưới (khe cáp 40 × 12 ở chân lưng như cũ).
+- 2 ampli MAX98357A ~22 × 22 × 10 (dựng, mỏng theo x), mỗi cái cạnh loa của nó, tâm (±27, +16, 50) → cách thân sau loa 4,4 mm (render vẽ ở ±30 = chỉ cách 1,4 mm; **dùng ±27**), cách bo S3 7,5 mm theo x. H25: ampli cách khối loa ≥ 6 mm theo y.
+- Màn: PCB 86 × 50 × 1,6 ngay sau kính; cùng lúc dưới màn z=79 và đỉnh loa z=76 → **chỉ 3 mm theo z** (khác y: màn ở y≈−50, loa y 0…±26 ở H0): không chạm nhau nhưng sát; nếu cần dư, hạ tâm loa xuống z=46 (đáy bezel z=3, vát vào đáy) – đề xuất, chưa đổi.
+- Màn → bo S3: ≥ 70 mm theo y còn trống để luồn dây; không ép dây vào mép nhựa.
+- Thoát nhiệt: 5 khe 2 × 18 lưng như cũ (không đổi).
+
+**Màn: số chính thức và cách đặt ngang (thay ô 62 × 47)**
+- Đặt PCB 86 ngang, **header/FPC (dây) về bên phải mặt cú (phía x+)** – dây chạy ra sau về bo S3 ở giữa, tránh mỏ. Tâm PCB = tâm đĩa mặt (đĩa 94 × 58 đối xứng, tâm lỗ vít không đổi).
+- Từ tâm PCB: tâm vùng hiển thị (AA) lệch **−4,9 mm theo x** (về phía trái, xa header) vì AA cách mép kính trên 2,90 và dưới 8,70 và kính cách đầu PCB 6,40/10,40. Vùng hiển thị 57,6 × 43,2 → x −33,7…+23,9, z ±21,6.
+- **Chọn: cửa sổ 58,4 × 44,0 lệch tâm −4,9 mm** (khoảng rim đĩa: trái 12,9, phải 22,7, trên/dưới 7,0), và **firmware dịch hình mắt +4,9 mm = +27 px (0,18 mm/px) sang phải** để mắt nhìn cân giữa mặt cú. Phương án khác (đĩa lệch + cửa sổ giữa) làm mỏ/viền lệch → bỏ.
+- Kính TP 50,00 × 69,20 → khay giữ kính: kính từ x −36,6 đến +32,6 (tâm −2,0 so tâm PCB), z ±25. Viền đè lên kính: dọc trên/dưới 3,0 mm/bên (≥1,2 ✓), đầu trái 2,5 mm, đầu phải 8,3 mm.
+- Dày: 5,60 (không header) → khoang trước ≥ 6,0 + khe fit-library, mặt kính lùi 1,0 so mặt viền như 10.2. Header: 12,78 − 5,60 = 7,2 mm nhô sau → hốc sau PCB sâu ≥ 8 mm ở góc phải.
+- 4 lỗ Ø3,20 cách tâm PCB 44,00 (z) × 76,08 (x) → tâm lỗ x = ±38,04, z = ±22,0 so tâm PCB: trụ vít M3 (hoặc M3 ép insert tuỳ fit-library, TODO) ở thành sau đĩa mặt. Chú ý lỗ phải x=+38,04 cách mép đĩa (±47) chỉ 8,96 → trụ Ø7 còn 5,5 mm; kiểm khi dựng.
+
+**Cần quyết thêm:** (1) H0 hay H25; (2) hạ loa z=46 hay giữ 50 (màn–loa 3 mm theo z); (3) chấp nhận dời cánh lên/ra sau; (4) header về bên phải mặt cú (đã chọn, đổi thì đối xứng); (5) cổ kết nối/khe SD màn: TODO khi dựng.
+
+**Đã sửa gì sau khi nhìn ảnh:** bản 1 thiếu chỗ cho bezel (cánh chồng lưới) → dời cánh lên/ra sau; ampli ở x=±30 chỉ cách loa 1,4 mm → đề xuất ±27; H25: lưới lộ ra ở mặt trước gần mỏ/bụng rõ nên giữ vành kem nhô 3,5 để không bị thân che.
