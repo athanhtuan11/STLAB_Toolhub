@@ -37,22 +37,22 @@ def section():
     dz0, dz1 = meta["dz"]
     zt0, zt1 = meta["z_track"]
     tw, th = P["track"]
-    hh = P["header"][1]
+    hh = P["tube"][0]
+    PT = meta["PT"]
     fig, (a_top, a_bot) = plt.subplots(2, 1, figsize=(8.5, 11))
     UB, UH, UT = P["U"]
-    for ax, (zlo, zhi), title in ((a_top, (dz1 - 120, zt1 + hh + 30), "TREN: dam 40x40 + ray hop 40x40 + xe treo (CHI GIU DUNG, ho 3)"),
-                                  (a_bot, (-25, dz0 + 110), "DUOI: BE TU 40 - U chan chim ngang mat be + cum banh 608 POM (CHIU TAI)")):
+    for ax, (zlo, zhi), title in ((a_top, (dz1 - 120, zt1 + hh + 30), "TREN: dau dam dinh 40x40 + ray hop 40x40 + xe treo (CHI GIU DUNG) + tam che ray"),
+                                  (a_bot, (-25, dz0 + 110), "DUOI: BE TU 40 - U chan chim + cum banh 608 POM (CHIU TAI) + tam che ray")):
         for li, yc in enumerate((L0, L1)):
             yf0 = yc - FDP / 2
-            # canh: vien hop 20x40 (mat cat: 40 sau x 20 cao), lam phia sau mat truoc ~1
+            # canh: vien hop 20x40 (mat cat: 40 sau x 20 cao) + tam nhua 10 phu mat truoc
             rect(ax, yf0, dz0, FDP, 20, STEEL, z=3)
             rect(ax, yf0, dz1 - 20, FDP, 20, STEEL, z=3)
-            rect(ax, yf0 + 1, dz0 + 20, FDP - 14, dz1 - dz0 - 40, LAM, z=1)
+            rect(ax, yf0 - PT, dz0, PT, dz1 - dz0, LAM, z=3)
             ax.text(yc, (zlo + zhi) / 2, f"C{li + 1}", ha="center", va="center", fontsize=11, color="white", zorder=4,
                     fontweight="bold")
             # ray hop + dam
             rect(ax, yc - tw / 2, zt0, tw, th, "none", ec=ALU, lw=2.2, z=3)
-            rect(ax, yc - 20, zt1, 40, hh, STEEL, z=3, hatch="//")
             # xe treo + bulong + bat
             rect(ax, yc - 8, zt0 + 4, 16, P["trolley_h"], "#555", z=4)
             ax.add_patch(Circle((yc, zt0 + 14), 7, fc=NYL, ec="black", lw=0.6, zorder=5))
@@ -73,28 +73,36 @@ def section():
         UB_, UH_, UT_ = P["U"]
         rect(ax, L0 + UB_ / 2, 0, L1 - L0 - UB_, UH_, STEEL, z=3)
         yb0 = L1 + UB_ / 2
-        rect(ax, yb0, 0, 40, P["be_joist"][1], STEEL, z=3)
+        DZ = P["DZ"]
+        rect(ax, DZ, 0, 40, P["be_joist"][1], STEEL, z=3)                       # dan be truoc (dung hang cot)
+        rect(ax, yb0, 0, DZ - yb0, P["be_joist"][1], "#777", z=3)               # ban ma chem U - dan
+        rect(ax, DZ, P["be_joist"][1], 40, 200, STEEL, z=2)                     # cot truoc dung tren dan
         rect(ax, yb0, UH_ - P["be_board"], 140, P["be_board"], "#D9C7A6", z=3)
+        # dau dam dinh keo dai (ray bat thang duoi) + tam che ray tren/duoi (cung mat canh ngoai)
+        rect(ax, L0 - tw / 2, zt1, DZ + 40 - (L0 - tw / 2), hh, STEEL, z=3, hatch="//")
+        yfa = meta["YF"][0]
+        rect(ax, yfa, dz1 + P["fascia_gap"], PT, zt1 + hh - dz1 - P["fascia_gap"], "#C9A27E", z=5)
+        rect(ax, yfa, 0, PT, dz0 - P["fascia_gap"], "#C9A27E", z=5)
         ax.text(yb0 + 4, UH_ - P["be_board"] / 2, "van be", fontsize=7, va="center", zorder=6)
-        rect(ax, -10, -25, 140, 25, "#CFC8BC", ec="none", z=0, hatch="..")    # san
-        ax.set_xlim(-10, 130)
+        rect(ax, -10, -25, 185, 25, "#CFC8BC", ec="none", z=0, hatch="..")    # san
+        ax.set_xlim(-10, 175)
         ax.set_ylim(zlo, zhi)
         ax.set_aspect("equal")
         ax.set_title(title, fontsize=10)
         ax.set_xlabel("sau tu (mm, truoc -> sau)")
         ax.grid(alpha=0.2)
     # kich thuoc
-    dim(a_top, 112, dz1, 112, zt0, f"{P['hanger_gap']} khe chinh cao (TODO)", 2)
-    dim(a_top, 112, zt0, 112, zt1, f"ray {th}", 2)
-    dim(a_top, 112, zt1, 112, zt1 + hh, f"dam {hh}", 2)
-    a_top.text(0, zt1 + hh + 15, f"dinh dam {meta['H_TOP']:.0f} tu san", fontsize=8)
-    dim(a_bot, 112, 0, 112, UH, f"U cao {UH}", 2)
-    dim(a_bot, 112, UH, 112, dz0, f"{P['u_gap']} ho", 2)
+    dim(a_top, 150, dz1, 150, zt0, f"{P['hanger_gap']} khe chinh cao (TODO)", 2)
+    dim(a_top, 150, zt0, 150, zt1, f"ray {th}", 2)
+    dim(a_top, 150, zt1, 150, zt1 + hh, f"dam dinh {hh}", 2)
+    a_top.text(0, zt1 + hh + 15, f"dinh dam {meta['H_TOP']:.0f} tu san; tam che ray (vang nhat) cung mat canh ngoai", fontsize=8)
+    dim(a_bot, 150, 0, 150, UH, f"U cao {UH}", 2)
+    dim(a_bot, 150, UH, 150, dz0, f"{P['u_gap']} ho", 2)
     dim(a_bot, L1 - UB / 2, -12, L1 + UB / 2, -12, f"U {UB} = day canh", 2, "h")
     a_bot.text(-5, dz0 + 90, f"banh 608 POM O{P['wheel_d']}x{P['wheel_w']}, 2 cum x 2 banh / canh, can >= {meta['WHEEL_NEED']:.0f} kg/banh\n"
                f"cang {P['bogie_w']} trong long U {meta['U_IN']:.0f} -> chan canh lac +-{(meta['U_IN'] - P['bogie_w']) / 2:g} mm",
                fontsize=8)
-    fig.suptitle(f"Mat cat qua cum banh  |  khe giua 2 canh {meta['GAP_DOOR']:.0f}  |  canh ~{meta['DOOR_KG'][0]:.0f} kg (lam ~3 kg/thanh)",
+    fig.suptitle(f"Mat cat qua cum banh  |  khe giua 2 canh {meta['GAP_DOOR']:.0f}  |  canh ~{meta['DOOR_KG'][0]:.0f} kg (tam nhua {P['panel_kg']} kg/tam GIA DINH)",
                  fontsize=10)
     fig.tight_layout()
     fig.savefig(os.path.join(OUT, "12-mat-cat-ray.png"), dpi=150)
@@ -112,7 +120,7 @@ def plan():
         rect(ax, W, -30, 60, 160, "#E9E6E0", ec="none")
         for i, yc in enumerate((L0, L1)):
             x0 = DX0[i] + dx[i]
-            rect(ax, x0, yc - 20, DWS[i], 40, [LAM, "#7A5538"][i], z=3)
+            rect(ax, x0, meta["YF"][i], DWS[i], meta["DT"], [LAM, "#7A5538"][i], z=3)
             ax.text(x0 + DWS[i] / 2, yc, f"C{i + 1}", color="white", ha="center", va="center", fontsize=8, zorder=4)
         for yc in (L0, L1):
             rect(ax, 0, yc - P["U"][0] / 2, W, P["U"][0], "none", ec="#1565C0", lw=0.8, z=4)
@@ -120,7 +128,7 @@ def plan():
             for xb in (DX0[i] + dx[i] + P["bogie_in"], DX0[i] + dx[i] + DWS[i] - P["bogie_in"]):
                 ax.add_patch(Circle((xb, yc), 14, fc="#F2F2EE", ec="black", lw=0.6, zorder=5))
         for xl in meta["X_FULL"]:
-            rect(ax, xl - 20, 120, 40, 40, STEEL, z=2)
+            rect(ax, xl - 20, P["DZ"], 40, 40, STEEL, z=2)
         ax.set_xlim(-80, W + 80)
         ax.set_ylim(-35, 175)
         ax.set_aspect("equal")

@@ -91,20 +91,21 @@ def door_and_plan():
     a0 = fig.add_axes([0.0, 0.05, 0.22, 0.9])
     a1 = fig.add_axes([0.24, 0.45, 0.55, 0.5])
     a2 = fig.add_axes([0.80, 0.05, 0.2, 0.9])
-    # 1 canh
-    gs, ge = P["lam_gap_side"], P["lam_gap_end"]
-    a0.add_patch(Rectangle((0, 0), DW, DHD, fc=C["steel"], ec="k"))
+    # 1 canh: tam nhua phu mat truoc, khung (net dut trang) phia sau
+    PW = P["panel_w"]
     for j in range(k):
-        a0.add_patch(Rectangle((FW + gs + j * P["lam_w"], FW + ge), P["lam_w"], m["DH"], fc=C["lam"], ec="k", lw=0.5))
-    for n in range(P["n_rail_back"]):
-        zz = FW + ge + (n + 0.5) * m["DH"] / P["n_rail_back"]
-        a0.add_patch(Rectangle((FW, zz - 13), DW - 2 * FW, 26, fc="none", ec="w", ls="--", lw=0.8))
-    dim(a0, 0, DHD, DW, DHD, f"{DW} = {k}×{P['lam_w']} + 2×{gs} + viền 2×{FW}", off=80, fs=7)
-    dim(a0, 0, 0, 0, DHD, f"{DHD:.0f} = lam {m['DH']} + 2×{ge} + viền 2×{FW}", off=-60, vert=True, fs=7)
-    a0.text(DW / 2, -150, f"Viền hộp 20×40 đặt nằm (mặt 20 lộ, sâu 40)\ngiằng sau 13×26 (nét đứt trắng) đỡ lam\n"
-            f"2 cánh giống nhau, {min(KB)} thanh = {min(DWS)}; 2 cụm bánh dưới đáy", ha="center", fontsize=8)
+        a0.add_patch(Rectangle((j * PW, 0), PW, DHD, fc=C["lam"], ec="k", lw=0.6))
+    for x0_, w_ in [(0, FW), (DW - FW, FW)] + [(j * PW - P["mullion"][0] / 2, P["mullion"][0]) for j in range(1, k)]:
+        a0.add_patch(Rectangle((x0_, 0), w_, DHD, fc="none", ec="w", ls="--", lw=0.8))
+    a0.add_patch(Rectangle((0, 0), DW, FW, fc="none", ec="w", ls="--", lw=0.8))
+    a0.add_patch(Rectangle((0, DHD - FW), DW, FW, fc="none", ec="w", ls="--", lw=0.8))
+    dim(a0, 0, DHD, DW, DHD, f"{DW} = {k} tấm × {PW}", off=80, fs=7)
+    dim(a0, 0, 0, 0, DHD, f"{DHD:.0f} = dài tấm nhựa", off=-60, vert=True, fs=7)
+    a0.text(DW / 2, -150, f"Tấm nhựa {PW}×{P['panel_L']}×{P['panel_t']} bắt vít lên mặt trước khung\n"
+            f"khung: viền hộp 20×40 nằm + {k - 1} sống đứng 20×40 dựng (mặt 40) ở đường nối tấm\n"
+            f"2 cánh giống nhau = {min(DWS)}; 2 cụm bánh dưới đáy", ha="center", fontsize=8)
     a0.set_xlim(-320, DW + 100); a0.set_ylim(-380, DHD + 250); a0.set_aspect("equal"); a0.axis("off")
-    a0.set_title(f"CÁNH {k} THANH (nhìn trước)", fontsize=11)
+    a0.set_title(f"CÁNH {k} TẤM NHỰA (nhìn trước)", fontsize=11)
     # mat bang
     a1.add_patch(Rectangle((-120, -150), 120, D + 270, fc="#ddd", hatch="//", ec="#999"))
     a1.add_patch(Rectangle((W, -150), 120, D + 270, fc="#ddd", hatch="//", ec="#999"))
@@ -115,12 +116,12 @@ def door_and_plan():
             a1.add_patch(Rectangle((x, y), w, h, fc=C["steel"]))
     for i in range(P["door_n"]):
         front = i % 2 == 0
-        yl = m["LANES"][i % 2] - FDP / 2
+        yl = m["YF"][i % 2]
         x0, dwi = DX0[i], DWS[i]
-        a1.add_patch(Rectangle((x0, yl), dwi, FDP, fc=C["lam"], ec="k", lw=0.5, alpha=0.9))
-        a1.add_patch(Rectangle((x0, yl), FW, FDP, fc=C["steel"]))
-        a1.add_patch(Rectangle((x0 + dwi - FW, yl), FW, FDP, fc=C["steel"]))
-        a1.text(x0 + dwi / 2, -40 if front else 150, f"Cánh {i + 1}: {KB[i]} thanh, {DWS[i]} – ray {'ngoài' if front else 'trong'}",
+        a1.add_patch(Rectangle((x0, yl), dwi, m["DT"], fc=C["lam"], ec="k", lw=0.5, alpha=0.9))
+        a1.add_patch(Rectangle((x0, yl + m["PT"]), FW, FDP, fc=C["steel"]))
+        a1.add_patch(Rectangle((x0 + dwi - FW, yl + m["PT"]), FW, FDP, fc=C["steel"]))
+        a1.text(x0 + dwi / 2, -40 if front else 150, f"Cánh {i + 1}: {KB[i]} tấm, {DWS[i]} – ray {'ngoài' if front else 'trong'}",
                 ha="center", fontsize=7)
     for b, spec in enumerate(m["BAYS"]):
         a1.text((XL[b] + XL[b + 1]) / 2, D / 2 + 60, spec["name"], ha="center", fontsize=8)
@@ -146,7 +147,7 @@ def door_and_plan():
         a2.add_patch(Circle((YM, zr), 27, fc=C["rod"], ec="k"))
         a2.text(YM, zr - 480, f"ống @ {zr}\náo ≤ 850\nmóc ~450", ha="center", fontsize=7)
     for ln in m["LANES"]:
-        a2.add_patch(Rectangle((ln - FDP / 2, m["dz"][0]), FDP, DHD, fc=C["lam"], alpha=0.8))
+        a2.add_patch(Rectangle((ln - FDP / 2 - m["PT"], m["dz"][0]), FDP + m["PT"], DHD, fc=C["lam"], alpha=0.8))
     a2.set_xlim(-100, D + 150); a2.set_ylim(-50, H_TOP + 150); a2.set_aspect("equal"); a2.axis("off")
     a2.set_title("MẶT CẮT khoang 2 tầng", fontsize=11)
     save(fig, os.path.join(OUT, "11-canh-mat-bang-mat-cat.png"))
@@ -166,8 +167,14 @@ def bom():
             rows[(f"Van ke {P['board_t']}", f"{pt['L']} x {pt['Wd']}", "ke hop noc")] += 1
         elif pt["kind"] == "rod":
             rows[(f"Ong inox tron {pt['spec']}", pt["L"], "ong treo")] += 1
-        elif pt["kind"] == "lam":
-            rows[(f"Lam song {P['lam_w']}x{P['lam_L']}x{P['lam_t']}", P["lam_L"], "canh (nguyen cay, khong cat)")] += 1
+        elif pt["kind"] == "panel":
+            rows[(f"Tam nhua trong nha {P['panel_w']}x{P['panel_L']}x{P['panel_t']}", P["panel_L"], "mat canh (nguyen tam, khong cat)")] += 1
+        elif pt["kind"] == "fascia":
+            rows[(f"Tam che ray (cat doc tu tam nhua {P['panel_w']}x{P['panel_L']})", f"{pt['L']} x {pt['Wd']}", "che ray tren/duoi, noi giua x=W/2")] += 1
+        elif pt["kind"] == "wallbracket":
+            rows[(pt["spec"], "", "cot sau - tuong sau (2 do cao)")] += 1
+        elif pt["kind"] == "tab":
+            rows[(pt["spec"], "", "noi U vao dan be truoc ~500/cai")] += 1
         elif pt["kind"] == "track":
             if pt["name"].endswith("-tren"):     # ray hop ve bang 5 manh -> dem 1 lan / ray
                 rows[(pt["spec"], pt["L"], "ray treo (1 ray / lop canh)")] += 1
@@ -209,7 +216,10 @@ def bom():
         w.writerow(["Vit no dau bang (khoan con) bat U xuong san, ~400 mm/vit", "", "2 thanh U", 2 * (P["W"] // 400 + 1)])
         w.writerow(["Khoa an tu cua lua (push lock)", "", "cho chong mi", len(m["LOCKS"])])
         w.writerow(["Ron choi chong bui (mep chong mi)", m["DH"], "1/canh", P["door_n"]])
-        w.writerow(["LUU Y", "", f"tai moi banh >= (khoi luong canh / 4) x 1.5 = {m['WHEEL_NEED']:.0f} kg (canh ~{m['DOOR_KG'][0]:.0f} kg voi lam_kg={P['lam_kg']}, Tuan tu chon banh)", ""])
+        w.writerow(["No M8 xuyen dan be xuong san (thay ban de chan cot)", "", "3 dan be, ~600/cai", 3 * (P["W"] // 600 + 1)])
+        w.writerow(["Vit 4x12 dau du (KHOAN MOI 3.3, khong dung vit tu khoan) bat tam che vao thanh U / ray", "", "~250/vit", 2 * (P["W"] // 250 + 1)])
+        w.writerow(["Tan rut ren M5 + vit M5 bat tam che tren vao dau 5 dam dinh (han bit dau)", "", "5 dam dinh", 5])
+        w.writerow(["LUU Y", "", f"tai moi banh >= (khoi luong canh / 4) x 1.5 = {m['WHEEL_NEED']:.0f} kg (canh ~{m['DOOR_KG'][0]:.0f} kg voi panel_kg={P['panel_kg']} GIA DINH - TODO can tam that)", ""])
         w.writerow(["Khoi luong sat uoc tinh (kg)", round(kg, 1), "do day 1.4/1.2 gia dinh", ""])
     tube_m = Counter()
     for pt in parts:
@@ -234,8 +244,8 @@ def contact():
         x, y = (i % 3) * tw, (i // 3) * th + 40
         sheet.paste(im, (x + (tw - im.width) // 2, y + 25))
         dr.text((x + 10, y + 2), n, fill="black", font=font)
-    dr.text((10, 8), f"Tủ âm tường cửa lùa 2 cánh – BỆ TỦ 40, U chấn chìm ngang mặt bệ chịu tải, ray hộp 40x40 trên giữ đứng – khung sắt + lam sóng {P['lam_w']}x{P['lam_L']}x{P['lam_t']} – "
-            f"W={W}, cánh {'-'.join(map(str, KB))} thanh ({'/'.join(map(str, DWS))}), chồng mí {OV:.0f}", fill="black", font=font)
+    dr.text((10, 8), f"Tủ âm tường cửa lùa 2 cánh – bệ 40 + U chấn chịu tải, ray hộp 40x40 bắt dưới đầu dầm đỉnh – cánh tấm nhựa {P['panel_w']}x{P['panel_L']}x{P['panel_t']} + tấm che ray – "
+            f"W={W}, cánh {'-'.join(map(str, KB))} tấm ({'/'.join(map(str, DWS))}), chồng mí {OV:.0f}", fill="black", font=font)
     sheet.save(os.path.join(OUT, "00-contact-sheet.png"))
 
 
@@ -244,5 +254,5 @@ door_and_plan()
 kg, tm = bom()
 contact()
 print("SAT:", {s: round(v, 1) for s, v in tm.items()}, "m; ~%.0f kg" % kg)
-print("LAM:", sum(KB), "thanh nguyen cay; canh", DWS, "chong mi %.1f" % OV, "mo", [round(o) for o in OPEN])
+print("TAM NHUA:", sum(KB), "tam canh; canh", DWS, "chong mi %.1f" % OV, "mo", [round(o) for o in OPEN])
 print("PLANS OK")

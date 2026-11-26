@@ -1,33 +1,33 @@
 ﻿vat_tu,dai_mm,vi_tri,so_luong
-Ban de 60x60x4,,de cot giua bat no san,13
-Ban de bat noi dam dau cua - cot truoc,,de cot giua bat no san,3
 "Cang banh (2 ban ma + truc M8, vit chinh cao) han day vien duoi",,2 cum/canh,4
 Chan cuoi cao su trong long U,,2 dau moi thanh U,4
-Lam song 220x2900x26,2900,"canh (nguyen cay, khong cat)",14
 Ong inox tron Ø27,698.0,ong treo,8
-Sat hop 13x26,1542.0,giang sau lam (canh),8
-Sat hop 20x40,1542.0,vien-ngang-duoi,2
-Sat hop 20x40,1542.0,vien-ngang-tren,2
-Sat hop 20x40,2943.0,vien-dung-trai,2
-Sat hop 20x40,2943.0,vien-dung-phai,2
+Sat hop 20x40,1560.0,vien-ngang-duoi,2
+Sat hop 20x40,1560.0,vien-ngang-tren,2
+Sat hop 20x40,2860,song-dung,6
+Sat hop 20x40,2900,vien-dung-trai,2
+Sat hop 20x40,2900,vien-dung-phai,2
 "Sat hop 20x40 (dan be, dat nam)",3000,be tu,3
-Sat hop 40x40,2256,cot-giua,5
+Sat hop 40x40,105.0,dam-dinh-dau,5
+Sat hop 40x40,2240,cot-giua,5
+Sat hop 40x40,2991,cot-truoc,3
+Sat hop 40x40,2991,cot-sau,5
 Sat hop 40x40,3000,ke-truoc,1
-Sat hop 40x40,3000,ke-sau,1
 Sat hop 40x40,3000,dinh-truoc,1
-Sat hop 40x40,3000,dinh-sau,1
-Sat hop 40x40,3000,dau-cua,2
-Sat hop 40x40,3050.0,cot-truoc,3
-Sat hop 40x40,3050.0,cot-sau,5
-Sat hop 40x40,600,dam-ke,5
-Sat hop 40x40,600,dam-dinh,5
+Sat hop 40x40,595,dam-ke,5
+Sat hop 40x40,595,dam-dinh,5
+Tam che ray (cat doc tu tam nhua 400x2900),1499.5 x 40,"che ray tren/duoi, noi giua x=W/2",2
+Tam che ray (cat doc tu tam nhua 400x2900),1499.5 x 99,"che ray tren/duoi, noi giua x=W/2",2
+Tam nhua trong nha 400x2900x10,2900,"mat canh (nguyen tam, khong cat)",8
 U chan 40x40x2.0,3000,"ray duoi CHIU TAI, nam ngua, vit dau bang + no xuong san",2
-Van be 18,3000 x 702.0,mat be tu (khoet lo chan cot),1
-Van ke 17,720.0 x 680,ke hop noc,2
-Van ke 17,740.0 x 680,ke hop noc,2
+Van be 18,3000 x 680.0,mat be tu (khoet lo chan cot),1
+Van ke 17,720.0 x 675,ke hop noc,2
+Van ke 17,740.0 x 675,ke hop noc,2
+ban ma chem 5x20x40 han U trong - dan be,,noi U vao dan be truoc ~500/cai,7
+bat L 50x50x4 + no M8 bat cot sau vao tuong sau,,cot sau - tuong sau (2 do cao),10
 chan cuoi cao su,,trong ray treo,2
 chan cuoi co lay giu canh dong,,trong ray treo,2
-la dem 8x40 han giua 2 U,3000,dem giua 2 thanh U (be tu),1
+hop 20x40 dat dung han giua 2 U,3000,dem giua 2 thanh U (be tu),1
 ray hop 40x40,3000,ray treo (1 ray / lop canh),2
 
 Banh 608 boc POM O32x12 (hoac banh o bi tuong duong) + bulong truc M8,,4 banh/canh (2 cum x 2),8
@@ -36,5 +36,8 @@ Bat treo (bat vien tren bang tan rut ren M8) + bulong chinh,,2/canh,4
 "Vit no dau bang (khoan con) bat U xuong san, ~400 mm/vit",,2 thanh U,16
 Khoa an tu cua lua (push lock),,cho chong mi,1
 Ron choi chong bui (mep chong mi),2900,1/canh,2
-LUU Y,,"tai moi banh >= (khoi luong canh / 4) x 1.5 = 14 kg (canh ~37 kg voi lam_kg=3.0, Tuan tu chon banh)",
-Khoi luong sat uoc tinh (kg),148.6,do day 1.4/1.2 gia dinh,
+No M8 xuyen dan be xuong san (thay ban de chan cot),,"3 dan be, ~600/cai",18
+"Vit 4x12 dau du (KHOAN MOI 3.3, khong dung vit tu khoan) bat tam che vao thanh U / ray",,~250/vit,26
+Tan rut ren M5 + vit M5 bat tam che tren vao dau 5 dam dinh (han bit dau),,5 dam dinh,5
+LUU Y,,tai moi banh >= (khoi luong canh / 4) x 1.5 = 13 kg (canh ~34 kg voi panel_kg=3.0 GIA DINH - TODO can tam that),
+Khoi luong sat uoc tinh (kg),139.5,do day 1.4/1.2 gia dinh,
