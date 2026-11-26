@@ -1,0 +1,8 @@
+{
+  "_nguon": "PCOL trong cad/build_owl_s3_screen.py (mo #F6BE9A, kem #FFF3DF, bo #FFC857); nhom theo print-s3-screen.yaml",
+  "shell-front.stl": "#F6BE9A", "shell-back.stl": "#F6BE9A",
+  "speaker-bezel-L.stl": "#F6BE9A", "speaker-bezel-R.stl": "#F6BE9A", "speaker-ring-L.stl": "#F6BE9A", "speaker-ring-R.stl": "#F6BE9A",
+  "mic-clamp.stl": "#F6BE9A", "amp-tray.stl": "#F6BE9A", "amp-tray-2.stl": "#F6BE9A",
+  "face-plate.stl": "#FFF3DF", "belly.stl": "#FFF3DF", "base-plate.stl": "#FFF3DF",
+  "beak.stl": "#FFC857", "button-cap.stl": "#FFC857", "mx-cross-gauge.stl": "#FFC857"
+}

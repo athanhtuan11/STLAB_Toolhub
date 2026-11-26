@@ -1,0 +1,19 @@
+# english-teacher (Cu Bong) - ban in S3 CO MAN TFT 2,8" + 2 LOA chech 25 do. STL sinh bang cad/build_owl_s3_screen.py (Blender),
+# chep sang print/stl-s3-screen/ (amp-tray in 2 cai: amp-tray.stl + amp-tray-2.stl giong nhau).
+# Cat lop: python ../../tools/print/scripts/slice.py print/print-s3-screen.yaml   (STL da dung huong in)
+machine: Bambu Lab A1 0.4 nozzle
+filament: Bambu PETG Basic @BBL A1
+stl: stl-s3-screen
+plates_dir: plates-s3-screen
+common: {sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
+plates:
+  # mau MO: nua truoc (mat rap xuong) + kep mic + 2 khay ampli
+  A_shell_front: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "15%"}, stl: ["shell-front.stl", "mic-clamp.stl", "amp-tray.stl", "amp-tray-2.stl"]}
+  # mau MO: nua sau
+  B_shell_back: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "15%"}, stl: ["shell-back.stl"]}
+  # mau MO: 2 vanh loa (chup tru, dia luoi xuong) + 2 vong ep
+  C_speakers: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%"}, stl: ["speaker-bezel-L.stl", "speaker-bezel-R.stl", "speaker-ring-L.stl", "speaker-ring-R.stl"]}
+  # mau KEM: face-plate (mat truoc xuong) + bung + tam de
+  D_cream: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%", brim_type: outer_only, brim_width: "5"}, stl: ["face-plate.stl", "belly.stl", "base-plate.stl"]}
+  # mau BO: mo + nap nut dau (MX) + bo thu chu thap
+  E_butter: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%"}, stl: ["beak.stl", "button-cap.stl", "mx-cross-gauge.stl"]}

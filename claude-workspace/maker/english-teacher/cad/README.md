@@ -160,3 +160,28 @@ Tuan: bezel **đạt**; eye-diffuser không góp ý (bỏ khỏi bàn thử). Đ
 | mic-clamp | không hợp module | INMP441 Shopee **PCB tròn ~Ø15** (ShillehTek manual), hốc Ø15,6, rãnh dày 1,9, **nhét từ trên xuống**, mặt sau hở giữa (hàn dây + chip), ống dẫn âm lỗ Ø4; mặt PHẲNG (không chip) hướng ra trán |
 | amp-tray | tạm, chưa tối ưu, đặt chạm đáy vỏ | MAX98357A clone **18 × 19** / Adafruit 19,4 × 17,8: PCB **trượt vào 2 ray rãnh** (rãnh 2,0), gờ khóa 0,4 + vấu chặn, 2 đầu trống cho dây I2S + dây loa, gầm hở 3 mm + khe thoáng; đặt trên đáy hốc thật z 7,3 (đo ray_cast) – bắt **2 vít M2.5 × 6** xuyên đáy vỏ trước xuống tấm đế (lỗ mồi Ø2,2 đã khoét) |
 Gate `gate_owl_s3.py` thêm: PCB mic/ampli thật không chạm kẹp/khay/vỏ; kẹp + khay không chạm vỏ. TODO đo: độ dày PCB 2 module, chiều cao linh kiện ampli, vị trí lỗ âm INMP441.
+
+## Bản có màn + 2 loa (WIP 2026-11-26, chưa PASS gate)
+Sinh bằng `build_owl_s3_screen.py` (Blender 5.2) → `out-s3-screen/` (STL, `asm/`, `owl-params.json`, ảnh, `owl-assembly.sc`);
+bàn in `print/print-s3-screen.yaml` → `print/plates-s3-screen/` (STL in ở `print/stl-s3-screen/`, `amp-tray` in 2 cái = `amp-tray.stl` + `amp-tray-2.stl`).
+Gate `gate_owl_s3_screen.py`: mọi kiểm hình học PASS, **chỉ còn FAIL "bàn in chưa PASS: A_shell_front, B_shell_back"** (cắt lớp C, D, E PASS).
+
+### Vị trí cuối (mm; +Z lên, mặt trước −Y, mặt ráp y = 0,37)
+| Linh kiện | Tâm / số | Ghi chú |
+|---|---|---|
+| Màn MSP2807 | PCB (0; −50,7; 100), header +x, kính y −55,5 | cửa sổ 58,4 × 44 lệch −4,9; viền đè 2,5; glass_recess 1,5 (viền dày 1,35) |
+| face-plate | đĩa 94 × 58 R10 nhô 4 (mặt trước y −57), yên vát 45° rộng 5, vành chặn 104 × 68 × 2 | lắp từ trong; lỗ vỏ 94,6 × 58,6 loe 104,6 × 68,6; 4 vít M2.5 × 6 ở (±45,5; ±27,5) (đổi từ (±49; ±31) vì góc vành R15) |
+| Hộp nền | thẳng đứng y −53, thành 2,4, thu nhỏ 45° về thân | in không mái treo |
+| Loa L/R | (∓43,5; −12; 46), trục [∓0,9063; −0,4226; 0] | chụp trụ Ø72 sâu 32 in liền vành; 6 cánh bám + lỗ O34,2; ngàm xoay + gờ Ø48 giữ nguyên |
+| Ampli ×2 | (−3; −13; 7,3) và (+3; +12,5; 7,3), PCB 18 × 19,4 | dưới bo S3 giữa 2 ray (khay v2); đổi khỏi "lưng x ±27..45" vì nón chụp loa chiếm z 4..80 |
+| Mic | module Ø15 nghiêng 45° tâm (0; −29,2; 133,3), trục [0; −0,7075; 0,7067] | lỗ Ø4 trong vách vỏ, vách trước tì cách PCB 0,2; kẹp mic = ống lót nửa dưới + gờ vát 45°; giữ PCB bằng keo nóng |
+| Mỏ | tâm z 63,3, thu nhỏ 0,64 | dome đỉnh 69,1 (không chồng mép đĩa vì vành mỏ phải < lỗ màn 70,7) |
+| Bụng | Ø36 tâm z 28, 12 vạch + chữ STLAB | bụng trơn |
+| Bu-lông đế | (±24; ±14) như bản S3 | |
+
+### TODO còn lại (WIP)
+1. **shell-front: 558 mm² nhô ra (rộng 31) ở z 20..67, y −36..−53, x ±(13,6..44,5)** = trần vỏ trong của đường hầm giọt nước loa gặp mái vỏ (dốc 31°). Chưa tìm được hình dạng hầm làm hết vùng này (thử bán kính hầm, độ dày vỏ 3/4,5, CY −12/−4/0: vẫn 420..710 mm²).
+2. **shell-back: 180 mm² (rộng 5,5 > ngưỡng 5) ở z 7,7..17,6, x ±(60..66)** cùng nguyên nhân (nửa sau).
+3. Kẹp loa: 6 cánh bám + gờ 0,8 PETG (chưa in thử, chưa tính lực gập); vỏ giữ vành chỉ bằng mép lỗ Ø34,2 (không keo).
+4. Ống dẫn âm mic = lỗ Ø4 trong vỏ (không còn ống in rời); khớp mê cung chỉ ghi tham số (`mic.seal`), chưa có rãnh thật.
+5. TODO đo: PCB ampli/INMP441 (dày, linh kiện) như bản v2.
