@@ -171,6 +171,15 @@
       "audience": "",
       "status": "san-sang-in",
       "next": "In thử 2 bàn (3 balô + 5 voi)."
+    },
+    {
+      "rel": "maker/nfc-story-box",
+      "group": "smart",
+      "title": "Hộp kể chuyện Cú con",
+      "summary": "Đặt thẻ NFC lên Cú con → kể chuyện Việt–Anh từ thẻ microSD. ESP32-A1S, trẻ 3–6 tuổi.",
+      "audience": "3–6 tuổi",
+      "status": "dang-lam",
+      "next": "Bước 0: Tuan chọn 1 trong 3 dáng (A gốc cây / B ôm sách / C tổ cú)."
     }
   ],
   "simulations": [

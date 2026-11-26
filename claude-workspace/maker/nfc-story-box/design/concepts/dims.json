@@ -1,0 +1,45 @@
+{
+ "a": {
+  "rong": 156.0,
+  "sau": 148.5999984741211,
+  "cao": 160.3086700439453,
+  "de_rong": 156.0,
+  "x0": -78.0,
+  "x1": 78.0,
+  "y0": -74.5999984741211,
+  "y1": 74.0,
+  "ghi_chu_nut": "3 nút trên mặt gốc cây (− +  ▶)"
+ },
+ "b": {
+  "rong": 150.0,
+  "sau": 148.5999984741211,
+  "cao": 166.26393127441406,
+  "de_rong": 150.0,
+  "x0": -75.0,
+  "x1": 75.0,
+  "y0": -74.5999984741211,
+  "y1": 74.0,
+  "ghi_chu_nut": "− + ở hai cánh, ▶ ở trang trái"
+ },
+ "c": {
+  "rong": 158.0,
+  "sau": 149.13999938964844,
+  "cao": 146.7080078125,
+  "de_rong": 154.0,
+  "x0": -79.0,
+  "x1": 79.0,
+  "y0": -75.13999938964844,
+  "y1": 74.0,
+  "ghi_chu_nut": "3 nút trên mặt tổ (− +  ▶)"
+ },
+ "uoc_luong_ben_trong": {
+  "bo_a1s_mm": "82 x 73 (datasheet Ai-Thinker; do day, lo vit, cao linh kien TODO do bo that)",
+  "loa_mm": "O52 cao 26 (loai Tuan co; TODO xac nhan con hang)",
+  "module_nfc_pn532_mm": "43 x 41 x 5 – UOC LUONG, CHUA DO (TODO)",
+  "nut_mm": ">= O25 (ve: -/+ O26, Choi/Dung O32-34)",
+  "vung_dat_the_mm": ">= O60 (ve: O68)",
+  "the_truyen_mm": "O50 x 5",
+  "gioi_han_bao_mm": "<= 160 x 150 x 190, de rong >= 130"
+ },
+ "ghi_chu": "Kich thuoc bao la kich thuoc dung trong ban ve minh hoa (bbox, khong gom ban tay/ban). Moi thong so ben trong chi la uoc luong tu brief.md – chua do bo/loa/NFC that."
+}
