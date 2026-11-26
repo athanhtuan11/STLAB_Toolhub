@@ -63,7 +63,8 @@ P = dict(
     tube=(40, 40, 1.4),         # khung chiu luc hop sat 40x40x1.4
     wall_brackets_z=(1500, 2900),   # bat L + no M8 bat cot sau vao tuong sau (thay ngang ke sau + ngang dinh sau)
     z_shelf=2300, board_t=17,
-    rod_d=27, rod_t=1.0, rod_load_kg=40, rod_sigma_max=100, rod_defl_max=3,
+    rod_d=21, rod_t=1.2,   # Tuan 2026-11-26: ong O21 cho vua moc moc ao; day >= 1.2 (1.0 -> 114 MPa vuot 100)
+     rod_load_kg=40, rod_sigma_max=100, rod_defl_max=3,
 )
 p = P
 W, D = p["W"], p["D"]

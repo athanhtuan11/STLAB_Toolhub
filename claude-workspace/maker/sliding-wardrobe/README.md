@@ -2,7 +2,7 @@
 
 Tủ treo đồ nằm giữa 3 bức tường (trái, sau, phải). Không có vách ván: phần chịu lực là **khung sắt hộp**.
 Mặt trước là **2 cánh lùa**. Mỗi cánh ghép từ **4 tấm nhựa trong nhà 400 × 2900 × 10** (tổng 8 tấm), bắt vít lên
-**mặt trước khung cánh** (Tuan 2026-11-26, thay lam sóng 220 × 2900 × 26). Bên trong chỉ treo đồ bằng **ống tròn Ø27**.
+**mặt trước khung cánh** (Tuan 2026-11-26, thay lam sóng 220 × 2900 × 26). Bên trong chỉ treo đồ bằng **ống tròn Ø21**.
 
 **Hệ lùa (Tuan 2026-11-11, bản cuối):** có **bệ tủ cao 40** phủ cả lòng tủ, 2 thanh U nằm **chìm ngang mặt bệ** → sàn ngoài phẳng, không vấp.
 - **Dưới chịu tải:** 2 thanh **thép U chấn 40 × 40** nằm ngửa trên sàn (vật tư dễ mua). Mỗi cánh có 4 bánh 608 bọc POM chạy trong lòng U.
@@ -145,7 +145,7 @@ Tấm chỉ dày 10 → **mọi thứ chịu lực bắt vào sắt phía sau, k
   hộp 20 × 40 **~30 m** cho khung cánh (viền + thanh ngang) cộng **~12 m** cho bệ (3 dãn bệ + thanh giữa 2 U),
   U chấn 40 × 40 2 × 3 m, sắt **~139,5 kg** (theo độ dày giả định, `TODO` theo hàng mua).
 
-| Khoang | Lọt lòng | Ống Ø27 (cao từ sàn) |
+| Khoang | Lọt lòng | Ống Ø21 (cao từ sàn) |
 | --- | --- | --- |
 | K1–K4 | ~700 mỗi khoang | 2050 + 1030 (treo 2 tầng) |
 | Hộp nóc | kệ ván 17 ở cao 2300 | chăn mền, vali |
@@ -166,7 +166,7 @@ Tấm chỉ dày 10 → **mọi thứ chịu lực bắt vào sắt phía sau, k
 | 10 | Khóa ấn (tùy chọn, hành trình ≥ 14, bắt ke L vào thanh ngang); tay nắm Tuan tự lắp | 1 | `TODO` chọn loại |
 | 11 | Tán rút ren M8 (bánh trên, viền trên) + kìm rút | 4 | theo `bom.csv` |
 | 12 | Ron chổi chống bụi mép chồng mí | 2 × 2,9 m | |
-| 13 | Ống inox Ø27 + tai đỡ hàn (dài 698 mm/ống) | 8 ống | `TODO` dày ống: model ghi 1,0, bản cũ ghi 1,2 |
+| 13 | Ống inox **Ø21 dày ≥ 1,2** + tai đỡ hàn (dài 698 mm/ống; Ø21 vừa móc móc áo) | 8 ống | dày 1,0 thì quá ứng suất (114 MPa) |
 | 14 | Nở sắt M8 xuyên dãn bệ xuống sàn | 18 | ~600/cái |
 | 15 | Bát L 50 × 50 × 4 + nở M8 bắt cột sau vào tường sau | 10 | 2 độ cao 1500 và 2900 × 5 cột |
 | 17 | Sắt hộp 40 × 40 (cột, dầm, ngang) | ~47,6 m | 1,4 mm (giả định) |
@@ -183,7 +183,6 @@ Mở `design/wardrobe.blend`, bấm **Space**: C1 lùa phải hết cỡ rồi �
 - W thực tế.
 - Cân 1 tấm nhựa 400 × 2900 × 10 thật → sửa `panel_kg` (Tuan: ~5 kg, đã sửa; cân chính xác nếu cần).
 - Đo bánh POM (Ø, bề rộng, tải → `wheel_kg`), U chấn thật (rộng lòng, dày) → điền vào `P`, chạy lại.
-- Dày ống inox Ø27: model 1,0, bản cũ 1,2 → xác nhận.
 - Bản vẽ gia công cánh tấm nhựa (bảng cắt, viền, thanh ngang, càng bánh, tán rút ren bánh trên, lỗ khóa).
 - Tường sau ẩm thì chừa khe ~20 sau quần áo hoặc ốp tấm chống ẩm.
 

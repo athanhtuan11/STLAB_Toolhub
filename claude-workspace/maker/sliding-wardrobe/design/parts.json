@@ -78,8 +78,8 @@
    ],
    "z_shelf": 2300,
    "board_t": 17,
-   "rod_d": 27,
-   "rod_t": 1.0,
+   "rod_d": 21,
+   "rod_t": 1.2,
    "rod_load_kg": 40,
    "rod_sigma_max": 100,
    "rod_defl_max": 3
@@ -179,8 +179,8 @@
   "WHEEL_NEED": 14.63932656,
   "ROD": {
    "span": 700.0,
-   "sigma": 67.05774081064702,
-   "defl": 1.3136591264159567
+   "sigma": 98.19680693645206,
+   "defl": 2.47329320867575
   },
   "CHECK": {
    "chong_mi": [
@@ -241,11 +241,11 @@
    ],
    "ong_ben": [
     true,
-    "ong O27x1.0 nhip 700 tai 40 kg: ung suat 67 MPa <= 100"
+    "ong O21x1.2 nhip 700 tai 40 kg: ung suat 98 MPa <= 100"
    ],
    "ong_vong": [
     true,
-    "vong giua nhip 1.3 mm <= 3"
+    "vong giua nhip 2.5 mm <= 3"
    ],
    "U_noi_cot": [
     true,
@@ -1156,7 +1156,7 @@
    "group": "Ong treo",
    "mat": "rod",
    "kind": "rod",
-   "spec": "Ø27",
+   "spec": "Ø21",
    "bbox": [
     40.0,
     740.0,
@@ -1166,15 +1166,15 @@
     2063.5
    ],
    "L": 698.0,
-   "Wd": 27,
-   "Th": 27
+   "Wd": 21,
+   "Th": 21
   },
   {
    "name": "K1-ong-1030",
    "group": "Ong treo",
    "mat": "rod",
    "kind": "rod",
-   "spec": "Ø27",
+   "spec": "Ø21",
    "bbox": [
     40.0,
     740.0,
@@ -1184,15 +1184,15 @@
     1043.5
    ],
    "L": 698.0,
-   "Wd": 27,
-   "Th": 27
+   "Wd": 21,
+   "Th": 21
   },
   {
    "name": "K2-ong-2050",
    "group": "Ong treo",
    "mat": "rod",
    "kind": "rod",
-   "spec": "Ø27",
+   "spec": "Ø21",
    "bbox": [
     780.0,
     1480.0,
@@ -1202,15 +1202,15 @@
     2063.5
    ],
    "L": 698.0,
-   "Wd": 27,
-   "Th": 27
+   "Wd": 21,
+   "Th": 21
   },
   {
    "name": "K2-ong-1030",
    "group": "Ong treo",
    "mat": "rod",
    "kind": "rod",
-   "spec": "Ø27",
+   "spec": "Ø21",
    "bbox": [
     780.0,
     1480.0,
@@ -1220,15 +1220,15 @@
     1043.5
    ],
    "L": 698.0,
-   "Wd": 27,
-   "Th": 27
+   "Wd": 21,
+   "Th": 21
   },
   {
    "name": "K3-ong-2050",
    "group": "Ong treo",
    "mat": "rod",
    "kind": "rod",
-   "spec": "Ø27",
+   "spec": "Ø21",
    "bbox": [
     1520.0,
     2220.0,
@@ -1238,15 +1238,15 @@
     2063.5
    ],
    "L": 698.0,
-   "Wd": 27,
-   "Th": 27
+   "Wd": 21,
+   "Th": 21
   },
   {
    "name": "K3-ong-1030",
    "group": "Ong treo",
    "mat": "rod",
    "kind": "rod",
-   "spec": "Ø27",
+   "spec": "Ø21",
    "bbox": [
     1520.0,
     2220.0,
@@ -1256,15 +1256,15 @@
     1043.5
    ],
    "L": 698.0,
-   "Wd": 27,
-   "Th": 27
+   "Wd": 21,
+   "Th": 21
   },
   {
    "name": "K4-ong-2050",
    "group": "Ong treo",
    "mat": "rod",
    "kind": "rod",
-   "spec": "Ø27",
+   "spec": "Ø21",
    "bbox": [
     2260.0,
     2960.0,
@@ -1274,15 +1274,15 @@
     2063.5
    ],
    "L": 698.0,
-   "Wd": 27,
-   "Th": 27
+   "Wd": 21,
+   "Th": 21
   },
   {
    "name": "K4-ong-1030",
    "group": "Ong treo",
    "mat": "rod",
    "kind": "rod",
-   "spec": "Ø27",
+   "spec": "Ø21",
    "bbox": [
     2260.0,
     2960.0,
@@ -1292,8 +1292,8 @@
     1043.5
    ],
    "L": 698.0,
-   "Wd": 27,
-   "Th": 27
+   "Wd": 21,
+   "Th": 21
   },
   {
    "name": "Ray-Utren-1-long",
