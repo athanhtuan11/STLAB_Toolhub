@@ -1,69 +1,109 @@
-# Cú Bông bản ESP32-S3 – hướng dẫn hàn và đấu dây
+# Cú Bông S3 – hàn và đấu dây (bản có màn + 2 loa, 2026-11-26)
 
-Bo: **ESP32-S3 N16R8 devkit** (đã đọc chip 2026-11-12: ESP32-S3 rev v0.2, PSRAM 8 MB, flash 16 MB).
-Mic **INMP441** (I2S) + ampli **MAX98357A** (I2S) + loa 52 mm. Sơ đồ chân giống bo `bread-compact-wifi` của xiaozhi.
+Bo ESP32-S3 N16R8 (đã đọc chip 2026-11-12: rev v0.2, PSRAM 8 MB, flash 16 MB); mic INMP441; 2 × MAX98357A + 2 loa Ø52 4 Ω 3 W ở 2 sườn quay ngang (H0); màn TFT 2,8" SPI cảm ứng MSP2807 làm mắt; 1 nút nói switch MX.
+Nguồn chân: `wiring-s3.yaml` (Toolhub vẽ hình từ file này). Đổi chân phải sửa yaml + file này + `firmware/xiaozhi-s3/boards/stlab-s3/config.h`.
 
 ## 1. An toàn – đọc trước khi hàn
 
-- **INMP441 chỉ cấp 3,3 V.** Cấp 5 V có thể hỏng mic.
-- **MAX98357A cấp 5 V**, không lấy từ chân 3,3 V của bo (quá tải mạch ổn áp, ESP32 chập chờn).
-- **Hai dây loa (+ và −) không được nối GND.** Ngõ ra ampli là kiểu cầu, chạm GND là chập ampli.
-- **Tụ hóa có cực**: chân dài (+) vào VIN, chân ngắn / vạch trắng (−) vào GND. Cắm ngược tụ có thể phồng, nổ.
-- Rút USB khi hàn. Mỏ hàn khoảng 330–350 °C, hàn xong để nguội, không chạm đầu mỏ.
-- Nguồn: cục sạc 5 V ≥ 2 A. Đang dùng nguồn ngoài vào chân 5V thì không cắm thêm cáp máy tính.
-- Âm lượng thử ≤ 70. Loa 4 Ω 3 W (nhãn loa) – hợp MAX98357A ở 5 V; nghe rè thì hạ âm lượng.
+- **INMP441 chỉ 3,3 V.** Cấp 5 V có thể hỏng mic.
+- **MAX98357A cấp 5 V**, không lấy từ chân 3V3 của bo.
+- **Dây loa (+ và −) không nối GND.** Ngõ ra ampli là kiểu cầu; chạm GND là chập ampli.
+- **Mỗi loa 1 ampli.** Không nối 2 loa song song vào 1 ampli (2 Ω quá tải).
+- **Tụ hóa có cực.** Chân dài (+) vào VIN, chân ngắn có vạch trắng (−) vào GND. Cắm ngược có thể phồng, nổ.
+- **Chân tín hiệu màn chỉ chịu 3,3 V.** ESP32-S3 ra 3,3 V nên nối thẳng được, không qua mạch 5 V.
+- **VCC màn 5 V thì J1 trên màn phải HỞ** (U2 hạ 3,3 V). TODO: kiểm trước khi cấp điện.
+- **Kính màn mỏng, không có tấm che.** Hàn và lắp tránh đè lên kính.
+- **Rút USB khi hàn.** Mỏ hàn 330–350 °C, hàn xong để nguội, không chạm đầu mỏ.
+- **Nguồn 5 V ≥ 2 A** (2 ampli phát to + màn + bo). Cổng USB máy tính 0,5–0,9 A KHÔNG đủ.
+- **Âm lượng thử ≤ 70.**
 
 ## 2. Chuẩn bị
 
 | Món | Số lượng |
 |---|---|
-| ESP32-S3 N16R8 devkit | 1 |
+| ESP32-S3 N16R8 | 1 |
 | Module INMP441 | 1 |
-| Module MAX98357A | 1 (2 loa trái + phải → 2 con, xem mục 6) |
-| Loa 52 mm | 1 |
-| Tụ hóa 1000 µF 16 V | 1 |
-| Dây Dupont cái–cái hoặc dây điện mềm | ~12 sợi |
-| Hàng rào (pin header) | đi kèm module |
+| Module MAX98357A | 2 (mỗi loa 1 module) |
+| Loa Ø52 × 26 mm, 4 Ω 3 W | 2 |
+| Tụ hóa 1000 µF 16 V | 2 (mỗi ampli 1 tụ) |
+| Màn TFT 2,8" SPI cảm ứng MSP2807 | 1 |
+| Switch MX (nút nói) | 1 |
+| Vít M2.5 × 6 | **12**: 4 bắt PCB màn vào khung, 4 bắt khung màn vào vỏ (lắp từ trong), 4 bắt 2 khay ampli xuống tấm đế (2/khay) |
+| Băng xốp 2 mm | vòng mặt loa (2 cái) |
+| Dây điện mềm | hàn thẳng toàn bộ, không jack, không cầu đấu (Tuan 2026-11-18) |
 
-## 3. Hàn chân
+## 3. Bảng chân tổng (theo GPIO)
 
-1. Hàn hàng rào cho INMP441 và MAX98357A (cắm hàng rào vào breadboard để giữ thẳng, đặt module lên rồi hàn).
-2. MAX98357A: hàn **cầu đấu vít 2 chân** (hoặc 2 dây) ở cổng loa.
-3. Hàn tụ 1000 µF **sát chân VIN – GND của MAX98357A** (mặt dưới module hoặc ngay đầu dây). Đúng cực!
-4. Mối hàn: bóng, hình nón, không dính sang chân bên cạnh.
+| GPIO | Chức năng | Ghi chú |
+|---|---|---|
+| 0 | BOOT | Nút có sẵn trên bo; dùng thử trên bàn |
+| 1 | Nút nói | Switch MX: GPIO1 → nút → GND |
+| 4 | Mic WS | INMP441 |
+| 5 | Mic SCK | INMP441 |
+| 6 | Mic SD | INMP441 |
+| 7 | DIN ampli | Chung cho 2 ampli |
+| 8 | RESET màn | |
+| 9 | DC màn | |
+| 10 | CS màn | |
+| 11 | MOSI màn + T_DIN | Chung cho hiển thị và cảm ứng |
+| 12 | SCK màn + T_CLK | Chung cho hiển thị và cảm ứng |
+| 13 | T_DO | Cảm ứng |
+| 14 | LED đèn nền màn | PWM |
+| 15 | BCLK ampli | Chung cho 2 ampli |
+| 16 | LRC ampli | Chung cho 2 ampli |
+| 17 | T_CS | Cảm ứng |
+| 18 | T_IRQ | Cảm ứng |
+| 48 | LED trên bo | |
 
-## 4. Đấu dây
+- **Không dùng** GPIO35, 36, 37 (PSRAM của bo N16R8).
+- **Không dùng** GPIO19, 20 (USB).
+- **Chân khởi động:** GPIO0, 3, 45, 46. GPIO0 chỉ dùng nút BOOT có sẵn.
+- **Bo clone:** đọc chữ in cạnh chân trước khi hàn; vị trí chân có thể khác bo gốc.
 
-### INMP441 → ESP32-S3
+## 4. Đấu từng module
 
-| INMP441 | ESP32-S3 |
-|---|---|
-| VDD | **3V3** |
-| GND | GND |
-| L/R | **GND** (chọn kênh trái – bắt buộc nối, không để trống) |
-| WS | GPIO4 |
-| SCK | GPIO5 |
-| SD | GPIO6 |
+### 4.1 INMP441 (mic)
 
-### MAX98357A → ESP32-S3
+| INMP441 | ESP32-S3 | Ghi chú |
+|---|---|---|
+| VDD | 3V3 | Chỉ 3,3 V |
+| GND | GND | |
+| L/R | GND | Bắt buộc nối, không để trống (chọn kênh trái) |
+| WS | GPIO4 | |
+| SCK | GPIO5 | |
+| SD | GPIO6 | |
 
-| MAX98357A | ESP32-S3 |
-|---|---|
-| VIN | **5V** (chân 5V / VIN của bo) |
-| GND | GND |
-| LRC | GPIO16 |
-| BCLK | GPIO15 |
-| DIN | GPIO7 |
-| GAIN | để trống |
-| SD | để trống |
-| Loa + / Loa − | 2 dây loa (không nối GND) |
-| Tụ 1000 µF | chân (+) vào **VIN**, chân (−) vào **GND** của MAX98357A (xem bên dưới) |
+### 4.2 MAX98357A – ampli 1, loa TRÁI
 
-### Tụ 1000 µF (chống sụt áp khi loa kêu to)
+| MAX98357A | ESP32-S3 / loa | Ghi chú |
+|---|---|---|
+| VIN | 5V | 5 V, không lấy từ 3V3 |
+| GND | GND | |
+| LRC | GPIO16 | |
+| BCLK | GPIO15 | |
+| DIN | GPIO7 | |
+| GAIN | để trống | |
+| SD | để trống | |
+| Loa + / Loa − | 2 dây loa trái | **KHÔNG nối GND** |
 
-Tụ mắc **song song** với nguồn của ampli, đặt **sát chân VIN – GND trên module MAX98357A** (không đặt ở đầu bo ESP32):
+### 4.3 MAX98357A – ampli 2, loa PHẢI
 
-```
+| MAX98357A | ESP32-S3 / loa | Ghi chú |
+|---|---|---|
+| VIN | 5V | Chung 5V với ampli 1 |
+| GND | GND | |
+| LRC | GPIO16 | Chung dây với ampli 1 |
+| BCLK | GPIO15 | Chung dây với ampli 1 |
+| DIN | GPIO7 | Chung dây với ampli 1 |
+| GAIN | để trống | GAIN nối GND = 12 dB, to hơn, CHƯA thử. Đánh đổi: vọng vào mic nhiều hơn |
+| SD | để trống | |
+| Loa + / Loa − | 2 dây loa phải | **KHÔNG nối GND** |
+
+### 4.4 Tụ 1000 µF 16 V (mỗi ampli 1 tụ)
+
+Hàn tụ sát chân VIN và GND của module MAX98357A (không đặt ở đầu bo ESP32):
+
+```text
   Bo ESP32-S3 5V ───────────┬──────── VIN  (MAX98357A)
                             │
                           ( + )   chân dài, phía KHÔNG có vạch
@@ -73,57 +113,15 @@ Tụ mắc **song song** với nguồn của ampli, đặt **sát chân VIN – 
   Bo ESP32-S3 GND ──────────┴──────── GND  (MAX98357A)
 ```
 
-- Cách hàn dễ nhất: hàn 2 chân tụ thẳng vào 2 chân hàng rào **VIN** và **GND** ở mặt dưới module (2 chân này nằm cạnh nhau
-  trên phần lớn module MAX98357A – đọc chữ in trên module để chắc), rồi mới cắm dây nguồn.
-- Tụ tháo bo cũ dùng được (vd. 1000 µF 50 V): đỉnh tụ phẳng, không phồng, không rỉ nước; điện áp định mức ≥ 10 V là đủ.
-- **Ngược cực = tụ có thể phồng, nổ.** Kiểm lại vạch trắng nằm phía GND trước khi cắm điện.
-- 2 module MAX98357A (2 loa) → mỗi module 1 tụ.
+- Ngược cực = tụ có thể phồng, nổ. Kiểm vạch trắng nằm phía GND trước khi cắm điện.
 
-### Nút
+### 4.5 Màn TFT 2,8" MSP2807
 
-| Chức năng | Chân |
-|---|---|
-| Nói (chạm = bắt đầu/kết thúc, chạm lúc cô nói = ngắt, giữ 5 s = ngủ) | **switch MX: GPIO1 → nút → GND** (nút trên đỉnh đầu vỏ S3) |
-| Nói (thử trên bàn, chạy song song) | nút **BOOT** trên bo (GPIO0) – không cần hàn; lắp vào vỏ thì BOOT bị che |
-| Âm lượng + | GPIO40 → nút → GND (tùy chọn, vỏ S3 KHÔNG có nút này – chỉnh âm lượng bằng giọng nói) |
-| Âm lượng − | GPIO39 → nút → GND (tùy chọn, vỏ S3 KHÔNG có nút này) |
-
-Không dùng GPIO35, 36, 37 (PSRAM của bo N16R8 chiếm).
-
-## 5. Bố trí
-
-- Dây I2S (GPIO4/5/6/7/15/16) càng ngắn càng tốt (khuyến nghị ≤ 15 cm).
-- **Mic xa loa nhất có thể**, không hướng lỗ mic vào loa – giúp khử vọng (bé ngắt lời cô bằng giọng) tốt hơn.
-  Khi thử trên bàn: đặt mic cách loa ≥ 15 cm, loa quay hướng khác.
-- Không bịt lỗ thu âm của INMP441.
-
-## 6. Hai loa trái + phải (sau)
-
-Mỗi MAX98357A chỉ kéo 1 loa. 2 loa = 2 module, **dùng chung** LRC (GPIO16), BCLK (GPIO15), DIN (GPIO7), 5V, GND.
-Firmware phát cùng tiếng ra cả 2 – để chân SD cả 2 module trống. Mỗi module 1 tụ 1000 µF.
-
-## 6b. Bản có màn + 2 loa (2026-11-26)
-
-Bản đang dựng (xem `README.md`). Nguồn đấu dây: `wiring-s3.yaml` (nhóm `ampli2`, `man`).
-
-**Ampli 2 (loa phải) – MAX98357A → ESP32-S3:**
-
-| MAX98357A (ampli 2) | ESP32-S3 | Ghi chú |
-|---|---|---|
-| VIN | **5V** | Dùng chung 5V với ampli 1 |
-| GND | GND | |
-| LRC | GPIO16 | Chung dây với ampli 1 |
-| BCLK | GPIO15 | Chung dây với ampli 1 |
-| DIN | GPIO7 | Chung dây với ampli 1 |
-| GAIN, SD | để trống | GAIN nối GND = 12 dB (chưa thử) |
-| Loa + / Loa − | 2 dây loa phải | **KHÔNG** nối GND |
-| Tụ 1000 µF 16 V | (+) vào VIN, (−) vào GND | Hàn sát module, đúng cực như mục 4 |
-
-**Màn TFT 2,8" SPI cảm ứng (MSP2807) → ESP32-S3:**
+Header 14 chân bước 2,54 mm nằm ở đầu phía +x của màn.
 
 | Màn TFT | ESP32-S3 | Ghi chú |
 |---|---|---|
-| VCC | **5V** | J1 trên màn để HỞ (ổn áp U2 hạ 3,3 V) – TODO kiểm |
+| VCC | 5V | J1 trên màn để HỞ (U2 hạ 3,3 V). TODO kiểm |
 | GND | GND | |
 | CS | GPIO10 | |
 | RESET | GPIO8 | |
@@ -139,19 +137,44 @@ Bản đang dựng (xem `README.md`). Nguồn đấu dây: `wiring-s3.yaml` (nh�
 | T_CS | GPIO17 | |
 | T_IRQ | GPIO18 | |
 
-- Firmware **CHƯA** có driver màn và cảm ứng. Chip màn: shop ghi ST7789, LCDWiki ghi ILI9341 → thử khi nạp.
-- Nguồn 5 V ≥ 2 A (2 ampli + màn + bo). TODO: kiểm diode trên đường 5V của bo S3; nếu sụt áp, cấp 5 V ampli thẳng từ nguồn ngoài, nối chung GND.
+### 4.6 Nút nói
+
+- Switch MX: GPIO1 → nút → GND. Chạm để bắt đầu/kết thúc nói; chạm lúc cô đang nói là ngắt lời; giữ 5 s là ngủ.
+- Nút BOOT GPIO0 dùng để thử trên bàn. Khi lắp vào vỏ, BOOT bị che.
+- Vỏ không có nút âm lượng (GPIO39/40 bỏ). Chỉnh âm lượng bằng giọng nói.
+
+## 5. Vị trí trong vỏ
+
+Số đo lấy từ `cad/README.md`, mục "Bản có màn + 2 loa".
+
+- **Màn**: mặt trước, header về +x. Giữ bằng 4 vít M2.5 × 6 vào khung mặt trước.
+- **Mic**: ở trán, nghiêng 45°. PCB mic dán keo nóng. Lỗ âm Ø4 mm, không bịt.
+- **2 loa**: 2 sườn, ngàm xoay + gờ Ø48 mm + băng xốp 2 mm.
+- **2 khay ampli**: dưới bo S3, giữa 2 ray; mỗi khay 2 vít M2.5 × 6 xuống tấm đế.
+- **Bo S3**: nằm ngang, cổng USB-C ra lưng.
+- **Đi dây**: dây I2S ≤ 15 cm; dây SPI màn ≤ 10 cm (nhiễu → hạ xung SPI 40 → 20 MHz). Dây loa chạy dọc sàn, không kẹp vào mặt ráp 2 nửa vỏ.
+
+## 6. Nguồn
+
+- Hiện dùng sạc qua cổng USB-C của bo. Cần ≥ 2 A.
+- TODO: kiểm diode trên đường 5V của bo S3. Nếu bo tự khởi động lại khi loa to (log `brownout`), cấp 5 V cho 2 ampli thẳng từ nguồn ngoài, GND chung.
+- Pin sạc sau này: chưa thiết kế (cell có mạch bảo vệ, mạch sạc/tăng áp 5 V, ngăn pin bắt vít).
 
 ## 7. Kiểm tra trước khi cắm điện
 
-1. Đồng hồ vạn năng thang thông mạch: **5V – GND** và **3V3 – GND** phải **không** kêu.
+1. Đồng hồ thang thông mạch: **5V – GND** và **3V3 – GND** phải **không** kêu.
 2. Kiểm từng dây theo bảng mục 4 (đầu này – đầu kia kêu).
 3. Loa + / Loa − không thông với GND.
-4. Cắm USB: đèn nguồn bo sáng, không có mùi khét, không linh kiện nào nóng tay. Có bất thường → rút ngay.
+4. J1 trên màn đang hở.
+5. Mỗi ampli đúng 1 loa.
+6. Chân tín hiệu màn không chạm 5V.
+7. Cắm USB: đèn nguồn bo sáng, không mùi khét, linh kiện không nóng tay. Bất thường → rút ngay.
 
 ## 8. Thử
 
 - Bấm BOOT → cô chào → nói "Hello" → cô trả lời.
 - Lúc cô đang nói, nói chen "Cô ơi!" → cô dừng và nghe.
-- Bo tự khởi động lại khi loa to (log `brownout`) → cấp 5 V riêng cho ampli qua module USB-C, GND chung.
-- Cô hay tự ngắt lời khi không ai nói → tiếng vọng lọt: đưa mic xa loa hơn, báo Claude để chỉnh `STLAB_AEC_REF_DELAY_MS`.
+- 2 loa đều kêu (nghe từng bên).
+- Bo tự khởi động lại khi loa to (log `brownout`) → cấp 5 V riêng cho ampli qua nguồn ngoài, GND chung.
+- Cô tự ngắt lời khi không ai nói → tiếng vọng lọt: đưa mic xa loa hơn, báo Claude chỉnh `STLAB_AEC_REF_DELAY_MS`.
+- Màn và cảm ứng: firmware CHƯA có driver. Tạm thời chỉ kiểm đèn nền sáng khi GPIO14 lên mức cao. TODO khi có firmware: chip ST7789 hay ILI9341, thử cả 2.
