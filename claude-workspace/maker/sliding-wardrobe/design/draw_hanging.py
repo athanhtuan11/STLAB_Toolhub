@@ -59,20 +59,23 @@ def section():
             rect(ax, yc - 4, dz1 + 6, 8, zt0 + 8 - dz1 - 6, "#DADDE0", z=4)
             rect(ax, yc - 15, dz1, 30, 6, STEEL, z=4)
             # U chan nam ngua + cang banh + banh (mat cat qua truc banh: banh thay rong wheel_w, cao wheel_d)
+            yk = yc
+            yc = meta["UL"][li]
             rect(ax, yc - UB / 2, 0, UB, UT, STEEL, z=3)
             rect(ax, yc - UB / 2, 0, UT, UH, STEEL, z=3)
             rect(ax, yc + UB / 2 - UT, 0, UT, UH, STEEL, z=3)
             za = meta["z_axle"]
             bw = P["bogie_w"]
-            rect(ax, yc - bw / 2, za + 4, bw, dz0 - za - 4, "#555", z=4)
+            rect(ax, yc - bw / 2, za + 4, bw, UH - 8 - za, "#555", z=4)
+            y_a, y_b = max(yc - bw / 2, yk - FDP / 2), min(yc + bw / 2, yk + FDP / 2)
+            rect(ax, y_a, UH - 4, y_b - y_a, dz0 - UH + 4, "#555", z=4)
             rect(ax, yc - bw / 2, za - 3, (bw - P["wheel_w"]) / 2 - 1, 7, "#555", z=4)
             rect(ax, yc + P["wheel_w"] / 2 + 1, za - 3, (bw - P["wheel_w"]) / 2 - 1, 7, "#555", z=4)
             rect(ax, yc - P["wheel_w"] / 2, UT, P["wheel_w"], P["wheel_d"], NYL, z=5)
             rect(ax, yc - 4, za - 4, 8, 8, "#DADDE0", z=6)
         # be tu: thanh dem giua 2 U + dan 20x40 nam + van, mat van = mieng U
         UB_, UH_, UT_ = P["U"]
-        rect(ax, L0 + UB_ / 2, 0, L1 - L0 - UB_, UH_, STEEL, z=3)
-        yb0 = L1 + UB_ / 2
+        yb0 = meta["UL"][1] + UB_ / 2
         DZ = P["DZ"]
         rect(ax, yb0, 0, 40, P["be_joist"][1], STEEL, z=3)                      # dan be truoc ap sat U trong (han doc), do cot truoc
         rect(ax, DZ, P["be_joist"][1], 40, 200, STEEL, z=2)                     # cot truoc dung tren dan
@@ -81,7 +84,7 @@ def section():
         rect(ax, L0 - tw / 2, zt1, DZ + 40 - (L0 - tw / 2), hh, STEEL, z=3, hatch="//")
         yfa = meta["YF"][0]
         rect(ax, yfa, dz1 + P["fascia_gap"], PT, zt1 + hh - dz1 - P["fascia_gap"], "#C9A27E", z=5)
-        rect(ax, yfa, 0, PT, dz0 - P["fascia_gap"], "#C9A27E", z=5)
+        rect(ax, meta["UL"][0] - UB_ / 2 - PT, 0, PT, UH_, "#C9A27E", z=5)
         ax.text(yb0 + 4, UH_ - P["be_board"] / 2, "van be", fontsize=7, va="center", zorder=6)
         rect(ax, -10, -25, 185, 25, "#CFC8BC", ec="none", z=0, hatch="..")    # san
         ax.set_xlim(-10, 175)
@@ -97,7 +100,7 @@ def section():
     a_top.text(0, zt1 + hh + 15, f"dinh dam {meta['H_TOP']:.0f} tu san; tam che ray (vang nhat) cung mat canh ngoai", fontsize=8)
     dim(a_bot, 150, 0, 150, UH, f"U cao {UH}", 2)
     dim(a_bot, 150, UH, 150, dz0, f"{P['u_gap']} ho", 2)
-    dim(a_bot, L1 - UB / 2, -12, L1 + UB / 2, -12, f"U {UB} = day canh", 2, "h")
+    dim(a_bot, meta["UL"][0] - UB / 2, -12, meta["UL"][1] + UB / 2, -12, "2 U chap sat, han doc", 2, "h")
     a_bot.text(-5, dz0 + 90, f"banh 608 POM O{P['wheel_d']}x{P['wheel_w']}, 2 cum x 2 banh / canh, can >= {meta['WHEEL_NEED']:.0f} kg/banh\n"
                f"cang {P['bogie_w']} trong long U {meta['U_IN']:.0f} -> chan canh lac +-{(meta['U_IN'] - P['bogie_w']) / 2:g} mm",
                fontsize=8)
@@ -121,9 +124,9 @@ def plan():
             x0 = DX0[i] + dx[i]
             rect(ax, x0, meta["YF"][i], DWS[i], meta["DT"], [LAM, "#7A5538"][i], z=3)
             ax.text(x0 + DWS[i] / 2, yc, f"C{i + 1}", color="white", ha="center", va="center", fontsize=8, zorder=4)
-        for yc in (L0, L1):
+        for yc in meta["UL"]:
             rect(ax, 0, yc - P["U"][0] / 2, W, P["U"][0], "none", ec="#1565C0", lw=0.8, z=4)
-        for i, yc in enumerate((L0, L1)):
+        for i, yc in enumerate(meta["UL"]):
             for xb in (DX0[i] + dx[i] + P["bogie_in"], DX0[i] + dx[i] + DWS[i] - P["bogie_in"]):
                 ax.add_patch(Circle((xb, yc), 14, fc="#F2F2EE", ec="black", lw=0.6, zorder=5))
         for xl in meta["X_FULL"]:

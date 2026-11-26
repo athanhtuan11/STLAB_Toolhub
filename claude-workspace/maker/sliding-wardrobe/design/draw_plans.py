@@ -172,7 +172,7 @@ def bom():
         elif pt["kind"] == "panel":
             rows[(f"Tam nhua trong nha {P['panel_w']}x{P['panel_L']}x{P['panel_t']}", P["panel_L"], "mat canh (nguyen tam, khong cat)")] += 1
         elif pt["kind"] == "fascia":
-            rows[(f"Tam che ray (cat doc tu tam nhua {P['panel_w']}x{P['panel_L']})", f"{pt['L']} x {pt['Wd']}", "che ray tren/duoi, noi giua x=W/2")] += 1
+            rows[(f"Tam che ray (cat doc tu tam nhua {P['panel_w']}x{P['panel_L']})", f"{pt['L']} x {pt['Wd']}", "che ray tren/duoi: 1 tam nguyen 2900 + 1 mau sat tuong phai")] += 1
         elif pt["kind"] == "wallbracket":
             rows[(pt["spec"], "", "cot sau - tuong sau (2 do cao)")] += 1
         elif pt["kind"] == "tab":

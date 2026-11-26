@@ -56,9 +56,9 @@ Các bộ treo hãng đều kèm dẫn hướng sàn
 - **Bệ cao 40 = đúng chiều cao thanh U**, phủ toàn bộ lòng tủ (3000 × 680 phía sau 2 thanh U):
   3 dãn bệ **sắt hộp 20 × 40 đặt nằm** (cao 20, dày 1,4) đặt **đúng hàng cột** ở y = 125 (trước), 442,5 (giữa), 760 (sau).
   **Ván 18** (plywood/MFC chịu ẩm) bắt vít lên dãn, chêm ≤ 3 cho mặt ván bằng miệng U (kiểm `be_phang`). Ván khoét lỗ cho chân cột.
-- 2 thanh U nằm **chìm ngang mặt bệ** ở mép trước; giữa 2 U hàn **hộp 20 × 40 đặt ĐỨNG** (cao 40 = miệng U, thay la 8 × 40 cũ)
-  → mặt bệ liền một mặt phẳng.
-- **Mặt trước bệ = tấm che ray dưới** (nhựa 10, cao 40, cùng mặt phẳng cánh ngoài), che hết thành U. Sàn phòng trước tủ để nguyên, phẳng.
+- 2 thanh U nằm **chìm ngang mặt bệ** ở mép trước, **chắp sát nhau, hàn dọc** (Tuan 2026-11-26, bỏ hộp đệm giữa) → mặt bệ liền.
+- **Mặt trước bệ = tấm che ray dưới** (nhựa 10, cao 40) bắt vào mặt trước U ngoài → chân tủ **lùi vào 20** so với mặt cánh ngoài
+  (đường bóng như chân tủ). Sàn phòng trước tủ để nguyên, phẳng.
 - Đáy cánh cách mặt bệ (miệng U 40) chỉ 6 (đáy cánh 46) → bánh nằm trong lòng U, **không thấy bánh**.
 - Lòng U nằm dưới cánh và sau tấm che dưới; hút bụi lòng U định kỳ qua khe khi mở cánh.
 - Ống treo dưới (cao 1030 từ sàn) còn cách mặt bệ 990 – đồ dài ≤ ~850 vẫn thoải mái.
@@ -71,16 +71,19 @@ Các bộ treo hãng đều kèm dẫn hướng sàn
   cột trước lùi về y = 125.
 - Cao độ từ sàn: miệng U 40 · đáy cánh 46 (hở 6) · đỉnh cánh 2946 · đáy ray trên 2971 · đỉnh ray 3011 · **đỉnh tủ (dầm đỉnh) 3051**
   (trước 3094).
-- Tấm che ray: **trên** cao 99 (2952 → 3051), **dưới** cao 40 (0 → 40); cách mép cánh 6 (cánh chính không cọ).
+- Tấm che ray: **trên** cao 99 (2952 → 3051), **dưới** cao 40 (0 → 40); cách mép cánh 6 (cánh chỉnh cao không cọ).
+  Mỗi tấm = **1 tấm nguyên 2900 từ tường trái + 1 mẩu 100 sát tường phải** (không nối giữa).
 
 ## Ray dưới – U chấn 40 × 40 (chịu tải)
 
-- 2 thanh **U chấn 40 × 40 × 2** (Tuan 2026-11-11: thép dày 2) dài 3000, nằm ngửa, mỗi lớp cánh 1 thanh, ở y = 20–60 và 80–120
-  (khe 20 giữa 2 U). Đặt đúng dưới tâm ray trên (dọi dây).
+- 2 thanh **U chấn 40 × 40 × 2** (Tuan 2026-11-11: thép dày 2) dài 3000, nằm ngửa, mỗi lớp cánh 1 thanh, **chắp sát nhau** ở y = 40–80
+  và 80–120, hàn dọc. U trong đúng dưới tâm khung C2. U ngoài lệch 20 ra sau so với tâm khung C1 → **càng bánh C1 lệch 20**
+  (bản đế càng hàn dưới viền dưới C1, phần lệch nằm thấp trong lòng U, không chạm tấm C2). Xe treo trên giữ cánh đứng; lực ngang
+  do lệch rất nhỏ (ước ~3 N ở đỉnh cánh).
 - Bắt xuống sàn bằng **vít nở đầu bằng, khoan côn** cho đầu vít chìm phẳng lòng U (bánh lăn qua), khoảng 400 mm/vít. Sàn lệch thì
   chêm tôn dưới U cho thẳng và phẳng.
 - **Đỡ U từ dưới:** cột đứng trên 3 dãn bệ 20 × 40 nằm (xem Bệ tủ); dãn bệ bắt nở M8 xuống sàn ~600/cái (18 cái).
-  **Dãn bệ trước áp sát cạnh sau U trong, hàn dọc suốt 3000**, đồng thời là chân của 3 cột trước (cột đứng trên dãn, lệch 5 về sau) → 2 U + hộp đệm + dãn + cột thành một khối, dãn bắt nở M8 xuống sàn. Bỏ 13 bản đế 60 × 60 × 4 cũ.
+  **Dãn bệ trước áp sát cạnh sau U trong, hàn dọc suốt 3000**, đồng thời là chân của 3 cột trước (cột đứng trên dãn, lệch 5 về sau) → 2 U + dãn + cột thành một khối, dãn bắt nở M8 xuống sàn. Bỏ 13 bản đế 60 × 60 × 4 cũ.
 - **Chặn cuối cao su trong lòng U** ở 2 đầu (cụm bánh chạm thì dừng, mép cánh sát tường).
 - **Cụm bánh** (2 cụm/cánh, tâm cách mép cánh 110): càng thép rộng 30 hàn dưới viền dưới; 2 bánh 608 bọc POM Ø32 × 12 cách nhau 60,
   trục bu lông M8. Có vít chỉnh cao để cân cánh thẳng đứng.
@@ -94,7 +97,7 @@ Các bộ treo hãng đều kèm dẫn hướng sàn
 - 2 ray hộp 40 × 40 × 3000 (anh đã có), mỗi lớp cánh 1 ray, **bắt thẳng dưới 5 dầm đỉnh** (ray cao 2971 → 3011, đỉnh tủ 3051).
 - 2 xe treo/cánh, bu lông treo xuống bát treo bắt trên viền trên (tán rút ren M8). **Chỉnh đai ốc để bánh xe treo hở 3 mm trên mép ray**:
   xe treo không gánh tải, chỉ giữ đầu cánh.
-- **Tấm che ray trên** (nhựa 10, cao 99 = 2952 → 3051, cùng mặt phẳng cánh ngoài): 2 mảnh 1499,5 nối ở giữa (x = 1500),
+- **Tấm che ray trên** (nhựa 10, cao 99 = 2952 → 3051, cùng mặt phẳng cánh ngoài): 1 tấm nguyên 2900 + 1 mẩu 100 sát tường phải,
   bắt vào đầu 5 dầm đỉnh (hàn bịt đầu + tán rút ren M5) và thanh trước ray.
 - **An toàn lắp:** thành ray dày 2, cạnh thanh ~3 → **KHOAN MỒI 3,3 + vít 4 × 12 đầu dù**, KHÔNG dùng vít tự khoan (mũi khoan lọt
   vào lòng U/ray làm chạm bánh).
@@ -105,7 +108,7 @@ Các bộ treo hãng đều kèm dẫn hướng sàn
 ## Cánh tấm nhựa (Tuan 2026-11-26)
 
 - **Tấm = nhựa trong nhà 400 × 2900 × 10**, 4 tấm/cánh (x = 0–400, 400–800, 800–1200, 1200–1600), **bắt vít lên MẶT TRƯỚC khung cánh**.
-  Tổng 8 tấm cho 2 cánh + **1 tấm** cắt thành 4 mảnh 1499,5 làm 2 tấm che ray (mỗi tấm 2 mảnh) → **mua 9 tấm**.
+  Tổng 8 tấm cho 2 cánh + **1 tấm** xẻ dọc: dải 99 × 2900 (che trên) + dải 40 × 2900 (che dưới), phần còn lại cắt 2 mẩu 100 → **mua 9 tấm**.
 - **Viền = sắt hộp 20 × 40 × 1,2 đặt nằm** (mặt 20 lộ ra trước, sâu 40): viền trên, viền dưới, 2 viền đứng; dài 1560 (ngang) và 2900 (đứng).
 - Tấm có **hèm khóa bằng móc sắt** (Tuan 2026-11-26) → không cần sống đứng ở đường nối. Dùng **4 thanh ngang sắt hộp 20 × 40 đặt nằm**
   (sâu 40 = dày khung, mặt 20 sát sau tấm), dài 1560, tâm cao **638 / 1210 / 1782 / 2354** từ sàn (chia đều ~572).
@@ -140,7 +143,7 @@ Tấm chỉ dày 10 → **mọi thứ chịu lực bắt vào sắt phía sau, k
 - **Cột sau** bắt **bát L 50 × 50 × 4** + nở M8 vào tường sau ở 2 độ cao **1500 và 2900** (10 bát cho 5 cột); Tuan xác nhận tường sau bắt nở được.
 - **Dầm đỉnh:** bỏ 2 dầm đầu 40 × 40 × 3000 (xem Ray trên).
 - Vật tư (`design/bom.csv`, tính lại 2026-11-26): hộp 40 × 40 **~47,6 m** (bớt ~12 m so với bản lam sóng, không kể 2 ray đã có),
-  hộp 20 × 40 **~30 m** cho khung cánh (viền + thanh ngang) cộng **~12 m** cho bệ (3 dãn bệ + 1 hộp đứng giữa 2 U),
+  hộp 20 × 40 **~30 m** cho khung cánh (viền + thanh ngang) cộng **~9 m** cho bệ (3 dãn bệ),
   U chấn 40 × 40 2 × 3 m, sắt **~139,5 kg** (theo độ dày giả định, `TODO` theo hàng mua).
 
 | Khoang | Lọt lòng | Ống Ø27 (cao từ sàn) |
@@ -152,7 +155,7 @@ Tấm chỉ dày 10 → **mọi thứ chịu lực bắt vào sắt phía sau, k
 
 | # | Phụ kiện | SL | Ghi chú |
 | --- | --- | --- | --- |
-| 1 | **Tấm nhựa trong nhà 400 × 2900 × 10** | **9 tấm** | 8 tấm làm 2 cánh (4/cánh) + 1 tấm cắt 4 mảnh 1499,5 làm 2 tấm che ray |
+| 1 | **Tấm nhựa trong nhà 400 × 2900 × 10** | **9 tấm** | 8 tấm làm 2 cánh (4/cánh) + 1 tấm xẻ dọc làm 2 tấm che ray (dải 2900 + mẩu 100) |
 | 2 | **Thép U chấn 40 × 40 × 2**, dài 3 m | 2 | ray dưới chịu tải |
 | 3 | **Bánh 608 bọc POM Ø32 × 12** (hoặc bánh ổ bi tương đương), bu lông trục M8 | 8 | Tuan tự chọn, nên ≥ 15 kg/bánh |
 | 4 | Thép bản làm càng bánh (tự cắt hàn), rộng 30, vít chỉnh cao M8 | 4 cụm | `TODO` dày bản (bản cũ ghi 4–5 mm) |
@@ -169,7 +172,7 @@ Tấm chỉ dày 10 → **mọi thứ chịu lực bắt vào sắt phía sau, k
 | 15 | Bát L 50 × 50 × 4 + nở M8 bắt cột sau vào tường sau | 10 | 2 độ cao 1500 và 2900 × 5 cột |
 | 17 | Sắt hộp 40 × 40 (cột, dầm, ngang) | ~47,6 m | 1,4 mm (giả định) |
 | 18 | Sắt hộp 20 × 40 khung cánh (viền + 4 thanh ngang, 2 cánh) | ~30 m | 1,2 mm |
-| 19 | Bệ tủ: sắt hộp 20 × 40 (3 dãn bệ 3 m + 1 hộp đứng giữa 2 U 3 m) | ~12 m | dãn bệ 1,4 mm |
+| 19 | Bệ tủ: sắt hộp 20 × 40 (3 dãn bệ 3 m) | ~9 m | dãn bệ 1,4 mm |
 | 20 | Ván 18 chịu ẩm 3000 × 680 (mặt bệ, khoét lỗ chân cột) | 1 tấm | mặt ván = miệng U |
 
 ## Mô phỏng trượt (Blender)
