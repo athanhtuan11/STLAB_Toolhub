@@ -1,12 +1,13 @@
-# nfc-story-box – hộp kể chuyện NFC Cú con trên ESP32-A1S cho trẻ 3–6 tuổi
+# nfc-story-box – hộp kể chuyện NFC Cú con trên ESP32-S3 cho trẻ 3–6 tuổi
 
-Tuan bắt đầu 2026-11-26 (khuyến nghị số 1 trong danh sách ý tưởng bo A1S). Brief: `design/brief.md`.
+Tuan bắt đầu 2026-11-26 (ý tưởng số 1 của danh sách bo A1S, Tuan đổi sang S3). Brief: `design/brief.md`.
 
 ## Đã chốt (2026-11-26)
-- Bo **ESP32-A1S Audio Kit V2.2** (ES8388) – chân đã dò ở `tools/esp32-a1s/README.md` (I2C 32/33, I2S 0/27/25/26/35, PA 21,
-  nút 36,13,19,23,18,5, SD 1-bit 14/15/2).
+- **Dáng A – Cú trên gốc cây** (Tuan 2026-11-26), bao 156 × 149 × 160 mm.
+- Bo **ESP32-S3 N16R8** (Tuan 2026-11-26, thay A1S) + MAX98357A (chân như Cú Bông S3) + module microSD (SPI2) + RC522 (SPI3)
+  + 3 nút + 2 WS2812B qua 74AHCT125. Chân + BOM: `hardware/BOM.md`, `hardware/wiring.yaml` (bản giấy, chưa thử).
 - Nhân vật **Cú con** (họ Cú Bông) – thiết kế mới của STLab, không chép sản phẩm thương mại.
-- Truyện MP3 trên thẻ microSD; thẻ truyện = đĩa in 3D + NTAG213; đọc bằng PN532 I2C (đề xuất, chưa thử).
+- Truyện MP3 trên thẻ microSD; thẻ truyện = đĩa in 3D Ø50 + NTAG213.
 
 ## Bước 0 – Giao diện (làm TRƯỚC)
 - `design/`: 3 dáng + CMF + contact-sheet → Tuan chọn bằng ảnh. Chưa chọn thì chưa làm cơ khí/firmware thật.

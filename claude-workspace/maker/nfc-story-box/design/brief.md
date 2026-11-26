@@ -52,3 +52,4 @@ Hệ thiết kế: `studio/design/DESIGN.md`. Chưa chọn dáng thì chưa làm
 
 ## Quyết định
 <!-- Tuan chọn: ngày | concept | ghi chú → chép 1 dòng vào README "Lịch sử sửa" -->
+2026-11-26 | **A – Cú trên gốc cây** | Tuan chọn + đổi bo sang **ESP32-S3 N16R8** (thay A1S) → RC522 SPI thay PN532, xem `hardware/BOM.md`.

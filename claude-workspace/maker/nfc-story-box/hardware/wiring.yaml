@@ -1,0 +1,61 @@
+# So do dau day nfc-story-box – nguon duy nhat cho hinh SVG + bang day tren Toolhub (/projects/<slug>/guide).
+# Claude viet 2026-11-26 (giai doan 1, ban giay – CHUA thu breadboard). Bo ESP32-S3 N16R8 devkit.
+# Chan tranh: GPIO0/3/45/46 (strapping), 19/20 (USB), 35-37 (PSRAM octal N16R8), 38/48 (LED RGB tren bo), 43/44 (UART log).
+# Ampli giu dung chan da chay that cua Cu Bong S3 (maker/english-teacher/hardware/wiring-s3.md): BCLK 15, LRC 16, DIN 7.
+# The SD = SPI2, RC522 = SPI3 (2 bus rieng, khong chung MISO). Doi chan -> sua ca firmware pins.h (giai doan 2).
+title: "Hộp kể chuyện Cú con – sơ đồ đấu dây"
+groups:
+  nguon: "Dây nguồn"
+  ampli: "Loa"
+  sd: "Thẻ nhớ truyện"
+  nfc: "Đầu đọc thẻ NFC"
+  nut: "3 nút"
+  mat: "Mắt LED"
+parts:
+  usb: {label: "Module USB-C 5 V (cổng lưng)", pins: ["VBUS", "GND"]}
+  esp: {label: "ESP32-S3 N16R8", pins: ["5V", "3V3", "GND", "GPIO2", "GPIO4", "GPIO5", "GPIO6", "GPIO7", "GPIO8", "GPIO9", "GPIO10", "GPIO11", "GPIO12", "GPIO13", "GPIO15", "GPIO16", "GPIO17", "GPIO18", "GPIO21"]}
+  amp: {label: "MAX98357A (ampli)", pins: ["VIN", "GND", "LRC", "BCLK", "DIN", "Loa +", "Loa −"]}
+  spk: {label: "Loa 4 Ω 3 W Ø52", pins: ["+", "−"]}
+  sd: {label: "Module microSD (SPI)", pins: ["VCC", "GND", "CS", "MOSI", "SCK", "MISO"]}
+  rfid: {label: "RC522 (NFC 13,56 MHz)", pins: ["3.3V", "GND", "SDA", "SCK", "MOSI", "MISO", "RST"]}
+  bplay: {label: "Nút Chơi/Dừng (vàng)", pins: ["1", "2"]}
+  bup: {label: "Nút To hơn (+)", pins: ["1", "2"]}
+  bdn: {label: "Nút Nhỏ hơn (−)", pins: ["1", "2"]}
+  buf: {label: "74AHCT125 (nâng mức)", pins: ["VCC", "GND", "1A", "1Y", "1OE"]}
+  led: {label: "2 × WS2812B (mắt)", pins: ["5V", "GND", "DIN"]}
+wires:
+  - {from: usb.VBUS, to: esp.5V, level: 5v, color: RD, group: nguon, note: "cục sạc 5 V ≥ 2 A; đang cấp ở đây thì KHÔNG cắm thêm cáp máy tính vào bo"}
+  - {from: usb.GND, to: esp.GND, level: gnd, color: BK, group: nguon}
+  - {from: amp.VIN, to: usb.VBUS, level: 5v, color: RD, group: ampli, note: "tụ 1000 µF 16 V sát VIN–GND, đúng cực; KHÔNG lấy từ 3V3"}
+  - {from: amp.GND, to: usb.GND, level: gnd, color: BK, group: ampli}
+  - {from: amp.BCLK, to: esp.GPIO15, level: tin-hieu, color: TQ, group: ampli}
+  - {from: amp.LRC, to: esp.GPIO16, level: tin-hieu, color: VT, group: ampli}
+  - {from: amp.DIN, to: esp.GPIO7, level: tin-hieu, color: WH, group: ampli}
+  - {from: spk.+, to: amp.Loa +, level: loa, color: RD, group: ampli, note: "KHÔNG nối GND (ngõ ra cầu)"}
+  - {from: spk.−, to: amp.Loa −, level: loa, color: GY, group: ampli, note: "KHÔNG nối GND"}
+  - {from: sd.VCC, to: usb.VBUS, level: 5v, color: RD, group: sd, note: "module có ổn áp 3,3 V trên bo thì cấp 5 V; module 3,3 V trần thì nối 3V3 – TODO đọc chữ trên module"}
+  - {from: sd.GND, to: esp.GND, level: gnd, color: BK, group: sd}
+  - {from: sd.CS, to: esp.GPIO10, level: tin-hieu, color: OG, group: sd}
+  - {from: sd.MOSI, to: esp.GPIO11, level: tin-hieu, color: YE, group: sd}
+  - {from: sd.SCK, to: esp.GPIO12, level: tin-hieu, color: GN, group: sd}
+  - {from: sd.MISO, to: esp.GPIO13, level: tin-hieu, color: BU, group: sd}
+  - {from: rfid.3.3V, to: esp.3V3, level: 3v3, color: OG, group: nfc, note: "CHỈ 3,3 V – cấp 5 V có thể hỏng RC522"}
+  - {from: rfid.GND, to: esp.GND, level: gnd, color: BK, group: nfc}
+  - {from: rfid.SDA, to: esp.GPIO17, level: tin-hieu, color: PK, group: nfc, note: "SDA = chân chọn chip (CS) khi chạy SPI"}
+  - {from: rfid.SCK, to: esp.GPIO18, level: tin-hieu, color: GN, group: nfc}
+  - {from: rfid.MOSI, to: esp.GPIO8, level: tin-hieu, color: YE, group: nfc}
+  - {from: rfid.MISO, to: esp.GPIO9, level: tin-hieu, color: BU, group: nfc}
+  - {from: rfid.RST, to: esp.GPIO21, level: tin-hieu, color: WH, group: nfc}
+  - {from: bplay.1, to: esp.GPIO4, level: tin-hieu, color: YE, group: nut, note: "kéo lên nội; nhấn = nối GND"}
+  - {from: bplay.2, to: esp.GND, level: gnd, color: BK, group: nut}
+  - {from: bup.1, to: esp.GPIO5, level: tin-hieu, color: GN, group: nut}
+  - {from: bup.2, to: esp.GND, level: gnd, color: BK, group: nut}
+  - {from: bdn.1, to: esp.GPIO6, level: tin-hieu, color: BU, group: nut}
+  - {from: bdn.2, to: esp.GND, level: gnd, color: BK, group: nut}
+  - {from: buf.VCC, to: usb.VBUS, level: 5v, color: RD, group: mat}
+  - {from: buf.GND, to: usb.GND, level: gnd, color: BK, group: mat}
+  - {from: buf.1OE, to: usb.GND, level: gnd, color: BK, group: mat, note: "OE nối GND = luôn bật"}
+  - {from: buf.1A, to: esp.GPIO2, level: tin-hieu, color: GN, group: mat}
+  - {from: buf.1Y, to: led.DIN, level: tin-hieu, color: GN, group: mat, note: "điện trở ~330 Ω nối tiếp sát DIN (TODO datasheet)"}
+  - {from: led.5V, to: usb.VBUS, level: 5v, color: RD, group: mat}
+  - {from: led.GND, to: usb.GND, level: gnd, color: BK, group: mat}
