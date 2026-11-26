@@ -16,4 +16,4 @@ plates:
   # mau KEM: face-plate (mat truoc xuong) + bung + tam de
   D_cream: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%", brim_type: outer_only, brim_width: "5"}, stl: ["face-plate.stl", "belly.stl", "base-plate.stl"]}
   # mau BO: mo + nap nut dau (MX) + bo thu chu thap
-  E_butter: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%"}, stl: ["beak.stl", "button-cap.stl", "mx-cross-gauge.stl"]}
+  E_butter: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%"}, stl: ["beak.stl", "button-cap.stl"]}   # 2026-11-26: bo thuoc thu chu thap (nut noi da DAT)
