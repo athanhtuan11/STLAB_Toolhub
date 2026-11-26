@@ -9,6 +9,11 @@ Chay (Python di kem FreeCAD co san yaml/matplotlib/PIL; khong can FreeCAD):
 print.yaml (duong dan tuong doi theo data_dir) - mau: maker/esp32-s3-cam/solidcraft/print/print.yaml.
 Ra: <plates_dir>/<plate>/<plate>.3mf (mo thang bang Bambu Studio de in),
     print-overview.png (bang + anh tung ban), print-report.json.
+Chay ca du an (khong only=) con ra 1 project gop: <plates_dir>/<ten-yaml>.3mf (vd. print-s3-test.3mf) = TAT CA ban,
+moi ban 1 plate Bambu Studio (dung chi tiet + vi tri xep + mau filament cua ban, override process khac nhau nam o
+muc object; moi ban 1 filament slot nen plate i in bang slot i). Mo bang Bambu Studio bam Slice all (Bambu Studio 02.09
+bao "G-code conflicts" khi CLI cat ca project >= 2 plate nen file gop chua cat; 1 ban thi co san gcode). Cach gop: merge_plates.py.
+File tung ban (<ban>/<ban>.3mf, preview, report) giu nguyen. Co trong print-report.json: muc "project_gop".
 Exit code 1 neu co ban FAIL (cat loi, ra ngoai ban in, vung lo lung) hoac co STL chua xep ban.
 
 TRUOC khi cat (printability.py, 2026-10-23 - Tuan in that thay phan NHO RA khong support bi hong):
@@ -44,6 +49,7 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import printability  # noqa: E402
+import merge_plates  # noqa: E402
 
 EXE = Path(r"C:\Program Files\Bambu Studio\bambu-studio.exe")
 BBL = EXE.parent / "resources" / "profiles" / "BBL"
@@ -507,6 +513,25 @@ def main():
           "tong_gam": round(sum(b.get("gam", 0) for b in bans), 1),
           "stl_chua_xep": chua_xep, "stl_xep_2_lan": trung, "xu_ly_lo_lung": xu_ly, "brim": brim, "ban": bans,
           "thoi_gian_chay_s": round(time.time() - t0, 1)}
+    if not chon:
+        try:
+            thu_tu = {t: i for i, t in enumerate(cfg["plates"])}
+            ds = sorted([b for b in bans if b["trang_thai"] != "FAIL" or (ra / b["ban"]).exists()],
+                        key=lambda b: (thu_tu.get(b["ban"].split("__")[0], 99), b["ban"]))
+            procs, fils = {}, {}
+            for b in ds:
+                g = b["ban"].split("__")[0]
+                pp = prof / f"process_{b['ban']}.json"
+                procs[b["ban"]] = str(pp if pp.exists() else prof / f"process_{g}.json")
+                fils[b["ban"]] = str(prof / f"filament_{g}.json")
+            gop_f, so_plate, da_cat = merge_plates.gop(ra, cfg_p.stem, ds, EXE, p_may, procs, fils, tat_ca[0])
+            if gop_f:
+                bc["project_gop"] = {"file": str(gop_f), "so_plate": so_plate, "da_cat": da_cat,
+                                     "plates": [b["ban"] for b in ds if next((ra / b["ban"]).glob("*.3mf"), None)]}
+                print(f"Project gop {so_plate} plate -> {gop_f}" + ("" if da_cat else " (chua cat: Slice all trong Bambu Studio)"),
+                      flush=True)
+        except Exception as e:  # noqa: BLE001 - file gop la phan them, khong lam hong ket qua tung ban
+            print(f"CANH BAO: khong gop duoc project nhieu plate: {e}", file=sys.stderr, flush=True)
     anh_tong_quan(bc, ra / "print-overview.png")
     (ra / "print-report.json").write_text(json.dumps(bc, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"KET LUAN: {ket_luan}  ({bc['thoi_gian_chay_s']} s)  -> {ra}")

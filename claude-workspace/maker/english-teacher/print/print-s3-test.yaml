@@ -23,4 +23,4 @@ plates:
   #   s3-rail-coupon               : doan ray bo S3 + lo USB-C cat tu vo that (38 x 18 x 21) – truot bo vao, cam cap
   #   (cad/make_fit_coupons.py, env XH=12 YLO=10 YHI=10 MZLO=<mic z'-9> RX=19 RYLO=36 RZT=9 RZB=9). Mau cat tu vo co the can support nho (slicer tu bat).
   p6-test-gon: {process: 0.20mm Standard @BBL A1, color: "#FFF3DF", overrides: {wall_loops: "2", sparse_infill_density: "15%"},
-                stl: ["mini-cap.stl", "mx-socket-coupon.stl", "speaker-ring-L.stl", "mic-seat-coupon.stl", "mic-clamp.stl", "s3-rail-coupon.stl"]}
+                stl: ["mic-seat-coupon.stl", "mic-clamp.stl", "s3-rail-coupon.stl"]}   # 2026-11-26: nut DAT, vong ep loa Tuan khong can in lai -> bo
