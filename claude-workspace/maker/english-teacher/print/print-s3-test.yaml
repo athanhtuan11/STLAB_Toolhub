@@ -4,14 +4,27 @@
 #   - face-plate: khung man TFT 2,8" MSP2807 - thu kinh 69,2 x 50 vao hoc (khe 0,3/ben), 4 vit M2.5 x 6 bat PCB, cua so che het mep kinh,
 #     mat kinh lui 1,5 so vien, cam ung bam duoc (vien khong de len vung hien thi).
 #   - button-cap: Tuan 2026-11-26 can in lai nut noi (nap switch MX dinh dau).
+# 2026-11-26 chieu: ban p2-button = nut noi lam lai theo clicky chay that (catpaw: hoc 9,80, ong O5,71, chu thap 5,49, thap o 17x17) + khoi thu o switch
+#   mx-socket-test.stl (o 14,00 + ranh V + go chan nap y het dinh dau) + speaker-ring-L noi khe ngam xoay (0,40/0,40/0,45; dung lai vanh loa da in).
 # Ca bo (vo, chup loa) chua chot dang (cho Tuan chon H0/H25) -> chua in. STL: cad/build_owl_s3_screen.py -> stl-s3-screen.
 # Cat lop: python tools/print/scripts/memjob.py 3 -- python tools/print/scripts/slice.py maker/english-teacher/print/print-s3-test.yaml
 machine: Bambu Lab A1 0.4 nozzle
 filament: Bambu PETG Basic @BBL A1
-stl: stl-s3-screen
+stl: stl-s3-test   # 4 STL (+ mic-seat-coupon, mic-clamp cho p4 va s3-rail-coupon cho p5, cad/make_fit_coupons.py) chep tu cad/out-s3-screen (face-plate, speaker-ring-L, button-cap, mx-socket-test)
 plates_dir: plates-s3-test
 partial: true   # ban thu: STL khac trong stl-s3-screen la co y khong xep
 common: {sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
 plates:
   p1-fit-test: {process: 0.20mm Standard @BBL A1, color: "#FFF3DF", overrides: {wall_loops: "3", sparse_infill_density: "20%"},
                 stl: ["face-plate.stl", "speaker-ring-L.stl", "button-cap.stl"]}
+  p2-button: {process: 0.20mm Standard @BBL A1, color: "#FFF3DF", overrides: {wall_loops: "3", sparse_infill_density: "20%"},
+              stl: ["button-cap.stl", "mx-socket-test.stl", "speaker-ring-L.stl"]}
+  # 2026-11-26 toi: ban thu NHANH nut (Tuan: in nguyen de + nut rat lau) - chi khop chu thap + o switch (cad/make_button_coupon.py)
+  p3-button-quick: {process: 0.20mm Standard @BBL A1, color: "#FFF3DF", overrides: {wall_loops: "3", sparse_infill_density: "20%"},
+                    stl: ["mini-cap.stl", "mx-socket-coupon.stl"]}
+  # 2026-11-26 chieu: ban thu NHANH mic + ray bo S3 (cad/make_fit_coupons.py, CAT NGUYEN tu vo that): vung tran quanh mic + kep mic (dat module INMP441 O15 + ron xop 1,2),
+  #   doan ray giu bo ESP32-S3 (~22 mm mep PCB) + lo cap USB-C o lung. Bo S3 CHUA do so hang that: ray chua rong PCB 25,4-28,6 (khoi giu cho 72 x 29 x 16).
+  p4-mic-s3: {process: 0.20mm Standard @BBL A1, color: "#FFF3DF", overrides: {wall_loops: "2", sparse_infill_density: "10%"},
+              stl: ["mic-seat-coupon.stl", "mic-clamp.stl"]}
+  p5-s3-rail: {process: 0.20mm Standard @BBL A1, color: "#FFF3DF", overrides: {wall_loops: "2", sparse_infill_density: "10%"},
+               stl: ["s3-rail-coupon.stl"]}

@@ -2,6 +2,17 @@
 
 **Bản hiện tại: có màn 2,8" + 2 loa** (WIP 2026-11-26, mục "Bản có màn + 2 loa" bên dưới). Bản S3 1 loa và A1S là lịch sử, đã vào `backup/` (mục "Lịch sử" cuối file).
 
+**Nút nói làm lại (2026-11-26, Tuan in thử: "nút nhấn chìm xuống", chữ thập không ăn chân switch):** chép nguyên clicky chạy thật cat-paw
+(`docs/research-notes/cat-paw-clicker-fits.md`): mặt dưới nắp có hốc trần cao **9,80** trên mép váy, ống Ø**5,71** từ trần xuống, đầu ống +**4,31** trên mép váy, lỗ chữ thập 4,19 × 1,25
+xuyên hết ống (**5,49** = `mx.cross_depth`); bỏ rãnh vòng r4,6 + ống nhún cũ. Ổ switch ở đỉnh đầu: 14,00 sâu 8,58 + rãnh V catpaw, **miệng ổ = đáy hốc** (như mẫu, không còn khối bay 15,8).
+Nắp lúc nghỉ ngồi trên chân (đầu ống cách đỉnh vỏ switch 1,0 mm → chữ thập ăn 2,6/3,6 mm chân), gờ chặn nón cách vành nắp **1,0 mm** (`stop_gap`, nắp nhấc 1 mm vẫn giữ chữ thập).
+Giả định chưa có datasheet (ghi trong `mx.assumed`): vỏ switch cao 3,0, chân 3,6, hành trình 4,0.
+Hai chỗ lệch yêu cầu ban đầu, cần Claude/Tuan duyệt: (1) PCB mic Ø15 nghiêng 45° (không đổi) có góc tại r 24,8 mm, z 139,17 nằm trong hốc nút → mặt dưới nắp phải khoét côn 45° và **vành nắp thu Ø58 → Ø54** (`TALK_FLANGE_R` 27, vành trong lỗ 1,6 ≥ 1,5); nắp đi xuống được ~3,9 mm trước khi chạm PCB mic (cần ≥ 4,5) → **đã sửa, xem mục "Mic dời" bên dưới (4,85 mm)**.
+(2) Thành trụ hốc nút chỉ được cao ≤ 5,0 mm (slicer: mái vòm nằm > 5 mm là CAN SUPPORT) → đáy hốc phẳng ngang miệng ổ, nắp **chạm đáy ở ~3,0 mm** (`travel_free` = 3,39 tính, đo BVH ~3,0) thay vì ≥ 5,5 trống; switch (nguồn phụ 4,0) vẫn qua điểm tác động ~2,0.
+Bàn thử nhanh: `p2-button` (nắp + `mx-socket-test.stl` Ø62,8 + vòng ép L). Khe ngàm xoay vòng ép nới (chỉ phía vòng ép, vành loa đã in dùng lại): ống tay 0,25 → **0,40**, chốt 0,25 → **0,40**, rãnh 0,30 → **0,45**.
+**Vành loa +2 mm (Tuan 2026-11-26):** `BZL_RF` 36 → 38, vành ngoài Ø86 → Ø90 (lưới Ø56, cốc 29,0, chốt, gờ Ø48 giữ nguyên; lỗ trên vỏ sườn nới theo).
+Tuan in thử 2026-11-26: vòng ép loa + gờ Ø48 ĐẠT.
+
 **Bàn in thử v3 (2026-11-26):** `print/print-s3-test.yaml` → `print/plates-s3-test/p1-fit-test/p1-fit-test.3mf`, PASS 105 phút, 54,2 g, 1 màu: `face-plate`, `speaker-ring-L`, `button-cap`. Chờ in (cần 4 vít M2.5 × 6).
 
 ## Bản có màn + 2 loa (H0 ngang, 2026-11-26, gate PASS)
@@ -26,5 +37,24 @@ Gate `gate_owl_s3_screen.py` PASS; 5 bàn PASS không support: A vỏ trước 3
 ### TODO còn lại
 1. Dáng: hộp nền vẫn nhô khỏi thân (thành thẳng ~15 mm ở góc trên/dưới trước khi thu 45°); vai R ≥ 12 chỉ đạt ở góc mặt phẳng (R17,7), mép trước bo R6 (R12 làm mặt trước hẹp hơn lỗ 94,6) – cần Claude xem ảnh.
 2. Mỏ: hơi chồng đĩa 1 mm, chưa chồng ~4 mm như V2 (vành giữ mỏ chạm đĩa).
-3. Mic: ống dẫn âm = lỗ Ø4 trong vách vỏ; khớp mê cung chỉ ghi tham số (`mic.seal`), chưa có rãnh thật.
+3. Mic: ống dẫn âm = lỗ Ø4 trong vách vỏ; bịt bằng ron xốp 1,2 mm (xem "Mic dời + bịt kín"), chưa thử ron thật.
 4. Đo thật: PCB ampli / INMP441 (độ dày, linh kiện) như bản v2.
+
+### Mic dời + bịt kín (2026-11-26)
+- Tâm mic hạ **0,9 mm** theo z: (0; −29,2; 133,3) → **(0; −29,2; 132,4)** (`MIC_DROP`), trục nghiêng 45° giữ, x = 0, cách tâm mỗi loa ≫ 60. Lỗ mic ≥ cạnh trên PCB màn + 7,4 (gate ≥ 7,0).
+  Côn hốc dưới nắp **giữ theo tâm mic cũ** (`MIC_C_REF`) → nâng khe thật 0,9 mm.
+- Đo BVH (nắp `asm/button-cap.stl` tịnh tiến −z đến khi chạm): PCB mic Ø15 × 1,6 = **4,85 mm** (≥ 4,5), kẹp mic 8,05. `mx.travel_free` = 4,85; `mx.travel_floor` = 3,39 (nắp chạm đáy hốc, đo BVH cũ ~3,0 – giới hạn thật còn là đáy hốc, switch cần ~2,0 để tác động).
+- **Bịt mic = ron xốp**, bỏ `seal: labyrinth` (không có rãnh thật): hốc PCB Ø16,4 sâu thêm đến vách **w = 1,8** (cũ 1,0) → PCB mặt trước w 0,8, khe 1,0 mm cho ron vòng 1,2 mm (OD 12 / ID 6,4) dán lên vách quanh ống dẫn âm Ø4, PCB ép ron 0,2 (17 %). `mic.gasket_t` = 1,2. (Thử rãnh ron sâu 0,8 → slicer báo floating, bỏ.)
+- Bo ESP32-S3: **chưa đo hàng thật** – vẫn khối giữ chỗ 72 × 29 × 16; ray chừa PCB 25,4–28,6 như cũ.
+
+### Mẫu thử lắp nhanh p4 / p5 (`make_fit_coupons.py`)
+Đọc STL đã xuất (`out-s3-screen`), cắt nguyên vẹn bằng boolean với hộp, giữ hướng in của vỏ (mặt ghép xuống bàn). Xuất vào `print/stl-s3-test/`:
+| Bàn | File | Nội dung | Cắt lớp |
+|---|---|---|---|
+| `p4-mic-s3` | `mic-seat-coupon.stl` + `mic-clamp.stl` | vùng trán quanh mic 52 × 27 (mặt ghép đến z′ ~37) + kẹp mic; đặt module INMP441 Ø15 + ron xốp | PASS 46 ph, 11,2 g, không support |
+| `p5-s3-rail` | `s3-rail-coupon.stl` | ray giữ bo S3 ~18 mm ledge (y 18..36) + hốc + lỗ cáp USB-C 14 × 9, vỏ lưng y 18..58 (72 × 24 × 38,8); đầu ray mở nằm ở mặt bàn | PASS 49 ph, 14,3 g, không support |
+Cửa sổ cắt chọn bằng slicer: mẫu mic cần rộng ≥ ±26 mm (hẹp hơn Bambu báo floating vì mảnh vòm mất vách hai sườn), mẫu ray ±36. Lâu hơn 30 phút vì phải in đủ cao theo hướng thật (không thêm đế để khỏi chặn lối cho PCB/kẹp).
+
+### Bảng khe lắp (Tuan 2026-11-26: lỗ/khe = kích thước thật + 0,2 mm, ngàm xoay ≥ 0,40)
+Nguồn đầy đủ: `maker/english-teacher/CLAUDE.md` mục "Bảng khe lắp". Đã nâng: **tai ốc M3 (`M3_NUT_S`) 5,8 → 5,9 (0,15 → 0,20/bên)**; mọi khe khác đã ≥ 0,2.
+Giữ nguyên vì đã in + chạy thật: khung màn (hốc kính 69,2 + 0,3/bên, PCB), 4 vít M2.5 × 6 tự ren Ø2,4, gờ giữ loa Ø48, vành loa, ổ MX 14,00 + rãnh V, chữ thập 4,19 × 1,25, ống Ø5,71.

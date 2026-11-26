@@ -32,6 +32,33 @@ Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\
   `C:\Espressif\tools-v6.1` (~6,4 GB, esp32 + esp32s3; không đụng 5.5.4). Kích hoạt trong PowerShell: xóa biến MSYS →
   `$env:IDF_TOOLS_PATH='C:\Espressif\tools-v6.1'; . C:\Espressif\frameworks\esp-idf-v6.1\export.ps1`. Kiểm: `idf.py --version` = v6.1.
 
+## Bảng khe lắp (quy tắc maker/CLAUDE.md: khe = kích thước thật + 0,2 mm; ngàm xoay ≥ 0,40) – bản có màn, rà 2026-11-26
+| Cặp lắp | Kích thước thật | Vẽ | Khe/bên | Nguồn |
+|---|---|---|---|---|
+| Kính màn MSP2807 ↔ hốc face-plate | 69,2 × 50,0 | 69,8 × 50,6 | 0,3 | datasheet + **in thật ĐẠT 2026-11-26** (giữ) |
+| PCB màn ↔ hốc | 86,0 × 50,0 | 86,4 × 50,6 | 0,2 (x) / 0,3 (z) | in thật ĐẠT (giữ) |
+| Vít PCB màn M2.5 tự ren | lỗ Ø2,4 | Ø2,4 | – | fit-library, in thật (ngoại lệ) |
+| Vít vành chặn M2.5 × 6 | Ø2,5 | lỗ thông Ø2,8 | 0,15 | fit-library (ngoại lệ) |
+| Đĩa face-plate ↔ lỗ vỏ | 94 × 58 R10 | lỗ +0,3 mỗi bên | 0,3 | gate PASS, in thật ĐẠT |
+| Vành chặn 104 × 68 ↔ hốc vỏ | 104 × 68 | hốc 104,6 × 68,6 | 0,3 | như trên |
+| Loa Ø52 ↔ hốc | Ø52 | Ø52,6 | 0,3 | đo thật 2026-11-06 |
+| Vòng ép loa ↔ thân loa | Ø52 (mép) | gờ giữ Ø48,0 | – (giữ mép 2,0/bên) | in thật ĐẠT 2026-11-26 |
+| Ngàm xoay vòng ép: ống tay / chốt / rãnh | – | 0,40 / 0,40 / 0,45 | 0,40–0,45 | in thật (vành loa lần 1) |
+| Nút nói ↔ lỗ vỏ | Ø50 | lỗ Ø50,8 | 0,4 | gate PASS |
+| Ổ switch MX | 14,00 | 14,00 + rãnh V | – | fit-library catpaw (ngoại lệ) |
+| Chữ thập 4,19 × 1,25, ống Ø5,71 | – | giữ | – | fit-library (ngoại lệ) |
+| PCB mic Ø15 × 1,6 ↔ hốc | Ø15 | hốc Ø16,4 | 0,7 | gate; **ron xốp 1,2 mm trong khe 1,0** (ép 0,2) |
+| PCB mic ↔ kẹp mic | Ø15 | Ø15,6 | 0,3 | gate PASS |
+| Kẹp mic ↔ lỗ lót vỏ | Ø20,8 | lỗ Ø21,8 | 0,5 | gate PASS |
+| Bo ESP32-S3 ↔ ray | 25,4–28,6 (**chưa đo hàng thật**) | ray 29,6 | ≥ 0,5 | TODO đo bo thật |
+| Bo S3 ↔ khoang (z) | 16 (giữ chỗ) | 16,4 | 0,2 | giữ chỗ, TODO đo |
+| USB-C ↔ lỗ cáp | 14 × 9 (giữ chỗ) | 14 × 9 R2, mái cách cổng 0,3 | 0,3 | TODO đo cáp |
+| PCB ampli ↔ ray khay | 18,0 × 19,4 | rãnh +0,25 (x), z +0,4 | 0,25 / 0,2 | TODO đo ampli thật |
+| Vít khay ampli | M2.5 | mồi Ø2,2 | – | tự ren (TODO thử) |
+| Tai ốc M3 ↔ hốc lục giác | 5,5 AF | **5,9** (cũ 5,8) | **0,20** (cũ 0,15) | nâng 2026-11-26 |
+| Vít M3 ↔ lỗ thông | Ø3,0 | Ø3,4 | 0,2 | quy tắc |
+| Chốt định vị 2 nửa | Ø2,0 | chốt/lỗ chép từ bản A1S | 0,2 (TODO kiểm lại) | bản cũ đã in |
+
 ## Trạng thái
 - 2026-11-26: **dáng A2 V2** = mắt màn TFT 2,8" cảm ứng (MSP2807) + **2 loa Ø52 H0** (sườn quay ngang; H25 bỏ vì phải support), gờ giữ loa Ø48, mỗi loa 1 MAX98357A.
   CAD `cad/build_owl_s3_screen.py` → `out-s3-screen`: gate PASS, 5 bàn `plates-s3-screen` PASS không support (~16 h, ~443 g); lỗ màn V1.1 đối xứng 80 × 44; chờ duyệt dáng + kết quả bàn thử v3.

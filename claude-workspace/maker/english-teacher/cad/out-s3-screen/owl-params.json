@@ -5,7 +5,7 @@
  "grille_hole_d": 2.8,
  "mic_hole_d": 2.0,
  "m3_clear_d": 3.4,
- "m3_nut_s": 5.8,
+ "m3_nut_s": 5.9,
  "button_cap_d": 50.0,
  "button_hole_d": 50.8,
  "vent_w": 2.0,
@@ -125,7 +125,7 @@
   "center": [
    0.0,
    -29.2,
-   133.3
+   132.4
   ],
   "box": [
    17.0,
@@ -138,22 +138,27 @@
    0.0,
    1.5
   ],
-  "hole_z": 139.17,
+  "hole_z": 138.72,
   "axis": [
    0.0,
    -0.7075,
    0.7067
   ],
   "seal": {
-   "type": "labyrinth",
-   "depth": 1.0,
-   "clearance": 0.15
+   "type": "gasket",
+   "pocket_floor_w": 1.8,
+   "gap": 1.0,
+   "gasket_od": 12.0,
+   "gasket_id": 6.4,
+   "note": "ron xop dan len vach quanh ong dan am O4; PCB ep ron"
   },
+  "gasket_t": 1.2,
+  "drop": 0.9,
   "pcb": {
    "center": [
     0.0,
     -29.2,
-    133.3
+    132.4
    ],
    "d": 15.0,
    "t": 1.6,
@@ -206,9 +211,9 @@
    "pin_w": 4.0,
    "pin_h": 1.1,
    "pin_t": 1.5,
-   "sleeve_clr": 0.25,
-   "pin_clr": 0.25,
-   "groove_clr": 0.3,
+   "sleeve_clr": 0.4,
+   "pin_clr": 0.4,
+   "groove_clr": 0.45,
    "lip_pre": 0.3,
    "out_gap": 0.3,
    "sleeve_t": 2.4
@@ -219,6 +224,26 @@
   "socket_depth": 8.58,
   "stem_cross_l": 4.19,
   "stem_cross_w": 1.25,
+  "cross_depth": 5.49,
+  "travel_free": 4.85,
+  "travel_floor": 3.39,
+  "stop_gap": 1.0,
+  "tube_gap": 1.0,
+  "cap_hollow_d": 33.2,
+  "cap_hollow_depth": 9.8,
+  "tube_od": 5.71,
+  "tube_end_above_rim": 4.31,
+  "socket_outer_w": 17.0,
+  "rim_z": 138.3,
+  "mouth_z": 138.61,
+  "floor_z": 138.11,
+  "assumed": {
+   "housing_h": 3.0,
+   "stem_h": 3.6,
+   "travel": 4.0,
+   "note": "housing/stem/hanh trinh 4,0 la nguon phu chua datasheet"
+  },
+  "source": "fit-library catpaw/mx-keycap-cross + catpaw/mx-socket (docs/research-notes/cat-paw-clicker-fits.md)",
   "keys": [
    {
     "name": "talk",
@@ -227,9 +252,9 @@
     "pos": [
      0.0,
      0.37,
-     133.6
+     138.61
     ],
-    "flange_over": 3.6
+    "flange_over": 1.6
    }
   ]
  },

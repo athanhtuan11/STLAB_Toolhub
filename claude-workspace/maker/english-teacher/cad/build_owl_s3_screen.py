@@ -23,12 +23,12 @@ BAY_ANG = (90.0, 210.0, 330.0)         # goc 3 chot (vi tri da khoa)
 BAY_TWIST = 30.0                       # goc xoay khoa
 BPIN_W, BPIN_H, BPIN_T = 4.0, 1.1, 1.5 # chot: rong tiep tuyen, nho ra, day doc truc
 BPIN_DZ = 2.5                          # mat duoi chot cach mat cuoi ong om
-SLEEVE_CLR, BPIN_CLR, GROOVE_CLR = 0.25, 0.25, 0.3
+SLEEVE_CLR, BPIN_CLR, GROOVE_CLR = 0.40, 0.40, 0.45   # 2026-11-26 Tuan: vong ep qua khit (0,25/0,25/0,30) -> noi, CHI phia vong ep (bezel da in giu nguyen)
 SLEEVE_T, SLEEVE_LEN = 2.4, 5.0
 LIP_PRE, OUT_GAP = 0.3, 0.3
 GRILLE_HOLE_D, GRILLE_PITCH, GRILLE_ZONE_D = 2.8, 5.6, 56.0
 MIC_HOLE_D = 2.0
-M3_CLEAR_D, M3_NUT_S, NUT_DEPTH = 3.4, 5.8, 2.8
+M3_CLEAR_D, M3_NUT_S, NUT_DEPTH = 3.4, 5.9, 2.8   # 2026-11-26: tui ecu M3 5,5 AF + 0,2/ben = 5,9 (cu 5,8: 0,15/ben)
 BUTTON_CAP_D, BUTTON_HOLE_D = 50.0, 50.8
 DIFFUSER_T = 0.8
 VENT_W, VENT_L = 2.0, 18.0
@@ -47,22 +47,29 @@ AMP_POS = [(-3.0, -13.0), (3.0, 12.5)]  # 2 khay duoi bo S3 giua 2 ray (|x| < 14
 AMP_Z0 = 7.3                           # day khay (san bay z = 6,0 + 0,4 khe)
 
 # Mic INMP441 PCB tron O15, NGHIENG 45 do theo vom tran (spec muc 9): truc n = (0, -cos45, +sin45) huong ra truoc-len
-MIC_C = (0.0, -29.2, 133.3)            # tam module (gate: z >= 133)
+MIC_DROP = 0.9                         # 2026-11-26: ha mic 0,9 de nap nut di >= 4,5 mm (nap/hoc con GIU theo MIC_C_REF cu)
+MIC_C_REF = (0.0, -29.2, 133.3)        # tam mic cu: chi dung de tinh con hoc duoi nap (CAP_DISH_K)
+MIC_C = (0.0, -29.2, 133.3 - MIC_DROP) # tam module that
 MIC_N = Vector((0.0, -math.sqrt(0.5), math.sqrt(0.5)))
 MIC_T = Vector((0.0, math.sqrt(0.5), math.sqrt(0.5)))   # tiep tuyen "len-sau" tren mat module
-MIC_L = 8.3                            # tam module -> mat ngoai vom doc truc
+MIC_L = 8.3 + 0.64                     # tam module -> mat ngoai vom doc truc (+0,64 vi ha mic 0,9 theo z)
 MIC_PCB_D, MIC_PCB_T = 15.0, 1.6
 MIC_BORE_R = 8.0                       # khoang module O16 (PCB O15 + 0,5/ben), w -0,5..+6,2 (cham tren khoang truoc)
 MIC_FRONT_W = 6.2                      # buong truoc module: w tu 0,8 den 6,2 (khong vat nao trong Y-dia cua gate)
 MIC_SLEEVE_BORE_R = 10.9               # lo ong lot (sleeve) phia sau, thong xuong khoang than (tent)
 MIC_HOLE_X = (-1.5, 0.0, 1.5)
-MIC_SEAL_DEPTH, MIC_SEAL_CLR = 1.0, 0.15
+# Bit mic = RON XOP (bo me cung): hoc PCB sau them den w = 1,8 (khong ranh -> khong overhang them): PCB mat truoc w 0,8, mat vach w 1,8
+# -> khe ron 1,0 mm; ron xop vong 1,2 mm (OD 12 / ID 6,4) dan len vach quanh ong dan am O4, PCB ep ron 0,2 (17 %)
+MIC_TRAVEL_BVH = 4.85                  # hanh trinh nap truoc khi cham PCB mic (do BVH sau khi ha mic 0,9; kep mic 8,05)
+MIC_GASKET_T = 1.2
+MIC_POCKET_W1 = 1.8                    # vach truoc hoc PCB (cu 1,0)
+MIC_GASKET_OD, MIC_GASKET_ID = 12.0, 6.4
 MIC_TUBE_OD, MIC_TUBE_ID = 7.4, 4.0
 
 # 2 loa NGANG H0 (Tuan chon 2026-11-26): truc ra ngoai [+-1,0,0], mat loa tren vo suon, vanh loa + yen non nhu ban A1S
 SPK_A = Vector((1.0, 0.0, 0.0))
 SPK_CX, SPK_CY, SPK_Z = 51.8, 0.37, 46.0
-BZL_RF, BZL_REAR, BZL_A, BZL_RHO = 36.0, 54.0, 25.0, 8.0
+BZL_RF, BZL_REAR, BZL_A, BZL_RHO = 38.0, 54.0, 25.0, 8.0   # BZL_RF 36 -> 38: vanh loa +2,0 mm ban kinh (Tuan 2026-11-26)
 BZL_T = math.tan(math.radians(BZL_A))
 SPEAKERS = [{"center": [-SPK_CX, SPK_CY, SPK_Z], "axis": [-1.0, 0.0, 0.0]},
             {"center": [SPK_CX, SPK_CY, SPK_Z], "axis": [1.0, 0.0, 0.0]}]
@@ -114,7 +121,14 @@ MX_INSERT, MX_TRAVEL = 1.2, 2.4
 # nam trong ONG NHUN O5,71, ranh vong quanh ong de ong gian nhe khi ep. Kem bo thu chu thap 3 co (mx-cross-gauge.stl).
 MX_TUBE_OD, MX_RELIEF_R, MX_RELIEF_H = 5.71, 4.6, 4.0
 MX_GAUGE_W = (1.25, 1.35, 1.45)
-REST_UP = 0.2
+# 2026-11-26 Tuan in thu: nap nut chim xuong (nap khong an chu thap, mat phang duoi nap chay vo switch). Lam lai theo clicky chay that
+# (catpaw/mx-keycap-cross + mx-socket, docs/research-notes/cat-paw-clicker-fits.md): hoc duoi nap sau 9,80 tu vanh, ong O5,71 dau ong o +4,31 tren vanh,
+# lo chu thap 4,19 x 1,25 xuyen het ong (5,49); mieng o switch nam o DAY HOC (nhu mau), o 14,00 sau 8,58 + ranh V.
+CAP_HOLLOW_R, CAP_CEIL, CAP_TUBE_END, MX_CROSS_DEPTH = 16.6, 9.80, 4.31, 5.49     # mau cat-paw (hoc O33,2 >= 33,15 x 24,2)
+CAP_STOP_GAP = 1.0                  # khe doc truc vanh nap <-> go chan cua vo luc nghi (nap khong ep, chu thap van an 5,49)
+TUBE_GAP = 1.0                      # dau ong nap cao hon dinh vo switch luc nghi -> chu thap an MX_STEM_H - TUBE_GAP = 2,6 mm vao chan
+MX_TOWER_W = 17.0                   # ong ngoai o switch cua mau cat-paw (17 x 17); ban nay o khoet thang vao khoi dac dau, day hoc phang o muc mieng
+REST_UP = 0.3 - CAP_STOP_GAP        # dung de khe doc truc go chan = CAP_STOP_GAP (nap hanh theo mat con va vanh)
 CONE_CLR_KEY = 0.3
 
 # Vol-pod o lung (2 nut am luong)
@@ -128,7 +142,7 @@ POD_TF, POD_STRIP = 3.0, (-18.8, -5.6, POD_CT - 0.5, 20.7)
 POD_HOLES = ((-9.2, 12.3), (-15.2, 17.0))
 SCR_CLEAR, SCR_HEAD, SCR_PILOT, SCR_PILOT_DEPTH, SCR_LEN = 2.8, 5.0, 2.2, 6.2, 10.0
 EAR_GAP, G_HEAD = 0.4, 4.0
-TALK_FLANGE_R = 29.0
+TALK_FLANGE_R = 27.0   # 2026-11-26: 29 -> 27 (van nap lot goc PCB mic khi an 4 mm; van trong rong hon lo 1,6 >= 1,5)
 TALK_ZB = 139.0
 TENT_XM, TENT_ZLO, TENT_ZHI = 48.0, 6.0, 124.0
 TENT_SL = 1.0
@@ -312,7 +326,6 @@ def make_cavity():
 
 def mx_cutters(M, u_rim):
     out = []
-    out.append(extrude('mxbay', diamond(hr(MX_BODY_UP + 0.2)), u_rim - MX_HOUSING_H - 0.6, u_rim + 0.02, M))
     out.append(extrude('mxpocket', diamond(hr(MX_HOLE)), u_rim, u_rim + MX_DEPTH, M))
     g0, g1, g2, gw = MX_GROOVE
     bm = bmesh.new(); pts = []
@@ -496,18 +509,26 @@ for (sx, sy) in BOSSES:
 for sgn in (-1, 1):
     diff(S, extrude('bhole', teardrop(BUTTON_HOLE_D / 2), SEAT_Z - 0.3, 180.0, M_half(sgn)))
 TALK_R = TALK_FLANGE_R + 0.4
-TALK_ZPOCKET = TALK_ZB - MX_TRAVEL - 0.4
+CAP_RIM_Z = TALK_ZB + REST_UP                       # vanh nap (mat duoi) luc nghi
 z_cone_end = SEAT_Z - (TALK_R - BUTTON_HOLE_D / 2)
-diff(S, lathe('tseat', [(0, SEAT_Z), (BUTTON_HOLE_D / 2, SEAT_Z), (TALK_R, z_cone_end), (TALK_R, TALK_ZPOCKET), (0, TALK_ZPOCKET)],
-              seg=96, M=Matrix.Translation((0, Y0, 0))))
-TALK_RIM = TALK_ZB + MX_INSERT - MX_STEM_H - MX_HOUSING_H
+TALK_RIM = CAP_RIM_Z + CAP_TUBE_END - TUBE_GAP - MX_HOUSING_H     # mieng o switch = DAY HOC (mau cat-paw: mieng o nam o day hoc)
+# Goc PCB mic (O15, nghieng 45 do) nho vao hoc nut tai r = 24,8, z = 139,17 (khong doi mic): khi nap an xuong, goc PCB tuong doi di LEN
+# trong khung nap -> mat duoi nap (r > hoc) khoet con 45 do: z = (z + r cua goc) + hanh trinh 4,0 + du 0,5 - r (khong chung that voi PCB mic)
+_pc = (Vector(MIC_C_REF) + MIC_N * (MIC_PCB_T / 2) + MIC_T * (MIC_PCB_D / 2))
+CAP_DISH_K = _pc.z + abs(_pc.y - Y0) + 4.0 + 0.5
+# day hoc = phang o muc mieng o (nhu mau cat-paw: mieng o nam o day hoc). Thanh tru O54,8 chi cao <= 5,0 mm (z_cone_end -> z_w) vi mai vom nam
+# ngua > 5 mm bi slicer bao CAN SUPPORT (printability bridge_max 5,0). Vanh nap (mep con) cach day: TRAVEL_SHELL (nap cham day truoc khi het 4,0 cua switch)
+TALK_ZPOCKET = TALK_RIM - 0.5
+TSEAT_PROF = [(0, SEAT_Z), (BUTTON_HOLE_D / 2, SEAT_Z), (TALK_R, z_cone_end), (TALK_R, TALK_ZPOCKET), (TALK_R - 0.5, TALK_RIM), (0, TALK_RIM)]
+TRAVEL_SHELL = CAP_DISH_K - TALK_FLANGE_R - TALK_ZPOCKET
+diff(S, lathe('tseat', TSEAT_PROF, seg=96, M=Matrix.Translation((0, Y0, 0))))
 MT = Matrix(((1, 0, 0, 0), (0, 1, 0, Y0), (0, 0, -1, TALK_RIM), (0, 0, 0, 1)))
 for o_ in mx_cutters(MT, 0.0):
     diff(S, o_)
 
 # Mic INMP441 nghieng 45 do: lo ong lot (thong xuong khoang than), hoc PCB/mam O19,6, lo ong dan am O7,7, 3 lo O2
 diff(S, cyl('micb1', mpt(-17.0), mpt(-0.5), MIC_SLEEVE_BORE_R, seg=64))
-diff(S, cyl('micb2', mpt(-1.0), mpt(1.0), 8.2, seg=64))     # hoc PCB O16,4, vach truoc w = 1,0 (khe 0,2 voi mat PCB: 'ong' dan am = lo O4 trong vach vo)
+diff(S, cyl('micb2', mpt(-1.0), mpt(MIC_POCKET_W1), 8.2, seg=64))     # hoc PCB O16,4, vach truoc w = 1,0 (khe 0,2 voi mat PCB: 'ong' dan am = lo O4 trong vach vo)
 diff(S, cyl('micb3', mpt(0.9), mpt(MIC_BORE3_END), MIC_TUBE_ID / 2, seg=48))
 for dx in MIC_HOLE_X:
     diff(S, cyl('mich', mpt(MIC_BORE3_END - 0.3) + Vector((dx, 0, 0)), mpt(MIC_L + 5.0) + Vector((dx, 0, 0)), MIC_HOLE_D / 2, seg=24))
@@ -544,6 +565,30 @@ SCREW_INFO = []
 # Chot dinh vi 2 nua vo
 for (px, pz) in ((-43, 142), (43, 142), (-34, 130), (34, 130), (-28.7, 160), (28.7, 160)):
     diff(S, cyl('pin', (px, Y0 - PIN_HALF, pz), (px, Y0 + PIN_HALF, pz), PIN_D / 2, seg=16))
+
+# Bo nhung manh vun roi (< 20 mm3) con sot giua day hoc nut / lo mic (khong bam vao vo)
+def drop_islands(o, min_vol=20.0):
+    bm = bmesh.new(); bm.from_mesh(o.data)
+    seen = set(); comps = []
+    for v in bm.verts:
+        if v.index in seen:
+            continue
+        stack = [v]; seen.add(v.index); comp = []
+        while stack:
+            x = stack.pop(); comp.append(x)
+            for e in x.link_edges:
+                w = e.other_vert(x)
+                if w.index not in seen:
+                    seen.add(w.index); stack.append(w)
+        comps.append(comp)
+    comps.sort(key=len, reverse=True)
+    n = 0
+    for comp in comps[1:]:
+        if len(comp) < 400:
+            bmesh.ops.delete(bm, geom=comp, context='VERTS'); n += 1
+    bm.to_mesh(o.data); bm.free()
+    print("DROP_ISLANDS", n)
+drop_islands(S)
 
 # ============================================================ TACH 2 NUA
 SRC = cp(S, 'src')
@@ -738,11 +783,16 @@ def cross_cutters(M, u_open, depth, dirn, angs=(45.0, 135.0)):
 cp_ = [(0, BTN_TOP), (19, BTN_TOP)] + arc(19, BTN_TOP - 6, 6, 90, 0, 8)[1:]
 cp_ += [(25.0, SEAT_Z + REST_UP + 0.1), (TALK_FLANGE_R, SEAT_Z + REST_UP + 0.1 - (TALK_FLANGE_R - 25.0)), (TALK_FLANGE_R, TALK_ZB + REST_UP), (0, TALK_ZB + REST_UP)]
 CAP = lathe('cap', cp_, seg=96, M=Matrix.Translation((0, Y0, 0)))
-_zc = TALK_ZB + REST_UP
-_rel = cyl('caprel', (0, Y0, _zc - 0.5), (0, Y0, _zc + MX_RELIEF_H), MX_RELIEF_R, seg=64)
-diff(_rel, cyl('captube', (0, Y0, _zc - 1.0), (0, Y0, _zc + MX_RELIEF_H + 1.0), MX_TUBE_OD / 2, seg=48))
-diff(CAP, _rel)
-for o_ in cross_cutters(Matrix.Translation((0, Y0, _zc)), 0.0, MX_STEM_H, 1):
+_zc = CAP_RIM_Z
+_tube_z = _zc + CAP_TUBE_END
+_ceil_z = _zc + CAP_CEIL
+# hoc duoi nap (mau cat-paw): O33,2 sau 9,80 tu vanh; ong O5,71 tu tran xuong, dau ong +4,31; chu thap xuyen het ong
+_r_out = TALK_FLANGE_R + 0.3
+_r_ce = CAP_DISH_K - _ceil_z                     # tai r nay duong con cat tran hoc
+diff(CAP, lathe('caphollow', [(0, _zc - 0.5), (_r_out, _zc - 0.5), (_r_out, CAP_DISH_K - _r_out), (_r_ce, _ceil_z), (0, _ceil_z)],
+                seg=96, M=Matrix.Translation((0, Y0, 0))))
+union(CAP, cyl('captube', (0, Y0, _tube_z), (0, Y0, _ceil_z + 0.5), MX_TUBE_OD / 2, seg=48))
+for o_ in cross_cutters(Matrix.Translation((0, Y0, _tube_z)), 0.0, MX_CROSS_DEPTH, 1):
     diff(CAP, o_)
 
 def make_cross_gauge():
@@ -852,6 +902,19 @@ export_obj(B, T_back, OUT / "shell-back.stl")
 export_obj(BELLY, T_belly, OUT / "belly.stl")
 export_obj(BEAK, T_beak, OUT / "beak.stl")
 export_obj(CAP, T_cap, OUT / "button-cap.stl")
+
+# --- Khoi thu o switch (ban thu p2-button): chep dung o + thap + go chan nap cua dinh dau, khong in ca vo
+def make_socket_test():
+    zb = TALK_RIM - MX_DEPTH - 2.0
+    R_o = TALK_R + 4.0
+    blk = cyl('sockt', (0, Y0, zb), (0, Y0, SEAT_Z + 2.0), R_o, seg=96)
+    diff(blk, lathe('tseat_t', TSEAT_PROF, seg=96, M=Matrix.Translation((0, Y0, 0))))
+    diff(blk, cyl('bhole_t', (0, Y0, SEAT_Z - 0.3), (0, Y0, SEAT_Z + 5.0), BUTTON_HOLE_D / 2, seg=96))
+    for o_ in mx_cutters(MT, 0.0):
+        diff(blk, o_)
+    return blk
+SOCKET_TEST = make_socket_test()
+export_obj(SOCKET_TEST, Matrix.Identity(4), OUT / "mx-socket-test.stl")
 export_obj(FP_LOCAL, Matrix.Identity(4), OUT / "face-plate.stl")
 for side in ("L", "R"):
     export_obj(BEZEL_LOCAL, T_bezel, OUT / f"speaker-bezel-{side}.stl")
@@ -926,7 +989,8 @@ params = dict(
                 holes=[SCR_HOLES[0], SCR_HOLES[1]], hole_d=SCR_HOLE_D, touch=True),
     mic=dict(center=list(MIC_C), box=[17.0, 8.0, 17.0], holes=3, hole_x=list(MIC_HOLE_X), hole_z=round(mpt(MIC_L).z, 2),
              axis=[0.0, round(-0.7075, 4), round(0.7067, 4)],
-             seal=dict(type="labyrinth", depth=MIC_SEAL_DEPTH, clearance=MIC_SEAL_CLR),
+             seal=dict(type="gasket", pocket_floor_w=MIC_POCKET_W1, gap=round(MIC_POCKET_W1 - MIC_PCB_T / 2, 2), gasket_od=MIC_GASKET_OD, gasket_id=MIC_GASKET_ID, note="ron xop dan len vach quanh ong dan am O4; PCB ep ron"),
+             gasket_t=MIC_GASKET_T, drop=MIC_DROP,
              pcb=dict(center=list(MIC_C), d=MIC_PCB_D, t=MIC_PCB_T, axis=[0.0, -0.7075, 0.7067], note="INMP441 Shopee tron ~O15, nghieng 45 do; day PCB TODO")),
     pcb_usb=dict(center=[PCB_CENTER[0], PCB_Y_USB, PCB_CENTER[2]], dir="+y"),
     cable_slot=dict(side="back", w=CABLE_W, h=CABLE_H, r=CABLE_R, center=[PCB_CENTER[0], round(Y_ROOF + CABLE_WALL_T / 2, 2), PCB_CENTER[2]], wall_t=round(CABLE_WALL_T, 2)),
@@ -940,6 +1004,11 @@ params = dict(
         bayonet=dict(n=len(BAY_ANG), twist=BAY_TWIST, pin_w=BPIN_W, pin_h=BPIN_H, pin_t=BPIN_T, sleeve_clr=SLEEVE_CLR,
                      pin_clr=BPIN_CLR, groove_clr=GROOVE_CLR, lip_pre=LIP_PRE, out_gap=OUT_GAP, sleeve_t=SLEEVE_T)),
     mx=dict(hole=MX_HOLE, socket_depth=MX_DEPTH, stem_cross_l=MX_STEM_L, stem_cross_w=MX_STEM_W,
+            cross_depth=MX_CROSS_DEPTH, travel_free=MIC_TRAVEL_BVH, travel_floor=round(TRAVEL_SHELL, 2), stop_gap=CAP_STOP_GAP, tube_gap=TUBE_GAP,
+            cap_hollow_d=2 * CAP_HOLLOW_R, cap_hollow_depth=CAP_CEIL, tube_od=MX_TUBE_OD, tube_end_above_rim=CAP_TUBE_END,
+            socket_outer_w=MX_TOWER_W, rim_z=round(CAP_RIM_Z, 3), mouth_z=round(TALK_RIM, 3), floor_z=round(TALK_ZPOCKET, 3),
+            assumed=dict(housing_h=MX_HOUSING_H, stem_h=MX_STEM_H, travel=4.0, note="housing/stem/hanh trinh 4,0 la nguon phu chua datasheet"),
+            source="fit-library catpaw/mx-keycap-cross + catpaw/mx-socket (docs/research-notes/cat-paw-clicker-fits.md)",
             keys=[dict(name="talk", gpio=1, axis="z", pos=[0.0, Y0, TALK_RIM], flange_over=round(TALK_FLANGE_R - BUTTON_HOLE_D / 2, 2))]),
     face_plate=dict(disc=[2 * DISC[0], 2 * DISC[1], DISC[2]], protrude=4.0, bevel=BEV, flange=[2 * (DISC[0] + BEV), 2 * (DISC[1] + BEV), FL_T],
                     screws=dict(n=4, xz=list(SCREW_FP), thread="M2.5 x 6", thru_d=2.8, pilot_d=2.4)),
