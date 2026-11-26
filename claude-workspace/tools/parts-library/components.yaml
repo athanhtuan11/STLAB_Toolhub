@@ -783,14 +783,19 @@ components:
       muc_logic_v: 3.3
       cong_suat_w: 0.31
       do_sang_cd_m2: "190 (bản cảm ứng)"
-      kich_thuoc_pcb_mm: "50,0 × 86,0"
-      vung_hien_thi_mm: "43,2 × 57,6"
+      kich_thuoc_pcb_mm: "50,00 × 86,00 × 1,60"
+      vung_hien_thi_mm: "AA 43,20 × 57,60 (cách mép trái/phải 3,40, cách mép trên 9,30); VA 45,20 × 59,45 (mép 2,40 / trên 8,45)"
+      kinh_mm: "TP 50,00 × 69,20 ±0,2, cách mép trên PCB 6,40 (mép trên = đầu 4 lỗ SD, đối diện header)"
+      lo_bat: "4 × Ø3,20 (pad Ø4,70), tâm cách 44,00 (ngang) × 76,08 (dọc); cách mép trái/phải 3,00, mép trên 3,00 → mép dưới (phía header) 6,92"
+      day_mm: "5,60 ±0,2 tổng không tính header (kính cảm ứng TP 1,20 + LCD 2,30 + băng 0,50 + PCB 1,60); linh kiện SMD mặt sau ≤ 2,20 – riêng; tổng có header 12,78"
+      header: "14 chân bước 2,54, chân 1 (VCC) cách mép 8,49 (nhìn mặt trước), tâm hàng cách mép dưới 2,00; header cao 11,17"
       khoi_luong_g: "43 (bản cảm ứng)"
       chan: "VCC, GND, CS, RESET, DC, SDI(MOSI), SCK, LED, SDO(MISO), T_CLK, T_CS, T_DIN, T_DO, T_IRQ (header 14 chân) + SD_SCK/MISO/MOSI/CS (4 lỗ hàn riêng)"
     nguon:
       - http://www.lcdwiki.com/2.8inch_SPI_Module_ILI9341_SKU:MSP2807
+      - "Bản vẽ LCM OUTLINE MSP2807 V1.0 (2026-04-03, driver ghi ILI9341V): community/datasheets/lcdwiki-msp2807-size.pdf"
       - "Ảnh mặt sau Tuan chụp 2026-11-26 (silk V1.1, nhãn chân)"
-    todo: ["xác nhận driver + IC cảm ứng trên hàng thật", "lỗ bắt: tọa độ + Ø (mm) – đo hàng thật", "chiều dày tổng (kính + PCB + header)", "J1/U2 (ổn áp 3,3 V?) – đọc sơ đồ MSP2807-2.8-SPI.pdf", "chưa có model STEP"]
+    todo: ["xác nhận driver + IC cảm ứng trên hàng thật", "bản vẽ là V1.0/V1.2, hàng Tuan V1.1 → thước kẹp kiểm 44,00 × 76,08 trước khi in vỏ", "J1/U2 (ổn áp 3,3 V?) – đọc sơ đồ MSP2807-2.8-SPI.pdf", "chưa có model STEP"]
 
   - id: tft-3-2-spi-ili9341-touch
     ten: Màn TFT 3,2" SPI 240 × 320 có cảm ứng + khe SD (mạch đỏ, in "3.2'' TFT SPI 240X320 V1.0")
