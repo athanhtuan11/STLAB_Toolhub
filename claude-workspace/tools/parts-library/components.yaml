@@ -776,7 +776,7 @@ components:
     ten: Màn TFT 2,8" SPI 240 × 320 có cảm ứng + khe SD (mạch đỏ, in "2.8'' TFT 240xRGBx320 V1.1")
     loai: man-hinh
     thong_so:
-      driver_ic: "ILI9341 (LCDWiki MSP2807) – TODO đọc ID trên hàng thật (lệnh 0xD3)"
+      driver_ic: "MÂU THUẪN: shop aitexm.vn ghi ST7789, LCDWiki MSP2807 ghi ILI9341 – TODO đọc ID trên hàng thật (0x04 / 0xD3)"
       cam_ung: "SPI 5 chân T_CLK/T_CS/T_DIN/T_DO/T_IRQ; IC U1 TSSOP-16 (giống họ XPT2046, cảm ứng điện trở) – TODO đọc mã chip"
       do_phan_giai: "240 × 320, RGB 65K, SPI 4 dây"
       vcc_v: "3,3–5"
@@ -796,7 +796,7 @@ components:
     ten: Màn TFT 3,2" SPI 240 × 320 có cảm ứng + khe SD (mạch đỏ, in "3.2'' TFT SPI 240X320 V1.0")
     loai: man-hinh
     thong_so:
-      driver_ic: "ILI9341 (LCDWiki MSP3218) – TODO đọc ID trên hàng thật (lệnh 0xD3)"
+      driver_ic: "MÂU THUẪN: shop aitexm.vn ghi ST7789, LCDWiki MSP3218 ghi ILI9341 – TODO đọc ID trên hàng thật (0x04 / 0xD3)"
       cam_ung: "SPI 5 chân như bản 2,8\"; U1 in giống \"HR2046\" (tương thích XPT2046, cảm ứng điện trở) – TODO xác nhận"
       do_phan_giai: "240 × 320, RGB 65K, SPI 4 dây"
       vcc_v: "3,3–5"
