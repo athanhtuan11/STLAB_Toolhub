@@ -231,10 +231,6 @@
     true,
     "banh tren ha het (nam tren dinh canh) thap hon mieng U 6 -> dung canh vao cho roi van banh len 36"
    ],
-   "be_phang": [
-    true,
-    "dan 20 + van 18 (+ chem <= 3) = mieng U 40: mat be phang voi U"
-   ],
    "khoa_tren_tam": [
     true,
     "than khoa khong vuong vien/thanh ngang, cach thanh ngang 15 (<=30, de bat ke L vao thanh ngang, khong bat vao nhua)"
@@ -1730,24 +1726,6 @@
    "L": 3000,
    "Wd": 40.0,
    "Th": 20
-  },
-  {
-   "name": "Be-van",
-   "group": "Be tu",
-   "mat": "board",
-   "kind": "be-board",
-   "spec": "van be 18 (khoet lo cho chan cot)",
-   "bbox": [
-    0,
-    3000,
-    120.0,
-    800,
-    22,
-    40
-   ],
-   "L": 3000,
-   "Wd": 680.0,
-   "Th": 18
   },
   {
    "name": "C1-vien-dung-trai",

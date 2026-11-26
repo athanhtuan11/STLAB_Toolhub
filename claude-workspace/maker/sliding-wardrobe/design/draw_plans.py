@@ -156,6 +156,10 @@ def door_and_plan():
     plt.close(fig)
 
 
+BAR_KGM = {"Sat hop 40x40": KGM["40x40"], "Sat hop 20x40": KGM["20x40"],
+           "U chan 40x40x2.0": (40 + 2 * 38) * 2.0 * 7.85e-3}
+
+
 def bars_6m(stock=6000, kerf=3):
     """So cay 6 m moi loai sat (first-fit decreasing). Tra {loai: (so cay, tong dai mm, so do cat tung cay)}."""
     cuts = {}
@@ -252,8 +256,12 @@ def bom():
         w.writerow(["Khoi luong sat uoc tinh (kg)", round(kg, 1), "do day 1.4/1.2 gia dinh", ""])
         w.writerow([])
         w.writerow(["TONG HOP CAY 6 M (xep cat FFD, mach cat 3, cat chi tiet Tuan tu theo ban ve)", "", "chi tiet cat", "so cay 6 m"])
+        tot = 0.0
         for spec, (n, used, plan) in bars_6m().items():
-            w.writerow([spec, round(used / 1000, 1), " | ".join(plan), n])
+            kgb = BAR_KGM[spec] * 6
+            tot += n * kgb
+            w.writerow([spec, round(used / 1000, 1), " | ".join(plan), n, f"{kgb:.1f} kg/cay", f"{n * kgb:.0f} kg"])
+        w.writerow(["TONG SAT MUA (cay 6 m)", "", "do day gia dinh: 40x40x1.4, 20x40x1.2, U 40x40x2 - TODO theo hang", "", "", f"{tot:.0f} kg"])
     tube_m = Counter()
     for pt in parts:
         if pt["kind"] in ("steel", "dframe", "rback"):

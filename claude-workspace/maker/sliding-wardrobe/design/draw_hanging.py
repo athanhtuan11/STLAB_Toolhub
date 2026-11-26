@@ -82,10 +82,8 @@ def section():
         DZ = P["DZ"]
         rect(ax, yb0, 0, 40, P["be_joist"][1], STEEL, z=3)                      # dan be truoc ap sat U trong (han doc), do cot truoc
         rect(ax, DZ, P["be_joist"][1], 40, 200, STEEL, z=2)                     # cot truoc dung tren dan
-        rect(ax, yb0, UH_ - P["be_board"], 140, P["be_board"], "#D9C7A6", z=3)
         # dau dam dinh keo dai (ray bat thang duoi)
         rect(ax, L0 - tw / 2, zt1, DZ + 40 - (L0 - tw / 2), hh, STEEL, z=3, hatch="//")
-        ax.text(yb0 + 4, UH_ - P["be_board"] / 2, "van be", fontsize=7, va="center", zorder=6)
         rect(ax, -10, -25, 185, 25, "#CFC8BC", ec="none", z=0, hatch="..")    # san
         ax.set_xlim(-10, 175)
         ax.set_ylim(zlo, zhi)

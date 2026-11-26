@@ -19,7 +19,6 @@ Sat hop 40x40,595,dam-dinh,5
 Tam nhua trong nha 400x2900x10,2900,"mat canh (nguyen tam, khong cat)",8
 U chan 40x40x2.0,3000,"ray TREN up nguoc, dan huong (bat duoi 5 dau dam dinh)",2
 U chan 40x40x2.0,3000,"ray duoi CHIU TAI, nam ngua, vit dau bang + no xuong san",2
-Van be 18,3000 x 680.0,mat be tu (khoet lo chan cot),1
 Van ke 17,720.0 x 675,ke hop noc,2
 Van ke 17,740.0 x 675,ke hop noc,2
 ban ma chem 5x40x20 han U trong - cot truoc,,noi U trong vao 3 cot truoc (duoi mieng U),3
@@ -39,6 +38,7 @@ LUU Y,,tai moi banh >= (khoi luong canh / 4) x 1.5 = 15 kg (canh ~39 kg voi pane
 Khoi luong sat uoc tinh (kg),145.2,do day 1.4/1.2 gia dinh,
 
 "TONG HOP CAY 6 M (xep cat FFD, mach cat 3, cat chi tiet Tuan tu theo ban ve)",,chi tiet cat,so cay 6 m
-Sat hop 20x40,42.3,3000+2900 | 3000+2900 | 3000+2900 | 3000+2900 | 3x1560 | 3x1560 | 3x1560 | 3x1560,8
-Sat hop 40x40,47.5,3000+2984 | 3000+2984 | 2x2984 | 2x2984 | 2x2984 | 2x2240+2x595+2x105 | 2x2240+2x595+2x105 | 2240+6x595+105,8
-U chan 40x40x2.0,12.0,3000 | 3000 | 3000 | 3000,4
+Sat hop 20x40,42.3,3000+2900 | 3000+2900 | 3000+2900 | 3000+2900 | 3x1560 | 3x1560 | 3x1560 | 3x1560,8,6.5 kg/cay,52 kg
+Sat hop 40x40,47.5,3000+2984 | 3000+2984 | 2x2984 | 2x2984 | 2x2984 | 2x2240+2x595+2x105 | 2x2240+2x595+2x105 | 2240+6x595+105,8,10.2 kg/cay,81 kg
+U chan 40x40x2.0,12.0,3000 | 3000 | 3000 | 3000,4,10.9 kg/cay,44 kg
+TONG SAT MUA (cay 6 m),,"do day gia dinh: 40x40x1.4, 20x40x1.2, U 40x40x2 - TODO theo hang",,,177 kg

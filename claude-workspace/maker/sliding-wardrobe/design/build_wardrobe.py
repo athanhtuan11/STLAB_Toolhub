@@ -143,8 +143,7 @@ CHECK["chong_nhay"] = (_lift + 5 <= UH - UT, f"nhac canh toi da {_lift:.0f} mm (
 CHECK["dan_huong"] = (p["guide_d"] + 2 <= UB - 2 * UT and z_g0 >= z_tr0 + 10,
                       f"banh tren O{p['guide_d']} trong long U {UB - 2 * UT:.0f} (lac +-{(UB - 2 * UT - p['guide_d']) / 2:g}), an sau {z_g1 - z_tr0:.0f} vao U, day banh cao hon mieng U {z_g0 - z_tr0:.0f}")
 CHECK["lap_canh"] = (dz1 + p["guide_w"] + 2 <= z_tr0, f"banh tren ha het (nam tren dinh canh) thap hon mieng U {z_tr0 - dz1 - p['guide_w']:.0f} -> dung canh vao cho roi van banh len {z_g0 - dz1:.0f}")
-CHECK["be_phang"] = (p["be_joist"][1] + p["be_board"] <= UH <= p["be_joist"][1] + p["be_board"] + 3,
-                     f"dan {p['be_joist'][1]} + van {p['be_board']} (+ chem <= 3) = mieng U {UH}: mat be phang voi U")
+# be_phang: bo van be (Tuan 2026-11-26: duoi la san gach) - long tu de san gach, U cao 40 tren san
 if p["wheel_kg"]:
     CHECK["tai_banh"] = (p["wheel_kg"] >= WHEEL_NEED, f"banh {p['wheel_kg']} kg >= can {WHEEL_NEED:.0f} kg")
 
@@ -423,8 +422,7 @@ def build():
                           f"cot truoc noi thang U trong bang ban ma chem {y0i - (UL[1] + UB / 2):.0f} (z {jh}..{UH}, thap hon day canh {dz0:.0f})")
     CHECK["U_noi_khung"] = (abs((yb0 + jw) - (y0i + TB)) <= 5 and yb0 + jw > y0i,
                             f"dan truoc y {yb0:.0f}..{yb0 + jw:.0f} ap sat U trong (han doc) va do cot truoc y {y0i}..{y0i + TB} (lech {y0i - yb0:.0f})")
-    box("Be-van", "Be tu", 0, W, yb0, D, UH - p["be_board"], UH, "board", "be-board",
-        f"van be {p['be_board']} (khoet lo cho chan cot)")
+    # van be: BO (Tuan 2026-11-26, san gach)
     # ---- canh: vien hop 20x40 + song dung 20x40 dat dung o duong noi + 4 tam nhua phu mat truoc + cum banh + bat treo
     for i in range(p["door_n"]):
         front = i % 2 == 0

@@ -57,14 +57,14 @@ Các bộ treo hãng đều kèm dẫn hướng sàn
 
 - **Bệ cao 40 = đúng chiều cao thanh U**, phủ toàn bộ lòng tủ (3000 × 680 phía sau 2 thanh U):
   3 dãn bệ **sắt hộp 20 × 40 đặt nằm** (cao 20, dày 1,4) đặt **đúng hàng cột** ở y = 125 (trước), 442,5 (giữa), 760 (sau).
-  **Ván 18** (plywood/MFC chịu ẩm) bắt vít lên dãn, chêm ≤ 3 cho mặt ván bằng miệng U (kiểm `be_phang`). Ván khoét lỗ cho chân cột.
+  **Không ván bệ** (Tuan 2026-11-26): lòng tủ để sàn gạch; 3 dãn bệ nằm trên sàn chỉ làm chân cột + nối U.
 - 2 thanh U nằm **chìm ngang mặt bệ** ở mép trước; **thanh giữa hộp 20 × 40 đặt đứng hàn kẹp giữa 2 U** → mỗi U nằm đúng dưới
   tâm cánh của nó (không lệch), 2 U + thanh giữa thành 1 cụm, mặt bệ liền. (Tuan 2026-11-26: thử chắp sát 2 U thì càng bánh cánh
   ngoài phải lệch 20 → chọn giữ thanh giữa.)
 - **Mặt trước bệ = thành ngoài U dưới, sơn đen** (như chân tủ; Tuan 2026-11-26 bỏ tấm che ray). Sàn phòng trước tủ để nguyên, phẳng.
 - Đáy cánh cách mặt bệ (miệng U 40) chỉ 6 (đáy cánh 46) → bánh nằm trong lòng U, **không thấy bánh**.
 - Lòng U nằm dưới cánh; hút bụi lòng U định kỳ qua khe khi mở cánh.
-- Ống treo dưới (cao 1030 từ sàn) còn cách mặt bệ 990 – đồ dài ≤ ~850 vẫn thoải mái.
+- Ống treo dưới (cao 1030 từ sàn) cách sàn 1030 – đồ dài ≤ ~850 vẫn thoải mái.
 
 ## Kích thước chính (W = 3000)
 
@@ -172,7 +172,6 @@ Tấm chỉ dày 10 → **mọi thứ chịu lực bắt vào sắt phía sau, k
 | 17 | Sắt hộp 40 × 40 (cột, dầm, ngang) | ~47,6 m | 1,4 mm (giả định) |
 | 18 | Sắt hộp 20 × 40 khung cánh (viền + 4 thanh ngang, 2 cánh) | ~30 m | 1,2 mm |
 | 19 | Bệ tủ: sắt hộp 20 × 40 (3 dãn bệ 3 m + thanh giữa 2 U 3 m) | ~12 m | dãn bệ 1,4 mm |
-| 20 | Ván 18 chịu ẩm 3000 × 680 (mặt bệ, khoét lỗ chân cột) | 1 tấm | mặt ván = miệng U |
 
 ## Mô phỏng trượt (Blender)
 
