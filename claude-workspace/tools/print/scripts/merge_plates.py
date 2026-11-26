@@ -9,8 +9,8 @@ Dung boi slice.py (xem docstring slice.py). Cach lam (khong sua cat lop tung ban
  3. Tham so process khac nhau giua cac ban (brim_type, sparse_infill_density, ...) -> ghi de muc object trong
     model_settings.config cua chi tiet thuoc ban do.
  4. Thu cho Bambu Studio CLI cat lai project (--slice 0 = tat ca plate) -> Metadata/plate_N.gcode, gui in ngay duoc.
-    Bambu Studio 02.09.01.70: project >= 2 plate bao "G-code conflicts" khi cat tat ca (tung plate rieng thi cat duoc)
-    -> giu project chua cat: mo bang Bambu Studio bam Slice all (ket qua giong cac file tung ban).
+    2026-11-26: "G-code conflicts" truoc day do objectid luoi TRUNG giua cac plate (moi plate hien cung 1 mau) - da sua (cong off);
+    CLI cat duoc ca project (co gcode tung plate). Neu CLI loi -> giu project chua cat: mo Bambu Studio bam Slice all.
 """
 
 from __future__ import annotations
@@ -115,9 +115,15 @@ def gop(ra: Path, ten: str, ds_ban: list, exe: Path, may: str, procs: dict, fils
             mm = re.fullmatch(r"3D/Objects/object_(\d+)\.model", nm)
             if mm:
                 moi = f"3D/Objects/object_p{i + 1}_{mm.group(1)}.model"
-                files[moi] = zz.read(nm)
+                # 2026-11-26 (Tuan: "5 plates nhung cung 1 mau"): Bambu Studio tra luoi theo objectid cua component,
+                # khong theo duong dan -> id luoi trong file con PHAI duy nhat giua cac plate (cong off) + UUID moi.
+                sub = zz.read(nm).decode("utf-8")
+                sub = re.sub(r'(<object id=")(\d+)(")', lambda m: f"{m.group(1)}{int(m.group(2)) + off}{m.group(3)}", sub)
+                sub = re.sub(r'p:UUID="([^"]+)"', lambda m: f'p:UUID="{_uid(f"s{i}{nm}{m.group(1)}")}"', sub)
+                files[moi] = sub.encode("utf-8")
                 rs = rs.replace("/" + nm, "/" + moi)
         rs = re.sub(r'(<object id=")(\d+)(")', lambda m: f"{m.group(1)}{int(m.group(2)) + off}{m.group(3)}", rs)
+        rs = re.sub(r'(<component [^>]*?objectid=")(\d+)(")', lambda m: f"{m.group(1)}{int(m.group(2)) + off}{m.group(3)}", rs)
         rs = re.sub(r'p:UUID="([^"]+)"', lambda m: f'p:UUID="{_uid(f"{i}{m.group(1)}")}"', rs)
         res.append(rs)
         for it in re.finditer(r"<item [^>]*/>", bd):

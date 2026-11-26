@@ -11,8 +11,8 @@ Ra: <plates_dir>/<plate>/<plate>.3mf (mo thang bang Bambu Studio de in),
     print-overview.png (bang + anh tung ban), print-report.json.
 Chay ca du an (khong only=) con ra 1 project gop: <plates_dir>/<ten-yaml>.3mf (vd. print-s3-test.3mf) = TAT CA ban,
 moi ban 1 plate Bambu Studio (dung chi tiet + vi tri xep + mau filament cua ban, override process khac nhau nam o
-muc object; moi ban 1 filament slot nen plate i in bang slot i). Mo bang Bambu Studio bam Slice all (Bambu Studio 02.09
-bao "G-code conflicts" khi CLI cat ca project >= 2 plate nen file gop chua cat; 1 ban thi co san gcode). Cach gop: merge_plates.py.
+muc object; moi ban 1 filament slot nen plate i in bang slot i). CLI cat ca project -> co san gcode tung plate (2026-11-26: loi "G-code conflicts" truoc do do objectid luoi trung giua cac plate,
+da sua; neu CLI van loi thi file gop giu chua cat -> Slice all trong Studio). Cach gop: merge_plates.py.
 File tung ban (<ban>/<ban>.3mf, preview, report) giu nguyen. Co trong print-report.json: muc "project_gop".
 Exit code 1 neu co ban FAIL (cat loi, ra ngoai ban in, vung lo lung) hoac co STL chua xep ban.
 

@@ -56,6 +56,17 @@ def check(yml):
         ok(f'value="{b["ban"]}"' in pl, f"{y.stem} plate {i}: ten plate = ten ban")
     for b in bans:
         ok(next((plates_dir / b["ban"]).glob("*.3mf")).exists(), f"{y.stem}: file ban {b['ban']} con nguyen")
+    # 2026-11-26 loi that (Tuan: "5 plates nhung cung 1 mau"): Bambu Studio tra luoi theo objectid component ->
+    # objectid component phai DUY NHAT va khop <object id> trong dung file con; moi plate phai co luoi rieng.
+    mdl = z.read("3D/3dmodel.model").decode("utf-8")
+    comps = re.findall(r'<component p:path="([^"]+)" objectid="(\d+)"', mdl)
+    ids = [c[1] for c in comps]
+    ok(len(ids) == len(set(ids)), f"{y.stem}: objectid component trung {sorted(ids)}")
+    for p, oid in comps:
+        ok(f'<object id="{oid}"' in z.read(p.lstrip("/")).decode("utf-8"), f"{y.stem}: {p} khong co object id {oid}")
+    if len(bans) > 1:
+        pngs = [z.read(f"Metadata/plate_{i}_small.png") for i in range(1, len(bans) + 1) if f"Metadata/plate_{i}_small.png" in z.namelist()]
+        ok(len(set(pngs)) == len(pngs), f"{y.stem}: anh plate giong nhau (cung 1 mau?)")
 
 
 if "--run" in sys.argv:
