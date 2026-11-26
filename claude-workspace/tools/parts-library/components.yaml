@@ -771,3 +771,43 @@ components:
       - https://cdn-reichelt.de/documents/datenblatt/A300/ME016.pdf
       - https://www.tinytronics.nl/en/mechanics-and-actuators/motor-controllers-and-drivers/stepper-motor-controllers-and-drivers/uln2003-stepper-motor-driver-module
     todo: ["đo module thật: kích thước, tọa độ lỗ, chiều cao linh kiện", "chưa có model STEP"]
+
+  - id: tft-2-8-spi-ili9341-touch
+    ten: Màn TFT 2,8" SPI 240 × 320 có cảm ứng + khe SD (mạch đỏ, in "2.8'' TFT 240xRGBx320 V1.1")
+    loai: man-hinh
+    thong_so:
+      driver_ic: "ILI9341 (LCDWiki MSP2807) – TODO đọc ID trên hàng thật (lệnh 0xD3)"
+      cam_ung: "SPI 5 chân T_CLK/T_CS/T_DIN/T_DO/T_IRQ; IC U1 TSSOP-16 (giống họ XPT2046, cảm ứng điện trở) – TODO đọc mã chip"
+      do_phan_giai: "240 × 320, RGB 65K, SPI 4 dây"
+      vcc_v: "3,3–5"
+      muc_logic_v: 3.3
+      cong_suat_w: 0.31
+      do_sang_cd_m2: "190 (bản cảm ứng)"
+      kich_thuoc_pcb_mm: "50,0 × 86,0"
+      vung_hien_thi_mm: "43,2 × 57,6"
+      khoi_luong_g: "43 (bản cảm ứng)"
+      chan: "VCC, GND, CS, RESET, DC, SDI(MOSI), SCK, LED, SDO(MISO), T_CLK, T_CS, T_DIN, T_DO, T_IRQ (header 14 chân) + SD_SCK/MISO/MOSI/CS (4 lỗ hàn riêng)"
+    nguon:
+      - http://www.lcdwiki.com/2.8inch_SPI_Module_ILI9341_SKU:MSP2807
+      - "Ảnh mặt sau Tuan chụp 2026-11-26 (silk V1.1, nhãn chân)"
+    todo: ["xác nhận driver + IC cảm ứng trên hàng thật", "lỗ bắt: tọa độ + Ø (mm) – đo hàng thật", "chiều dày tổng (kính + PCB + header)", "J1/U2 (ổn áp 3,3 V?) – đọc sơ đồ MSP2807-2.8-SPI.pdf", "chưa có model STEP"]
+
+  - id: tft-3-2-spi-ili9341-touch
+    ten: Màn TFT 3,2" SPI 240 × 320 có cảm ứng + khe SD (mạch đỏ, in "3.2'' TFT SPI 240X320 V1.0")
+    loai: man-hinh
+    thong_so:
+      driver_ic: "ILI9341 (LCDWiki MSP3218) – TODO đọc ID trên hàng thật (lệnh 0xD3)"
+      cam_ung: "SPI 5 chân như bản 2,8\"; U1 in giống \"HR2046\" (tương thích XPT2046, cảm ứng điện trở) – TODO xác nhận"
+      do_phan_giai: "240 × 320, RGB 65K, SPI 4 dây"
+      vcc_v: "3,3–5"
+      muc_logic_v: 3.3
+      cong_suat_w: 0.72
+      do_sang_cd_m2: "400 (bản cảm ứng)"
+      kich_thuoc_pcb_mm: "55,04 × 89,3 × 1,6 (LCDWiki + in trên PCB)"
+      vung_hien_thi_mm: "48,6 × 64,8"
+      khoi_luong_g: "52 (bản cảm ứng)"
+      chan: "giống bản 2,8\" (14 chân + 4 lỗ SD)"
+    nguon:
+      - http://www.lcdwiki.com/3.2inch_SPI_Module_ILI9341_SKU:MSP3218
+      - "Ảnh mặt sau Tuan chụp 2026-11-26 (silk V1.0, 89.3X55X1.6mm)"
+    todo: ["xác nhận driver + IC cảm ứng trên hàng thật", "lỗ bắt: tọa độ + Ø (mm) – đo hàng thật", "chiều dày tổng", "chưa có model STEP"]
