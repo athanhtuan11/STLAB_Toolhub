@@ -59,16 +59,18 @@ MIC_HOLE_X = (-1.5, 0.0, 1.5)
 MIC_SEAL_DEPTH, MIC_SEAL_CLR = 1.0, 0.15
 MIC_TUBE_OD, MIC_TUBE_ID = 7.4, 4.0
 
-# 2 loa H25: truc la vector phap mat loa huong RA NGOAI, chech truoc 25 do
-SPK_A = Vector((math.cos(math.radians(25)), -math.sin(math.radians(25)), 0.0))
-SPK_CX, SPK_CY, SPK_Z = 50.0, -12.0, 46.0
-SPEAKERS = [{"center": [-SPK_CX, SPK_CY, SPK_Z], "axis": [-SPK_A.x, SPK_A.y, 0.0]},
-            {"center": [SPK_CX, SPK_CY, SPK_Z], "axis": [SPK_A.x, SPK_A.y, 0.0]}]
+# 2 loa NGANG H0 (Tuan chon 2026-11-26): truc ra ngoai [+-1,0,0], mat loa tren vo suon, vanh loa + yen non nhu ban A1S
+SPK_A = Vector((1.0, 0.0, 0.0))
+SPK_CX, SPK_CY, SPK_Z = 51.8, 0.37, 46.0
+BZL_RF, BZL_REAR, BZL_A, BZL_RHO = 36.0, 54.0, 25.0, 8.0
+BZL_T = math.tan(math.radians(BZL_A))
+SPEAKERS = [{"center": [-SPK_CX, SPK_CY, SPK_Z], "axis": [-1.0, 0.0, 0.0]},
+            {"center": [SPK_CX, SPK_CY, SPK_Z], "axis": [1.0, 0.0, 0.0]}]
 
 # MAN TFT 2,8" MSP2807 (ban ve LCDWiki): tam PCB (0, ?, 100), header +x
 SCR_ZC = 100.0
 SCR_PCB = (86.0, 50.0, 1.6); SCR_GLASS = (69.2, 50.0); SCR_AA = (57.6, 43.2); SCR_T = 5.6
-SCR_HOLES = (76.08, 44.0); SCR_HOLE_D = 3.2
+SCR_HOLES = (80.0, 44.0); SCR_HOLE_D = 3.2   # hang that V1.1 (Tuan do 2026-11-26): doi xung
 GLASS_RECESS = 1.5                     # spec muc 9: vien 1,35 sau khe 0,15
 YS_OUT = -53.0                         # mat phang nen (thang dung), y
 YF = YS_OUT - 4.0                      # mat truoc dia nho 4 so voi nen
@@ -369,38 +371,12 @@ def teardrop_full(r, apex_sign=1):
         t = math.radians(135 + 270 * k / 24); pts.append((r * math.cos(t), r * math.sin(t)))
     return pts
 
-# ---------- loa: vi tri (CX giai de mat phang cat phang = diem thap nhat cua mat vo trong vong tron + 1,0)
-BZR = 36.0                       # ban kinh dia vanh loa (O72, nhu ban A1S)
-TA_BZ = math.tan(math.radians(25.0))
-SPK_PLATE_BACK = SPK_XF - 3.0     # local z mat sau dia (66)
-SPK_ZC_LOCAL = z_spk_center       # local z cua tam loa
-
-def _surface_pts():
-    xs, zs = np.meshgrid(np.arange(20.0, 76.0, 0.5), np.arange(0.0, 160.0, 0.5))
-    ys = np.vectorize(body_y)(xs, zs)
-    pts = np.stack([xs.ravel(), ys.ravel(), zs.ravel()], axis=1)
-    pts = pts[np.abs(pts[:, 1]) > 0]
-    pts2 = pts.copy(); pts2[:, 1] *= -1
-    return np.concatenate([pts, pts2])
-
-_SURF = _surface_pts()
-
-def spk_u_max(cx):
-    c = np.array([cx, SPK_CY, SPK_Z]); a = np.array([SPK_A.x, SPK_A.y, 0.0])
-    d = _SURF - c
-    u = d @ a
-    perp = np.sqrt(np.maximum((d * d).sum(axis=1) - u * u, 0))
-    m = (perp <= BZR) & (u > 0)
-    return float(u[m].max())
-
-SPK_CX = 43.5     # gate: rong lap rap <= 150 -> mep dia x <= 75 (xem README); mat phang cat phang theo trong tam nay
-print("SPK_CX", SPK_CX, "u_max", spk_u_max(SPK_CX), "plane", SPK_PLATE_BACK - SPK_ZC_LOCAL)
-SPEAKERS = [{"center": [-SPK_CX, SPK_CY, SPK_Z], "axis": [-SPK_A.x, SPK_A.y, 0.0]},
-            {"center": [SPK_CX, SPK_CY, SPK_Z], "axis": [SPK_A.x, SPK_A.y, 0.0]}]
-
+# ---------- loa H0: he toa do cuc bo cua vanh loa (local z = |x|; tam loa tai local z = z_spk_center)
+SPK_ZC_LOCAL = z_spk_center
 def spk_frame(sgn):
-    a = Vector((sgn * SPK_A.x, SPK_A.y, 0.0)); c = Vector((sgn * SPK_CX, SPK_CY, SPK_Z))
-    return frame(c, a) @ Matrix.Translation((0, 0, -SPK_ZC_LOCAL)), a, c
+    a = Vector((sgn, 0.0, 0.0)); c = Vector((sgn * SPK_CX, SPK_CY, SPK_Z))
+    M = Matrix(((0, 0, sgn, c.x), (1, 0, 0, c.y), (0, sgn, 0, c.z), (0, 0, 0, 1))) @ Matrix.Translation((0, 0, -SPK_ZC_LOCAL))
+    return M, a, c
 
 SPK_Z_END = 34.0            # day chup tru (local z)
 SPK_TUBE_R = 33.9
@@ -417,7 +393,7 @@ OUTER = sup('outer', (0, 0, BZ), BR, NT, NB, TAPER)
 for s in (-1, 1):
     union(OUTER, sup('ear', (s * 42, 0, 148), (17, 13, 26), 2, 2, 0.32, rot=s * 20, seg=48, rings=24))
     # canh trang tri: doi len z ~112, ra sau, nho lai (khong de len vanh loa)
-    union(OUTER, sup('wing', (s * 58, 14, 112), (6, 15, 20), 2, 2, -0.3, rot=s * 5, seg=48, rings=24))
+    union(OUTER, sup('wing', (s * 55, 14, 110), (6, 12, 16), 2, 2, -0.3, rot=s * 5, seg=48, rings=24))
 
 PLATE = sup('plate', (0, 0, BZ), BR, NT, NB, TAPER)
 inter(PLATE, box('slab', (-200, -200, 0), (200, 200, FLOOR_CUT)))
@@ -426,18 +402,20 @@ OUTER_HEAD = cp(OUTER, 'outer_head')            # than dau truoc khi them hop ma
 
 # --- hop man: san phang thang dung YS_OUT (u = 4), thanh 2,4, ben ngoai thang roi thu nho 45 do ve than (khong mai treo)
 PAD_R = 17.7
-pad_rings = [(4.0, rr(PAD_W - 2, PAD_H - 2, PAD_R - 2)), (6.0, rr(PAD_W, PAD_H, PAD_R)), (22.0, rr(PAD_W, PAD_H, PAD_R))]
+pad_rings = []
+for _d, _ins in ((0.0, 6.0), (0.6, 3.2), (1.5, 1.8), (3.0, 0.8), (6.0, 0.0)):
+    pad_rings.append((4.0 + _d, rr(PAD_W - _ins, PAD_H - _ins, PAD_R - _ins)))
+pad_rings.append((22.0, rr(PAD_W, PAD_H, PAD_R)))
 for X in (6, 12, 18, 24, 30, 36):
     pad_rings.append((22.0 + X, rr(PAD_W - X, PAD_H - X, PAD_R - X)))
 PADOUT = loft('padout', pad_rings, MS)
-FLATCUT = loft('flatcut', [(-14.0, rr(PAD_W - 2, PAD_H - 2, PAD_R - 2)), (4.0, rr(PAD_W - 2, PAD_H - 2, PAD_R - 2))], MS)
+FLATCUT = loft('flatcut', [(-14.0, rr(PAD_W - 6, PAD_H - 6, PAD_R - 6)), (4.0, rr(PAD_W - 6, PAD_H - 6, PAD_R - 6))], MS)
 diff(OUTER, FLATCUT)
 union(OUTER, PADOUT)
 
 SPK_F = {}
 for sgn in (-1, 1):
     SPK_F[sgn] = spk_frame(sgn)
-    diff(OUTER, cyl_local('spcut', SPK_F[sgn][0], SPK_PLATE_BACK, 110.0, BZR + 0.4, seg=96))   # cat phang vuong goc truc loa
 
 def outer(): return cp(OUTER, 'o')
 def clip(o): return inter(o, outer())
@@ -469,11 +447,11 @@ for sx in (-1, 1):
         diff(S, cyl('pilot', MS @ Vector((sx * SCREW_FP[0], sz * SCREW_FP[1], 2.3)), MS @ Vector((sx * SCREW_FP[0], sz * SCREW_FP[1], 14.0)), 1.2, seg=20))
 
 # ---------------- chi tiet noi bo ----------------
-BEAK_Z = 63.3
-BK = 0.64                         # beak thu nho: dome dinh 69,1; vanh 70,4 < lo man 70,7
-BEAK_P = Vector((0, YS_OUT, BEAK_Z))
+BEAK_Z = 63.4
+BEAK_Y = -57.4                    # mat goc mo nam TRUOC dia mat (y -57): khe 0,4; dome chong mep duoi dia (z 71) 1,6 mm
+BEAK_P = Vector((0, BEAK_Y, BEAK_Z))
 BEAK_M = frame(BEAK_P, Vector((0, -1, 0)))
-t = cyl_local('bcollar', BEAK_M, -5.0, 2.0, 11.6 * BK); clip(t); union(S, t)
+t = cyl_local('bcollar', BEAK_M, -12.0, 0.0, 7.0, seg=48); union(S, t)      # tru dau mo noi tu hop man ra truoc dia
 t = cyl('bcol', (0, Y0, SEAT_Z), (0, Y0, 175), 31.6, seg=90); clip(t); union(S, t)
 
 # Bo ESP32-S3 NAM NGANG (giu nguyen ban S3 hien tai)
@@ -535,27 +513,20 @@ for dx in MIC_HOLE_X:
     diff(S, cyl('mich', mpt(MIC_BORE3_END - 0.3) + Vector((dx, 0, 0)), mpt(MIC_L + 5.0) + Vector((dx, 0, 0)), MIC_HOLE_D / 2, seg=24))
 
 # Mo (beak) thu nho
-diff(S, cyl_local('beakhole', BEAK_M, -8.0, 12.0, 9.2 * BK))
-diff(S, cyl_local('beakpocket', BEAK_M, -40.0, -5.0, 11.4 * BK))
+diff(S, cyl_local('beakhole', BEAK_M, -8.0, 12.0, 5.0))
+diff(S, cyl_local('beakpocket', BEAK_M, -40.0, -6.0, 7.8))
+_bc = cyl('beakcone', BEAK_M @ Vector((0, 0, -6.05)), BEAK_M @ Vector((0, 0, -3.2)), 7.8, 5.0, seg=48); diff(S, _bc)
 
 # Lo non tam bung (nho ngoai, rong vao trong -> yen non, lap tu trong)
 diff(S, cyl('bhole2', (0, BELLY_FRONT - 1.5, BELLY_Z), (0, BELLY_REAR, BELLY_Z), bcone(BELLY_FRONT - 1.5, CONE_CLR), bcone(BELLY_REAR, CONE_CLR), seg=96))
 
-# Loa chech: ham cho chup tru = giot nuoc (chop huong len khi in, moi nua vo mot chop) CAT TRONG phan vo trong (vach vo 3,0 con nguyen),
-# roi mot lo tron O34,2 xuyen vach cho chup tru cam tu ngoai vao; 6 canh bam cua chup ngam sau mep trong cua vach.
-SKIN_T = 3.0
-INNER2 = sup('inner2', (0, 0, BZ), (BR[0] - SKIN_T, BR[1] - SKIN_T, BR[2] - SKIN_T), NT, NB, TAPER)
-for sgn in (-1, 1):
-    F_, a_, c_ = SPK_F[sgn]
-    xl = F_.to_3x3() @ Vector((1, 0, 0))
-    for half, ysg in (("f", -1), ("b", 1)):
-        w = Vector((0, ysg, 0)); w = (w - a_ * w.dot(a_)).normalized()
-        sgn_x = 1.0 if xl.dot(w) > 0 else -1.0
-        tun = extrude('stun', [(sgn_x * b_, a_c) for (a_c, b_) in teardrop_full(SPK_TUBE_R + 1.0)], SPK_Z_END - 0.5, SPK_PLATE_BACK + 6.0, F_)
-        inter(tun, box('hclip', (-300, -300 if half == "f" else Y0 - 0.01, -50), (300, Y0 + 0.01 if half == "f" else 300, 300)))
-        inter(tun, cp(INNER2, 'in2c'))
-        diff(S, tun)
-    diff(S, cyl_local('szhole', F_, SPK_Z_END - 0.5, 120.0, SPK_TUBE_R + 0.3, seg=96))
+# Loa ngang (nhu ban A1S): yen non 25 do lap tu trong + duong ham giot nuoc (chop huong len khi in, moi nua vo mot chop)
+def zcone(h, extra): return BZL_RF + extra + BZL_T * (SPK_XF - h)
+for s in (-1, 1):
+    diff(S, cyl('szhole', (s * (SPK_XF + 1.5), Y0, SPK_Z), (s * BZL_REAR, Y0, SPK_Z), zcone(SPK_XF + 1.5, CONE_CLR), zcone(BZL_REAR, CONE_CLR), seg=96))
+    for sg_ in (-1, 1):
+        Mx_ = Matrix(((0, 0, s, 0), (0, sg_, 0, Y0), (1, 0, 0, SPK_Z), (0, 0, 0, 1)))   # local (a, h, u) -> (s*u, Y0 + sg*h, SPK_Z + a)
+        diff(S, extrude('stun', teardrop(BODY_D_MAX / 2 + 0.8), 36.0, 55.0, Mx_))
 
 # 5 khe thoat nhiet o lung
 for i in range(5):
@@ -632,10 +603,16 @@ except Exception as e:
 
 # --- Vanh loa (bezel): dia O72 (luoi O56) + ong non 25 do (yen non lap tu trong) + ong om vanh loa + 3 chot ngam xoay
 def make_bezel():
-    h0 = SPK_XF
-    pr = [(0, h0), (BZR - 0.8, h0), (BZR, h0 - 0.8), (BZR, SPK_PLATE_BACK), (SPK_TUBE_R, SPK_PLATE_BACK),
-          (SPK_TUBE_R, SPK_Z_END), (SPK_TUBE_R - 1.9, SPK_Z_END), (SPK_TUBE_R - 1.9, SPK_PLATE_BACK), (CUP_OR, SPK_PLATE_BACK),
-          (CUP_OR, CUP_END), (SPEAKER_POCKET_D / 2, CUP_END), (SPEAKER_POCKET_D / 2, SPK_PLATE_BACK), (0, SPK_PLATE_BACK)]
+    h0 = SPK_XF; rho = BZL_RHO
+    turn = 90.0 - BZL_A; tb = rho * math.tan(math.radians(turn / 2)); tib = 2.4 / math.cos(math.radians(BZL_A))
+    cx = BZL_RF - tb; A_S, CH = 40.0, 50.0
+    ax, az = cx + rho * math.cos(math.radians(A_S)), h0 - rho + rho * math.sin(math.radians(A_S))
+    pr = [(0, h0), (ax - (h0 - az) / math.tan(math.radians(CH)), h0), (ax, az)]
+    pr += arc(cx, h0 - rho, rho, A_S, BZL_A, 6)[1:]
+    r_rear = BZL_RF + BZL_T * (SPK_XF - BZL_REAR)
+    plate_back = h0 - 3.0
+    pr += [(r_rear, BZL_REAR), (r_rear - tib, BZL_REAR), (BZL_RF - tib + BZL_T * 3.0, plate_back),
+           (CUP_OR, plate_back), (CUP_OR, CUP_END), (SPEAKER_POCKET_D / 2, CUP_END), (SPEAKER_POCKET_D / 2, plate_back), (0, plate_back)]
     z = lathe('bezel', pr, seg=96)
     bm = bmesh.new(); rmax = GRILLE_ZONE_D / 2 - GRILLE_HOLE_D / 2
     dy = GRILLE_PITCH * math.sqrt(3) / 2; cnt = 0
@@ -652,15 +629,6 @@ def make_bezel():
         pz0 = CUP_END + BPIN_DZ
         pn = box('bpin', (CUP_OR - 0.5, -BPIN_W / 2, pz0), (CUP_OR + BPIN_H, BPIN_W / 2, pz0 + BPIN_T)); pn.data.transform(R)
         union(z, pn)
-    # 3 canh bam (6 khe) o dau sau chup tru: goc bam 45 do ca 2 phia, nhô 1,2 (tuong ung ranh vong tren vo)
-    bz0 = SPK_Z_END + 1.0
-    bar = lathe('barb', [(SPK_TUBE_R - 0.5, bz0), (SPK_TUBE_R + SPK_BARB_H, bz0 + SPK_BARB_H), (SPK_TUBE_R + SPK_BARB_H, bz0 + SPK_BARB_H + 0.8),
-                         (SPK_TUBE_R - 0.5, bz0 + 2 * SPK_BARB_H + 0.8 + 0.5)], seg=96)
-    union(z, bar)
-    for k in range(6):
-        ang = 30.0 + 60.0 * k
-        sl = box('slit', (SPK_TUBE_R - 3.0, -1.25, SPK_Z_END - 1.0), (SPK_TUBE_R + 3.0, 1.25, SPK_Z_END + 14.0))
-        sl.data.transform(Matrix.Rotation(math.radians(ang), 4, 'Z')); diff(z, sl)
     return z, cnt
 
 def sector(name, r0, r1, z0, z1, a0, a1, n=16):
@@ -754,9 +722,9 @@ M_mic_clamp = frame(MIC_C, MIC_N)
 MIC_CLAMP_W = cp(MIC_CLAMP_LOCAL, 'mic_clamp_w'); MIC_CLAMP_W.data.transform(M_mic_clamp)
 
 # --- Mo (beak) thu nho 0,8
-bp = [(0, -9.0 * BK), (11.0 * BK, -9.0 * BK), (11.0 * BK, -6.2 * BK), (9 * BK, -6.2 * BK), (9 * BK, 0.0)]
-bp += [(9 * BK * math.cos(math.radians(a)), 7.5 * BK * math.sin(math.radians(a))) for a in range(10, 91, 10)]
-BEAK = lathe('beak', bp[:-1] + [(0, 7.5 * BK)], seg=64, M=BEAK_M)
+bp = [(0, -9.0), (7.3, -9.0), (7.3, -6.2), (4.8, -6.2), (4.8, -3.8), (8.6, 0.0)]
+bp += [(8.6 * math.cos(math.radians(a)), 0.0 + 7.5 * math.sin(math.radians(a))) for a in range(10, 91, 10)]
+BEAK = lathe('beak', bp[:-1] + [(0, 7.5)], seg=64, M=BEAK_M)
 
 # --- Nut dau (button-cap) giu nguyen
 def cross_cutters(M, u_open, depth, dirn, angs=(45.0, 135.0)):
@@ -818,7 +786,7 @@ def make_face_plate():
     # lom 1,6 mat truoc PCB cho moi han chan header (dai 6 x 38, x 38..43,2)
     hb = box('fp_hdr', (38.0, -19.0, u_pcb - 1.6), (43.3, 19.0, u_pcb + 0.1)); diff(fp, hb)
     # 4 lo mo O2,4 (vit tu ren) tai lo PCB (x -40,00 / +36,08 ; z +-22), tu mat truoc PCB lui vao 3,6
-    for (px, pz) in ((-40.0, 22.0), (-40.0, -22.0), (36.08, 22.0), (36.08, -22.0)):
+    for (px, pz) in ((-40.0, 22.0), (-40.0, -22.0), (40.0, 22.0), (40.0, -22.0)):
         diff(fp, cyl('fp_pil', (px, pz, u_pcb - 3.6), (px, pz, u_pcb + 0.3), 1.2, seg=20))
     # 4 lo vit M2.5 x 6 o 4 goc vanh chan: lo thong O2,8, mu chim O5,2 sau 3,5
     u_end = T0 + 4.0 + BEV + FL_T

@@ -33,8 +33,8 @@ Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\
   `$env:IDF_TOOLS_PATH='C:\Espressif\tools-v6.1'; . C:\Espressif\frameworks\esp-idf-v6.1\export.ps1`. Kiểm: `idf.py --version` = v6.1.
 
 ## Trạng thái
-- 2026-11-26: **dáng A2 V2** = mắt màn TFT 2,8" cảm ứng (MSP2807) + **2 loa Ø52 H25** (sườn chếch 25°), gờ giữ loa Ø48, mỗi loa 1 MAX98357A.
-  CAD WIP (`cad/build_owl_s3_screen.py` → `out-s3-screen`), gate hình học PASS, còn 2 bàn vỏ WARN support (ống loa nghiêng 25°); dáng chưa chốt.
+- 2026-11-26: **dáng A2 V2** = mắt màn TFT 2,8" cảm ứng (MSP2807) + **2 loa Ø52 H0** (sườn quay ngang; H25 bỏ vì phải support), gờ giữ loa Ø48, mỗi loa 1 MAX98357A.
+  CAD `cad/build_owl_s3_screen.py` → `out-s3-screen`: gate PASS, 5 bàn `plates-s3-screen` PASS không support (~16 h, ~443 g); lỗ màn V1.1 đối xứng 80 × 44; chờ duyệt dáng + kết quả bàn thử v3.
   **Bàn thử v3** `p1-fit-test.3mf` (face-plate, speaker-ring-L, button-cap) CHỜ IN. Firmware bản 1 loa, CHƯA có driver màn/cảm ứng, CHƯA thử ampli 2.
   File bản S3 1 loa cũ → `cad/backup/` + `print/backup/20261126-ban-s3-1-loa-thay-bang-ban-man/`. Câu hỏi chờ Tuan: xem `README.md`.
 - 2026-11-15: **Trang giáo trình `/curriculum`** trên bridge (`server/live/curriculum_web.py`, cổng 8003; ra ngoài

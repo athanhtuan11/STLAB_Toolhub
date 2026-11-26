@@ -74,7 +74,7 @@
       "summary": "ESP32-S3 nói chuyện tiếng Anh với bé, mắt là màn 2,8 inch cảm ứng, mic INMP441 + 2 ampli MAX98357A + 2 loa 52 mm.",
       "audience": "",
       "status": "dang-lam",
-      "next": "Bàn in thử v3 (khung màn, vòng loa Ø48, nút) chờ in; chọn hướng vỏ H0/H25; firmware màn + ampli 2 chưa làm.",
+      "next": "Bàn in thử v3 (khung màn, vòng loa Ø48, nút) chờ in; vỏ H0 gate PASS chờ duyệt dáng; firmware màn + ampli 2 chưa làm.",
       "cover": "cad/out-s3-screen/owl-front.png",
       "works": true,
       "works_note": "thử thật trên mạch 2026-11-12",
