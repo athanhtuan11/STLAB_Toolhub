@@ -156,6 +156,34 @@ def door_and_plan():
     plt.close(fig)
 
 
+def bars_6m(stock=6000, kerf=3):
+    """So cay 6 m moi loai sat (first-fit decreasing). Tra {loai: (so cay, tong dai mm, so do cat tung cay)}."""
+    cuts = {}
+    for pt in parts:
+        k = pt["kind"]
+        spec = ("Sat hop " + pt["spec"]) if k in ("steel", "dframe") else \
+               "Sat hop 20x40" if k in ("be-joist", "be-strip") else \
+               f"U chan {P['U'][0]}x{P['U'][1]}x{P['U'][2]}" if k == "utrack" else None
+        if spec:
+            cuts.setdefault(spec, []).append(pt["L"])
+    out = {}
+    for spec, L in sorted(cuts.items()):
+        bins = []
+        for x in sorted(L, reverse=True):
+            for b in bins:
+                if sum(b) + kerf * len(b) + x <= stock:
+                    b.append(x)
+                    break
+            else:
+                bins.append([x])
+        plan = []
+        for b in bins:
+            c = Counter(b)
+            plan.append("+".join(f"{q}x{v:g}" if q > 1 else f"{v:g}" for v, q in sorted(c.items(), reverse=True)))
+        out[spec] = (len(bins), sum(L), plan)
+    return out
+
+
 def bom():
     rows = Counter()
     kg = 0.0
@@ -223,6 +251,10 @@ def bom():
         w.writerow(["Tan rut ren M5 + vit M5 bat tam che tren vao dau 5 dam dinh (han bit dau)", "", "5 dam dinh", 5])
         w.writerow(["LUU Y", "", f"tai moi banh >= (khoi luong canh / 4) x 1.5 = {m['WHEEL_NEED']:.0f} kg (canh ~{m['DOOR_KG'][0]:.0f} kg voi panel_kg={P['panel_kg']})", ""])
         w.writerow(["Khoi luong sat uoc tinh (kg)", round(kg, 1), "do day 1.4/1.2 gia dinh", ""])
+        w.writerow([])
+        w.writerow(["TONG HOP CAY 6 M (xep cat FFD, mach cat 3, cat chi tiet Tuan tu theo ban ve)", "", "chi tiet cat", "so cay 6 m"])
+        for spec, (n, used, plan) in bars_6m().items():
+            w.writerow([spec, round(used / 1000, 1), " | ".join(plan), n])
     tube_m = Counter()
     for pt in parts:
         if pt["kind"] in ("steel", "dframe", "rback"):
