@@ -179,10 +179,7 @@ for i in range(p["door_n"]):
     x = DX0[i] + p["handle_off"] if i % 2 == 0 else DX0[i] + DWS[i] - p["handle_off"]
     HANDLES.append(dict(door=i, x=x))
 _hr = p["handle_w"] / 2 + p["handle_finger"]
-CHECK["tay_nam_ne"] = (all(_clear(h["door"], h["x"] - _hr, h["x"] + _hr) for h in HANDLES)
-                       and _clear_z(p["handle_z"] - p["handle_h"] / 2, p["handle_z"] + p["handle_h"] / 2, 30)
-                       and p["handle_cup_depth"] <= FDP - 5,
-                       f"tay nam am (khay sau {p['handle_cup_depth']}) nam trong long khung sau {FDP}, cach vien/thanh ngang >= 30")
+# tay nam: Tuan tu lap (2026-11-26) - khong ve, khong kiem
 
 
 def _front_pos(fi):
@@ -212,8 +209,7 @@ def _handle_ok(h):
     return False
 
 
-CHECK["tay_nam_thay"] = (all(_handle_ok(h) for h in HANDLES),
-                         "canh ray trong: dong cua thay tay nam, lua het van keo ve duoc (khong bi canh truoc che kin)")
+pass
 z_rail_top = H_TOP - TB
 y0i, y1i = p["DZ"], D
 y_mid = (y0i + y1i) / 2
@@ -444,11 +440,7 @@ def build():
         for j in range(kk):
             box(pre + f"tam{j + 1}", g, x0 + j * PW + 0.5, x0 + (j + 1) * PW - 0.5, yp0, yf0, dz0, dz1, "panel", "panel",
                 f"{PW}x{DH}x{PT}")
-        hx, hw_, hh = HANDLES[i]["x"], p["handle_w"], p["handle_h"]
-        box(pre + "tay-nam", g, hx - hw_ / 2, hx + hw_ / 2, yp0 - 1, yf0 + 0.5,
-            p["handle_z"] - hh / 2 + hw_ / 2, p["handle_z"] + hh / 2 - hw_ / 2, "dark", "hole", f"khe nam {hw_}x{hh} xuyen tam")
-        for zc in (p["handle_z"] - hh / 2 + hw_ / 2, p["handle_z"] + hh / 2 - hw_ / 2):
-            cyl(pre + f"tay-nam-{int(zc)}", g, hw_ / 2, PT + 1.5, (hx, yp0 + PT / 2 - 0.25, zc), (math.pi / 2, 0, 0), "dark")
+        # tay nam: Tuan tu lap (2026-11-26), khong ve
         # 2 cum banh duoi: cang thep han day vien duoi, 2 banh 608 boc POM lan tren long U
         for side, xb_ in (("trai", x0 + p["bogie_in"]), ("phai", x0 + dw - p["bogie_in"])):
             bw = p["bogie_w"]
@@ -600,8 +592,6 @@ def main():
          move={"C2-": (0, 140)})
     ct = cam("Cam-ray-treo", (W - 420, 520, H_TOP - 330), (108, 0, 205), lens=40)
     shot(ct, os.path.join(out, "07-chi-tiet-ray-treo.png"), hide=inside)
-    ch = cam("Cam-tay-nam", (W / 2 - 250, -1100, p["handle_z"] + 250), (78, 0, -12), lens=35)
-    shot(ch, os.path.join(out, "08-chi-tiet-tay-nam.png"))
     n_fr = setup_anim()
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(here, "wardrobe.blend"))
     json.dump(dict(meta=meta, parts=parts), open(os.path.join(here, "parts.json"), "w", encoding="utf-8"),

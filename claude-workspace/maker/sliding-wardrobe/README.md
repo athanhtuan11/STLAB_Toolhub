@@ -116,20 +116,18 @@ Các bộ treo hãng đều kèm dẫn hướng sàn
 - Khối lượng cánh ≈ **~39 kg/cánh** (tấm **~5 kg**, Tuan cân 2026-11-26) → bánh nên **≥ 15 kg/bánh**.
 - Chống vênh: hàn/ghép trên mặt phẳng, kẹp chặt, đính chéo góc, **2 đường chéo lệch ≤ 2** mới chốt.
 - Sơn: mài mối hàn → lót chống gỉ → đen mờ; sơn xong mới bắt tấm.
-- `TODO`: vẽ lại bản vẽ gia công cánh (bảng cắt tấm, viền, thanh ngang, càng bánh, bát treo, lỗ khóa, khe tay nắm) sau khi anh duyệt
+- `TODO`: vẽ lại bản vẽ gia công cánh (bảng cắt tấm, viền, thanh ngang, càng bánh, bát treo, lỗ khóa) sau khi anh duyệt
   và có tấm nhựa thật.
 
 ## Khóa + tay nắm
 
 
 Tấm chỉ dày 10 → **mọi thứ chịu lực bắt vào sắt phía sau, không bắt vít chịu lực vào nhựa**.
-- **Tay nắm âm** (khay ép/vít vào lỗ khoét trên tấm, khay sâu ≤ 35 nằm gọn trong lòng khung 40) cho **cả 2 cánh**. Không dùng tay nắm
-  nổi: tay nắm nổi trên C2 sẽ quẹt vào C1 khi lùa (khe chỉ 10). Tâm **cao 950**, cách mép cánh phía tường **300** (C1 x = 300,
-  C2 x = 2700), cách viền và thanh ngang ≥ 30 (kiểm `tay_nam_ne`). C2 lùa hết sang trái vẫn còn chỗ móc tay (kiểm `tay_nam_thay`).
-  `TODO`: cỡ lỗ khoét theo tay nắm mua (model đang để 30 × 200).
+- **Tay nắm: Tuan tự lắp** (2026-11-26), model không vẽ. Lưu ý khi lắp: dùng tay nắm âm, khay sâu ≤ 35 cho gọn trong lòng khung 40;
+  tay nắm nổi trên C2 sẽ quẹt C1 (khe 10). Tránh vị trí 4 thanh ngang (cao 638 / 1210 / 1782 / 2354).
 - **Khóa (tùy chọn)**: khóa ấn tủ cửa lùa ở chỗ chồng mí, nút xuyên tấm C1 tại x = 1410, cao 1160. **Thân khóa bắt lên ke L thép
   vít vào thanh ngang** ngay trên (cách 15), không treo vào nhựa. Chốt bắn ra sau qua khe 10, ăn 4 vào lỗ tấm C2 (sau lỗ là viền đứng C2).
-  `TODO`: khóa mua cần **hành trình chốt ≥ 14**. Không cần khóa thì bỏ, chỉ giữ 2 tay nắm âm.
+  `TODO`: khóa mua cần **hành trình chốt ≥ 14**. Không cần khóa thì bỏ.
 
 ## Khung sắt (hộp 40 × 40 × 1,4)
 
@@ -163,7 +161,7 @@ Tấm chỉ dày 10 → **mọi thứ chịu lực bắt vào sắt phía sau, k
 | 7 | Chặn cuối: trong ray trên (2 có lẫy + 2 cao su) + cao su trong lòng U (4) | 8 | |
 | 8 | Vít 4 × 12 đầu dù (khoan mồi 3,3) bắt tấm che ray vào U/ray | 26 | ~250/vít, không dùng vít tự khoan |
 | 9 | Vít nở đầu bằng (khoan côn) bắt U xuống sàn | 16 | đầu vít chìm phẳng lòng U |
-| 10 | Tay nắm âm cửa lùa (khay sâu ≤ 35) + khóa ấn (tùy chọn, hành trình ≥ 14, bắt ke L vào thanh ngang) | 2 + 1 | `TODO` chọn loại |
+| 10 | Khóa ấn (tùy chọn, hành trình ≥ 14, bắt ke L vào thanh ngang); tay nắm Tuan tự lắp | 1 | `TODO` chọn loại |
 | 11 | Tán rút ren M8 (bát treo) + tán rút ren M5 (đầu 5 dầm đỉnh) + kìm rút | 4 + 5 | theo `bom.csv` |
 | 12 | Ron chổi chống bụi mép chồng mí | 2 × 2,9 m | |
 | 13 | Ống inox Ø27 + tai đỡ hàn (dài 698 mm/ống) | 8 ống | `TODO` dày ống: model ghi 1,0, bản cũ ghi 1,2 |

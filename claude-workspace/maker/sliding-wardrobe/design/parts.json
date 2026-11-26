@@ -230,14 +230,6 @@
     true,
     "chot khoa qua khe 10 + an 4 vao lo tam nhua C2 (sau lo la vien dung C2)"
    ],
-   "tay_nam_ne": [
-    true,
-    "tay nam am (khay sau 25) nam trong long khung sau 40, cach vien/thanh ngang >= 30"
-   ],
-   "tay_nam_thay": [
-    true,
-    "canh ray trong: dong cua thay tay nam, lua het van keo ve duoc (khong bi canh truoc che kin)"
-   ],
    "ong_ben": [
     true,
     "ong O27x1.0 nhip 700 tai 40 kg: ung suat 67 MPa <= 100"
@@ -2169,24 +2161,6 @@
    "Th": 10.0
   },
   {
-   "name": "C1-tay-nam",
-   "group": "Canh 1",
-   "mat": "dark",
-   "kind": "hole",
-   "spec": "khe nam 30x200 xuyen tam",
-   "bbox": [
-    285.0,
-    315.0,
-    9.0,
-    20.5,
-    865.0,
-    1035.0
-   ],
-   "L": 170.0,
-   "Wd": 30.0,
-   "Th": 11.5
-  },
-  {
    "name": "C1-cang-banh-trai",
    "group": "Canh 1",
    "mat": "steel",
@@ -2527,24 +2501,6 @@
    "L": 2900,
    "Wd": 399.0,
    "Th": 10.0
-  },
-  {
-   "name": "C2-tay-nam",
-   "group": "Canh 2",
-   "mat": "dark",
-   "kind": "hole",
-   "spec": "khe nam 30x200 xuyen tam",
-   "bbox": [
-    2685.0,
-    2715.0,
-    69.0,
-    80.5,
-    865.0,
-    1035.0
-   ],
-   "L": 170.0,
-   "Wd": 30.0,
-   "Th": 11.5
   },
   {
    "name": "C2-cang-banh-trai",
