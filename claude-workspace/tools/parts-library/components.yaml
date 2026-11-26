@@ -786,7 +786,7 @@ components:
       kich_thuoc_pcb_mm: "50,00 × 86,00 × 1,60"
       vung_hien_thi_mm: "AA 43,20 × 57,60 (cách mép trái/phải 3,40, cách mép trên 9,30); VA 45,20 × 59,45 (mép 2,40 / trên 8,45)"
       kinh_mm: "TP 50,00 × 69,20 ±0,2, cách mép trên PCB 6,40 (mép trên = đầu 4 lỗ SD, đối diện header)"
-      lo_bat: "4 × Ø3,20 (pad Ø4,70), tâm cách 44,00 (ngang) × 76,08 (dọc); cách mép trái/phải 3,00, mép trên 3,00 → mép dưới (phía header) 6,92"
+      lo_bat: "4 × Ø3,20 (pad Ø4,70). HÀNG THẬT V1.1 (Tuan đo 2026-11-26): mép lỗ cách cả 4 cạnh 1,35 → ĐỐI XỨNG, tâm cách 80,0 × 44,0. Bản vẽ V1.0 ghi 76,08 × 44,00 (mép trên 3,00, phía header 6,92) – KHÔNG dùng cho V1.1"
       day_mm: "5,60 ±0,2 tổng không tính header (kính cảm ứng TP 1,20 + LCD 2,30 + băng 0,50 + PCB 1,60); linh kiện SMD mặt sau ≤ 2,20 – riêng; tổng có header 12,78"
       header: "14 chân bước 2,54, chân 1 (VCC) cách mép 8,49 (nhìn mặt trước), tâm hàng cách mép dưới 2,00; header cao 11,17"
       khoi_luong_g: "43 (bản cảm ứng)"

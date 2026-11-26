@@ -9,13 +9,21 @@ groups:
   mic: "Mic INMP441"
   ampli: "Ampli MAX98357A"
   nut: "Nút nói"
+  ampli2: "Ampli 2 (loa phải)"
+  man: "Màn TFT 2,8\" cảm ứng"
 parts:
-  esp: {label: "ESP32-S3 N16R8", pins: ["3V3", "5V", "GND", "GPIO4", "GPIO5", "GPIO6", "GPIO7", "GPIO15", "GPIO16", "GPIO1"]}
+  esp: {label: "ESP32-S3 N16R8", pins: ["3V3", "5V", "GND", "GPIO4", "GPIO5", "GPIO6", "GPIO7", "GPIO15", "GPIO16", "GPIO1",
+                                         "GPIO8", "GPIO9", "GPIO10", "GPIO11", "GPIO12", "GPIO13", "GPIO14", "GPIO17", "GPIO18"]}
   mic: {label: "INMP441 (mic)", pins: ["VDD", "GND", "L/R", "WS", "SCK", "SD"]}
   amp: {label: "MAX98357A (ampli)", pins: ["VIN", "GND", "LRC", "BCLK", "DIN", "Loa +", "Loa −"]}
   cap: {label: "Tụ 1000 µF 16 V", pins: ["+ (chân dài)", "− (vạch trắng)"]}
   spk: {label: "Loa 4 Ω 3 W", pins: ["+", "−"]}
   btn: {label: "Nút nói (switch MX)", pins: ["1", "2"]}
+  amp2: {label: "MAX98357A (ampli 2)", pins: ["VIN", "GND", "LRC", "BCLK", "DIN", "Loa +", "Loa −"]}
+  cap2: {label: "Tụ 1000 µF 16 V (ampli 2)", pins: ["+ (chân dài)", "− (vạch trắng)"]}
+  spk2: {label: "Loa 2 – 4 Ω 3 W", pins: ["+", "−"]}
+  tft: {label: "TFT 2,8\" SPI MSP2807 (cảm ứng)", pins: ["VCC", "GND", "CS", "RESET", "DC", "SDI(MOSI)", "SCK", "LED",
+                                                          "T_CLK", "T_CS", "T_DIN", "T_DO", "T_IRQ"]}
 wires:
   - {from: mic.VDD, to: esp.3V3, level: 3v3, color: OG, group: nguon, note: "CHỈ 3,3 V – cấp 5 V hỏng mic"}
   - {from: mic.GND, to: esp.GND, level: gnd, color: BK, group: nguon}
@@ -34,7 +42,32 @@ wires:
   - {from: spk.−, to: amp.Loa −, level: loa, color: GY, group: ampli, note: "KHÔNG nối GND (dây xám, không dùng dây đen)"}
   - {from: btn.1, to: esp.GPIO1, level: tin-hieu, color: PK, group: nut}
   - {from: btn.2, to: esp.GND, level: gnd, color: BK, group: nut}
+  - {from: amp2.VIN, to: esp.5V, level: 5v, color: RD, group: ampli2, note: "5 V – nguồn ≥ 2 A, xem ghi chú"}
+  - {from: amp2.GND, to: esp.GND, level: gnd, color: BK, group: ampli2}
+  - {from: amp2.LRC, to: esp.GPIO16, level: tin-hieu, color: VT, group: ampli2, note: "chung dây với ampli 1"}
+  - {from: amp2.BCLK, to: esp.GPIO15, level: tin-hieu, color: TQ, group: ampli2, note: "chung dây với ampli 1"}
+  - {from: amp2.DIN, to: esp.GPIO7, level: tin-hieu, color: WH, group: ampli2, note: "chung dây với ampli 1"}
+  - {from: cap2.+ (chân dài), to: amp2.VIN, level: 5v, color: RD, group: ampli2, note: "hàn sát chân VIN – đúng cực"}
+  - {from: cap2.− (vạch trắng), to: amp2.GND, level: gnd, color: BK, group: ampli2}
+  - {from: spk2.+, to: amp2.Loa +, level: loa, color: RD, group: ampli2, note: "KHÔNG nối GND"}
+  - {from: spk2.−, to: amp2.Loa −, level: loa, color: GY, group: ampli2, note: "KHÔNG nối GND"}
+  - {from: tft.VCC, to: esp.5V, level: 5v, color: RD, group: man, note: "J1 trên màn phải HỞ (ổn áp U2 hạ 3,3 V) – TODO kiểm"}
+  - {from: tft.GND, to: esp.GND, level: gnd, color: BK, group: man}
+  - {from: tft.CS, to: esp.GPIO10, level: tin-hieu, color: YE, group: man}
+  - {from: tft.RESET, to: esp.GPIO8, level: tin-hieu, color: BN, group: man}
+  - {from: tft.DC, to: esp.GPIO9, level: tin-hieu, color: OG, group: man}
+  - {from: tft.SDI(MOSI), to: esp.GPIO11, level: tin-hieu, color: BU, group: man}
+  - {from: tft.SCK, to: esp.GPIO12, level: tin-hieu, color: GN, group: man}
+  - {from: tft.LED, to: esp.GPIO14, level: tin-hieu, color: WH, group: man, note: "đèn nền, PWM"}
+  - {from: tft.T_CLK, to: esp.GPIO12, level: tin-hieu, color: GN, group: man, note: "chung SCK"}
+  - {from: tft.T_DIN, to: esp.GPIO11, level: tin-hieu, color: BU, group: man, note: "chung MOSI"}
+  - {from: tft.T_DO, to: esp.GPIO13, level: tin-hieu, color: VT, group: man}
+  - {from: tft.T_CS, to: esp.GPIO17, level: tin-hieu, color: PK, group: man}
+  - {from: tft.T_IRQ, to: esp.GPIO18, level: tin-hieu, color: GY, group: man}
 notes:
   - "Vị trí chân trên hình là sơ đồ nguyên lý. Khi cắm, đọc chữ in cạnh chân trên bo."
   - "ESP32-S3 có nhiều chân GND – dùng chân GND nào cũng được."
-  - "GAIN và SD của MAX98357A để trống. Không dùng GPIO35, 36, 37 (PSRAM)."
+  - "GAIN và SD của MAX98357A để trống (GAIN nối GND = 12 dB nếu cần to hơn – chưa thử). Không dùng GPIO35, 36, 37 (PSRAM)."
+  - "2026-11-26: thêm màn 2,8\" (SPI, cảm ứng) + ampli 2 cho loa phải. Mỗi loa 1 ampli – KHÔNG nối 2 loa vào 1 ampli (2 Ω quá tải)."
+  - "Nguồn 5 V ≥ 2 A: 2 ampli phát to + màn + bo. TODO: kiểm diode trên đường 5V của bo S3 – có thể phải lấy 5 V ampli thẳng từ cổng USB-C nguồn vào."
+  - "SDO(MISO) và 4 chân SD trên màn để trống. Firmware CHƯA có driver màn/cảm ứng (config.h chưa đổi) – chip màn ST7789 hay ILI9341: thử khi nạp."

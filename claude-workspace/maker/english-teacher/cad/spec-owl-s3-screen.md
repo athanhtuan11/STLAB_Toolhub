@@ -125,3 +125,17 @@ cánh dời lên z ≈ 112, bụng trơn) – không cần ảnh.
    (khe ≤ 0,3 hoặc ron) – gate đã sửa: PCB mic kiểm theo trục nghiêng `mic.axis` (cần `mic.pcb` = {center, d 15, t 1,6}). Giữ PCB mic bằng **keo nóng: DUYỆT**
    (bên trong vỏ, bé không chạm).
 5. Sửa non-manifold shell-front + mọi va chạm gate báo. Ghi `out-s3-screen`, yaml, cắt lớp, README, .sc như cũ.
+
+## 11. Tuan chọn H0 (2026-11-26 tối) – ghi đè mục 5, 10.2, 10.3 (loa H25 / chụp trụ)
+1. **Loa ngang H0**: axis L `[-1, 0, 0]`, R `[1, 0, 0]` (gate: lệch ≤ 3°), tâm z 44–50, mặt loa nằm trên vỏ sườn. **Bỏ chụp trụ Ø72 sâu**:
+   vành loa (speaker-bezel-L/R) lắp vào lỗ trên vỏ sườn như **bản A1S 2 loa đã PASS không support** – đọc cách làm trong
+   `cad/backup/` + `claude-workspace/backup/20261117-remove-a1s-cu-bong/maker-english-teacher/cad/` (build_owl.py: lỗ sườn, vành 86 × 86 × 15,
+   khe 0,2–0,3, hết support 2026-11-08) – dựng lại tương tự; ngàm xoay + **gờ giữ Ø48** giữ nguyên. Nếu vành chồng mặt ráp 2 nửa: theo đúng cách bản A1S.
+2. **Ampli**: được dời ra 2 bên sàn cạnh loa (cách thân loa ≥ 2, cách tâm loa ≤ 70) hoặc giữ giữa 2 ray như hiện tại – chọn chỗ hết va chạm.
+3. **Lỗ màn hàng thật V1.1 ĐỐI XỨNG**: tâm (±40,0, ±22,0) so tâm PCB (`SCR_HOLES` 80,0 × 44,0) – Claude đã sửa build + gate.
+4. **Dáng (Claude xem ảnh: chưa đạt)** – sửa cùng lượt:
+   - Hộp nền màn đang nhô vuông như tivi → **giảm tối đa phần đắp**: nền chỉ đủ rộng cho vành chặn + yên vát, chuyển về vỏ cong bằng vai **R ≥ 12**
+     (không cạnh thẳng đứng lộ ra), đĩa mặt nhô ~4 như concept.
+   - **Mỏ chồng mép dưới đĩa mặt** theo V2 (nằm trước đĩa, khe ≥ 0,3, đỉnh ≤ cửa sổ dưới − 1); nếu cửa sổ dưới z 78 không đủ chỗ thì báo số.
+   - Cánh: nhỏ, sát thân, không đè vành loa.
+5. Mọi bàn in PASS không support, gate PASS, ảnh owl-preview/owl-exploded, .sc; README mục "Bản có màn + 2 loa" cập nhật vị trí cuối.

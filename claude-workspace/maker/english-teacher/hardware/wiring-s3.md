@@ -102,6 +102,46 @@ Không dùng GPIO35, 36, 37 (PSRAM của bo N16R8 chiếm).
 Mỗi MAX98357A chỉ kéo 1 loa. 2 loa = 2 module, **dùng chung** LRC (GPIO16), BCLK (GPIO15), DIN (GPIO7), 5V, GND.
 Firmware phát cùng tiếng ra cả 2 – để chân SD cả 2 module trống. Mỗi module 1 tụ 1000 µF.
 
+## 6b. Bản có màn + 2 loa (2026-11-26)
+
+Bản đang dựng (xem `README.md`). Nguồn đấu dây: `wiring-s3.yaml` (nhóm `ampli2`, `man`).
+
+**Ampli 2 (loa phải) – MAX98357A → ESP32-S3:**
+
+| MAX98357A (ampli 2) | ESP32-S3 | Ghi chú |
+|---|---|---|
+| VIN | **5V** | Dùng chung 5V với ampli 1 |
+| GND | GND | |
+| LRC | GPIO16 | Chung dây với ampli 1 |
+| BCLK | GPIO15 | Chung dây với ampli 1 |
+| DIN | GPIO7 | Chung dây với ampli 1 |
+| GAIN, SD | để trống | GAIN nối GND = 12 dB (chưa thử) |
+| Loa + / Loa − | 2 dây loa phải | **KHÔNG** nối GND |
+| Tụ 1000 µF 16 V | (+) vào VIN, (−) vào GND | Hàn sát module, đúng cực như mục 4 |
+
+**Màn TFT 2,8" SPI cảm ứng (MSP2807) → ESP32-S3:**
+
+| Màn TFT | ESP32-S3 | Ghi chú |
+|---|---|---|
+| VCC | **5V** | J1 trên màn để HỞ (ổn áp U2 hạ 3,3 V) – TODO kiểm |
+| GND | GND | |
+| CS | GPIO10 | |
+| RESET | GPIO8 | |
+| DC | GPIO9 | |
+| SDI (MOSI) | GPIO11 | |
+| SCK | GPIO12 | |
+| LED | GPIO14 | Đèn nền, PWM |
+| SDO (MISO) | để trống | |
+| 4 chân SD (khe thẻ) | để trống | |
+| T_CLK | GPIO12 | Chung SCK |
+| T_DIN | GPIO11 | Chung MOSI |
+| T_DO | GPIO13 | |
+| T_CS | GPIO17 | |
+| T_IRQ | GPIO18 | |
+
+- Firmware **CHƯA** có driver màn và cảm ứng. Chip màn: shop ghi ST7789, LCDWiki ghi ILI9341 → thử khi nạp.
+- Nguồn 5 V ≥ 2 A (2 ampli + màn + bo). TODO: kiểm diode trên đường 5V của bo S3; nếu sụt áp, cấp 5 V ampli thẳng từ nguồn ngoài, nối chung GND.
+
 ## 7. Kiểm tra trước khi cắm điện
 
 1. Đồng hồ vạn năng thang thông mạch: **5V – GND** và **3V3 – GND** phải **không** kêu.

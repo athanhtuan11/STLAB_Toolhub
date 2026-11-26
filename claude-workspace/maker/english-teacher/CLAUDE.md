@@ -19,7 +19,7 @@ Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\
   thông số bo + firmware dò A1S chuyển sang `tools/esp32-a1s/` (dùng cho guitar-sai-thanh, drum-pad). Ghi chú lịch sử A1S bên dưới giữ để tra cứu.
 - xiaozhi v2.5.2 (nền bản S3): ESP-IDF 6.1, xem mục Firmware.
 
-- **Cơ khí** (2026-11-06): loa **Ø52 × cao 26 mm** (Tuan đo), **4 Ω 3 W** (nhãn loa, Tuan đọc 2026-11-12). **Bản S3: 1 loa duy nhất** (Tuan chốt 2026-11-12, thay 2 loa trái + phải) → vỏ S3 sau này: 1 loa, khay bo S3 N16R8, mic xa loa. Không ghép 2 loa vào 1 MAX98357A (song song 2 Ω quá tải).
+- **Cơ khí** (2026-11-06): loa **Ø52 × cao 26 mm** (Tuan đo), **4 Ω 3 W** (nhãn loa, Tuan đọc 2026-11-12). **Bản S3: 1 loa duy nhất** (Tuan chốt 2026-11-12, thay 2 loa trái + phải; 2026-11-26 đổi lại 2 loa, mỗi loa 1 ampli) → vỏ S3 sau này: 1 loa, khay bo S3 N16R8, mic xa loa. Không ghép 2 loa vào 1 MAX98357A (song song 2 Ω quá tải).
 
 ## An toàn
 - Nguồn USB 5 V. Pin Li-ion (nếu dùng): chỉ cell có mạch bảo vệ, ngăn bắt vít – chưa thiết kế.
@@ -33,6 +33,10 @@ Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\
   `$env:IDF_TOOLS_PATH='C:\Espressif\tools-v6.1'; . C:\Espressif\frameworks\esp-idf-v6.1\export.ps1`. Kiểm: `idf.py --version` = v6.1.
 
 ## Trạng thái
+- 2026-11-26: **dáng A2 V2** = mắt màn TFT 2,8" cảm ứng (MSP2807) + **2 loa Ø52 H25** (sườn chếch 25°), gờ giữ loa Ø48, mỗi loa 1 MAX98357A.
+  CAD WIP (`cad/build_owl_s3_screen.py` → `out-s3-screen`), gate hình học PASS, còn 2 bàn vỏ WARN support (ống loa nghiêng 25°); dáng chưa chốt.
+  **Bàn thử v3** `p1-fit-test.3mf` (face-plate, speaker-ring-L, button-cap) CHỜ IN. Firmware bản 1 loa, CHƯA có driver màn/cảm ứng, CHƯA thử ampli 2.
+  File bản S3 1 loa cũ → `cad/backup/` + `print/backup/20261126-ban-s3-1-loa-thay-bang-ban-man/`. Câu hỏi chờ Tuan: xem `README.md`.
 - 2026-11-15: **Trang giáo trình `/curriculum`** trên bridge (`server/live/curriculum_web.py`, cổng 8003; ra ngoài
   `https://engteacher.mamnoncaynho.com/curriculum`): xem 24 unit Seed + giáo án, **ghim bài theo máy** (`Curriculum.pin`, lưu
   `learners.json` khóa `pins`) tới khi Bỏ ghim; đang trong buổi thì đổi bài ngay (`ACTIVE_SESSIONS`). Bé vẫn xin đổi bằng giọng

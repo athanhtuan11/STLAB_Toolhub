@@ -3,6 +3,7 @@
 #   - speaker-ring-L: go giu loa O48 (Tuan: O47 v2 khong dua loa vo duoc). Co cau ngam xoay GIU NGUYEN -> thu voi vanh loa (bezel) da in o lan 1.
 #   - face-plate: khung man TFT 2,8" MSP2807 - thu kinh 69,2 x 50 vao hoc (khe 0,3/ben), 4 vit M2.5 x 6 bat PCB, cua so che het mep kinh,
 #     mat kinh lui 1,5 so vien, cam ung bam duoc (vien khong de len vung hien thi).
+#   - button-cap: Tuan 2026-11-26 can in lai nut noi (nap switch MX dinh dau).
 # Ca bo (vo, chup loa) chua chot dang (cho Tuan chon H0/H25) -> chua in. STL: cad/build_owl_s3_screen.py -> stl-s3-screen.
 # Cat lop: python tools/print/scripts/memjob.py 3 -- python tools/print/scripts/slice.py maker/english-teacher/print/print-s3-test.yaml
 machine: Bambu Lab A1 0.4 nozzle
@@ -13,4 +14,4 @@ partial: true   # ban thu: STL khac trong stl-s3-screen la co y khong xep
 common: {sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
 plates:
   p1-fit-test: {process: 0.20mm Standard @BBL A1, color: "#FFF3DF", overrides: {wall_loops: "3", sparse_infill_density: "20%"},
-                stl: ["face-plate.stl", "speaker-ring-L.stl"]}
+                stl: ["face-plate.stl", "speaker-ring-L.stl", "button-cap.stl"]}

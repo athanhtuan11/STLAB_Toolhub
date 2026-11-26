@@ -1,7 +1,7 @@
 # Gate CAD vo Cu Bong BAN S3 CO MAN + 2 LOA (Claude viet 2026-11-26, executor KHONG sua). Goc: gate_owl_s3.py.
 # Chay: "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b --python-exit-code 1 -P gate_owl_s3_screen.py -- out-s3-screen
 # 2026-11-26 Tuan: dang A2 V2 (man TFT 2,8" MSP2807 cam ung lam mat, khong tam che, mo chong mep duoi vien) + 2 loa O52 4 ohm 3 W
-# o 2 suon CHECH TRUOC 25 do (H25), moi loa 1 MAX98357A. Bo eye-ring/eye-diffuser, bung tron.
+# o 2 suon (2026-11-26 Tuan chon H0: truc NGANG +-X, thay H25), moi loa 1 MAX98357A. Bo eye-ring/eye-diffuser, bung tron.
 # Ban S3 (Tuan 2026-11-12): ESP32-S3 N16R8 + INMP441 + MAX98357A, CHI 1 LOA 4 ohm 3 W (O52 x 26, mep 5) o BUNG quay ra truoc,
 # mic o TRAN (xa loa, ngan kin), 1 switch MX: noi GPIO1 (dinh dau); 2026-11-12 bo 2 nut am luong + vol-pod.
 import bpy, bmesh, json, sys, math, itertools
@@ -15,7 +15,7 @@ PARTS = ["shell-front", "shell-back", "belly", "beak", "button-cap", "face-plate
          "speaker-bezel-L", "speaker-bezel-R", "speaker-ring-L", "speaker-ring-R", "mic-clamp", "amp-tray"]
 # man MSP2807 (ban ve LCDWiki LCM OUTLINE V1.0, tools/parts-library id tft-2-8-spi-ili9341-touch) - dat NGANG
 SCR_PCB = (86.0, 50.0, 1.6); SCR_GLASS = (69.2, 50.0); SCR_AA = (57.6, 43.2); SCR_T = 5.6; SCR_T_HDR = 12.78
-SCR_HOLES = (76.08, 44.0); SCR_HOLE_D = 3.2
+SCR_HOLES = (80.0, 44.0); SCR_HOLE_D = 3.2   # hang that V1.1 (Tuan do 2026-11-26), ban ve V1.0: 76,08
 # 2026-11-12 Tuan: "chi can 1 SW khoi dong, tinh chinh dung voice" -> bo 2 nut am luong + vol-pod
 BED = 250.0
 
@@ -133,8 +133,9 @@ if bm:
                 fails.append(f"loa can axis la vector [ax, ay, 0]: {s}"); continue
             a.normalize()
             ang = math.degrees(math.atan2(-a.y, abs(a.x)))
-            if a.x * c.x <= 0 or not 20 <= ang <= 30 or abs(a.z) > 0.05:
-                fails.append(f"loa {s}: mat loa phai huong ra ngoai suon + chech TRUOC 20-30 do (dang {ang:.1f})")
+            # 2026-11-26 Tuan chon H0: truc loa NGANG +-X (lech <= 3 do), khong con H25
+            if a.x * c.x <= 0 or abs(ang) > 3.0 or abs(a.z) > 0.05:
+                fails.append(f"loa {s}: mat loa phai huong NGANG ra ngoai suon (H0, lech <= 3 do; dang {ang:.1f})")
             if not 40 <= c.z <= 55:
                 fails.append(f"loa tam z {c.z:.1f} ngoai 40..55")
             sc_ = p.get("speaker_clamp", {}); ft = sc_.get("flange_t", 5.0); bd = sc_.get("body_d_max", 39.0)

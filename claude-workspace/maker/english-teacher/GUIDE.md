@@ -1,5 +1,7 @@
 # Cú Bông – loa dạy tiếng Anh (bản ESP32-S3)
 
+> Bản có màn 2,8" + 2 loa đang dựng – xem `README.md` của dự án. Hướng dẫn này vẫn theo bản 1 loa, không màn.
+
 Cú Bông là chú loa biết nói, giúp em học tiếng Anh. Bản này dùng bo ESP32-S3 với mic, ampli và 1 loa.
 Em làm theo đúng thứ tự từng mục. Gặp chỗ không chắc thì hỏi thầy/cô trước khi làm tiếp.
 

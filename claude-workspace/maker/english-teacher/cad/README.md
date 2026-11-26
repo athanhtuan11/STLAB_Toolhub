@@ -1,9 +1,43 @@
-# CAD vỏ Cú Bông – bản 1 (ESP32-A1S Audio Kit, 2 loa)
+# CAD vỏ Cú Bông
+
+**Bản hiện tại: có màn 2,8" + 2 loa** (WIP 2026-11-26, mục "Bản có màn + 2 loa" bên dưới). Bản S3 1 loa và A1S là lịch sử, đã vào `backup/` (mục "Lịch sử" cuối file).
+
+**Bàn in thử v3 (2026-11-26):** `print/print-s3-test.yaml` → `print/plates-s3-test/p1-fit-test/p1-fit-test.3mf`, PASS 105 phút, 54,2 g, 1 màu: `face-plate`, `speaker-ring-L`, `button-cap`. Chờ in (cần 4 vít M2.5 × 6).
+
+## Bản có màn + 2 loa (WIP 2026-11-26, chưa PASS gate)
+Sinh bằng `build_owl_s3_screen.py` (Blender 5.2) → `out-s3-screen/` (STL, `asm/`, `owl-params.json`, ảnh, `owl-assembly.sc`);
+bàn in `print/print-s3-screen.yaml` → `print/plates-s3-screen/` (STL in ở `print/stl-s3-screen/`, `amp-tray` in 2 cái = `amp-tray.stl` + `amp-tray-2.stl`).
+Gate `gate_owl_s3_screen.py`: mọi kiểm hình học PASS, **chỉ còn FAIL "bàn in chưa PASS: A_shell_front, B_shell_back"** (cắt lớp C, D, E PASS).
+
+### Vị trí cuối (mm; +Z lên, mặt trước −Y, mặt ráp y = 0,37)
+| Linh kiện | Tâm / số | Ghi chú |
+|---|---|---|
+| Màn MSP2807 | PCB (0; −50,7; 100), header +x, kính y −55,5 | cửa sổ 58,4 × 44 lệch −4,9; viền đè 2,5; glass_recess 1,5 (viền dày 1,35) |
+| face-plate | đĩa 94 × 58 R10 nhô 4 (mặt trước y −57), yên vát 45° rộng 5, vành chặn 104 × 68 × 2 | lắp từ trong; lỗ vỏ 94,6 × 58,6 loe 104,6 × 68,6; 4 vít M2.5 × 6 ở (±45,5; ±27,5) (đổi từ (±49; ±31) vì góc vành R15) |
+| Hộp nền | thẳng đứng y −53, thành 2,4, thu nhỏ 45° về thân | in không mái treo |
+| Loa L/R | (∓43,5; −12; 46), trục [∓0,9063; −0,4226; 0] | chụp trụ Ø72 sâu 32 in liền vành; 6 cánh bám + lỗ O34,2; ngàm xoay + gờ Ø48 giữ nguyên |
+| Ampli ×2 | (−3; −13; 7,3) và (+3; +12,5; 7,3), PCB 18 × 19,4 | dưới bo S3 giữa 2 ray (khay v2); đổi khỏi "lưng x ±27..45" vì nón chụp loa chiếm z 4..80 |
+| Mic | module Ø15 nghiêng 45° tâm (0; −29,2; 133,3), trục [0; −0,7075; 0,7067] | lỗ Ø4 trong vách vỏ, vách trước tì cách PCB 0,2; kẹp mic = ống lót nửa dưới + gờ vát 45°; giữ PCB bằng keo nóng |
+| Mỏ | tâm z 63,3, thu nhỏ 0,64 | dome đỉnh 69,1 (không chồng mép đĩa vì vành mỏ phải < lỗ màn 70,7) |
+| Bụng | Ø36 tâm z 28, 12 vạch + chữ STLAB | bụng trơn |
+| Bu-lông đế | (±24; ±14) như bản S3 | |
+
+### TODO còn lại (WIP)
+1. **shell-front: 558 mm² nhô ra (rộng 31) ở z 20..67, y −36..−53, x ±(13,6..44,5)** = trần vỏ trong của đường hầm giọt nước loa gặp mái vỏ (dốc 31°). Chưa tìm được hình dạng hầm làm hết vùng này (thử bán kính hầm, độ dày vỏ 3/4,5, CY −12/−4/0: vẫn 420..710 mm²).
+2. **shell-back: 180 mm² (rộng 5,5 > ngưỡng 5) ở z 7,7..17,6, x ±(60..66)** cùng nguyên nhân (nửa sau).
+3. Kẹp loa: 6 cánh bám + gờ 0,8 PETG (chưa in thử, chưa tính lực gập); vỏ giữ vành chỉ bằng mép lỗ Ø34,2 (không keo).
+4. Ống dẫn âm mic = lỗ Ø4 trong vỏ (không còn ống in rời); khớp mê cung chỉ ghi tham số (`mic.seal`), chưa có rãnh thật.
+5. TODO đo: PCB ampli/INMP441 (dày, linh kiện) như bản v2.
+
+## Lịch sử (bản cũ, file ở backup/)
 
 Sinh bằng `build_owl.py` (Blender 5.2 bpy, boolean MANIFOLD). Gate: `gate_owl.py` (xem `spec-owl.md`). Ảnh duyệt: `out/owl-preview.png`, `out/owl-exploded.png`.
 Hệ lắp ráp: mm, +Z lên, mặt trước −Y; mặt ráp hai nửa là mặt phẳng y = 0,37. Mọi số đặt ở đầu `build_owl.py`, ghi vào `out/owl-params.json`.
 
-## Bố trí (đổi 2026-11-05: 2 loa trái + phải)
+**Bản ESP32-A1S (2026-11-05 → gỡ 2026-11-17):**
+
+
+### Bố trí (đổi 2026-11-05: 2 loa trái + phải)
 - 2 loa Ø52 × 26, trục x, mặt ra ngoài, tâm (±51,5; 0; 46), hốc Ø52,6. Mỗi loa nằm trong **vành loa** (`speaker-bezel.stl`, in 2 cái): mặt phẳng Ø72 (mép vát 50° + bo nhỏ, ống non 25°) chứa
   lưới Ø56 (lỗ Ø2,8, bước 5,6, 82 lỗ), ống non 30° làm yên côn lắp **từ trong ra ngoài** (không rút ra từ ngoài được), ống ôm vành loa có 3 chốt ngàm xoay cho vòng ép (xem mục "Giữ loa").
 - Bo 82 × 73 × 25 dựng đứng giữa thân, **82 theo Y** (sâu), 73 theo Z, dày 25 theo X; tâm **(0; 0,37; 70)** (đổi 2026-11-08: 82 chia đều 2 nửa vỏ, nâng lên z 70 để trần mái nhọn không support). 2 tấm vẩy đứng (khe 0,3); **chân chặn đầu/cuối bo = chính mái chữ A** (trần hầm bo ở h = 41,3 mm mỗi nửa).
@@ -14,7 +48,7 @@ Hệ lắp ráp: mm, +Z lên, mặt trước −Y; mặt ráp hai nửa là mặ
 - Nửa sau: 5 khe 2 × 18 ở lưng, khe cáp 40 × 12 chân lưng (z 3–16, từ mặt ráp ra ngoài; vẩy bo vẫn nối sàn qua mép trên chạm mái).
 - Vít: 4 vít M3 từ đáy xuyên **tấm đế** (`base-plate.stl`, dày 4, lõm Ø9 sâu 2,8 dưới miếng cao su Ø16) và sàn vỏ (xuyên 3,4) vào đai ốc lục giác 5,8 thả từ trên vào hốc đỉnh 4 trụ trong vỏ (2 trụ mỗi nửa).
 
-## Giữ loa (2026-11-06) – không vít, ngàm xoay
+### Giữ loa (2026-11-06) – không vít, ngàm xoay
 - **Lý do đổi:** bản đầu 4 vấu nằm sau đáy loa 2,7–4,3 mm (không chạm loa → rè). Bản vít M2.5 bỏ vì Tuan: chỗ quá nhỏ, không có cầu bắt vít.
 - **Giữ loa bằng mép trước** (mép dày 5 mm, thân sau mép < Ø39 – Tuan đo):
   - Ron EVA dày 2 mm (vòng ngoài Ø52, lỗ trong **Ø47** – mép trong của mép loa Ø46 (Tuan đo), chừa 0,5 mm/bên để không chạm viền màng loa; vành ron rộng 2,5) giữa mặt sau tấm lưới và mặt loa; khi khóa còn **1,2 mm**.
@@ -25,7 +59,7 @@ Hệ lắp ráp: mm, +Z lên, mặt trước −Y; mặt ráp hai nửa là mặ
 - **In:** `print/print.yaml` bàn `A_speakers` (2 vành loa + 2 vòng ép, Bambu PETG Basic, 0,20 mm, 3 tường, 20 %): PASS, không support, 173 phút, 60,6 g. File `print/plates/A_speakers/A_speakers.3mf`.
 - **Gate `gate_owl` PASS:** chi tiết kín 1 khối; loa (mép Ø52 × 5 + thân Ø39) ở vị trí đã khóa không chạm; số khe ngàm; **thử lắp trên hình**: vòng ép lọt rãnh dọc khi đưa vào, xoay hết 30° khi ấn thêm 0,2, nằm khít ở vị trí khóa.
 
-## Lắp loa
+### Lắp loa
 > [!IMPORTANT]
 > **An toàn (bé < 3 tuổi):** ron và vòng ép nằm trong vỏ, không lộ ra sau khi đóng. Keo epoxy: nơi thoáng, đeo găng, chờ khô hẳn rồi mới cho bé dùng.
 
@@ -36,7 +70,7 @@ Hệ lắp ráp: mm, +Z lên, mặt trước −Y; mặt ráp hai nửa là mặ
 5. Lặp lại cho loa thứ hai.
 6. Dán mặt côn vành loa vào lỗ côn vỏ bằng epoxy (đẩy từ trong ra), chờ khô.
 
-## Khác với spec (cần Claude/Tuan duyệt)
+### Khác với spec (cần Claude/Tuan duyệt)
 1. **Không có gờ–rãnh dọc đường ráp**: gờ nhô qua mặt ráp nên nửa mang gờ phải in đứng trên gờ, trong khi tai/cánh đặc nằm lơ lửng. Thay bằng 6 lỗ chốt Ø2 sâu 8 mỗi nửa
    (đoạn nhựa 1,75 mm) ở tai, cánh và vành nút. Khớp + khe 0,2 theo bảng khe: chưa có, chưa in thử.
 2. **Vít M3 không bắt chéo hai nửa**: tab chéo mặt ráp cũng làm hỏng hướng in → thêm part **tấm đế** kẹp cả hai nửa. Chiều cao tổng không đổi (đế nằm z 0–4).
@@ -44,7 +78,7 @@ Hệ lắp ráp: mm, +Z lên, mặt trước −Y; mặt ráp hai nửa là mặ
 4. `eye-diffuser.stl` chỉ chứa 1 cái (gate buộc 1 khối), in 2 lần. Ảnh render dùng STL thật, màu theo design-spec, nhám 0,6.
 5. **Mép vành loa** đổi từ bo R8 sang vát 50° + bo nhỏ (in úp mặt lưới, không cần support). Mặt loa lùi 1,3 mm so với bản cũ.
 
-## Kích thước part (đã đặt hướng in, mm)
+### Kích thước part (đã đặt hướng in, mm)
 | Part | X × Y × Z | Hướng in | Ghi chú |
 |---|---|---|---|
 | shell-front | 134,4 × 168,7 × 56,1 | mặt ráp xuống | mơ; 126,5 g, 4 h 11 |
@@ -60,7 +94,7 @@ Hệ lắp ráp: mm, +Z lên, mặt trước −Y; mặt ráp hai nửa là mặ
 | eye-diffuser (×2) | 40 × 40 × 3,8 | cửa sổ xuống | PETG trắng tự nhiên |
 | eye-ring (×2) | 54 × 54 × 9,6 | **mặt trước phẳng xuống**, mặt lõm ôm vỏ hướng lên | kem (không support) |
 
-## Hết support (2026-11-08) – cắt lớp 6 bàn PASS, không support
+### Hết support (2026-11-08) – cắt lớp 6 bàn PASS, không support
 Kết quả `slice.py print/print.yaml`: A 172 ph / 60,6 g, B 263 ph / 128,4 g, C 295 ph / 151,9 g, D 97 ph / 48,8 g, E 51 ph / 27,0 g, F 8 ph / 3,4 g – tổng 14 h 44, 420,1 g (trước: 12 h 04, 297,7 g – vỏ dày hơn vì trần đặc, hạ infill nếu cần).
 Sửa hình học (giữ ngoại hình + các khe lắp loa / ngàm xoay / ron / bo 82 × 73 × 25 – gate kiểm):
 1. **Khoang trong vỏ**: bỏ vòm elipsoid (trần ngang ~97 mm – nguyên nhân support 3797 + 11443 mm²). Thay bằng khoang giao (∩ khoang cũ) của: **mái chữ A** dọc theo z (rộng 48 ở mặt ráp, dốc 45° mỗi bên), **hầm bo** (thành đứng ±12,8 + mái chữ A trên đầu cuối bo), **đường hầm loa** (tiết diện giọt nước: tròn Ø41 + chóp 45° – lắp thân loa Ø39), **ống trụ bụng** (tấm bụng lắp từ trong; ống Ø88,8 + vát 45° ở đỉnh). Mọi trần nghiêng ≥ 45° hoặc đỉnh phẳng ≤ 2 mm.
@@ -72,7 +106,7 @@ Sửa hình học (giữ ngoại hình + các khe lắp loa / ngàm xoay / ron /
 7. 2026-11-08 (sau): bỏ đệm + lỗ nút âm lượng hai bên đầu (commit 25accf3); nút âm lượng về **lưng** bằng cụm rời `vol-pod` (mục dưới). Cắt lớp lại: A 171 ph / 60,6 g, B 251 ph / 126,5 g, C 311 ph / 155,7 g, D 96 ph / 48,8 g, E 50 ph / 26,9 g, F 8 ph / 3,4 g – **tổng 14 h 51, 423,2 g, 6 bàn PASS, không support** (v2: C 312 ph / 157,0 g).
 Lưu ý: hai nửa vỏ có khối đặc dày (mái chữ A) – hộp bo vẫn lọt, nhưng **dây loa / LED phải đi qua đường hầm loa + giếng mắt** (chưa vẽ rãnh đi dây riêng – TODO nếu cần). Công cụ kiểm nhanh: `tools/print/scripts/printability.py out`; build nhanh bỏ ảnh: đặt biến môi trường `OWL_FAST=1`.
 
-## 3 nút MX (2026-11-08, ý tưởng clicker – thay công tắc 6 × 6)
+### 3 nút MX (2026-11-08, ý tưởng clicker – thay công tắc 6 × 6)
 Số lắp ghép **lấy từ fit-library** (`tools/model-study/fit-library/fits.json`): `catpaw/mx-socket` (lỗ vuông 14,00 press, sâu 8,58 từ miệng, rãnh V 45°: 1,94 → 3,44 dưới miệng, sâu nhất 2,69, rộng 15,44) và `catpaw/mx-keycap-cross` (lỗ chữ thập 4,19 × 1,25). Ghi vào `out/owl-params.json` mục `mx`; file lắp ráp: `out/asm/mx-switch-<talk|vol_up|vol_down>.stl` (khối giả switch), `mx-cap-vol-up/-down.stl`, `button-cap.stl`.
 - **Lỗ switch xoay 45° quanh trục** (hình thoi) – như mẫu catpaw – nên trần lỗ là mái 45° (in không support). Lỗ nằm **trên đường ráp**: mỗi nửa vỏ giữ nửa lỗ → **kẹp switch + nắp khi đóng vỏ** (lắp từ trong trước khi đóng; bé < 3 tuổi không rút nắp ra từ ngoài được).
 - **talk** (KEY4, GPIO23): dưới nắp nút đầu, trục z, miệng lỗ z = 133,6. Nắp `button-cap`: vành Ø58 vát 45° tì vào yên côn của vỏ (lỗ vỏ Ø50,8, nắp Ø50, vành hơn lỗ **3,6 mm/bên**), mặt dưới có lỗ chữ thập 4,19 × 1,25 sâu 3,6 cắm vào chân MX.
@@ -94,24 +128,24 @@ Số lắp ghép **lấy từ fit-library** (`tools/model-study/fit-library/fits
   Nếu switch thật cao/thấp hơn thì nắp nhô/lún tương ứng → đo 1 số khi có switch: **từ vai ngàm (mặt tấm 14,00) tới đỉnh chân chữ thập**.
 - **Dây:** hàn 2 chân mỗi switch **song song** nút KEY4 / KEY5 / KEY6 trên bo A1S (GPIO23 / GPIO18 / GPIO5 xuống GND); dây xuống khoang qua cửa sổ đáy lỗ (thoi 9 mm). An toàn: rút USB trước khi hàn; điện 3,3 V (không có điện áp cao); mỏ hàn nóng; dây đủ dài để mở 2 nửa vỏ, cố định bằng keo nến; nắp nút bị giữ trong vỏ (vành trong lớn hơn lỗ vỏ).
 
-## Chưa chắc / TODO
+### Chưa chắc / TODO
 - Độ dày, cao linh kiện bo Audio Kit; vị trí USB: không có nguồn → khe cáp rộng; bo giữ bằng ray + chân chặn phía trước, **sau bo chưa có chốt giữ** (gate cấm vật chạm khối 82 × 73 × 25) → dùng xốp/keo nóng.
 - Switch MX (xem mục 3 nút MX): ổ 14,00 + rãnh V + chữ thập đã kiểm chứng (giống switch-clicker); chỉ còn chiều cao phía trên mặt ổ là giả định. Thân loa sau mép < Ø39 (Tuan đo 2026-11-06), lọt lỗ vòng ép Ø42.
 - fit-library chưa có mục M3 / ống non: **chưa in thử** mọi khe (0,3 hốc linh kiện, 0,3 yên côn, 0,4 nút).
 - Đáy phẳng vát 0,8 mm chưa làm. Khắc ▲ và logo STLAB chưa làm.
 
-## File CAD để đo (SolidCraft, 2026-11-06)
+### File CAD để đo (SolidCraft, 2026-11-06)
 - `out/owl-assembly.sc`: mở bằng SolidCraft, 24 chi tiết, mỗi chi tiết một component **đúng vị trí lắp**, đơn vị mm (gồm loa và bo mạch giữ chỗ `*-dummy`, không in).
 - Sinh lại: chạy `build_owl.py` (Blender) rồi `python export_cad.py out`.
 - Chi tiết là thân lưới: đo bằng Measure, bắt đỉnh/cạnh. Vành loa và vòng ép có thể chuyển sang mặt phẳng/trụ thật bằng Convert Mesh để đo dễ hơn.
 
-## Bản ESP32-S3 (1 loa ở bụng, mic ở trán chính giữa, 1 nút, 2026-11-12)
+### Bản ESP32-S3 (1 loa ở bụng, mic ở trán chính giữa, 1 nút, 2026-11-12)
 
-Sinh bằng `build_owl_s3.py` (Blender 5.2 bpy), xuất ra `out-s3/` (STL in, `asm/` vị trí lắp, `owl-params.json`, `owl-assembly.sc`, ảnh
-`owl-preview/exploded/front/back.png`). Gate: `gate_owl_s3.py`. Bàn in: `print/print-s3.yaml` → `print/plates-s3/` (PETG Bambu A1 0,20, KHÔNG support).
+Sinh bằng `backup/20261126-ban-s3-1-loa-thay-bang-ban-man/build_owl_s3.py` (Blender 5.2 bpy), xuất ra `backup/20261126-ban-s3-1-loa-thay-bang-ban-man/out-s3/` (STL in, `asm/` vị trí lắp, `owl-params.json`, `owl-assembly.sc`, ảnh
+`owl-preview/exploded/front/back.png`). Gate: `backup/20261126-ban-s3-1-loa-thay-bang-ban-man/gate_owl_s3.py`. Bàn in: `print/backup/20261126-ban-s3-1-loa-thay-bang-ban-man/print-s3.yaml` → `print/backup/20261126-ban-s3-1-loa-thay-bang-ban-man/plates-s3/` (PETG Bambu A1 0,20, KHÔNG support).
 Quyết định Tuan 2026-11-12: chỉ 1 nút (nói, GPIO 1), cáp USB-C thẳng, chưa có TPU → mọi thứ in PETG, không dùng tấm EVA.
 
-### Vị trí cuối (mm; +Z lên, mặt trước −Y, mặt ráp y = 0,37)
+#### Vị trí cuối (mm; +Z lên, mặt trước −Y, mặt ráp y = 0,37)
 | Linh kiện | Tâm | Hộp giữ chỗ | Ghi chú |
 |---|---|---|---|
 | Loa Ø52 × 26 | (0; −42,8; 48) | trục Y, mặt ra −Y | mặt loa ÁP SÁT vành; vành/vòng ép đặt ở y −41,6 (như bản A1S, chỉ đổi trục) |
@@ -138,20 +172,20 @@ có TPU thì in ron Ø52/Ø46 × 2 TPU 95A (cuộn ngoài, không qua AMS lite),
 
 **Khay ampli:** dán keo nóng xuống sàn (Tuan chọn), không cần vít.
 
-### Vật tư (bản S3)
+#### Vật tư (bản S3)
 1 switch MX (nút nói, GPIO 1) + nắp `button-cap`, keo nóng (khay ampli, nắp mic nếu lỏng), cáp USB-C THẲNG, loa 4 Ω 3 W Ø52 × 26, ESP32-S3 N16R8, INMP441, MAX98357A.
 Không còn tấm EVA. Đã bỏ: 2 nút âm lượng (GPIO 39/40), vol-pod, nắp mx-cap-vol, lỗ cửa sổ ở lưng (vỏ lưng liền, giữ khe nhiệt).
 
-### Bàn in S3 (PASS cả 6, không support)
+#### Bàn in S3 (PASS cả 6, không support)
 A 1.5 h 23 g; B 4.6 h 143 g; C 5.1 h 169 g; D 1.2 h 37 g; E 0.7 h 24 g; F 0.1 h 2 g.
 
-### Chưa chắc / TODO
+#### Chưa chắc / TODO
 - Kích thước thật bo clone ESP32-S3 N16R8 2 cổng USB-C (đang chừa 72 × 29 × 16).
 - Hướng lỗ âm INMP441; kín tiếng mic chỉ bằng gờ lõm PETG (chưa đo).
 - Lẫy lò xo PETG: lực thực tế + nứt mỏi chưa thử.
 - Lệch spec đã báo: mic z 115,4 / y −34,5 (trần hốc trán z = 124; vách trán cong dạng mái 45°); loa y −42,8 (mặt loa ì vành).
 
-## Bàn in thử v2 (2026-11-18, theo góp ý Tuan sau lần in thử 1)
+### Bàn in thử v2 (2026-11-18, theo góp ý Tuan sau lần in thử 1)
 Tuan: bezel **đạt**; eye-diffuser không góp ý (bỏ khỏi bàn thử). Đi dây **hàn thẳng toàn bộ**, không jack/cầu đấu.
 | Chi tiết | Lỗi lần 1 | Sửa v2 |
 |---|---|---|
@@ -159,29 +193,5 @@ Tuan: bezel **đạt**; eye-diffuser không góp ý (bỏ khỏi bàn thử). Đ
 | button-cap | không ép được chân switch MX | chữ thập 4,19 × 1,25 nằm trong **ống nhún Ø5,71** + rãnh vòng Ø9,2 sâu 4 (như mẫu catpaw); kèm **`mx-cross-gauge.stl`** 3 khe 1,25 / 1,35 / 1,45 (1/2/3 chấm) – nắp lỏng/chặt thì báo số chấm vừa nhất |
 | mic-clamp | không hợp module | INMP441 Shopee **PCB tròn ~Ø15** (ShillehTek manual), hốc Ø15,6, rãnh dày 1,9, **nhét từ trên xuống**, mặt sau hở giữa (hàn dây + chip), ống dẫn âm lỗ Ø4; mặt PHẲNG (không chip) hướng ra trán |
 | amp-tray | tạm, chưa tối ưu, đặt chạm đáy vỏ | MAX98357A clone **18 × 19** / Adafruit 19,4 × 17,8: PCB **trượt vào 2 ray rãnh** (rãnh 2,0), gờ khóa 0,4 + vấu chặn, 2 đầu trống cho dây I2S + dây loa, gầm hở 3 mm + khe thoáng; đặt trên đáy hốc thật z 7,3 (đo ray_cast) – bắt **2 vít M2.5 × 6** xuyên đáy vỏ trước xuống tấm đế (lỗ mồi Ø2,2 đã khoét) |
-Gate `gate_owl_s3.py` thêm: PCB mic/ampli thật không chạm kẹp/khay/vỏ; kẹp + khay không chạm vỏ. TODO đo: độ dày PCB 2 module, chiều cao linh kiện ampli, vị trí lỗ âm INMP441.
+Gate `backup/20261126-ban-s3-1-loa-thay-bang-ban-man/gate_owl_s3.py` thêm: PCB mic/ampli thật không chạm kẹp/khay/vỏ; kẹp + khay không chạm vỏ. TODO đo: độ dày PCB 2 module, chiều cao linh kiện ampli, vị trí lỗ âm INMP441.
 
-## Bản có màn + 2 loa (WIP 2026-11-26, chưa PASS gate)
-Sinh bằng `build_owl_s3_screen.py` (Blender 5.2) → `out-s3-screen/` (STL, `asm/`, `owl-params.json`, ảnh, `owl-assembly.sc`);
-bàn in `print/print-s3-screen.yaml` → `print/plates-s3-screen/` (STL in ở `print/stl-s3-screen/`, `amp-tray` in 2 cái = `amp-tray.stl` + `amp-tray-2.stl`).
-Gate `gate_owl_s3_screen.py`: mọi kiểm hình học PASS, **chỉ còn FAIL "bàn in chưa PASS: A_shell_front, B_shell_back"** (cắt lớp C, D, E PASS).
-
-### Vị trí cuối (mm; +Z lên, mặt trước −Y, mặt ráp y = 0,37)
-| Linh kiện | Tâm / số | Ghi chú |
-|---|---|---|
-| Màn MSP2807 | PCB (0; −50,7; 100), header +x, kính y −55,5 | cửa sổ 58,4 × 44 lệch −4,9; viền đè 2,5; glass_recess 1,5 (viền dày 1,35) |
-| face-plate | đĩa 94 × 58 R10 nhô 4 (mặt trước y −57), yên vát 45° rộng 5, vành chặn 104 × 68 × 2 | lắp từ trong; lỗ vỏ 94,6 × 58,6 loe 104,6 × 68,6; 4 vít M2.5 × 6 ở (±45,5; ±27,5) (đổi từ (±49; ±31) vì góc vành R15) |
-| Hộp nền | thẳng đứng y −53, thành 2,4, thu nhỏ 45° về thân | in không mái treo |
-| Loa L/R | (∓43,5; −12; 46), trục [∓0,9063; −0,4226; 0] | chụp trụ Ø72 sâu 32 in liền vành; 6 cánh bám + lỗ O34,2; ngàm xoay + gờ Ø48 giữ nguyên |
-| Ampli ×2 | (−3; −13; 7,3) và (+3; +12,5; 7,3), PCB 18 × 19,4 | dưới bo S3 giữa 2 ray (khay v2); đổi khỏi "lưng x ±27..45" vì nón chụp loa chiếm z 4..80 |
-| Mic | module Ø15 nghiêng 45° tâm (0; −29,2; 133,3), trục [0; −0,7075; 0,7067] | lỗ Ø4 trong vách vỏ, vách trước tì cách PCB 0,2; kẹp mic = ống lót nửa dưới + gờ vát 45°; giữ PCB bằng keo nóng |
-| Mỏ | tâm z 63,3, thu nhỏ 0,64 | dome đỉnh 69,1 (không chồng mép đĩa vì vành mỏ phải < lỗ màn 70,7) |
-| Bụng | Ø36 tâm z 28, 12 vạch + chữ STLAB | bụng trơn |
-| Bu-lông đế | (±24; ±14) như bản S3 | |
-
-### TODO còn lại (WIP)
-1. **shell-front: 558 mm² nhô ra (rộng 31) ở z 20..67, y −36..−53, x ±(13,6..44,5)** = trần vỏ trong của đường hầm giọt nước loa gặp mái vỏ (dốc 31°). Chưa tìm được hình dạng hầm làm hết vùng này (thử bán kính hầm, độ dày vỏ 3/4,5, CY −12/−4/0: vẫn 420..710 mm²).
-2. **shell-back: 180 mm² (rộng 5,5 > ngưỡng 5) ở z 7,7..17,6, x ±(60..66)** cùng nguyên nhân (nửa sau).
-3. Kẹp loa: 6 cánh bám + gờ 0,8 PETG (chưa in thử, chưa tính lực gập); vỏ giữ vành chỉ bằng mép lỗ Ø34,2 (không keo).
-4. Ống dẫn âm mic = lỗ Ø4 trong vỏ (không còn ống in rời); khớp mê cung chỉ ghi tham số (`mic.seal`), chưa có rãnh thật.
-5. TODO đo: PCB ampli/INMP441 (dày, linh kiện) như bản v2.

@@ -40,10 +40,10 @@ COLOR_VN = {"RD": "đỏ", "OG": "cam", "BK": "đen", "YE": "vàng", "GN": "xanh
 # ---- 1. wiring.load: doc + kiem file so do ----
 w = wiring.load(WIRING)
 check(w.get("title") == "Cú Bông S3 – sơ đồ đấu dây", "wiring.load: title")
-check(set(w.get("groups", {})) == {"nguon", "mic", "ampli", "nut"}, "wiring.load: groups")
-check(set(w.get("parts", {})) == {"esp", "mic", "amp", "cap", "spk", "btn"}, "wiring.load: parts")
+check(set(w.get("groups", {})) == {"nguon", "mic", "ampli", "nut", "ampli2", "man"}, "wiring.load: groups")
+check(set(w.get("parts", {})) == {"esp", "mic", "amp", "cap", "spk", "btn", "amp2", "cap2", "spk2", "tft"}, "wiring.load: parts")
 wires = w.get("wires", [])
-check(len(wires) == 17, f"wiring.load: 17 day (co {len(wires)})")
+check(len(wires) == 39, f"wiring.load: 39 day (co {len(wires)})")
 WKEYS = {"from_part", "from_pin", "to_part", "to_pin", "from_label", "to_label", "level", "color", "color_name",
          "group", "group_label", "note"}
 for i, x in enumerate(wires):
@@ -51,7 +51,7 @@ for i, x in enumerate(wires):
     check(not miss, f"day {i + 1}: thieu khoa {sorted(miss)}")
     if not miss:
         check(x["color_name"] == COLOR_VN.get(x["color"]), f"day {i + 1}: color_name sai ({x['color']} -> {x['color_name']})")
-if len(wires) == 17 and not (WKEYS - set(wires[0])):
+if len(wires) == 39 and not (WKEYS - set(wires[0])):
     a = wires[0]
     check((a["from_part"], a["from_pin"], a["to_part"], a["to_pin"]) == ("mic", "VDD", "esp", "3V3"), "day 1 = mic.VDD -> esp.3V3")
     check(a["from_label"] == "INMP441 (mic)" and a["to_label"] == "ESP32-S3 N16R8", "day 1: nhan linh kien")
@@ -115,7 +115,7 @@ for p in d["projects"]:
 et = rows.get("maker/english-teacher", {})
 check(et.get("works") is True and et.get("guide_url") == "/projects/maker--english-teacher/guide",
       "english-teacher: works + guide_url")
-check(et.get("cover", "").endswith("/cad/out-s3/owl-front.png"), "english-teacher: cover theo manifest")
+check(et.get("cover", "").endswith("/cad/out-s3-screen/owl-front.png"), "english-teacher: cover theo manifest")
 cam = rows.get("maker/esp32-s3-cam", {})
 check(cam.get("works") is True and cam.get("guide_url") in ("", None), "esp32-s3-cam: works, chua co guide -> guide_url rong")
 check(rows.get("maker/line-bot", {}).get("works") is False, "works mac dinh False")
@@ -203,7 +203,7 @@ check("<svg" in blk, "khoi so do co SVG")
 check('data-wire-group="all"' in blk and all(f'data-wire-group="{k}"' in blk for k in ("nguon", "mic", "ampli", "nut")),
       "nut loc: all + 4 nhom")
 check(all(f'data-wire-svg="{k}"' in blk for k in ("mic", "ampli", "nguon", "nut")), "SVG tung nhom data-wire-svg")
-check(blk.count("data-wire=") == 17, f"bang day: 17 dong data-wire (co {blk.count('data-wire=')})")
+check(blk.count("data-wire=") == 39, f"bang day: 39 dong data-wire (co {blk.count('data-wire=')})")
 check(blk.count('type="checkbox"') >= 17, "moi dong day co o tich")
 for s in ["cam", "đỏ", "xám", "CHỈ 3,3 V", "KHÔNG nối GND", "GPIO16", "Dây nguồn"]:
     check(s in blk, f"bang day thieu '{s}'")
