@@ -1,6 +1,48 @@
 # CAD vỏ Cú Bông
 
-**Bản hiện tại: có màn 2,8" + 2 loa** (WIP 2026-11-26, mục "Bản có màn + 2 loa" bên dưới). Bản S3 1 loa và A1S là lịch sử, đã vào `backup/` (mục "Lịch sử" cuối file).
+## Bản v3 lắp ráp thật (2026-11-27, gate PASS)
+
+Theo `spec-owl-v3-assembly.md`. Script `build_owl_v3.py` (Blender 5.2) → `out-v3/` (STL in, `asm/`, `owl-params.json`, ảnh). Bản cũ `build_owl_s3_screen.py` giữ nguyên.
+
+**Chạy:** `python run_v3.py` (vẽ 11 s, song song: `tools/assembly-check` 4 s + kiểm in nhanh printability 5 s + mẫu thử 2 s, rồi `gate_owl_v3` 5 s; ~27 s).
+- `python run_v3.py --slice`: thêm cắt lớp thật (~30–50 s), chỉ khi tầng nhanh sạch; tổng ~65 s.
+- `--no-build`: chỉ kiểm.
+
+**Kết quả:**
+- `assembly-check` PASS, 0 FAIL, 0 WARN (14 part); `gate_owl_v3` PASS.
+- 5 bàn `print/plates-v3/print-v3.3mf` PASS không support: A vỏ trước + kẹp mic + đế nút · B vỏ sau · C 2 vành loa + 2 vòng ép · D kem (face-plate, bụng, bệ, khay S3) · E bơ (mỏ – brim bắt buộc, nắp nút).
+
+**Vỏ trước = khung.**
+- 6 vít M2.5 × 12 tự ren nối 2 nửa tại (x, z) = (±47; 11), (±52; 113), (±35; 151) mm. Vỏ trước: trụ + lỗ mồi Ø2,4. Vỏ sau: giếng Ø5,6 đáy 3,0 + lỗ thông Ø2,8. Độ sâu giếng từ mặt lưng 31,4 / 25,8 / 9,3 mm → tua vít thân ≤ Ø5, dài ≥ 41 mm.
+- Bỏ 6 lỗ chốt Ø2.
+- Vít trong lòng: 8 vít M2.5 × 6 song song trục y, bắt từ mặt ráp (vỏ trước nằm ngửa): vành loa 2 × 2 (vây vít), khay S3 2, đế nút 2. Gate: tua vít Ø8 × 80 không vướng, đạt cả 8.
+- Tai/vây dày 3,0; hốc trên vỏ trước +0,2/bên; mặt tai thấp hơn mặt ráp 0,1. Hốc đầu vít trên vỏ sau là côn 45° Ø8 (không trần phẳng).
+
+**Vành loa:** đặt theo −y cùng loa + vòng ép đã khóa (cụm lắp sẵn), 1 vây 2 vít ở mép trên. Đáy vây phẳng tới c 49 rồi dốc 45° (in mặt lưới xuống, không support). Đáy vành cắt phẳng z 4,3 (nằm trên bệ).
+
+**Bệ** (`base.stl` thay `base-plate`):
+- Siêu ellip 124 × 112, nhô trước 62 / sau 50, cao 6 (z −2..4), vát 45° 2,5 mép trên (in mặt trên xuống).
+- 4 hốc chân cao su Ø10,4 sâu 1,0 (TODO chọn loại). 4 bu-lông M3 từ dưới vào đai ốc 5,9 cũ (TODO chiều dài, dự kiến M3 × 16).
+- Góc lật nhỏ nhất 34,7° (≥ 20°), tính bảo thủ: vỏ đặc PETG 1,27 g/cm³ + giữ chỗ loa 2 × 60 g, màn 35 g, bo 10 g (TODO cân thật) → ~1344 g, trọng tâm cao 72 mm.
+
+**Khay chung `s3-tray`:**
+- Giữ nguyên ray 29,6, gờ đỡ, chặn đầu của bản cũ (Tuan xác nhận đúng). Đáy khay z 8,6 (trên sàn cong), ray tới y 29,5 (nằm gọn dưới mái lều 45° của vỏ sau), bo S3 dài ra sau tựa hốc vỏ sau như cũ. Gờ đỡ vát 45° để in đứng.
+- 2 ampli ĐỨNG ở 2 mặt ngoài ray, mặt linh kiện hướng ra loa. PCB 18 × 19,4 cài rãnh 2,0 (ăn 1,0, khe 0,25), cạnh dưới z 20,5. Dây loa ngắn.
+- Phương án này Claude tự chọn khi Tuan vắng (Tuan 2026-11-27: "tự chọn mẫu đẹp theo ý bạn"). Tuan duyệt lại bằng ảnh.
+
+**Đế nút** (`button-base`): ổ MX 14,00 + rãnh V tách khỏi vỏ, 2 vít, đặt theo −y. Nắp nút đặt theo −y trước khi đóng vỏ sau. Hốc đế nút trên 2 nửa có mái 45°.
+
+**Lắp từ ngoài** (lẫy chưa có số in thật → bàn thử):
+- `face-plate`: bỏ vành chặn 104 × 68 + 4 vít trong; thêm vành 1,5 (dày 1,0) ngồi hốc chìm 1,0 + 6 lẫy 1,2 × 5, gờ 0,8, vào cửa sổ cầu 5,6. Màn vẫn bắt 4 vít vào face-plate; cả cụm đẩy từ ngoài.
+- Bụng: đĩa + váy ngồi hốc chìm tới y −49; 4 lẫy dài 14,5 móc vát 45° vào côn sau vách (khoang bụng kết thúc bằng côn 45°, không trần phẳng).
+- Mỏ: hạ tâm z 61; vành Ø17,2 ngồi hốc chìm; lỗ Ø14; 3 lẫy móc côn 45°; lõi có mái côn.
+- Kẹp mic: 2 gai 0,8 vào cửa sổ vách ống lót.
+
+**Bàn thử nhỏ IN TRƯỚC:** `print/print-v3-test.yaml` → `plates-v3-test` PASS 115 phút 42,3 g (`make_v3_coupons.py`): belly-coupon-a (lẫy ăn 0,6) và -b (ăn 0,4) + bụng thật; beak-coupon + mỏ thật; screw-front/back (1 vít M2.5 × 12); fin-pocket + fin-tab (2 vít M2.5 × 6).
+
+**Kiểm lắp ráp:** `tools/assembly-check` thêm khóa `insert.flex` (lẫy biến dạng khi ép, ≤ 1,0, phải có joint snap) và `insert.with` (cụm lắp sẵn); test 13/13 PASS.
+
+**Bản hiện tại: v3 lắp ráp thật** (2026-11-27, mục trên). Bản có màn + 2 loa (2026-11-26, mục "Bản có màn + 2 loa" bên dưới) đã thay; bản S3 1 loa và A1S là lịch sử, đã vào `backup/` (mục "Lịch sử" cuối file).
 
 **Nút nói làm lại (2026-11-26, Tuan in thử: "nút nhấn chìm xuống", chữ thập không ăn chân switch):** chép nguyên clicky chạy thật cat-paw
 (`docs/research-notes/cat-paw-clicker-fits.md`): mặt dưới nắp có hốc trần cao **9,80** trên mép váy, ống Ø**5,71** từ trần xuống, đầu ống +**4,31** trên mép váy, lỗ chữ thập 4,19 × 1,25

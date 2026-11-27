@@ -1,0 +1,526 @@
+{
+ "variant": "v3",
+ "v3": {
+  "shell_screws": {
+   "xz": [
+    [
+     -47.0,
+     11.0
+    ],
+    [
+     47.0,
+     11.0
+    ],
+    [
+     -52.0,
+     113.0
+    ],
+    [
+     52.0,
+     113.0
+    ],
+    [
+     -35.0,
+     151.0
+    ],
+    [
+     35.0,
+     151.0
+    ]
+   ],
+   "thread": "M2.5 x 12 tu ren",
+   "pilot_d": 2.4,
+   "thru_d": 2.8,
+   "well_d": 5.6,
+   "well_floor": 3.0,
+   "axis": "+y"
+  },
+  "screws6": [
+   {
+    "name": "bezel-L-0",
+    "part": "speaker-bezel-L",
+    "pos": [
+     -47.4,
+     0.27,
+     86.4
+    ],
+    "axis": [
+     0,
+     1,
+     0
+    ],
+    "head_top_y": 1.97
+   },
+   {
+    "name": "bezel-L-1",
+    "part": "speaker-bezel-L",
+    "pos": [
+     -47.4,
+     0.27,
+     92.8
+    ],
+    "axis": [
+     0,
+     1,
+     0
+    ],
+    "head_top_y": 1.97
+   },
+   {
+    "name": "bezel-R-0",
+    "part": "speaker-bezel-R",
+    "pos": [
+     47.4,
+     0.27,
+     86.4
+    ],
+    "axis": [
+     0,
+     1,
+     0
+    ],
+    "head_top_y": 1.97
+   },
+   {
+    "name": "bezel-R-1",
+    "part": "speaker-bezel-R",
+    "pos": [
+     47.4,
+     0.27,
+     92.8
+    ],
+    "axis": [
+     0,
+     1,
+     0
+    ],
+    "head_top_y": 1.97
+   },
+   {
+    "name": "tray-L",
+    "part": "s3-tray",
+    "pos": [
+     -26.0,
+     0.27,
+     10.9
+    ],
+    "axis": [
+     0,
+     1,
+     0
+    ],
+    "head_top_y": 1.97
+   },
+   {
+    "name": "tray-R",
+    "part": "s3-tray",
+    "pos": [
+     26.0,
+     0.27,
+     10.9
+    ],
+    "axis": [
+     0,
+     1,
+     0
+    ],
+    "head_top_y": 1.97
+   },
+   {
+    "name": "button-L",
+    "part": "button-base",
+    "pos": [
+     -16.5,
+     0.27,
+     129.33
+    ],
+    "axis": [
+     0,
+     1,
+     0
+    ],
+    "head_top_y": 1.97
+   },
+   {
+    "name": "button-R",
+    "part": "button-base",
+    "pos": [
+     16.5,
+     0.27,
+     129.33
+    ],
+    "axis": [
+     0,
+     1,
+     0
+    ],
+    "head_top_y": 1.97
+   }
+  ],
+  "ear": {
+   "t": 3.0,
+   "clr": 0.2,
+   "pilot_depth": 4.6,
+   "head_relief": [
+    8.0,
+    3.8
+   ]
+  },
+  "base": {
+   "hx": 62.0,
+   "yf": 62.0,
+   "yb": 50.0,
+   "n": 2.6,
+   "z": [
+    -2.0,
+    4.0
+   ],
+   "chamfer": 2.5,
+   "feet": [
+    [
+     -40.0,
+     -38.0
+    ],
+    [
+     40.0,
+     -38.0
+    ],
+    [
+     -38.0,
+     32.0
+    ],
+    [
+     38.0,
+     32.0
+    ]
+   ],
+   "foot_d": 10.4,
+   "bolts": "4 x M3 x 16 tu duoi (TODO chieu dai theo vit co san)"
+  },
+  "snaps": {
+   "face_plate": {
+    "n": 6,
+    "t": 1.2,
+    "w": 5.0,
+    "hook": 0.8,
+    "win_u": 15.5
+   },
+   "belly": {
+    "n": 4,
+    "t": 1.2,
+    "w": 5.0,
+    "hook": 0.8,
+    "len": 12.1
+   },
+   "beak": {
+    "n": 3,
+    "t": 1.2,
+    "w": 4.5,
+    "hook": 0.45,
+    "hole_d": 14.0
+   },
+   "mic_clamp": {
+    "n": 2,
+    "hook": 0.8
+   }
+  },
+  "driver": [
+   8.0,
+   80.0
+  ]
+ },
+ "wall": 2.4,
+ "speaker_pocket_d": 52.6,
+ "grille_hole_d": 2.8,
+ "mic_hole_d": 2.0,
+ "m3_clear_d": 3.4,
+ "m3_nut_s": 5.9,
+ "button_cap_d": 50.0,
+ "button_hole_d": 50.8,
+ "vent_w": 2.0,
+ "speakers": [
+  {
+   "center": [
+    -51.8,
+    0.37,
+    46.0
+   ],
+   "axis": [
+    -1.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "center": [
+    51.8,
+    0.37,
+    46.0
+   ],
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ]
+  }
+ ],
+ "pcb_center": [
+  0.0,
+  8.700000000000003,
+  34.0
+ ],
+ "pcb_box": [
+  29.0,
+  72.0,
+  16.0
+ ],
+ "amps": [
+  {
+   "center": [
+    -21.0,
+    -3.0,
+    30.2
+   ],
+   "box": [
+    4.6,
+    18.0,
+    19.4
+   ],
+   "orient": "dung, mat linh kien huong ra loa (x)",
+   "pcb": {
+    "center": [
+     -19.5,
+     -3.0,
+     30.2
+    ],
+    "box": [
+     1.6,
+     18.0,
+     19.4
+    ],
+    "parts_h": 3.0,
+    "parts_dir": [
+     -1,
+     0,
+     0
+    ],
+    "note": "clone Shopee 18x19 / Adafruit 19,4x17,8; TODO do"
+   }
+  },
+  {
+   "center": [
+    21.0,
+    -3.0,
+    30.2
+   ],
+   "box": [
+    4.6,
+    18.0,
+    19.4
+   ],
+   "orient": "dung, mat linh kien huong ra loa (x)",
+   "pcb": {
+    "center": [
+     19.5,
+     -3.0,
+     30.2
+    ],
+    "box": [
+     1.6,
+     18.0,
+     19.4
+    ],
+    "parts_h": 3.0,
+    "parts_dir": [
+     1,
+     0,
+     0
+    ],
+    "note": "clone Shopee 18x19 / Adafruit 19,4x17,8; TODO do"
+   }
+  }
+ ],
+ "screen": {
+  "center": [
+   0.0,
+   -50.7,
+   100.0
+  ],
+  "glass_front_y": -55.5,
+  "header_side": "+x",
+  "window": [
+   58.4,
+   44.0
+  ],
+  "window_offset_x": -4.9,
+  "glass_recess": 1.5,
+  "bezel_over": 2.5,
+  "holes": [
+   80.0,
+   44.0
+  ],
+  "hole_d": 3.2,
+  "touch": true
+ },
+ "mic": {
+  "center": [
+   0.0,
+   -29.2,
+   132.4
+  ],
+  "box": [
+   17.0,
+   8.0,
+   17.0
+  ],
+  "holes": 3,
+  "hole_x": [
+   -1.5,
+   0.0,
+   1.5
+  ],
+  "hole_z": 138.72,
+  "axis": [
+   0.0,
+   -0.7075,
+   0.7067
+  ],
+  "seal": {
+   "type": "gasket",
+   "pocket_floor_w": 1.8,
+   "gap": 1.0,
+   "gasket_od": 12.0,
+   "gasket_id": 6.4,
+   "note": "ron xop dan len vach quanh ong dan am O4; PCB ep ron"
+  },
+  "gasket_t": 1.2,
+  "drop": 0.9,
+  "pcb": {
+   "center": [
+    0.0,
+    -29.2,
+    132.4
+   ],
+   "d": 15.0,
+   "t": 1.6,
+   "axis": [
+    0.0,
+    -0.7075,
+    0.7067
+   ],
+   "note": "INMP441 Shopee tron ~O15, nghieng 45 do; day PCB TODO"
+  }
+ },
+ "pcb_usb": {
+  "center": [
+   0.0,
+   44.7,
+   34.0
+  ],
+  "dir": "+y"
+ },
+ "cable_slot": {
+  "side": "back",
+  "w": 14.0,
+  "h": 9.0,
+  "r": 2.0,
+  "center": [
+   0.0,
+   50.7,
+   34.0
+  ],
+  "wall_t": 11.4
+ },
+ "split_plane_y": 0.37,
+ "grille_holes_per_speaker": 85,
+ "speaker_dims": [
+  52.0,
+  26.0
+ ],
+ "speaker_clamp": {
+  "flange_t": 5.0,
+  "gasket_t": 1.5,
+  "body_d_max": 39.0,
+  "ring_t": 2.4,
+  "ring_id": 48.0,
+  "gasket_locked": 1.2,
+  "gasket_slot_kept": true,
+  "gasket_note": "bang xop 2 mm dan vong mat loa (khong lay PETG)",
+  "bayonet": {
+   "n": 3,
+   "twist": 30.0,
+   "pin_w": 4.0,
+   "pin_h": 1.1,
+   "pin_t": 1.5,
+   "sleeve_clr": 0.4,
+   "pin_clr": 0.4,
+   "groove_clr": 0.45,
+   "lip_pre": 0.3,
+   "out_gap": 0.3,
+   "sleeve_t": 2.4
+  }
+ },
+ "mx": {
+  "hole": 14.0,
+  "socket_depth": 8.58,
+  "stem_cross_l": 4.19,
+  "stem_cross_w": 1.25,
+  "cross_depth": 5.49,
+  "travel_free": 4.85,
+  "travel_floor": 3.39,
+  "stop_gap": 1.0,
+  "tube_gap": 1.0,
+  "cap_hollow_d": 33.2,
+  "cap_hollow_depth": 9.8,
+  "tube_od": 5.71,
+  "tube_end_above_rim": 4.31,
+  "socket_outer_w": 17.0,
+  "rim_z": 138.3,
+  "mouth_z": 138.61,
+  "floor_z": 138.11,
+  "assumed": {
+   "housing_h": 3.0,
+   "stem_h": 3.6,
+   "travel": 4.0,
+   "note": "housing/stem/hanh trinh 4,0 la nguon phu chua datasheet"
+  },
+  "source": "fit-library catpaw/mx-keycap-cross + catpaw/mx-socket (docs/research-notes/cat-paw-clicker-fits.md)",
+  "keys": [
+   {
+    "name": "talk",
+    "gpio": 1,
+    "axis": "z",
+    "pos": [
+     0.0,
+     0.37,
+     138.61
+    ],
+    "flange_over": 1.6
+   }
+  ]
+ },
+ "face_plate": {
+  "disc": [
+   94.0,
+   58.0,
+   14.0
+  ],
+  "protrude": 4.0,
+  "bevel": 5.0,
+  "flange": [
+   104.0,
+   68.0,
+   2.0
+  ],
+  "screws": {
+   "n": 4,
+   "xz": [
+    45.5,
+    27.5
+   ],
+   "thread": "M2.5 x 6",
+   "thru_d": 2.8,
+   "pilot_d": 2.4
+  }
+ }
+}

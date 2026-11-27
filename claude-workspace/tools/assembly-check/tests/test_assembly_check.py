@@ -177,6 +177,20 @@ class T(unittest.TestCase):
         self.assertTrue(has(rep, "FAIL", "pair", "base", "cube"))
 
     @unittest.skipUnless(OWL_ASM.exists(), "khong co asm Cu Bong")
+    def test_11_flex_needs_snap(self):
+        self.put("cube", CUBE_OK)
+        cfg = base_cfg()
+        cfg["parts"]["cube"]["insert"]["flex"] = 0.5
+        cfg["joints"] = [{"type": "screw", "parts": ["cube", "base"], "blocks": ["*"], "note": "vit"}]
+        r, rep = run(self.d, cfg)
+        self.assertTrue(has(rep, "FAIL", "config", "cube"), kinds(rep, "FAIL"))   # flex khong co joint snap -> FAIL
+        cfg["joints"] = [{"type": "snap", "parts": ["cube", "base"], "blocks": ["*"], "note": "lay gai"}]
+        r, rep = run(self.d, cfg)
+        self.assertEqual(rep["verdict"], "PASS", kinds(rep, "FAIL"))
+        cfg["parts"]["cube"]["insert"]["flex"] = 2.0
+        r, rep = run(self.d, cfg)
+        self.assertTrue(has(rep, "FAIL", "config", "cube"), kinds(rep, "FAIL"))   # flex > 1,0 -> FAIL
+
     def test_20_owl_regression(self):
         # Loi that 2026-11-27: bung + mo chong vo truoc; 2 nua vo, vanh loa chi CHAM (khong duoc bao chong).
         out = Path(self.d) / "owl.json"

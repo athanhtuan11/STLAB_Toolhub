@@ -17,6 +17,7 @@ Máy dạy tiếng Anh cho bé 2–5 tuổi, dùng ESP32-S3 N16R8. Bé nói chuy
 1. **Nút nói in lại:** bản v2 bị lỗi gì (lỏng/chặt chân switch, cỡ khe nào trên `mx-cross-gauge` vừa: 1/2/3 chấm)? (Tuan đang in thử v3 – báo sau khi in)
 2. **GAIN MAX98357A:** chưa thử nối GAIN xuống GND (12 dB) – thử khi lắp 2 loa, nghe có vỡ tiếng / còn ngắt lời cô được không.
 3. **Nguồn:** "sạc máy tính" là cục sạc laptop USB-C (thường cấp 5 V 3 A – đủ) hay cổng USB trên máy tính (chỉ 0,5–0,9 A – KHÔNG đủ)?
+4. **Cú Bông v3 (2026-11-27):** (a) duyệt ảnh `cad/out-v3/owl-preview.png` + `owl-exploded.png` (bệ siêu ellip, ampli đứng 2 bên ray – Claude tự chọn); (b) xác nhận có vít M2.5 × 12 (6 cái nối vỏ + 1 thử) và M3 × 16 (4 cái bệ); (c) loại chân cao su Ø10; (d) cân loa + màn để tính lại góc lật; (e) in bàn thử `print/plates-v3-test` trước, báo cỡ lẫy bụng a hay b vừa.
 
 Đã trả lời 2026-11-26: vỏ chọn **H0** (loa quay ngang); lỗ màn hàng thật V1.1 **đối xứng**, mép lỗ cách cả 4 cạnh 1,35 → tâm cách 80,0 × 44,0 (bản vẽ V1.0 ghi 76,08); sau này chạy **pin sạc** (chưa thiết kế – cần cell có bảo vệ + mạch sạc/tăng áp 5 V, ngăn pin bắt vít).
 

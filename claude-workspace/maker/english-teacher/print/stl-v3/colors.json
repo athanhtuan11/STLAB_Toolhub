@@ -1,0 +1,7 @@
+{
+  "_nguon": "PCOL trong cad/build_owl_v3.py (mo #F6BE9A, kem #FFF3DF, bo #FFC857); nhom theo print-v3.yaml",
+  "shell-front.stl": "#F6BE9A", "shell-back.stl": "#F6BE9A", "mic-clamp.stl": "#F6BE9A", "button-base.stl": "#F6BE9A",
+  "speaker-bezel-L.stl": "#F6BE9A", "speaker-bezel-R.stl": "#F6BE9A", "speaker-ring-L.stl": "#F6BE9A", "speaker-ring-R.stl": "#F6BE9A",
+  "face-plate.stl": "#FFF3DF", "belly.stl": "#FFF3DF", "base.stl": "#FFF3DF", "s3-tray.stl": "#FFF3DF",
+  "beak.stl": "#FFC857", "button-cap.stl": "#FFC857"
+}

@@ -39,6 +39,12 @@ blender -b --factory-startup --python-exit-code 1 -P assembly_check.py -- --auto
 `asm_dir` tính tương đối theo thư mục chứa `assembly.json`. Thiếu khóa nào trong `tol` thì dùng mặc định
 đúng như ví dụ trên.
 
+Khóa thêm trong `insert` (2026-11-27, Cú Bông v3):
+- `"flex": <mm>` (0 < flex ≤ 1,0): part có **lẫy snap** – trên đường lắp, part được co thêm `flex` mm (lẫy biến dạng khi ép).
+  Chỉ hợp lệ khi có joint `snap` mà `parts[0]` là part đó. Ở vị trí lắp vẫn kiểm đầy đủ (không co).
+- `"with": ["<part>"]`: **cụm lắp sẵn** (vd. vòng ép đã xoay khóa trên vành loa rồi mới đặt cả cụm vào vỏ) – các part trong
+  `with` không tính là vật cản trên đường lắp của part này; chúng phải đứng trước trong `order`.
+
 ## Bốn nhóm kiểm
 
 1. **config** – STL trong thư mục phải được khai báo trong `parts` (và ngược lại), `order` phải chứa đủ

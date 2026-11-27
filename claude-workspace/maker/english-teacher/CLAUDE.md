@@ -57,9 +57,15 @@ Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\
 | Vít khay ampli | M2.5 | mồi Ø2,2 | – | tự ren (TODO thử) |
 | Tai ốc M3 ↔ hốc lục giác | 5,5 AF | **5,9** (cũ 5,8) | **0,20** (cũ 0,15) | nâng 2026-11-26 |
 | Vít M3 ↔ lỗ thông | Ø3,0 | Ø3,4 | 0,2 | quy tắc |
-| Chốt định vị 2 nửa | Ø2,0 | chốt/lỗ chép từ bản A1S | 0,2 (TODO kiểm lại) | bản cũ đã in |
+| Chốt định vị 2 nửa | Ø2,0 | đã bỏ ở v3 (thay bằng vít) | 0,2 (TODO kiểm lại) | bản cũ đã in |
+| Tai vít chi tiết ↔ hốc vỏ trước | dày 3,0 | hốc +0,2 mm/bên | 0,2 | quy tắc |
+| Vít nối 2 nửa M2.5 × 12 | lỗ mồi Ø2,4 / thông Ø2,8 / giếng Ø5,6 đáy 3,0 | – | fit-library Ø2,4 (ngoại lệ) | spec v3 |
+| Lẫy face-plate/bụng | dày 1,2, gờ 0,8 | – | 0,2 | TODO bàn thử v3 |
+| Lỗ mỏ | mỏ Ø13,6 | lỗ Ø14 | 0,2 | spec v3 |
 
 ## Trạng thái
+- 2026-11-27: **Cú Bông v3 lắp ráp thật** (gate PASS): 1 lệnh `python run_v3.py` (~27 s, `--slice` thêm cắt lớp), assembly-check 0 FAIL 0 WARN; 5 bàn `print/plates-v3` PASS không support.
+  Bàn thử v3 nhỏ `print/plates-v3-test` (115 phút, 42,3 g) CHỜ IN trước; bộ đầy đủ `print-v3.3mf` chỉ in sau khi bàn thử đạt. Xem `cad/README.md` mục "Bản v3".
 - 2026-11-26: **dáng A2 V2** = mắt màn TFT 2,8" cảm ứng (MSP2807) + **2 loa Ø52 H0** (sườn quay ngang; H25 bỏ vì phải support), gờ giữ loa Ø48, mỗi loa 1 MAX98357A.
   CAD `cad/build_owl_s3_screen.py` → `out-s3-screen`: gate PASS, 5 bàn `plates-s3-screen` PASS không support (~16 h, ~443 g); lỗ màn V1.1 đối xứng 80 × 44; chờ duyệt dáng + kết quả bàn thử v3.
   **Bàn thử v3** `p1-fit-test.3mf` (face-plate, speaker-ring-L, button-cap) CHỜ IN. Firmware bản 1 loa, CHƯA có driver màn/cảm ứng, CHƯA thử ampli 2.

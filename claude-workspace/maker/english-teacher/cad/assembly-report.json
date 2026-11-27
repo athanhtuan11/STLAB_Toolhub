@@ -1,0 +1,27 @@
+{
+  "verdict": "PASS",
+  "parts": [
+    "base",
+    "beak",
+    "belly",
+    "button-base",
+    "button-cap",
+    "face-plate",
+    "mic-clamp",
+    "s3-tray",
+    "shell-back",
+    "shell-front",
+    "speaker-bezel-L",
+    "speaker-bezel-R",
+    "speaker-ring-L",
+    "speaker-ring-R"
+  ],
+  "issues": [],
+  "tol": {
+    "penetration": 0.2,
+    "contact": 0.05,
+    "path_step": 0.5,
+    "seat_stop": 0.5,
+    "probe": 2.0
+  }
+}

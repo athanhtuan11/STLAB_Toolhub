@@ -243,6 +243,22 @@ def check_config(cfg, stl_names):
         if not ok:
             issues.append(_issue("FAIL", "config", [n],
                                  "part '%s' khong fixed nhung thieu insert (dir+from hoac moves)" % n))
+        if isinstance(ins, dict) and ins.get("with"):
+            for m in ins.get("with") or []:
+                if m not in names:
+                    issues.append(_issue("FAIL", "config", [n], "insert.with cua '%s' tro toi part '%s' khong ton tai" % (n, m)))
+                elif m in order and n in order and order.index(m) > order.index(n):
+                    issues.append(_issue("FAIL", "config", [n], "insert.with: '%s' phai dung truoc '%s' trong order" % (m, n)))
+        if isinstance(ins, dict) and "flex" in ins:
+            fx = ins.get("flex")
+            snap = any(j.get("type") == "snap" and (j.get("parts") or [None])[0] == n
+                       for j in cfg.get("joints", []) or [])
+            if not isinstance(fx, (int, float)) or not 0.0 < float(fx) <= 1.0:
+                issues.append(_issue("FAIL", "config", [n],
+                                     "insert.flex cua '%s' phai trong (0; 1,0] mm" % n))
+            elif not snap:
+                issues.append(_issue("FAIL", "config", [n],
+                                     "insert.flex chi dung cho part co joint snap (parts[0] = '%s')" % n))
 
     for j in cfg.get("joints", []) or []:
         jtype = j.get("type")
@@ -341,7 +357,11 @@ def check_paths(cfg, parts):
         total = cum[-1]
         if total <= 1e-9:
             continue
-        obstacles = [parts[o] for o in order[:idx] if o in parts]
+        flex = float(ins.get("flex", 0.0) or 0.0) if isinstance(ins, dict) else 0.0
+        flex = min(max(flex, 0.0), 1.0)
+        # cum lap san (vd. vong ep da xoay khoa tren vanh loa): part trong insert.with di cung, khong la vat can
+        mates = set(ins.get("with", []) or []) if isinstance(ins, dict) else set()
+        obstacles = [parts[o] for o in order[:idx] if o in parts and o not in mates]
         if not obstacles:
             continue
         s = 0.0
@@ -352,7 +372,8 @@ def check_paths(cfg, parts):
             if remaining < stop - 1e-9:
                 break
             off = _sample_offset(qs, cum, s)
-            mt, _ = offset_tree(p["bm"], -pen / 2.0, off)
+            # lay snap bien dang khi ep: part co insert.flex duoc co them flex mm tren duong lap (khong ap dung o vi tri lap)
+            mt, _ = offset_tree(p["bm"], -pen / 2.0 - flex, off)
             for ob in obstacles:
                 ot, _ = _static(ob["bm"], -pen / 2.0)
                 if mt.overlap(ot):
