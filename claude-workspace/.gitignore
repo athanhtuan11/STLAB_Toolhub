@@ -117,3 +117,5 @@ credentials*.json
 !/maker/english-teacher/server/music/README.md
 # Blender tu sinh khi ghi de
 *.blend1
+# 2026-11-27 log phien tu chay (tools/auto-run)
+/docs/plans/logs/
