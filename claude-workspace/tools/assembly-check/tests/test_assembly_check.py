@@ -176,7 +176,6 @@ class T(unittest.TestCase):
         self.assertEqual(rep["verdict"], "FAIL")
         self.assertTrue(has(rep, "FAIL", "pair", "base", "cube"))
 
-    @unittest.skipUnless(OWL_ASM.exists(), "khong co asm Cu Bong")
     def test_11_flex_needs_snap(self):
         self.put("cube", CUBE_OK)
         cfg = base_cfg()
@@ -191,6 +190,7 @@ class T(unittest.TestCase):
         r, rep = run(self.d, cfg)
         self.assertTrue(has(rep, "FAIL", "config", "cube"), kinds(rep, "FAIL"))   # flex > 1,0 -> FAIL
 
+    @unittest.skipUnless(OWL_ASM.exists(), "khong co asm Cu Bong")
     def test_20_owl_regression(self):
         # Loi that 2026-11-27: bung + mo chong vo truoc; 2 nua vo, vanh loa chi CHAM (khong duoc bao chong).
         out = Path(self.d) / "owl.json"
