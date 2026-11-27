@@ -5,11 +5,14 @@ Dau ra (cung thu muc cha cua asm/):
     <ten>.step   STEP AP lap rap (faceted solid) - mo bang Fusion 360, FreeCAD, Onshape, SolidWorks, Bambu Studio...
     <ten>.blend  Blender, moi chi tiet 1 object ten theo file, don vi mm (scale_length 0.001)
 Chay:
-    python tools/cad-export/export_cad.py <asm_dir> <ten>              # ca 3
-    python tools/cad-export/export_cad.py <asm_dir> <ten> --no-step    # bo STEP (nhanh hon, STEP ~5-10 MB/chi tiet)
+    python tools/cad-export/export_cad.py <asm_dir> <ten> --fast       # VONG SUA NHANH: chi <ten>.3mf (moi part 1 object co ten, mm)
+    python tools/cad-export/export_cad.py <asm_dir> <ten>              # PHAT HANH: .sc + .step + .blend (+ .3mf); hinh khong doi -> CACHE
+    python tools/cad-export/export_cad.py <asm_dir> <ten> --no-step    # bo STEP;  --force: bo cache
+Tuan 2026-11-27 duyet: vong sua = 3MF; .sc/.step/.blend chi khi phat hanh / truoc khi bao Tuan do.
 Chi tiet nao Convert Mesh loi (luoi ho/tu cat) -> giu luoi trong .sc, bo khoi STEP, in canh bao (khong im lang).
 Bien moi truong: SOLIDCRAFT_CLI, BLENDER_EXE.
 """
+import hashlib
 import json
 import os
 import re
@@ -17,7 +20,40 @@ import shutil
 import subprocess
 import sys
 import time
+import zipfile
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "print" / "scripts"))
+import meshhash  # noqa: E402
+
+_3MF_CT = ('<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+           '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
+           '<Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/></Types>')
+_3MF_RELS = ('<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+             '<Relationship Target="/3D/3dmodel.model" Id="rel0" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/></Relationships>')
+
+
+def write_3mf(stls, out):
+    """3MF lap rap: moi STL 1 <object name>, dinh gop trung (lam tron 1e-4 mm), toa do giu nguyen = vi tri lap, don vi mm."""
+    import numpy as np
+    objs, items = [], []
+    for i, f in enumerate(stls, 1):
+        t = meshhash.load_tris(f).reshape(-1, 3)
+        v, inv = np.unique(np.round(t, 4), axis=0, return_inverse=True)
+        tri = inv.reshape(-1, 3)
+        tri = tri[(tri[:, 0] != tri[:, 1]) & (tri[:, 1] != tri[:, 2]) & (tri[:, 0] != tri[:, 2])]
+        vs = "".join('<vertex x="%.4f" y="%.4f" z="%.4f"/>' % (r[0], r[1], r[2]) for r in v)
+        ts = "".join('<triangle v1="%d" v2="%d" v3="%d"/>' % (r[0], r[1], r[2]) for r in tri)
+        nm = f.stem.replace("&", "and").replace("<", "").replace('"', "")
+        objs.append('<object id="%d" name="%s" type="model"><mesh><vertices>%s</vertices><triangles>%s</triangles></mesh></object>' % (i, nm, vs, ts))
+        items.append('<item objectid="%d"/>' % i)
+    model = ('<?xml version="1.0" encoding="UTF-8"?><model unit="millimeter" xml:lang="en-US" '
+             'xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"><resources>' + "".join(objs) +
+             '</resources><build>' + "".join(items) + '</build></model>')
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("[Content_Types].xml", _3MF_CT)
+        z.writestr("_rels/.rels", _3MF_RELS)
+        z.writestr("3D/3dmodel.model", model)
 
 CLI = os.environ.get("SOLIDCRAFT_CLI", r"C:\Program Files\SolidCraft\solidcraft-cli.exe")
 BLENDER = os.environ.get("BLENDER_EXE", r"C:\Program Files\Blender Foundation\Blender 5.2\blender.exe")
@@ -72,6 +108,27 @@ def main():
     sc, step, blend = out / f"{name}.sc", out / f"{name}.step", out / f"{name}.blend"
     want_step = "--no-step" not in flags
     res, t0 = [], time.time()
+    tmf = out / f"{name}.3mf"
+    write_3mf(stls, tmf)
+    if "--fast" in flags:
+        print(f"CAD EXPORT nhanh ({time.time() - t0:.1f} s) -> {tmf} ({len(stls)} part, {tmf.stat().st_size / 1e6:.1f} MB)")
+        return
+    # cache phat hanh: chu ky hinh hoc moi part (so theo dung sai - boolean doi cach chia tam giac moi lan dung) + ma script + co
+    key = {"script": hashlib.md5(Path(__file__).read_bytes()).hexdigest(), "flags": sorted(f for f in flags if f != "--force"),
+           "parts": {f.name: meshhash.signature(f) for f in stls}}
+    kf = out / f"{name}.cadhash"
+    outs = [sc, blend] + ([step] if want_step else [])
+    try:
+        old = json.loads(kf.read_text(encoding="utf-8")) if kf.exists() else None
+    except ValueError:
+        old = None
+    hit = (old and old.get("script") == key["script"] and old.get("flags") == key["flags"]
+           and set(old.get("parts", {})) == set(key["parts"])
+           and all(meshhash.sig_equal(old["parts"][n], s) for n, s in key["parts"].items()))
+    if "--force" not in flags and hit and all(f.exists() for f in outs):
+        print(f"CAD EXPORT: CACHE (hinh khong doi, {time.time() - t0:.1f} s) -> {out}: " + ", ".join(f.name for f in outs + [tmf]))
+        return
+    kf.unlink(missing_ok=True)
 
     # 1) Blender: .blend + STL da lam sach (gop dinh trung, lap lo, phap tuyen) cho SolidCraft
     clean = out / "_cad_clean"; clean.mkdir(exist_ok=True)
@@ -109,10 +166,11 @@ def main():
     shutil.rmtree(clean, ignore_errors=True)
 
     print(f"CAD EXPORT ({time.time() - t0:.0f} s) -> {out}")
-    for x in res:
+    for x in res + [tmf.name]:
         print("  " + x)
     if any("LOI" in x for x in res):
         sys.exit(1)
+    kf.write_text(json.dumps(key), encoding="utf-8")
 
 
 if __name__ == "__main__":

@@ -34,6 +34,7 @@ Mau ban in (3MF mang mau thiet ke, khong phai dat lai trong Bambu Studio), uu ti
 from __future__ import annotations
 
 import fnmatch
+import hashlib
 import json
 import os
 import shutil
@@ -50,6 +51,7 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import printability  # noqa: E402
 import merge_plates  # noqa: E402
+import meshhash  # noqa: E402
 
 EXE = Path(r"C:\Program Files\Bambu Studio\bambu-studio.exe")
 BBL = EXE.parent / "resources" / "profiles" / "BBL"
@@ -163,20 +165,56 @@ def dat_mau_3mf(path, mau):
     tmp.replace(path)
 
 
+class _DaCache:
+    """Ban trung cache: khong chay CLI, giu nguyen ket qua cu (doi() goi wait/close)."""
+    def wait(self):
+        return 0
+
+    def close(self):
+        pass
+
+
+def khoa_cat(lenh, stl, profiles):
+    """2026-11-28 cache cat lop theo ban: lenh CLI (bo duong dan outputdir) + noi dung profile + hinh hoc chuan hoa tung STL
+    (meshhash: Blender boolean doi thu tu tam giac moi lan dung) + phien ban Bambu Studio."""
+    h = hashlib.md5()
+    h.update(json.dumps(lenh[1:], ensure_ascii=False).encode())
+    for pf in profiles:
+        h.update(Path(pf).read_bytes())
+    st = EXE.stat() if EXE.exists() else None
+    h.update(f"{st.st_size if st else 0}-{int(st.st_mtime) if st else 0}".encode())
+    h.update(meshhash.hash_many(stl).encode())
+    return h.hexdigest()
+
+
 def cat(thu_muc, ten, stl, p_may, p_proc, p_fil, xoay=False):
     """Khoi chay Bambu Studio CLI (khong cho) cho 1 ban: xep ban, cat lop, xuat 3MF.
-    xoay=True: --orient 1 (Bambu tu chon huong in it phan lo lung/support nhat)."""
+    xoay=True: --orient 1 (Bambu tu chon huong in it phan lo lung/support nhat).
+    Cache (2026-11-28): khoa trung .slicehash + result.json ma 0 + co 3MF -> dung lai (tat: STLAB_NO_SLICE_CACHE=1)."""
     thu_muc.mkdir(parents=True, exist_ok=True)
+    lenh = [str(EXE), "--debug", "2", "--load-settings", f"{p_may};{p_proc}", "--load-filaments", p_fil,
+            "--arrange", "1", "--orient", "1" if xoay else "0", "--avoid-extrusion-cali-region", "--slice", "0",
+            "--export-3mf", f"{ten}.3mf"]
+    khoa = khoa_cat(lenh, stl, (p_may, p_proc, p_fil))
+    lenh += ["--outputdir", str(thu_muc)] + [str(f) for f in stl]
+    a_ = {"stl": stl, "profile": (p_may, p_proc, p_fil)}
+    fh, fr = thu_muc / ".slicehash", thu_muc / "result.json"
+    if (not os.environ.get("STLAB_NO_SLICE_CACHE") and fh.exists() and fh.read_text(encoding="utf-8").strip() == khoa
+            and fr.exists() and (thu_muc / f"{ten}.3mf").exists()):
+        try:
+            if json.loads(fr.read_text(encoding="utf-8")).get("return_code") == 0:
+                print(f"  {ten}: CACHE (STL + profile khong doi)", flush=True)
+                return _DaCache(), _DaCache(), thu_muc, a_
+        except ValueError:
+            pass
     for f in thu_muc.iterdir():
         if f.is_file():
             f.unlink()
-    lenh = [str(EXE), "--debug", "2", "--load-settings", f"{p_may};{p_proc}", "--load-filaments", p_fil,
-            "--arrange", "1", "--orient", "1" if xoay else "0", "--avoid-extrusion-cali-region", "--slice", "0",
-            "--export-3mf", f"{ten}.3mf", "--outputdir", str(thu_muc)] + [str(f) for f in stl]
+    (thu_muc / ".slicehash.new").write_text(khoa, encoding="utf-8")
     log = open(thu_muc / "cli_log.txt", "w", encoding="utf-8")
     p = subprocess.Popen(lenh, stdout=log, stderr=subprocess.STDOUT, cwd=thu_muc,
                          creationflags=0x08000000)  # CREATE_NO_WINDOW
-    return p, log, thu_muc, {"stl": stl, "profile": (p_may, p_proc, p_fil)}
+    return p, log, thu_muc, a_
 
 
 def lo_lung(r):
@@ -184,9 +222,19 @@ def lo_lung(r):
 
 
 def doi(viec):
-    for p, log, _, _ in viec.values():
+    for p, log, td, _ in viec.values():
         p.wait()
         log.close()
+        fn = td / ".slicehash.new"      # chi ghi khoa cache khi CLI tra ma 0
+        if fn.exists():
+            try:
+                ok = json.loads((td / "result.json").read_text(encoding="utf-8")).get("return_code") == 0
+            except (OSError, ValueError):
+                ok = False
+            if ok:
+                fn.replace(td / ".slicehash")
+            else:
+                fn.unlink()
 
 
 def doc_ket_qua(thu_muc, ten):
@@ -524,7 +572,27 @@ def main():
                 pp = prof / f"process_{b['ban']}.json"
                 procs[b["ban"]] = str(pp if pp.exists() else prof / f"process_{g}.json")
                 fils[b["ban"]] = str(prof / f"filament_{g}.json")
-            gop_f, so_plate, da_cat = merge_plates.gop(ra, cfg_p.stem, ds, EXE, p_may, procs, fils, tat_ca[0])
+            # 2026-11-28 cache gop: moi ban trung khoa .slicehash cu + merge_plates.py khong doi + file gop con -> bo 2 lan goi CLI (~16 s)
+            hk = hashlib.md5(Path(merge_plates.__file__).read_bytes())
+            for b in ds:
+                fh_ = ra / b["ban"] / ".slicehash"
+                hk.update(b["ban"].encode()); hk.update(fh_.read_bytes() if fh_.exists() else os.urandom(8))
+            hk = hk.hexdigest()
+            fmh, fold = ra / ".mergehash", ra / "print-report.json"
+            cu = None
+            if not os.environ.get("STLAB_NO_SLICE_CACHE") and fmh.exists() and fmh.read_text(encoding="utf-8").strip() == hk and fold.exists():
+                try:
+                    cu = json.loads(fold.read_text(encoding="utf-8")).get("project_gop")
+                except ValueError:
+                    cu = None
+            if cu and Path(cu.get("file", "")).exists():
+                gop_f, so_plate, da_cat = Path(cu["file"]), cu["so_plate"], cu["da_cat"]
+                print("Project gop: CACHE (khong ban nao doi)", flush=True)
+            else:
+                fmh.unlink(missing_ok=True)
+                gop_f, so_plate, da_cat = merge_plates.gop(ra, cfg_p.stem, ds, EXE, p_may, procs, fils, tat_ca[0])
+                if gop_f and da_cat:
+                    fmh.write_text(hk, encoding="utf-8")
             if gop_f:
                 bc["project_gop"] = {"file": str(gop_f), "so_plate": so_plate, "da_cat": da_cat,
                                      "plates": [b["ban"] for b in ds if next((ra / b["ban"]).glob("*.3mf"), None)]}

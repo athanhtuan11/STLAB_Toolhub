@@ -67,3 +67,22 @@ Thứ tự đề xuất thực hiện là 1 → 2 → 4 → 6 → 7, vì đều 
 ## Kết luận
 
 Nút cổ chai thật là **số tam giác bị nhân lên qua hai bước tốn kém phía sau** (STEP faceted ~1 KB/tam giác và cắt lớp), cộng với việc **mỗi vòng làm lại toàn bộ** dù chỉ một part đổi. Tối ưu kernel boolean gần như đã hết dư địa: Blender MANIFOLD đã ngang manifold3d. Vì vậy công sức nên dồn vào cache theo hash ở ranh giới từng bước (part → xuất → bàn in) và vào việc sinh lưới vừa đủ chính xác cho FDM. Hệ quả dài hạn cũng đáng chú ý: STEP faceted 89 MB vừa chậm vừa chỉ đo được mặt–mặt, nên về lâu dài giá trị "mở-đo" chỉ thực sự có khi chi tiết cơ khí được dựng bằng B-rep. Đó là quyết định kiến trúc, không phải việc tối ưu, và nên tách thành câu hỏi riêng chờ Tuan. Bước tiếp theo rẻ nhất là chạy một vòng có đo: profile từng part, đếm tam giác, đọc `result.json` của 5 bàn. Số đó sẽ thay mọi ô [ước] trong bảng bằng số thật.
+
+
+## Kết quả áp dụng 2026-11-27 tối (đo trên máy, Cú Bông v3, Tuan duyệt "đồng ý")
+
+| Bước | Trước | Sau | Cách |
+|---|---|---|---|
+| Cả vòng `run_v3.py --slice` (không đổi hình) | 120–131 s | **30 s** | 3 mục dưới |
+| Xuất file CAD vòng sửa | 38 s (.sc/.step/.blend) | **1 s** (`.3mf` 0,8 MB, 16 object có tên) | `export_cad.py --fast` mặc định; `--release` mới xuất đủ |
+| Xuất phát hành, hình không đổi | 38 s | **1 s** | cache chữ ký hình học từng part (`.cadhash`) |
+| `slice.py` 5 bàn không đổi | 22–64 s | **6 s** | cache từng bàn (`.slicehash`) + cache bước gộp project (`.mergehash`, bỏ 2 lần gọi CLI ~16 s) |
+
+Phát hiện khi đo:
+- Boolean MANIFOLD dựng lại **cùng hình nhưng khác thứ tự + số tam giác (±4)** mỗi lần, kể cả `-t 1` → không cache được theo md5
+  byte. Dùng **chữ ký hình học** (diện tích, thể tích, mô-men mặt bậc 1–2, hộp bao; `tools/print/scripts/meshhash.py`): nhiễu
+  dựng lại ~1e-11, ngưỡng 1e-8. STL trong `print/` chỉ thay khi hình đổi thật → cache cắt lớp trúng.
+- `shell-back` có vài đỉnh ở mép lỗ nút nói xê dịch ~0,06 mm giữa các lần dựng (trụ cột nút gần tiếp tuyến lỗ giọt nước) – không ảnh
+  hưởng in; khi lệch, bàn B cắt lại (~10 s). TODO nếu muốn: tách xa 2 mặt đó để hình ổn định.
+- `slice.py` vốn đã cắt các bàn song song; chưa áp cờ `--skip-useless-pick/--min-save` (lợi nhỏ, chưa đo).
+Test: `tools/print/tests/test_slice_cache.py` PASS (cache, đổi thứ tự tam giác vẫn cache, đổi 1 STL chỉ bàn đó cắt lại, gộp không cache sai).

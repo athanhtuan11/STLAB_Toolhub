@@ -119,3 +119,5 @@ credentials*.json
 *.blend1
 # 2026-11-27 log phien tu chay (tools/auto-run)
 /docs/plans/logs/
+/maker/**/out*/*.cadhash
+/maker/**/out*/*.3mf

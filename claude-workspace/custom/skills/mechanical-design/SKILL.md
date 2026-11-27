@@ -44,7 +44,8 @@ description: Thiet ke co khi cho du an maker STLab (khong phu thuoc CAD - SolidC
 ## Đầu ra file CAD – BẮT BUỘC mọi dự án (Tuan 2026-11-06, nhắc lại 2026-11-27: "CAD không có file cho Blender hay bất kì phần mềm CAD nào")
 Chỉ có STL hướng in / 3mf là **thiếu** – Tuan cần mở ra đo để tự tìm chỗ sai. Dù dựng bằng Blender, SolidCraft hay script:
 1. Script dựng xuất `out*/asm/<chi-tiet>.stl` – mỗi chi tiết **đúng vị trí lắp**, mm (không phải hướng in).
-2. Chạy công cụ chung: `python tools/cad-export/export_cad.py <thu-muc>/asm <ten-du-an>-assembly` → cạnh `asm/`:
+2. **Vòng sửa** (Tuan duyệt 2026-11-27): `export_cad.py <asm> <ten> --fast` → chỉ `<ten>.3mf` (~1 s, mỗi part 1 object có tên, mm).
+   **Phát hành / trước khi báo Tuan đo**: chạy không `--fast` (vd. `run_v3.py --release`), có cache chữ ký hình học → cạnh `asm/`:
    - `<ten>.sc` SolidCraft (mặc định, mỗi chi tiết 1 component, đã Convert Mesh → solid, đo mặt/cạnh được)
    - `<ten>.step` mở bằng Fusion 360 / FreeCAD / Onshape / SolidWorks
    - `<ten>.blend` Blender, mỗi chi tiết 1 object, đơn vị mm
