@@ -14,9 +14,16 @@ nắp màn, mỏ không lắp được; vành loa/tai không bắt được vào
    Vít M2.5 × 12 (TODO Tuan xác nhận có sẵn; đổi chiều dài thì đổi `SCREW_L`, ăn ren ≥ 6 mm). 6 vít: 2 thấp, 2 giữa (trên vành loa,
    z ≥ 100), 2 trên đỉnh; vị trí cuối do gate (trụ nằm trong thành, không chạm linh kiện).
 5. **Bo ESP32-S3 + 2 ampli: 1 khay in rời bắt vào vỏ trước** (Tuan chọn), M2.5 × 6 tự ren, cổng USB-C chĩa ra lỗ vỏ sau
-   (lỗ = cổng/đầu cáp + 0,5 mỗi bên để bù lệch). **Chặn:** bo S3 + ampli CHƯA đo hàng thật (khối giữ chỗ 72 × 29 × 16) → đo trước khi vẽ khay.
-6. **Bỏ tấm đế** (Claude đề xuất, báo Tuan): đáy chia đôi liền 2 nửa vỏ, khay điện tử bắt vỏ trước → bớt 1 mặt + 4 vít M3.
-   Nếu Tuan muốn giữ tấm đế → chỉ bắt vào vỏ trước.
+   (lỗ = cổng/đầu cáp + 0,5 mỗi bên để bù lệch). **Tuan 2026-11-27: thông số khay S3 + ampli hiện tại đã chính xác** → dùng nguyên
+   số ray/khối bo (pcb_box, ray 29,6, khay ampli 18,0 × 19,4) làm chuẩn, chỉ đổi chỗ bắt sang vỏ trước.
+   Vít: Tuan có sẵn (M2.5 × 6 và × 12).
+6. **Giữ tấm đế, vẽ lại rộng + đẹp hơn, chống lật** (Tuan 2026-11-27: "đế nên có để bằng phẳng và Cú đứng được"):
+   - Mặt dưới phẳng, chân cao su/đệm (TODO chọn loại) – Cú đứng vững trên bàn.
+   - Đế **nhô ra ngoài chân vỏ** (dáng bệ ellip/giọt nước theo dáng Cú, mép bo), bắt vỏ trước + vỏ sau bằng vít M3 từ dưới (giữ hốc
+     đai ốc 5,9 đã nâng), vít giấu dưới đáy.
+   - **Gate chống lật:** góc lật ≥ 20° theo mọi hướng = atan(khoảng cách hình chiếu trọng tâm tới mép đế / độ cao trọng tâm);
+     trọng tâm tính từ thể tích STL × PETG 1,27 g/cm³ + khối linh kiện (loa 2 × TODO g, màn, bo) – thiếu số thì ghi TODO, dùng khối giữ chỗ.
+   - Bước 0 "giao diện trước": 2–3 dáng đế, render ảnh cho Tuan duyệt trước khi dựng chi tiết.
 
 ## Giữ mặt ráp y = 0,37
 In 2 nửa mặt ráp xuống bàn đã PASS không support. Dời mặt ráp ra sau → lưng nghiêng > 45° (cần support). Chi tiết vắt qua mặt ráp:
