@@ -1,6 +1,6 @@
 ---
 name: mechanical-design
-description: Thiet ke co khi cho du an maker STLab (khong phu thuoc CAD - SolidCraft mac dinh) - ga/khung, chon lo/chot/khe tu fit-library, mau thiet ke CyberBrick da chay, chot/truc khop quay, vach mong khi noi khe, support, huong dan lap cho hoc sinh, luu y dien, DAU RA FILE CAD BAT BUOC (.sc + .step + .blend), vo 2 nua phai co go am duong. Dung TRUOC khi dung bat ky chi tiet lap ghep, ga dong co, khung robot, hop so, vo hop.
+description: Thiet ke co khi cho du an maker STLab (khong phu thuoc CAD - SolidCraft mac dinh) - ga/khung, chon lo/chot/khe tu fit-library, mau thiet ke CyberBrick da chay, chot/truc khop quay, vach mong khi noi khe, support, huong dan lap cho hoc sinh, luu y dien, DAU RA FILE CAD BAT BUOC (.sc + .step + .blend), MOI cho tach part phai co moi ghep am duong/go pho bien (khong mat rap tron). Dung TRUOC khi dung bat ky chi tiet lap ghep, ga dong co, khung robot, hop so, vo hop.
 ---
 
 # Thiết kế cơ khí STLab
@@ -54,13 +54,27 @@ Chỉ có STL hướng in / 3mf là **thiếu** – Tuan cần mở ra đo để
 4. Các file này không commit (gitignore) nhưng **phải có trên máy**; trước khi báo xong kiểm file tồn tại và đưa đường dẫn
    `.sc` trước, `.step`/`.blend` sau, rồi mới tới bàn in `.3mf`.
 
-## Vỏ ghép 2 nửa – mối ráp có gờ âm dương, KHÔNG trơn (Tuan 2026-11-27)
-Mặt ráp phẳng trơn khó lắp (2 nửa trượt lệch khi bắt vít). Mọi vỏ 2 nửa phải có định vị âm dương dọc mép ráp:
-gờ dương ở một nửa + rãnh âm ở nửa kia, khe = thật + 0,2 mm (maker/CLAUDE.md), gờ không mỏng hơn 2 đường in (≈ 0,9 mm).
-**Ràng buộc in:** nửa có gờ nhô ra in úp mặt ráp xuống thì mọi mặt khác trên mặt ráp (vách trong, giếng vít) bị nhấc khỏi
-bàn đúng bằng chiều cao gờ → cần support. Chọn cách ngay từ đầu, trước khi đặt vách/giếng vít sát mặt ráp:
-(a) nửa mang gờ không có vách trong chạm mặt ráp; (b) gờ rời (vòng in phẳng) cắm vào rãnh của cả 2 nửa; (c) nửa mang gờ
-in hướng khác. Phần chìa ra ngắn hơn 2,5 mm (`short_overhang_mm`) thì printability bỏ qua.
+## Tách part – LUÔN có mối ghép định vị, KHÔNG BAO GIỜ mặt ráp trơn (QUY TẮC CỨNG, Tuan 2026-11-27)
+Mọi chỗ tách part (vỏ 2 nửa, tách màu hạn chế AMS, tách vì to quá bàn in, nắp/hộp, khay/vách) phải có **mối ghép âm dương
+hoặc dạng gờ phổ biến** để tự định vị trước khi bắt vít/dán. Mặt phẳng trơn + vít = 2 part trượt lệch, khó lắp (Cú Bông v3).
+Chọn dạng **ngay khi quyết định đường tách**, trước khi đặt vách/giếng vít sát mặt ráp; ghi dạng + khe vào bảng khe CLAUDE.md dự án.
+
+| Dạng | Dùng khi | Số mặc định (khe = thật + 0,2, maker/CLAUDE.md) |
+|---|---|---|
+| **Gờ – rãnh liền** (tongue & groove, lip) | vỏ/hộp, nửa mang gờ KHÔNG có vách trong chạm mặt ráp, hoặc nửa đó in hướng khác | gờ ≥ 1,0 dày (≥ 2 đường in) × 1,5–2,0 cao; rãnh +0,2 bề dày, +0,2 đáy; thành còn lại ≥ 1,2 |
+| **Bậc chồng mép** (rabbet / half-lap) | thành mỏng 2–3 mm, cần kín sáng/kín bụi | bậc = ½ thành, chồng 1,5–2,0; khe 0,2 |
+| **Gờ rời** (spline, vòng in phẳng) | cả 2 nửa in úp mặt ráp và có vách trong trên mặt ráp (gờ liền sẽ nhấc vách → support) | gờ 1,0 × 4,0 (2,0/nửa), rãnh 1,2 × 2,2 mỗi nửa – mẫu Cú Bông `seam-spline` |
+| **Chốt định vị** (pin/dowel + lỗ) | part phẳng ghép mặt, tách vì to quá bàn, cần tháo lắp nhiều | chốt in Ø3–4 hoặc đoạn filament 1,75; lỗ + 0,2; ≥ 2 chốt, xa nhau tối đa; lấy số fit-library nếu có |
+| **Mộng đuôi én / mộng vuông** (dovetail, mortise) | tách part dài/to quá bàn in, chịu kéo trong mặt phẳng | góc đuôi én 10–15°, khe 0,2/bên; vát 0,5 đầu mộng |
+| **Lẫy gài** (snap-fit) | nắp/bụng/mặt nạ tháo không cần vít | dày 1,2, gờ 0,6–0,8, khe 0,2 – **in mẫu thử** (chưa có số PETG in thật) |
+| **Ngàm xoay** (bayonet) | vòng tròn: vành loa, nắp tròn | khe ≥ 0,40–0,45 (đã in thật, Cú Bông) |
+| **Côn tự định tâm 45°** | mối ráp tròn/oval cần tự canh tâm, in không support | côn 45° cả 2 bên, khe 0,2 pháp tuyến |
+
+**Ràng buộc in (bắt buộc kiểm):** part mang phần nhô ra in úp mặt ráp xuống → mọi mặt khác trên mặt ráp bị nhấc khỏi bàn
+đúng bằng chiều cao phần nhô → support. Phần chìa < 2,5 mm (`short_overhang_mm`) printability bỏ qua; mặt nhấc lớn hơn → đổi
+dạng (gờ rời / chốt) hoặc đổi nửa mang gờ. Trần rãnh âm hướng xuống bàn: rộng ≤ 2,5 hoặc vát 45°.
+**Gate:** assembly-check phải có mối ghép mới trong `assembly.json` (đường lắp + được giữ), `kiem-lap-rap-moi-cap-part`;
+render/plot mặt ráp kiểm gờ chạy ở đâu, bỏ mẩu < 20 mm (dễ gãy). Mối ghép chưa có số in thật → ghi `TODO in thử` + đưa vào bàn thử nhỏ.
 
 ## Tra kho thông số lắp ghép – BẮT BUỘC (Tuan 2026-10-30)
 Trước khi chọn bất kỳ đường kính lỗ/chốt/khe nào: `tools/model-study/.venv/Scripts/python.exe

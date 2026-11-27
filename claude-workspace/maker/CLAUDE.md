@@ -6,6 +6,7 @@ Các dự án con tự nạp file này. Phần riêng nằm trong CLAUDE.md củ
 - Đơn vị: mm cho cơ khí; luôn ghi V/A/W/Ω/°C. Sơ đồ chân ghi rõ GPIO và mức logic (3.3 V hay 5 V).
 - Thông số linh kiện phải lấy từ datasheet (ghi nguồn); chưa có thì ghi `TODO`, không đoán.
 - **Co ngót in 3D (Tuan 2026-11-26): lỗ và khe lắp ghép = kích thước thật + 0,2 mm** (tối thiểu, mỗi bên với khe trượt/xoay; Ø lỗ cho trục/vít thông). Khớp xoay/ngàm xoay PETG cần lớn hơn (ngàm loa Cú Bông: 0,25 quá khít → 0,40–0,45). Ngoại lệ: số **đã in + chạy thật** trong fit-library (vd. ổ switch MX 14,00 ép, lỗ vít tự ren M2.5 Ø2,4) giữ nguyên vì đã gồm co ngót cùng máy + nhựa. Mỗi dự án ghi bảng khe trong CLAUDE.md dự án.
+- **Tách part LUÔN có mối ghép âm dương / gờ phổ biến** (Tuan 2026-11-27): gờ–rãnh, bậc chồng mép, gờ rời, chốt định vị, đuôi én, lẫy, ngàm xoay – không bao giờ mặt ráp trơn. Bảng chọn dạng + số mặc định + ràng buộc in: skill `mechanical-design` mục "Tách part".
 - Mỗi dự án có `CLAUDE.md` (quy ước riêng cho Claude) + `README.md` (trạng thái, an toàn, BOM, lịch sử sửa/in).
 - Thư mục chuẩn: `design/` (bước 0: dáng + mockup), `solidcraft/` + `print/` (CAD, mẫu: `card-coding-robot/`, `esp32-s3-cam/solidcraft/`),
   `firmware/`, `hardware/` (sơ đồ, PCB), `docs/`. Công cụ dùng chung ở `tools/`, không đặt trong `maker/`.
