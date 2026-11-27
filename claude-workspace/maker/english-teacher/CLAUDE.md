@@ -50,6 +50,7 @@ Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\
 | PCB mic Ø15 × 1,6 ↔ hốc | Ø15 | hốc Ø16,4 | 0,7 | gate; **ron xốp 1,2 mm trong khe 1,0** (ép 0,2) |
 | PCB mic ↔ kẹp mic | Ø15 | Ø15,6 | 0,3 | gate PASS |
 | Kẹp mic ↔ lỗ lót vỏ | Ø20,8 | lỗ Ø21,8 | 0,5 | gate PASS |
+| **Kẹp mic → tấm ép + vít** (2026-11-27, bỏ 2 gai) | tấm 34 × 9,4 dày 2,5 tì 2 trụ Ø6 vỏ (x ±14, T −4) | vít M2.5 × 6 bên +x (bên −x dự phòng), mồi Ø2,4 sâu 6,5; vành ép lưng mic giữ w −3,2 | tì sát (vai chặn) | gate tua vít xiên theo trục mic PASS; TODO lắp thật |
 | Bo ESP32-S3 ↔ ray | 25,4–28,6 (**chưa đo hàng thật**) | ray 29,6 | ≥ 0,5 | TODO đo bo thật |
 | Bo S3 ↔ khoang (z) | 16 (giữ chỗ) | 16,4 | 0,2 | giữ chỗ, TODO đo |
 | USB-C ↔ lỗ cáp | 14 × 9 (giữ chỗ) | 14 × 9 R2, mái cách cổng 0,3 | 0,3 | TODO đo cáp |

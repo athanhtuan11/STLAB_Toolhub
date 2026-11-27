@@ -292,6 +292,42 @@
     ],
     "length": 12.0,
     "pilot_d": 2.4
+   },
+   {
+    "name": "mic-R",
+    "part": "shell-front",
+    "at": "mic-clamp",
+    "head": [
+     14.0,
+     -22.836,
+     120.379
+    ],
+    "axis": [
+     -0.0,
+     0.7071,
+     -0.7071
+    ],
+    "length": 6.0,
+    "grip": 2.5,
+    "pilot_d": 2.4
+   },
+   {
+    "name": "mic-L",
+    "part": "shell-front",
+    "at": "mic-clamp",
+    "head": [
+     -14.0,
+     -22.836,
+     120.379
+    ],
+    "axis": [
+     -0.0,
+     0.7071,
+     -0.7071
+    ],
+    "length": 6.0,
+    "grip": 2.5,
+    "pilot_d": 2.4
    }
   ]
  },

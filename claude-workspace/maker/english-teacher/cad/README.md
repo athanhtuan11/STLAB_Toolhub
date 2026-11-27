@@ -2,6 +2,9 @@
 
 ## Bản v3 lắp ráp thật (2026-11-27, gate PASS)
 
+- **2026-11-27 kẹp mic → tấm ép + vít** (Tuan: "chi tiết nhỏ rất khó gắn"): bỏ nửa ống + 2 gai xiên 45°; tấm ép 34 mm ở miệng rãnh chữ U
+  quanh mic (chỉ phía −T, dây ra phía +T), tì 2 trụ vỏ ở x ±14 → vị trí cố định, vành ép lưng mic giữ đúng w −3,2 như cũ (ron nén 0,2);
+  1 vít M2.5 × 6 theo trục mic bên +x (bên −x lỗ mồi dự phòng). Tua vít thẳng theo trục mic, gate kiểm ở bước lắp (sau đế nút + nắp nút).
 - **2026-11-27 cơ chế giữ chắc** (Tuan: vành loa chỉ vít trên → rơ; mỏ/bụng lẫy khó tháo + mỏ Ø14 dễ hóc): mỏ = vít giấu M2.5 × 12 từ trong
   qua tấm chặn 3,0; bụng = vấu chữ D chống xoay + **thanh kẹp rời** `belly-clamp` (đầu vát theo côn 45° sau vách – vách đặc sau bụng
   không in được vì khoang r 38) + vít M2.5 × 12; vành loa thêm vít đáy M2.5 × 12 từ dưới đế; vòng ép thêm nấc khóa 0,20. **Thứ tự lắp mới:

@@ -320,8 +320,13 @@ for _n in ("mic-clamp",):   # v3: khay/de nut/be tiep xuc chu y -> kiem bang too
     _m = load(OUT / "asm" / f"{_n}.stl")
     if not _m:
         fails.append(f"thieu asm/{_n}.stl")
-    elif _sh_tree.overlap(BVHTree.FromBMesh(_m)):
-        fails.append(f"{_n} cham vo/vanh/nap o vi tri lap")
+    else:
+        # 2026-11-27 tam ep mic CO Y tua len 2 tru vo (vai chan) -> chi FAIL khi lan vao vo > 0,1 mm (co luoi 0,1 vao trong)
+        _m.normal_update()
+        _ix = {v: i for i, v in enumerate(_m.verts)}
+        _shr = BVHTree.FromPolygons([v.co - v.normal * 0.1 for v in _m.verts], [tuple(_ix[v] for v in f.verts) for f in _m.faces])
+        if _sh_tree.overlap(_shr):
+            fails.append(f"{_n} lan vao vo/vanh/nap > 0,1 mm o vi tri lap")
 
 # ngam xoay lap duoc that (moi loa): asm, truc = axis loa (huong ra ngoai)
 bay = (sc_ or {}).get("bayonet")
@@ -438,6 +443,14 @@ else:
         fails.append("con joint pin (chot 2 nua chua ve) - v3 dung vit")
 
 
+def _cyl_axis(c, ax, d, L):   # 2026-11-27: khoi tua vit theo truc bat ky (vit tam ep mic xien 45 do)
+    b = bmesh.new()
+    bmesh.ops.create_cone(b, cap_ends=True, segments=32, radius1=d / 2, radius2=d / 2, depth=L)
+    R = Vector((0, 0, 1)).rotation_difference(Vector(ax).normalized()).to_matrix().to_4x4()
+    bmesh.ops.transform(b, matrix=Matrix.Translation(Vector(c)) @ R, verts=b.verts)
+    return b
+
+
 def _cyl_y(c, d, L):
     b = bmesh.new()
     bmesh.ops.create_cone(b, cap_ends=True, segments=32, radius1=d / 2, radius2=d / 2, depth=L)
@@ -499,20 +512,21 @@ print(f"V3 tua vit: {len(s6)} vit M2.5 x 6 kiem O{drv[0]:g} x {drv[1]:g}")
 # 2b. vit giau (2026-11-27): mo/bung tu trong (+y), vit day vanh loa tu duoi (-z). Kiem: (a) tua vit O8 x 80 tu dinh dau vit
 #     nguoc chieu vit khong vuong part da lap tai luc bat; (b) lo moi trong part dich co vat lieu bao quanh (an ren) suot doan an ren.
 hs = v3.get("hidden_screws", [])
-if len(hs) < 4:
-    fails.append(f"v3.hidden_screws can 4 vit (mo, bung, 2 vit day vanh loa): {len(hs)}")
+if len(hs) < 6:
+    fails.append(f"v3.hidden_screws can 6 vit (mo, bung, 2 day vanh loa, 2 tam ep mic): {len(hs)}")
 for h_ in hs:
     part = h_["part"]
     if part not in order:
         fails.append(f"vit {h_['name']}: part {part} khong co trong order"); continue
     ax = Vector(h_["axis"]).normalized(); hd = Vector(h_["head"])
-    if abs(ax.z) > 0.5:      # tu duoi de: ngoai khong khi, chi kiem an ren
+    if abs(ax.z) > 0.95:     # thang dung tu duoi de: ngoai khong khi, chi kiem an ren
         pass
     else:
-        idx = order.index(part)
-        obs = [n for n in order[:idx] if n != part]
-        top = hd.y + 1.9      # dinh dau vit M2.5 (cao ~1,7)
-        dt = BVHTree.FromBMesh(_cyl_y((hd.x, top + drv[1] / 2 + 0.05, hd.z), drv[0], drv[1]))
+        at = h_.get("at", part)                     # part dang lap luc bat vit (vd. tam ep mic: vit an vao vo truoc)
+        idx = order.index(at)
+        obs = [n for n in order[:idx] if n not in (at, h_["part"] if at == part else at)]   # moi part da lap truoc (gom vo truoc)
+        c0 = hd + ax * (1.9 + drv[1] / 2 + 0.05)     # tu dinh dau vit (~1,7) ra theo truc
+        dt = BVHTree.FromBMesh(_cyl_axis(c0, ax, drv[0], drv[1]))
         hit = [n for n in obs if MESH.get(n) and dt.overlap(tree_of(MESH[n], -0.1))]
         if hit:
             fails.append(f"vit {h_['name']}: tua vit O{drv[0]:g} x {drv[1]:g} vuong {hit}")
@@ -521,8 +535,9 @@ for h_ in hs:
         # doan an ren: tu 1,0 sau mat part toi 1,0 truoc dau vit (dau vit + chieu dai)
         tip = hd - ax * h_["length"]
         bad = 0; tot = 0
+        eng = h_["length"] - h_.get("grip", 0.0)          # doan an ren that (bo phan xuyen qua chi tiet bi kep)
         for k in range(1, 6):
-            c_ = tip + ax * (1.0 + k * 1.0)
+            c_ = tip + ax * (0.5 + (min(eng, 5.5) - 1.0) * k / 5.0)
             # 2 vecto vuong goc truc
             u_ = ax.orthogonal().normalized(); v_ = ax.cross(u_)
             for a in [j * math.pi / 4 for j in range(8)]:

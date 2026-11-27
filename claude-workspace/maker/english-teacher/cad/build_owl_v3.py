@@ -217,6 +217,8 @@ BELLY_D_FLAT = 12.8                  # canh phang lo chu D: z = BELLY_Z - 12,8 (
 BELLY_SPIG_RI = 13.0                 # vau chu D: vanh r 13,0..15,0 (lo r 15,2 -> khe 0,2)
 CLAMP_YF, CLAMP_T, CLAMP_W, CLAMP_CLR = -44.4, 3.0, 8.0, 0.28   # thanh kep: mat truoc y -44,4, day 3,0, rong 8,0; khe 0,2 phap tuyen voi con 45 do
 MIC_SNAP_W = -5.6                    # canh moc cua so kep mic (w)
+MC_PLATE_W1, MC_PLATE_W0 = -10.5, -13.0   # tam ep w -13..-10,5; mat duoi = dinh tru (vo quanh mic = ranh chu U: 2 thanh |x| >= 12 phia +T keo sau toi w -18, phia -T trong)
+MC_BOSS_X, MC_BOSS_T, MC_BOSS_R = 14.0, -4.0, 3.0   # tru O6 o x +-14, T -2,5 (bam mep thanh ben T >= 0, phia -T trong -> tua vit thang); ong ep r 10,4 khe >= 0,6
 
 def hexc(h):
     h = h.lstrip('#'); c = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
@@ -739,11 +741,14 @@ for sgn in (-1, 1):
     scr = [(sgn * BB_SCREW_X, BB_ZB + BB_WING_H / 2)]
     ear_cuts(S, None, scr)
     SCREWS6 += [('button-%s' % ('L' if sgn < 0 else 'R'), 'button-base', scr[0][0], scr[0][1])]
-# kep mic: 2 cua so lay o 2 vach ben ong lot (vung dau dac z > 124)
+# kep mic (2026-11-27 tam ep + vit, bo 2 cua so lay): 2 tru O6 doc truc mic o x +-14, dinh w -9,5 (vai chan tam ep),
+# an vao vat lieu vo co san (w -2..-10); lo moi M2.5 sau 6,5. Dinh tru nghieng 45 do khi in (mat huong xuong 45 do = gioi han in duoc).
 M_MICF = frame(MIC_C, MIC_N)
 for sgn in (-1, 1):
-    a, b = sorted((sgn * 10.6, sgn * 12.0))
-    w_ = box('micwin', (a, -2.5, MIC_SNAP_W), (b, 2.0, MIC_SNAP_W + 2.2)); w_.data.transform(M_MICF); diff(S, w_)
+    bo_ = cyl('mic_boss', (sgn * MC_BOSS_X, MC_BOSS_T, MC_PLATE_W1), (sgn * MC_BOSS_X, MC_BOSS_T, -2.0), MC_BOSS_R, seg=32)
+    bo_.data.transform(M_MICF); union(S, bo_)
+    pi_ = cyl('mic_pil', (sgn * MC_BOSS_X, MC_BOSS_T, MC_PLATE_W1 - 0.5), (sgn * MC_BOSS_X, MC_BOSS_T, MC_PLATE_W1 + 6.5), PILOT_D / 2, seg=20)
+    pi_.data.transform(M_MICF); diff(S, pi_)
 # 6 vit noi 2 nua
 for (sx_, sz_) in ([] if 'screws' in V3_SKIP else SHELL_SCREWS):
     b_ = cyl('sboss', (sx_, Y0 - 14.0, sz_), (sx_, Y0 + 70.0, sz_), SHELL_BOSS_R, seg=40)
@@ -1062,6 +1067,9 @@ S3_TRAY = make_s3_tray()
 MC_RO, MC_RI = MIC_SLEEVE_BORE_R - 0.5, MIC_PCB_D / 2 + 0.3        # 10,4 va 7,8
 MC_W0, MC_W1 = -12.0, -0.7
 MC_YCUT = 2.0
+# 2026-11-27 Tuan "kep mic rat kho gan" -> TAM EP + VIT: bo 2 gai; tam phang 34 x 13,9 day 2,5 o mieng ong lot (w -12..-9,5), tua tren
+# 2 tru vo o x +-14 (vai chan: vi tri tam co dinh -> vanh ep lung mic dung w -3,2 nhu ban cu, ron nen 0,2); vit M2.5 x 6 ben +x
+# (ben -x lo moi du phong). Dau vit theo -n (vao long vo), tua vit thang theo truc mic.
 def make_mic_clamp():
     sl = cyl('mc_out', (0, 0, MC_W0), (0, 0, MC_W1), MC_RO, seg=64)
     diff(sl, cyl('mc_in', (0, 0, MC_W0 - 1), (0, 0, MC_W1 + 1), MC_RI, seg=64))
@@ -1069,11 +1077,12 @@ def make_mic_clamp():
     lip = lathe('mc_lip', [(MC_RI + 0.3, -5.2), (6.3, -3.7), (6.3, -3.2), (MC_RI + 0.3, -3.2)], seg=64)
     union(sl, lip)
     inter(sl, box('mc_half', (-20, -20, -20), (20, MC_YCUT, 20)))
-    # v3: 2 gai lay (vao cua so vach ong lot vo truoc) – chan lui theo truc (+y, -z cua the gioi)
+    # tam ep (in nam tren ban, mat w -12 xuong): x +-17, y -10,4..3,5 (phia +y = +T de trong cho day), lo giua r 7,8
+    pl = box('mc_plate', (-(MC_BOSS_X + MC_BOSS_R), MC_BOSS_T - MC_BOSS_R - 4.9, MC_PLATE_W0), (MC_BOSS_X + MC_BOSS_R, -2.0, MC_PLATE_W1))   # mep T -2,0: thanh ben bat dau T ~ -1,5
+    diff(pl, cyl('mc_pl_in', (0, 0, MC_PLATE_W0 - 1), (0, 0, MC_PLATE_W1 + 1), MC_RI, seg=64))
     for sg in (-1, 1):
-        g = extrude('mc_snap', [(sg * (MC_RO - 0.3), MIC_SNAP_W + 0.2), (sg * (MC_RO + 0.8), MIC_SNAP_W + 0.2), (sg * (MC_RO + 0.8), MIC_SNAP_W + 0.8),
-                                (sg * (MC_RO - 0.3), MIC_SNAP_W + 1.9)], -2.0, 1.5, Matrix(((1, 0, 0, 0), (0, 0, 1, 0), (0, 1, 0, 0), (0, 0, 0, 1))))
-        union(sl, g)
+        diff(pl, cyl('mc_pl_h', (sg * MC_BOSS_X, MC_BOSS_T, MC_PLATE_W0 - 1), (sg * MC_BOSS_X, MC_BOSS_T, MC_PLATE_W1 + 1), THRU_D / 2, seg=20))
+    union(sl, pl)
     return sl
 MIC_CLAMP_LOCAL = make_mic_clamp()
 M_mic_clamp = frame(MIC_C, MIC_N)
@@ -1335,7 +1344,12 @@ params = dict(
             hidden_screws=[dict(name='beak', part='beak', head=[0.0, round(BEAK_PLATE_Y0 + HID_PLATE_T, 2), BEAK_Z], axis=[0, 1, 0], length=HID_SCREW_L, pilot_d=PILOT_D),
                            dict(name='belly', part='belly', head=[0.0, CLAMP_YF + CLAMP_T, BELLY_Z], axis=[0, 1, 0], length=HID_SCREW_L, pilot_d=PILOT_D)]
                           + [dict(name='bezel-bot-%s' % sd, part='speaker-bezel-' + sd, head=[sg * BZ_BOT_X, Y0, BASE_BOT + BZ_BOT_CB_H], axis=[0, 0, -1], length=HID_SCREW_L, pilot_d=PILOT_D)
-                             for sg, sd in ((-1, 'L'), (1, 'R'))]),
+                             for sg, sd in ((-1, 'L'), (1, 'R'))]
+                          # 2026-11-27 tam ep mic: vit M2.5 x 6 ben +x (ben -x du phong), truc theo mic, dau vit huong -n
+                          + [dict(name='mic-%s' % sd, part='shell-front', at='mic-clamp',
+                                  head=[round(v, 3) for v in (Vector(MIC_C) + MIC_N * MC_PLATE_W0 + MIC_T * MC_BOSS_T + Vector((sg * MC_BOSS_X, 0, 0)))],
+                                  axis=[round(v, 4) for v in (-MIC_N)], length=6.0, grip=MC_PLATE_W1 - MC_PLATE_W0, pilot_d=PILOT_D)
+                             for sg, sd in ((1, 'R'), (-1, 'L'))]),
     wall=WALL,
     speaker_pocket_d=SPEAKER_POCKET_D,
     grille_hole_d=GRILLE_HOLE_D,
