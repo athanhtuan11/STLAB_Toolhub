@@ -69,7 +69,7 @@ Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\
 
 ## Trạng thái
 - 2026-11-27: **Cú Bông v3 lắp ráp thật** (gate PASS): 1 lệnh `python run_v3.py` (~27 s, `--slice` thêm cắt lớp), assembly-check 0 FAIL 0 WARN; 5 bàn `print/plates-v3` PASS không support.
-  Bàn thử v3 nhỏ `print/plates-v3-test` (115 phút, 42,3 g) CHỜ IN trước; bộ đầy đủ `print-v3.3mf` chỉ in sau khi bàn thử đạt. Xem `cad/README.md` mục "Bản v3".
+  **Tuan in thẳng bộ đầy đủ `print/plates-v3/print-v3.3mf`** (16h47, 468,1 g; bỏ bàn thử – đã thử các khớp trước, 2026-11-27). Mới chưa in thật: vít giấu mỏ/bụng + thanh kẹp, vít đáy vành loa, nấc khóa vòng ép 0,20, gờ rời. Xem `cad/README.md` mục "Bản v3".
 - 2026-11-26: **dáng A2 V2** = mắt màn TFT 2,8" cảm ứng (MSP2807) + **2 loa Ø52 H0** (sườn quay ngang; H25 bỏ vì phải support), gờ giữ loa Ø48, mỗi loa 1 MAX98357A.
   CAD `cad/build_owl_s3_screen.py` → `out-s3-screen`: gate PASS, 5 bàn `plates-s3-screen` PASS không support (~16 h, ~443 g); lỗ màn V1.1 đối xứng 80 × 44; chờ duyệt dáng + kết quả bàn thử v3.
   **Bàn thử v3** `p1-fit-test.3mf` (face-plate, speaker-ring-L, button-cap) CHỜ IN. Firmware bản 1 loa, CHƯA có driver màn/cảm ứng, CHƯA thử ampli 2.
