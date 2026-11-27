@@ -17,6 +17,13 @@ nắp màn, mỏ không lắp được; vành loa/tai không bắt được vào
    (lỗ = cổng/đầu cáp + 0,5 mỗi bên để bù lệch). **Tuan 2026-11-27: thông số khay S3 + ampli hiện tại đã chính xác** → dùng nguyên
    số ray/khối bo (pcb_box, ray 29,6, khay ampli 18,0 × 19,4) làm chuẩn, chỉ đổi chỗ bắt sang vỏ trước.
    Vít: Tuan có sẵn (M2.5 × 6 và × 12).
+   **Tuan 2026-11-27: xem lại cách bố trí khay ampli** (2 khay đang tách, dưới bo S3, cách loa ≤ 70): đề xuất bố trí mới
+   (ví dụ gộp 1 khay chung với bo S3, mỗi ampli gần loa của nó, dây loa ngắn, chừa chỗ đi dây + tay vặn vít), render ảnh cho Tuan duyệt.
+7. **Vít trong lòng Cú phải bắt dễ** (Tuan 2026-11-27): mọi vít bắt chi tiết vào vỏ trước phải có **đường thẳng cho tua vít**
+   từ phía mặt ráp (vỏ trước để ngửa, chưa đóng vỏ sau) tại thời điểm bắt vít theo thứ tự lắp: ống trống Ø8 (tay vặn) dọc trục vít,
+   dài ≥ 80 mm tính từ đầu vít, không vướng vỏ hay chi tiết đã lắp. Ưu tiên trục vít song song trục y (vuông mặt ráp).
+   Gate: thêm part giả `driver-<vít>` (trụ Ø8 × 80) vào kiểm va chạm, hoặc mở rộng `tools/assembly-check` với khai báo `screws`
+   (vị trí, trục, bước lắp) – giao việc riêng khi dựng v3.
 6. **Giữ tấm đế, vẽ lại rộng + đẹp hơn, chống lật** (Tuan 2026-11-27: "đế nên có để bằng phẳng và Cú đứng được"):
    - Mặt dưới phẳng, chân cao su/đệm (TODO chọn loại) – Cú đứng vững trên bàn.
    - Đế **nhô ra ngoài chân vỏ** (dáng bệ ellip/giọt nước theo dáng Cú, mép bo), bắt vỏ trước + vỏ sau bằng vít M3 từ dưới (giữ hốc
