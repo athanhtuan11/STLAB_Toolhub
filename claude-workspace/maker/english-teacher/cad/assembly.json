@@ -1,0 +1,36 @@
+{
+  "_about": "Khai bao lap rap Cu Bong ban co man + 2 loa (Claude 2026-11-27). Khai DUNG HIEN TRANG de tools/assembly-check bat loi that; sua thiet ke thi sua file nay cung luc. Chua co base-plate trong asm (TODO xuat).",
+  "asm_dir": "out-s3-screen/asm",
+  "tol": {"penetration": 0.2, "contact": 0.05, "path_step": 0.5, "seat_stop": 0.5, "probe": 2.0},
+  "order": ["shell-front", "amp-tray", "face-plate", "beak", "belly", "mic-clamp",
+            "speaker-bezel-L", "speaker-bezel-R", "speaker-ring-L", "speaker-ring-R", "button-cap", "shell-back"],
+  "parts": {
+    "shell-front": {"fixed": true},
+    "amp-tray": {"insert": {"dir": [0, 0, -1], "from": 40}, "note": "2 khay ampli, vit M2.5 xuong tam de"},
+    "face-plate": {"insert": {"dir": [0, -1, 0], "from": 60}, "note": "lap tu trong ra"},
+    "beak": {"insert": {"dir": [0, -1, 0], "from": 60}, "note": "lap tu trong ra (yen non)"},
+    "belly": {"insert": {"dir": [0, -1, 0], "from": 60}, "note": "lap tu trong ra (yen non 10 do)"},
+    "mic-clamp": {"insert": {"dir": [0, -0.7075, 0.7067], "from": 40}, "note": "theo truc mic nghieng 45 do"},
+    "speaker-bezel-L": {"insert": {"dir": [-1, 0, 0], "from": 40}, "note": "yen non lap tu trong, vat qua mat rap"},
+    "speaker-bezel-R": {"insert": {"dir": [1, 0, 0], "from": 40}},
+    "speaker-ring-L": {"insert": {"dir": [-1, 0, 0], "from": 30}, "note": "ngam xoay vao vanh loa"},
+    "speaker-ring-R": {"insert": {"dir": [1, 0, 0], "from": 30}},
+    "button-cap": {"insert": {"dir": [0, 0, 1], "from": 30}, "note": "vanh nap O54 > lo O50,8 -> dua tu trong len"},
+    "shell-back": {"insert": {"dir": [0, -1, 0], "from": 60}}
+  },
+  "allowed_contacts": [
+    ["shell-front", "shell-back"],
+    ["shell-front", "speaker-bezel-L"], ["shell-back", "speaker-bezel-L"],
+    ["shell-front", "speaker-bezel-R"], ["shell-back", "speaker-bezel-R"],
+    ["speaker-bezel-L", "speaker-ring-L"], ["speaker-bezel-R", "speaker-ring-R"],
+    ["shell-front", "face-plate"]
+  ],
+  "joints": [
+    {"type": "screw", "parts": ["face-plate", "shell-front"], "blocks": ["*"], "note": "4 vit M2.5 x 6 vanh chan"},
+    {"type": "screw", "parts": ["amp-tray", "shell-front"], "blocks": ["*"], "note": "vit M2.5 x 6 xuong tam de (tam de chua co trong asm)"},
+    {"type": "bayonet", "parts": ["speaker-ring-L", "speaker-bezel-L"], "blocks": ["*"], "note": "ngam xoay 3 chot 0,40/0,40/0,45"},
+    {"type": "bayonet", "parts": ["speaker-ring-R", "speaker-bezel-R"], "blocks": ["*"], "note": "ngam xoay 3 chot"},
+    {"type": "pin", "parts": ["shell-back", "shell-front"], "blocks": ["+x", "-x", "+z", "-z"], "pin_part": "pin-2mm", "note": "6 lo chot O2 - CHOT CHUA VE, chua co BOM"},
+    {"type": "screw", "parts": ["shell-back", "shell-front"], "blocks": ["+y"], "note": "4 vit M3 qua tam de - chi giu DAY, dinh dau co the ha (chua kiem xoay)"}
+  ]
+}
