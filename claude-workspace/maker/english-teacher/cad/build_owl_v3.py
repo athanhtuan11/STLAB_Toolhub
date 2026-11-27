@@ -757,6 +757,41 @@ A = S; B = cp(S, 'back')
 inter(A, box('fr', (-300, -300, -50), (300, Y0, 300)))
 inter(B, box('bk', (-300, Y0, -50), (300, 300, 300)))
 
+# ============================================================ GO ROI AM DUONG (Tuan 2026-11-27: "vo truoc va sau nen co dang go am duong,
+# dung lam tron han se kho lap rap"). Ca 2 nua in up mat rap xuong ban, mat rap co ~4900 mm2 vach trong + gieng vit -> go LIEN se
+# nhac vach trong khoi ban (phai support) -> Tuan chon GO ROI: ranh am o mep trong thanh vo CA 2 nua, vong go duong in phang rieng
+# (seam-spline) ep vao ranh vo truoc roi up vo sau len. Go = dai thanh vo [r_i, r_i + SPL_T] cat theo SRC (chi o cho co thanh).
+SPL_T, SPL_H, SPL_CLR = 1.0, 4.0, 0.2      # go day 1,0 (> 2 duong in 0,9), cao 4,0 = 2,0 vao moi nua; khe 0,2 (maker/CLAUDE.md)
+GRV_IN = 0.3                                 # ranh lan vao long 0,3: cat sach chan vach trong o mep trong, khong gay go
+GRV_D = SPL_H / 2 + SPL_CLR                  # sau ranh moi nua 2,2 -> thanh ngoai con WALL - SPL_T - SPL_CLR = 1,2
+def wall_band(name, d0, d1, y0, y1):
+    """dai lop vo tu mat trong + d0 toi mat trong + d1 (cung ho sieu ellip voi OUTER/inner2), cat theo y0..y1"""
+    o_ = sup(name + '_o', (0, 0, BZ), tuple(r - WALL + d1 for r in BR), NT, NB, TAPER)
+    diff(o_, sup(name + '_i', (0, 0, BZ), tuple(r - WALL + d0 for r in BR), NT, NB, TAPER))
+    inter(o_, box(name + '_y', (-300, y0, FLOOR_CUT), (300, y1, 300)))
+    return o_
+SPLINE = wall_band('spline', 0.0, SPL_T, Y0 - SPL_H / 2, Y0 + SPL_H / 2)
+inter(SPLINE, cp(SRC, 'src_spl'))
+diff(A, wall_band('grvA', -GRV_IN, SPL_T + SPL_CLR, Y0 - GRV_D, Y0 + 1.0))
+diff(B, wall_band('grvB', -GRV_IN, SPL_T + SPL_CLR, Y0 - 1.0, Y0 + GRV_D))
+_bm = bmesh.new(); _bm.from_mesh(SPLINE.data)
+_isl = []; _seen = set(); _drop = []
+for _v in _bm.verts:
+    if _v.index in _seen: continue
+    _st = [_v]; _seen.add(_v.index); _vs = []
+    while _st:
+        _x = _st.pop(); _vs.append(_x)
+        for _e in _x.link_edges:
+            _w = _e.other_vert(_x)
+            if _w.index not in _seen: _seen.add(_w.index); _st.append(_w)
+    _z = [q.co.z for q in _vs]
+    if max(_z) - min(_z) < 20.0:     # mau ngan o chan (z 4..10, dai ~12): mong 1,0 de gay, khong giup dinh vi -> bo
+        _drop += _vs
+    else:
+        _isl.append((round(min(_z), 1), round(max(_z), 1)))
+bmesh.ops.delete(_bm, geom=_drop, context='VERTS'); _bm.to_mesh(SPLINE.data); _bm.free()
+print("SPLINE giu", len(_isl), "cung (z tu, z toi):", _isl, "| bo", len(_drop), "dinh mau ngan")
+
 # v3: BE thay tam de (Tuan: "de nen co de bang phang va Cu dung duoc"): sieu ellip lech truoc nho ra ngoai chan vo,
 # day phang + 4 hoc chan cao su, mep tren vat 45 do 2,5 (in mat tren xuong ban), 4 bu-long M3 x 16 tu duoi vao dai oc trong vo
 def base_ring(d):
@@ -1167,6 +1202,7 @@ refine(A, (-50, YF - 5, SCR_ZC - 40), (50, YF + 25, SCR_ZC + 40), L=8.0)
 
 export_obj(A, T_front, OUT / "shell-front.stl")
 export_obj(B, T_back, OUT / "shell-back.stl")
+export_obj(SPLINE, T_front, OUT / "seam-spline.stl")   # in phang: mat cat y -> z (cao 4,0)
 export_obj(BELLY, T_belly, OUT / "belly.stl")
 export_obj(BEAK, T_beak, OUT / "beak.stl")
 export_obj(CAP, T_cap, OUT / "button-cap.stl")
@@ -1202,7 +1238,7 @@ for o_ in mx_cutters(MT, 0.0):
 export_obj(BUTTON_BASE, Matrix.Identity(4), OUT / "button-base.stl")   # in dung, mieng o len tren
 
 # ============================================================ LAP RAP (owl-assembled.stl)
-ALL_OBJS = [A, B, PLATE, BELLY, BEAK, CAP, FP_W, BEZEL_W[-1], BEZEL_W[1], SRING_W[-1], SRING_W[1], MIC_CLAMP_W, S3_TRAY, BUTTON_BASE]
+ALL_OBJS = [A, B, SPLINE, PLATE, BELLY, BEAK, CAP, FP_W, BEZEL_W[-1], BEZEL_W[1], SRING_W[-1], SRING_W[1], MIC_CLAMP_W, S3_TRAY, BUTTON_BASE]
 asm = bmesh.new()
 for o in ALL_OBJS:
     asm.from_mesh(o.data)
@@ -1226,6 +1262,7 @@ for sgn, side in ((-1, "L"), (1, "R")):
     export_asm(SRING_W[sgn], OUT / "asm" / f"speaker-ring-{side}.stl")
 export_asm(A, OUT / "asm" / "shell-front.stl")
 export_asm(B, OUT / "asm" / "shell-back.stl")
+export_asm(SPLINE, OUT / "asm" / "seam-spline.stl")
 export_asm(BELLY, OUT / "asm" / "belly.stl")
 export_asm(BEAK, OUT / "asm" / "beak.stl")
 export_asm(CAP, OUT / "asm" / "button-cap.stl")
@@ -1322,6 +1359,7 @@ mic_dummy = cyl('mic_d', mpt(-0.8), mpt(0.8), MIC_PCB_D / 2, seg=48)
 ITEMS = [
     (A, 'front', 'shell', (0, -75, 0)),
     (B, 'back', 'shell', (0, 75, 0)),
+    (SPLINE, 'spline', 'shell', (0, 30, 0)),
     (PLATE, 'plate', 'cream', (0, 0, -45)),
     (BELLY, 'belly', 'cream', (0, -130, 0)),
     (BEAK, 'beak', 'butter', (0, -135, 30)),
@@ -1391,7 +1429,7 @@ def merge(p1, p2, out):
     nim = bpy.data.images.new('m', width=big.shape[1], height=big.shape[0], alpha=True)
     nim.pixels.foreach_set(big.reshape(-1)); nim.filepath_raw = str(out); nim.file_format = 'PNG'; nim.save()
 
-ASM = ['front', 'back', 'plate', 'belly', 'beak', 'cap', 'fp', 'bzl', 'bzr', 'srl', 'srr', 'micclamp', 'tray', 'bbase']
+ASM = ['front', 'back', 'spline', 'plate', 'belly', 'beak', 'cap', 'fp', 'bzl', 'bzr', 'srl', 'srr', 'micclamp', 'tray', 'bbase']
 sc = fresh_scene((800, 1200)); load_items(sc, ASM, False)
 cam_at(sc, (0, 0, 85), -32, 12, 560); render_png(sc, OUT / "_v1.png")
 bpy.data.objects.remove(sc.camera)

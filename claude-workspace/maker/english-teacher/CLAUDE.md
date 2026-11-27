@@ -58,6 +58,7 @@ Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\
 | Tai ốc M3 ↔ hốc lục giác | 5,5 AF | **5,9** (cũ 5,8) | **0,20** (cũ 0,15) | nâng 2026-11-26 |
 | Vít M3 ↔ lỗ thông | Ø3,0 | Ø3,4 | 0,2 | quy tắc |
 | Chốt định vị 2 nửa | Ø2,0 | đã bỏ ở v3 (thay bằng vít) | 0,2 (TODO kiểm lại) | bản cũ đã in |
+| **Gờ rời âm dương** `seam-spline` ↔ rãnh mép trong 2 nửa vỏ (2026-11-27) | gờ dày 1,0 × cao 4,0 (2,0/nửa) | rãnh rộng 1,2 (+0,3 lấn vào lòng) × sâu 2,2 mỗi nửa | 0,2 (bề dày + đáy) | quy tắc; TODO in thử |
 | Tai vít chi tiết ↔ hốc vỏ trước | dày 3,0 | hốc +0,2 mm/bên | 0,2 | quy tắc |
 | Vít nối 2 nửa M2.5 × 12 | lỗ mồi Ø2,4 / thông Ø2,8 / giếng Ø5,6 đáy 3,0 | – | fit-library Ø2,4 (ngoại lệ) | spec v3 |
 | Lẫy face-plate/bụng | dày 1,2, gờ 0,8 | – | 0,2 | TODO bàn thử v3 |

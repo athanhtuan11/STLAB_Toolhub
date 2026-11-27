@@ -2,6 +2,11 @@
 
 ## Bản v3 lắp ráp thật (2026-11-27, gate PASS)
 
+- **2026-11-27 gờ rời âm dương** (Tuan: "vỏ trước và sau nên có gờ âm dương, đừng làm trơn"): 2 nửa in úp mặt ráp có ~4900 mm² vách trong +
+  giếng vít → gờ liền sẽ cần support → **gờ rời** `seam-spline.stl` (2 cung z 87–151 hai bên, dày 1,0 × cao 4,0, in phẳng ở bàn C) ép vào
+  rãnh mép trong vỏ trước (1,2 × sâu 2,2), úp vỏ sau (rãnh giống hệt) lên rồi bắt 6 vít. Đoạn sườn dưới là lỗ vành loa, đỉnh là cột nút → không có thành để chạy gờ.
+- File CAD mở-ra-đo: `out-v3/owl-assembly.sc` (SolidCraft, solid) + `.step` + `.blend` – `run_v3.py` tự xuất (tools/cad-export).
+
 Theo `spec-owl-v3-assembly.md`. Script `build_owl_v3.py` (Blender 5.2) → `out-v3/` (STL in, `asm/`, `owl-params.json`, ảnh). Bản cũ `build_owl_s3_screen.py` giữ nguyên.
 
 **Chạy:** `python run_v3.py` (vẽ 11 s, song song: `tools/assembly-check` 4 s + kiểm in nhanh printability 5 s + mẫu thử 2 s, rồi `gate_owl_v3` 5 s; ~27 s).

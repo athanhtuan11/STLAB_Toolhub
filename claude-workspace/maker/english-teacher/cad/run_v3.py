@@ -10,7 +10,7 @@ HERE = Path(__file__).resolve().parent
 PROJ = HERE.parent
 WS = PROJ.parents[1]
 BL = r"C:\Program Files\Blender Foundation\Blender 5.2\blender.exe"
-PRINT_STL = ["shell-front", "shell-back", "belly", "beak", "button-cap", "face-plate", "speaker-bezel-L", "speaker-bezel-R",
+PRINT_STL = ["shell-front", "shell-back", "seam-spline", "belly", "beak", "button-cap", "face-plate", "speaker-bezel-L", "speaker-bezel-R",
              "speaker-ring-L", "speaker-ring-R", "mic-clamp", "s3-tray", "button-base", "base"]
 T = []
 

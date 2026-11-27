@@ -4,7 +4,7 @@
   "tol": {"penetration": 0.2, "contact": 0.05, "path_step": 0.5, "seat_stop": 0.5, "probe": 2.0},
   "order": ["shell-front", "s3-tray", "button-base", "button-cap", "mic-clamp",
             "speaker-bezel-L", "speaker-ring-L", "speaker-bezel-R", "speaker-ring-R",
-            "face-plate", "beak", "belly", "shell-back", "base"],
+            "face-plate", "beak", "belly", "seam-spline", "shell-back", "base"],
   "parts": {
     "shell-front": {"fixed": true},
     "s3-tray": {"insert": {"dir": [0, -1, 0], "from": 50}, "note": "bo S3 + 2 ampli lap san tren khay, 2 vit M2.5 x 6 theo -y"},
@@ -18,11 +18,12 @@
     "face-plate": {"insert": {"dir": [0, 1, 0], "from": 60, "flex": 0.8}, "note": "man bat 4 vit vao face-plate, ca cum day tu ngoai"},
     "beak": {"insert": {"dir": [0, 1, 0], "from": 40, "flex": 0.5}, "note": "day tu ngoai, 3 lay"},
     "belly": {"insert": {"dir": [0, 1, 0], "from": 40, "flex": 1.0}, "note": "day tu ngoai, 4 lay"},
+    "seam-spline": {"insert": {"dir": [0, -1, 0], "from": 40}, "note": "go roi am duong (Tuan 2026-11-27): ep vao ranh mep trong vo truoc, vo sau up len kep lai"},
     "shell-back": {"insert": {"dir": [0, -1, 0], "from": 60}},
     "base": {"insert": {"dir": [0, 0, 1], "from": 30}}
   },
   "allowed_contacts": [
-    ["shell-front", "shell-back"], ["shell-front", "base"], ["shell-back", "base"],
+    ["shell-front", "shell-back"], ["seam-spline", "shell-front"], ["seam-spline", "shell-back"], ["shell-front", "base"], ["shell-back", "base"],
     ["shell-front", "s3-tray"], ["shell-front", "button-base"], ["shell-front", "mic-clamp"],
     ["shell-front", "speaker-bezel-L"], ["shell-back", "speaker-bezel-L"],
     ["shell-front", "speaker-bezel-R"], ["shell-back", "speaker-bezel-R"],
