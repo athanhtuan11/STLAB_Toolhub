@@ -84,6 +84,9 @@ credentials*.json
 # 2026-11-17: thu muc out-<bien the>/ (vd english-teacher/cad/out-s3) cung la file sinh; gcode cat lop chi tren may
 /maker/**/out-*/*.sc
 /maker/**/out-*/asm/
+# 2026-11-27: file CAD lap rap (tools/cad-export) - chi tren may
+/maker/**/out-*/*.blend
+/maker/**/out/*.blend
 /maker/**/*.gcode
 # elephant-backpack-clicker: file nang chi de tren may (README "khong len git")
 /maker/elephant-backpack-clicker/blender/elephant-backpack-color.blend
@@ -112,3 +115,5 @@ credentials*.json
 # Nhac Cu Bong (Tuan tu chep, khong len git)
 /maker/english-teacher/server/music/*
 !/maker/english-teacher/server/music/README.md
+# Blender tu sinh khi ghi de
+*.blend1

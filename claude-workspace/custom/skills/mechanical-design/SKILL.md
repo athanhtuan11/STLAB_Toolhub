@@ -1,6 +1,6 @@
 ---
 name: mechanical-design
-description: Thiet ke co khi cho du an maker STLab (khong phu thuoc CAD - SolidCraft mac dinh) - ga/khung, chon lo/chot/khe tu fit-library, mau thiet ke CyberBrick da chay, chot/truc khop quay, vach mong khi noi khe, support, huong dan lap cho hoc sinh, luu y dien. Dung TRUOC khi dung bat ky chi tiet lap ghep, ga dong co, khung robot, hop so, vo hop.
+description: Thiet ke co khi cho du an maker STLab (khong phu thuoc CAD - SolidCraft mac dinh) - ga/khung, chon lo/chot/khe tu fit-library, mau thiet ke CyberBrick da chay, chot/truc khop quay, vach mong khi noi khe, support, huong dan lap cho hoc sinh, luu y dien, DAU RA FILE CAD BAT BUOC (.sc + .step + .blend), vo 2 nua phai co go am duong. Dung TRUOC khi dung bat ky chi tiet lap ghep, ga dong co, khung robot, hop so, vo hop.
 ---
 
 # Thiết kế cơ khí STLab
@@ -40,6 +40,27 @@ description: Thiet ke co khi cho du an maker STLab (khong phu thuoc CAD - SolidC
    `kinematics_test.py` – Housing chỉ đắp được 0,7 mm vì Boom001 vào tới cách 1,0 mm khi xi-lanh duỗi hết. Cách tìm:
    cắt lưới **theo hướng in** (lấy từ 3MF) từng lớp 0,2 mm, mặt cắt có 2·diện tích/chu vi < 0,45 mm = vách mỏng.
 5. Báo lại: kích thước chính (mm), khối lượng ước tính (vật liệu PLA/PETG), các giả định.
+
+## Đầu ra file CAD – BẮT BUỘC mọi dự án (Tuan 2026-11-06, nhắc lại 2026-11-27: "CAD không có file cho Blender hay bất kì phần mềm CAD nào")
+Chỉ có STL hướng in / 3mf là **thiếu** – Tuan cần mở ra đo để tự tìm chỗ sai. Dù dựng bằng Blender, SolidCraft hay script:
+1. Script dựng xuất `out*/asm/<chi-tiet>.stl` – mỗi chi tiết **đúng vị trí lắp**, mm (không phải hướng in).
+2. Chạy công cụ chung: `python tools/cad-export/export_cad.py <thu-muc>/asm <ten-du-an>-assembly` → cạnh `asm/`:
+   - `<ten>.sc` SolidCraft (mặc định, mỗi chi tiết 1 component, đã Convert Mesh → solid, đo mặt/cạnh được)
+   - `<ten>.step` mở bằng Fusion 360 / FreeCAD / Onshape / SolidWorks
+   - `<ten>.blend` Blender, mỗi chi tiết 1 object, đơn vị mm
+   Công cụ tự làm sạch lưới (gộp đỉnh, pháp tuyến) và báo chi tiết nào không thành solid – không im lặng.
+3. Gắn bước này vào **lệnh 1 lệnh của dự án** (`run_*.py`, chạy song song với kiểm) – không để phụ thuộc trí nhớ.
+   Mẫu: `maker/english-teacher/cad/run_v3.py`. Dự án dựng thẳng bằng SolidCraft: `.sc` gốc + `--out x.step`.
+4. Các file này không commit (gitignore) nhưng **phải có trên máy**; trước khi báo xong kiểm file tồn tại và đưa đường dẫn
+   `.sc` trước, `.step`/`.blend` sau, rồi mới tới bàn in `.3mf`.
+
+## Vỏ ghép 2 nửa – mối ráp có gờ âm dương, KHÔNG trơn (Tuan 2026-11-27)
+Mặt ráp phẳng trơn khó lắp (2 nửa trượt lệch khi bắt vít). Mọi vỏ 2 nửa phải có định vị âm dương dọc mép ráp:
+gờ dương ở một nửa + rãnh âm ở nửa kia, khe = thật + 0,2 mm (maker/CLAUDE.md), gờ không mỏng hơn 2 đường in (≈ 0,9 mm).
+**Ràng buộc in:** nửa có gờ nhô ra in úp mặt ráp xuống thì mọi mặt khác trên mặt ráp (vách trong, giếng vít) bị nhấc khỏi
+bàn đúng bằng chiều cao gờ → cần support. Chọn cách ngay từ đầu, trước khi đặt vách/giếng vít sát mặt ráp:
+(a) nửa mang gờ không có vách trong chạm mặt ráp; (b) gờ rời (vòng in phẳng) cắm vào rãnh của cả 2 nửa; (c) nửa mang gờ
+in hướng khác. Phần chìa ra ngắn hơn 2,5 mm (`short_overhang_mm`) thì printability bỏ qua.
 
 ## Tra kho thông số lắp ghép – BẮT BUỘC (Tuan 2026-10-30)
 Trước khi chọn bất kỳ đường kính lỗ/chốt/khe nào: `tools/model-study/.venv/Scripts/python.exe

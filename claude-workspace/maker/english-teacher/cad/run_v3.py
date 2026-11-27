@@ -1,5 +1,5 @@
 # run_v3.py - 1 lenh ve + kiem Cu Bong v3 (Tuan 2026-11-27: "ve va kiem qua lau"). In bang thoi gian + ket qua <= 15 dong.
-#   python run_v3.py            ve -> (song song) assembly-check + kiem in nhanh (printability) + mau thu -> gate
+#   python run_v3.py            ve -> (song song) assembly-check + kiem in nhanh (printability) + mau thu + file CAD -> gate
 #   python run_v3.py --slice    ... + cat lop that (chi khi kiem in nhanh sach), roi gate
 #   python run_v3.py --no-build chi kiem lai (khong ve)
 # Tang 1 (vai giay): printability tren STL -> bat tran/treo truoc; tang 2 (~30-50 s): slice.py chi chay khi tang 1 sach va co --slice.
@@ -57,15 +57,19 @@ def main():
         src, dst = HERE / "out-v3" / f"{n}.stl", PROJ / "print" / "stl-v3" / f"{n}.stl"
         if h(src) != h(dst):
             shutil.copy2(src, dst); changed.append(n)
-    with cf.ThreadPoolExecutor(3) as ex:
+    with cf.ThreadPoolExecutor(4) as ex:
+        # file CAD mo-ra-do (Tuan 2026-11-27): .sc + .step + .blend tu out-v3/asm, chay song song voi kiem
+        f_cad = ex.submit(run, "file CAD (sc/step/blend)", [sys.executable, str(WS / "tools" / "cad-export" / "export_cad.py"),
+                                                            str(HERE / "out-v3" / "asm"), "owl-assembly"])
         f_asm = ex.submit(blender, "assembly-check", WS / "tools" / "assembly-check" / "assembly_check.py", str(HERE / "assembly.json"))
         f_cp = ex.submit(blender, "mau thu (coupons)", HERE / "make_v3_coupons.py")
         bad = printability()
-        r_asm, r_cp = f_asm.result(), f_cp.result()
+        r_asm, r_cp, r_cad = f_asm.result(), f_cp.result(), f_cad.result()
     for f in ("belly.stl", "beak.stl"):
         shutil.copy2(HERE / "out-v3" / f, PROJ / "print" / "stl-v3-test" / f)
     asm_line = [l for l in r_asm.stdout.splitlines() if l.startswith("ASSEMBLY")] or ["ASSEMBLY ?"]
     out.append(asm_line[0] + "".join("\n  " + l for l in r_asm.stdout.splitlines() if l.startswith("ASM FAIL"))[:600])
+    out.append("file CAD: " + ("out-v3/owl-assembly.sc|.step|.blend" if r_cad.returncode == 0 else "LOI " + r_cad.stdout[-400:]))
     out.append("kiem in nhanh: " + ("SACH" if not bad else "CAN SUA\n  " + "\n  ".join(bad)))
     if "--slice" in a:
         if bad or r_asm.returncode:

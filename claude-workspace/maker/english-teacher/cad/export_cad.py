@@ -1,28 +1,10 @@
-"""export_cad.py - gom out/asm/*.stl (moi chi tiet o dung vi tri lap, mm) thanh out/owl-assembly.sc (SolidCraft, mac dinh
-cua Tuan 2026-11-06) de MO RA DO. Moi chi tiet = 1 component (than luoi), ten theo file. Chay sau build_owl.py:
-    python export_cad.py out
-Do trong SolidCraft: cong cu Measure, bat dinh/canh cua luoi. Vanh loa/vong ep la khoi co khi: muon mat phang/tru that de
-do de hon thi chon than roi chay "Convert Mesh" (mesh.convert) trong SolidCraft.
+"""export_cad.py - file CAD mo-ra-do cua Cu Bong: goi cong cu chung tools/cad-export/export_cad.py
+(out-v3/asm/*.stl -> out-v3/owl-assembly.sc + .step + .blend). run_v3.py da tu goi; chay tay:
+    python export_cad.py [out-v3]
 """
-import json
-import os
-import subprocess
-import sys
+import subprocess, sys
 from pathlib import Path
 
-CLI = os.environ.get("SOLIDCRAFT_CLI", r"C:\Program Files\SolidCraft\solidcraft-cli.exe")
-OUT = Path(sys.argv[1] if len(sys.argv) > 1 else "out-s3-screen").resolve()   # 2026-11-26: ban S3 1 loa (out-s3) da vao backup
-ASM = OUT / "asm"
-stls = sorted(ASM.glob("*.stl"))
-if not stls:
-    sys.exit(f"Khong co {ASM}\\*.stl - chay build_owl_s3_screen.py truoc")
-cmds = [{"command": "file.insert_mesh", "params": {"path": str(f).replace(os.sep, "/")}} for f in stls]
-script = OUT / "owl-assembly.script.json"
-script.write_text(json.dumps({"commands": cmds}, indent=1), encoding="utf-8")
-sc = OUT / "owl-assembly.sc"
-r = subprocess.run([CLI, "run", str(script), "--save", str(sc), "--quiet"], capture_output=True, text=True, encoding="utf-8", errors="replace")
-if r.returncode != 0 or not sc.exists():
-    print(r.stdout[-1500:], r.stderr[-1500:])
-    sys.exit(f"SolidCraft loi (ma {r.returncode})")
-script.unlink()
-print(f"SAVED {sc.name} ({len(stls)} chi tiet: {', '.join(f.stem for f in stls)})")
+HERE = Path(__file__).resolve().parent
+out = HERE / (sys.argv[1] if len(sys.argv) > 1 else "out-v3")
+sys.exit(subprocess.call([sys.executable, str(HERE.parents[2] / "tools" / "cad-export" / "export_cad.py"), str(out / "asm"), "owl-assembly"]))

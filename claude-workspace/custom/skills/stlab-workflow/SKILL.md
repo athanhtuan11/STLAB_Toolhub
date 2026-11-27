@@ -69,7 +69,9 @@ Ngoại lệ: việc ≲ 30 dòng (nhỏ hơn viết spec) Claude tự sửa.
 7. **Cập nhật web Toolhub cùng commit** (Tuan 2026-11-11: "cập nhật web không chuẩn chỉnh"): dự án robotics đổi trạng
    thái / bước tiếp / thêm dự án hay mô phỏng mới → sửa `studio/toolhub/robotics.json` (ảnh, bàn in, PDF, ngày tự đọc);
    tính năng mới có trang → chạy Toolhub, chụp ảnh trang cho Tuan. Chạy `studio/tests/test_robotics.py` trước commit.
-8. Báo Tuan: làm gì, kiểm gì (PASS/FAIL thật), còn gì chưa kiểm, commit hash.
+8. **Việc CAD: kiểm file mở-ra-đo tồn tại** (`.sc` + `.step` + `.blend` từ `tools/cad-export/export_cad.py`, skill
+   `mechanical-design` mục "Đầu ra file CAD") – thiếu là CHƯA xong, kể cả khi gate PASS.
+9. Báo Tuan: làm gì, kiểm gì (PASS/FAIL thật), còn gì chưa kiểm, commit hash; việc CAD đưa đường dẫn `.sc` trước.
 
 ## 4. Lưu quy trình thành skill
 - Skill tự viết ở `custom/skills/<ten-kebab>/SKILL.md` (front matter `name`, `description` ghi rõ KHI NÀO dùng).
