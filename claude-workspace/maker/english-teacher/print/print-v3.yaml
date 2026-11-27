@@ -13,7 +13,7 @@ plates:
   B_shell_back: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "15%"}, stl: ["shell-back.stl"]}
   # mau MO: 2 vanh loa (mat luoi xuong, vay vit vat 45 do) + 2 vong ep + go roi am duong 2 cung (in phang, cao 4,0)
   C_speakers: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%"}, stl: ["speaker-bezel-L.stl", "speaker-bezel-R.stl", "speaker-ring-L.stl", "speaker-ring-R.stl", "seam-spline.stl"]}
-  # mau KEM: face-plate (mat truoc xuong) + bung + be (mat tren xuong) + khay S3/ampli
-  D_cream: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%", brim_type: outer_only, brim_width: "5"}, stl: ["face-plate.stl", "belly.stl", "base.stl", "s3-tray.stl"]}
+  # mau KEM: face-plate (mat truoc xuong) + bung + be (mat tren xuong) + khay S3/ampli + thanh kep bung (in phang)
+  D_cream: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%", brim_type: outer_only, brim_width: "5"}, stl: ["face-plate.stl", "belly.stl", "base.stl", "s3-tray.stl", "belly-clamp.stl"]}
   # mau BO: mo (lay xuong ban -> brim bat buoc) + nap nut dau
   E_butter: {process: 0.20mm Standard @BBL A1, overrides: {wall_loops: "3", sparse_infill_density: "20%", brim_type: outer_only, brim_width: "5"}, stl: ["beak.stl", "button-cap.stl"]}

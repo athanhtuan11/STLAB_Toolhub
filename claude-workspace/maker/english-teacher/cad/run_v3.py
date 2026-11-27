@@ -11,7 +11,7 @@ PROJ = HERE.parent
 WS = PROJ.parents[1]
 BL = r"C:\Program Files\Blender Foundation\Blender 5.2\blender.exe"
 PRINT_STL = ["shell-front", "shell-back", "seam-spline", "belly", "beak", "button-cap", "face-plate", "speaker-bezel-L", "speaker-bezel-R",
-             "speaker-ring-L", "speaker-ring-R", "mic-clamp", "s3-tray", "button-base", "base"]
+             "speaker-ring-L", "speaker-ring-R", "mic-clamp", "s3-tray", "button-base", "base", "belly-clamp"]
 T = []
 
 
@@ -65,7 +65,7 @@ def main():
         f_cp = ex.submit(blender, "mau thu (coupons)", HERE / "make_v3_coupons.py")
         bad = printability()
         r_asm, r_cp, r_cad = f_asm.result(), f_cp.result(), f_cad.result()
-    for f in ("belly.stl", "beak.stl"):
+    for f in ("belly.stl", "beak.stl", "speaker-ring-R.stl", "belly-clamp.stl"):
         shutil.copy2(HERE / "out-v3" / f, PROJ / "print" / "stl-v3-test" / f)
     asm_line = [l for l in r_asm.stdout.splitlines() if l.startswith("ASSEMBLY")] or ["ASSEMBLY ?"]
     out.append(asm_line[0] + "".join("\n  " + l for l in r_asm.stdout.splitlines() if l.startswith("ASM FAIL"))[:600])

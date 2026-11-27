@@ -179,6 +179,10 @@ DRIVER_D, DRIVER_L = 8.0, 80.0
 BZ_FIN = [(54.6, 42.8), (45.5, 33.7), (45.5, 53.5), (54.6, 44.4)]      # (|x|, r) r = khoang cach toi truc loa theo +z
 BZ_FIN_SCREWS = [(47.4, 40.4), (47.4, 46.8)]   # cach 6,4 > hoc dau O6; vach toi 2 canh vat >= 1,2 (lo sat canh -> manh treo khi in)
 BZ_TRIM_Z = FLOOR_CUT + 0.3          # vanh loa cat phang day (be o duoi z 4)
+# 2026-11-27 Tuan "vanh loa chi co vit tren, co ro khong": them VIT DAY M2.5 x 12 tu duoi de len tru O6 o day vanh (giu 2 dau).
+BZ_BOT_X, BZ_BOT_R, BZ_BOT_TOP = 57.5, 3.0, 13.0     # tru: x 54,5..60,5 (vach leu x 54 cach 0,5), dinh 13,0 (vong ep z 14,2 cach 1,2)
+BZ_BOT_CB_D, BZ_BOT_CB_H = 5.4, 1.8                   # hoc dau vit duoi de (dau O4,5 + 0,9); an ren = 12 - (6 - 1,8) - 0,3 = 7,5
+DET_H, DET_W = 0.20, 1.2                              # nac khoa vong ep: go 0,20 tren mat ranh ngang; an vong ep 0,25 (< OUT_GAP 0,3 cham coc, < khe ranh 0,45) la qua; rong 1,2; TODO in thu
 # be (tam de moi): sieu ellip lech truoc, day phang, vat 45 do mep tren, 4 bu-long M3 tu duoi (giu hoc dai oc 5,9)
 BASE_BOT, BASE_TOP = -2.0, FLOOR_CUT
 BASE_HX, BASE_YF, BASE_YB, BASE_N = 62.0, 62.0, 50.0, 2.6
@@ -200,6 +204,18 @@ FP_LIP, FP_BODY_END, FP_WIN_U = 1.5, 17.5, 15.5
 HOLE_END3 = 20.0
 BELLY_SEAT, BELLY_BORE_R, BELLY_PLATE_T, BELLY_CAV_Y = -49.0, 15.2, 2.0, -44.6   # BELLY_CAV_Y: dinh con 45 do sau vach (mat moc lay, khong tran phang)
 BEAK_FR, BEAK_FL_T, BEAK_H, BEAK_HOLE_R, BEAK_HOLE_L = 8.6, 1.0, 7.5, 7.0, 9.0
+# 2026-11-27 Tuan: mo + bung bo lay -> VIT GIAU TU TRONG (M2.5 x 12 tu ren, lo moi O2,4 fit-library; lo thong O2,8; khe +0,2).
+# Bat khi vo truoc nam ngua (truoc khi dong vo sau), tua vit O8 x 80 theo -y tu mat rap. Dau vit ngoi con 45 do (O4,6 > dau O4,5).
+HID_SCREW_L = 12.0
+HID_PLATE_T = 3.0                    # tam chan sau lo mo (vit xuyen qua)
+BEAK_PLATE_Y0 = -55.0 + BEAK_HOLE_L  # -46 (BEAK_Y -55 khai bao sau): mat tam chan phia mo (ong mo dung cach 0,2)
+# Bung: vach dac sau bung KHONG in duoc (khoang r 38 phia sau -> mat dong tam lo lo lung) -> giu lo O30,4 cat bang 1 canh (chu D),
+# bung co VAU CHU D cam vao lo (chong xoay, chu STLAB dung chieu) + tru vit O7; THANH KEP ROI (belly-clamp, in phang day 3,0) hai dau
+# vat theo mat con 45 do san co sau vach -> vit M2.5 x 12 xuyen thanh kep vao tru bung, keo thanh nem vao con + keo bung ep vao hoc.
+BELLY_BOSS_R = 3.5
+BELLY_D_FLAT = 12.8                  # canh phang lo chu D: z = BELLY_Z - 12,8 (vau bung 12,6 -> khe 0,2)
+BELLY_SPIG_RI = 13.0                 # vau chu D: vanh r 13,0..15,0 (lo r 15,2 -> khe 0,2)
+CLAMP_YF, CLAMP_T, CLAMP_W, CLAMP_CLR = -44.4, 3.0, 8.0, 0.28   # thanh kep: mat truoc y -44,4, day 3,0, rong 8,0; khe 0,2 phap tuyen voi con 45 do
 MIC_SNAP_W = -5.6                    # canh moc cua so kep mic (w)
 
 def hexc(h):
@@ -595,13 +611,24 @@ for dx in MIC_HOLE_X:
 # v3: hoc chim vanh mo + lo O14 dai 9 + con 45 do (mat moc lay, khong treo) + hoc sau O15,6
 diff(S, cyl_local('beakrec', BEAK_M, 0.0, 14.0, BEAK_FR + 0.2, seg=64))
 diff(S, cyl_local('beakhole', BEAK_M, -BEAK_HOLE_L, 0.5, BEAK_HOLE_R, seg=64))
-diff(S, cyl('beakcone', BEAK_M @ Vector((0, 0, -BEAK_HOLE_L - 0.8)), BEAK_M @ Vector((0, 0, -BEAK_HOLE_L + 0.01)), BEAK_HOLE_R + 0.8, BEAK_HOLE_R - 0.01, seg=64))
-diff(S, cyl_local('beakpocket', BEAK_M, -26.0, -BEAK_HOLE_L - 0.79, BEAK_HOLE_R + 0.8, seg=64))
+# v3 vit giau: lo O14 dai 9 -> tam chan 3,0 (lo thong O2,8) -> hoc O15,6 lam duong tua vit, day con 45 do toi O4,6 (khong tran phang)
+_bt0 = -BEAK_HOLE_L - HID_PLATE_T                    # mat dau vit (local z)
+_bc = BEAK_HOLE_R + 0.8 - 2.3                        # chieu cao con 45 do r 7,8 -> 2,3
+diff(S, cyl_local('beakpocket', BEAK_M, -26.0, _bt0 - _bc, BEAK_HOLE_R + 0.8, seg=64))
+diff(S, cyl('beakpcone', BEAK_M @ Vector((0, 0, _bt0 - _bc - 0.01)), BEAK_M @ Vector((0, 0, _bt0 + 0.01)), BEAK_HOLE_R + 0.8, 2.3, seg=64))
+diff(S, cyl_local('beakthru', BEAK_M, _bt0 - 0.5, -BEAK_HOLE_L + 0.5, THRU_D / 2, seg=24))
 
 # Lo non tam bung (nho ngoai, rong vao trong -> yen non, lap tu trong)
 # v3: hoc chim vanh bung r 18,2 toi mat ngoi BELLY_SEAT + lo O30,4 xuyen vach toi khoang (mat sau vach y -44 = mat moc 4 lay)
 diff(S, cyl('belly_rec', (0, BELLY_FRONT - 14.0, BELLY_Z), (0, BELLY_SEAT, BELLY_Z), BELLY_RF + 0.2, seg=96))
-diff(S, cyl('belly_bore', (0, BELLY_SEAT - 1.0, BELLY_Z), (0, BELLY_CAV_Y + 4.0, BELLY_Z), BELLY_BORE_R, seg=96))
+# 2026-11-27 vit giau: lo O30,4 cat 1 canh phang (chu D, chong xoay bung); lo doc theo y = vach dung khi in (khong treo)
+_yw = BELLY_CAV_Y                                    # -44,6: het vach (sau do la con 45 do cua khoang)
+_bb = cyl('belly_bore', (0, BELLY_SEAT - 1.0, BELLY_Z), (0, _yw, BELLY_Z), BELLY_BORE_R, seg=96)
+inter(_bb, box('belly_bd', (-30, -80, BELLY_Z - BELLY_D_FLAT), (30, 0, BELLY_Z + 30)))
+diff(S, _bb)
+diff(S, cyl('belly_bore2', (0, _yw - 0.01, BELLY_Z), (0, BELLY_CAV_Y + 4.0, BELLY_Z), BELLY_BORE_R, seg=96))
+# manh chu D chi trong vach, mat duoi vat 45 do theo con khoang keo dai (r = 14,9 + (y + 44,9)) -> khong treo; canh phang an y -49..-47
+diff(S, cyl('belly_dcone', (0, BELLY_SEAT, BELLY_Z), (0, _yw + 0.01, BELLY_Z), BELLY_BORE_R - 0.3 + (BELLY_SEAT - (BELLY_CAV_Y - 0.3)), BELLY_BORE_R + 0.01, seg=96))
 
 # Loa ngang (nhu ban A1S): yen non 25 do lap tu trong + duong ham giot nuoc (chop huong len khi in, moi nua vo mot chop)
 def zcone(h, extra): return BZL_RF + extra + BZL_T * (SPK_XF - h)
@@ -808,6 +835,9 @@ PLATE = loft('base', [(BASE_BOT, base_ring(BASE_BCH)), (BASE_BOT + BASE_BCH, bas
 for (sx, sy) in BOSSES:
     diff(PLATE, cyl('plh', (sx, sy, BASE_BOT - 1), (sx, sy, BASE_TOP + 1), M3_CLEAR_D / 2, seg=24))
     diff(PLATE, cyl('plc', (sx, sy, BASE_BOT - 1), (sx, sy, BASE_BOT + 2.8), 4.5, seg=40))
+for sgn in (-1, 1):   # vit day vanh loa M2.5 x 12 tu duoi
+    diff(PLATE, cyl('bzb_h', (sgn * BZ_BOT_X, Y0, BASE_BOT - 1), (sgn * BZ_BOT_X, Y0, BASE_TOP + 1), THRU_D / 2, seg=20))
+    diff(PLATE, cyl('bzb_cb', (sgn * BZ_BOT_X, Y0, BASE_BOT - 1), (sgn * BZ_BOT_X, Y0, BASE_BOT + BZ_BOT_CB_H), BZ_BOT_CB_D / 2, seg=32))
 for (fx, fy) in FEET:
     diff(PLATE, cyl('foot', (fx, fy, BASE_BOT - 1), (fx, fy, BASE_BOT + FOOT_T), FOOT_D / 2, seg=40))
 
@@ -835,14 +865,23 @@ prof_belly = [(0.0, yf), (rf - _rh, yf)] + arc(rf - _rh, yf + _rh, _rh, -90, 0, 
 prof_belly += [(rf, BELLY_SEAT), (rf - 2.0, BELLY_SEAT), (rf - 2.0, yf + BELLY_PLATE_T), (0.0, yf + BELLY_PLATE_T)]
 M_BELLY = Matrix.Translation((0, 0, BELLY_Z)) @ Matrix.Rotation(-math.pi / 2, 4, 'X')
 BELLY = lathe('belly', prof_belly, seg=96)
-_bh = math.degrees(math.asin(2.5 / 15.0))
-for a_ in (45.0, 135.0, 225.0, 315.0):
-    c0 = BELLY_CAV_Y          # moc vat 45 do song song mat con vo (khe 0,28 vuong goc)
-    prof_f = [(13.8, yf + BELLY_PLATE_T - 0.1), (15.0, yf + BELLY_PLATE_T - 0.1), (15.0, c0 + 0.2), (15.8, c0 + 1.0), (15.8, c0 + 1.6), (15.0, c0 + 2.4), (13.8, c0 + 2.4)]
-    union(BELLY, rsector('bl_f', prof_f, a_ - _bh, a_ + _bh, 8))
-    union(BELLY, rsector('bl_fr', [(13.0, yf + BELLY_PLATE_T - 0.1), (13.85, yf + BELLY_PLATE_T - 0.1), (13.85, yf + BELLY_PLATE_T + 0.8)], a_ - _bh, a_ + _bh, 8))
+# 2026-11-27 vit giau: tru O7 toi y -45,1 (lo moi O2,4 tu -54,0) + vau chu D r 13..15 toi y -45,3 (cuc bo: z = y the gioi,
+# y cuc bo = -(z the gioi - BELLY_Z) -> canh phang z the gioi BELLY_Z - 12,6 = y cuc bo +12,6)
+_ye = CLAMP_YF - 0.7
+union(BELLY, cyl('bl_boss', (0, 0, yf + BELLY_PLATE_T - 0.1), (0, 0, _ye), BELLY_BOSS_R, seg=40))
+diff(BELLY, cyl('bl_pilot', (0, 0, -54.0), (0, 0, _ye + 0.5), PILOT_D / 2, seg=20))
+_sp = cyl('bl_spig', (0, 0, yf + BELLY_PLATE_T - 0.1), (0, 0, _ye - 0.2), BELLY_BORE_R - 0.2, seg=96)
+diff(_sp, cyl('bl_spig_i', (0, 0, yf), (0, 0, _ye + 1.0), BELLY_SPIG_RI, seg=96))
+inter(_sp, box('bl_spig_d', (-30, -30, yf - 1), (30, BELLY_D_FLAT - 0.2, 0)))
+union(BELLY, _sp)
 BELLY.data.transform(Matrix.Rotation(-math.pi / 2, 4, 'X'))
 BELLY.data.transform(Matrix.Translation((0, 0, BELLY_Z)))
+
+# thanh kep bung (belly-clamp): hop x +-20, y CLAMP_YF..+3,0, z +-4 giao con 45 do (r <= 14,9 + (y + 44,9) - khe) -> dau vat khop con
+CLAMP = box('belly_clamp', (-20.0, CLAMP_YF, BELLY_Z - CLAMP_W / 2), (20.0, CLAMP_YF + CLAMP_T, BELLY_Z + CLAMP_W / 2))
+_r0 = BELLY_BORE_R - 0.3 + (CLAMP_YF - 1.0 - (BELLY_CAV_Y - 0.3)) - CLAMP_CLR
+inter(CLAMP, cyl('clamp_cone', (0, CLAMP_YF - 1.0, BELLY_Z), (0, CLAMP_YF + CLAMP_T + 1.0, BELLY_Z), _r0, _r0 + CLAMP_T + 2.0, seg=96))
+diff(CLAMP, cyl('clamp_h', (0, CLAMP_YF - 1, BELLY_Z), (0, CLAMP_YF + CLAMP_T + 1, BELLY_Z), THRU_D / 2, seg=24))
 
 def feather(px, pz):
     for sgn in (-1, 1):
@@ -928,6 +967,10 @@ def make_clamp_ring(locked=False):
         g0, g1 = pz0 - GROOVE_CLR, pz1
         diff(r, sector('gh', rsi - 0.5, rg, g0, g1, a - BAY_TWIST - half, a + half, 12))
         diff(r, sector('gv', rsi - 0.5, rg, g0, ztop + 0.5, a - BAY_TWIST - half, a - BAY_TWIST + half, 4))
+        # nac khoa (2026-11-27): go DET_H tren mat ranh phia pz1 (mat chot ty khi xop loa day vong ep), ngay truoc vi tri khoa ->
+        # chot vuot qua go (nen xop them) roi roi vao cho khoa, rung khong tu xoay lo
+        rp = rsi; hp = math.degrees((BPIN_W / 2 + 0.4) / rp); bw = math.degrees(DET_W / rp)   # go tu mat trong vong ep (rsi), khong lan vao coc vanh
+        union(r, sector('det', rsi, rg, pz1 - DET_H, pz1 + 0.01, a - hp - bw, a - hp, 4))
     return r
 
 BEZEL_LOCAL, GRILLE_N = make_bezel()
@@ -943,6 +986,8 @@ for sgn in (-1, 1):
     for (c, r) in BZ_FIN_SCREWS:
         diff(fin, cyl('bz_fh', (sgn * c, EAR_Y0 - 1, SPK_Z + r), (sgn * c, EAR_Y1 + 1, SPK_Z + r), THRU_D / 2, seg=20))
     union(BEZEL_W[sgn], fin)
+    union(BEZEL_W[sgn], cyl('bz_bot', (sgn * BZ_BOT_X, Y0, BZ_TRIM_Z - 1.0), (sgn * BZ_BOT_X, Y0, BZ_BOT_TOP), BZ_BOT_R, seg=32))
+    diff(BEZEL_W[sgn], cyl('bz_botp', (sgn * BZ_BOT_X, Y0, BZ_TRIM_Z - 1.5), (sgn * BZ_BOT_X, Y0, BZ_BOT_TOP - 0.7), PILOT_D / 2, seg=20))
     inter(BEZEL_W[sgn], box('bz_trim', (-300, -300, BZ_TRIM_Z), (300, 300, 300)))
 
 # --- Khay ampli MAX98357A (amp-tray.stl) giu nguyen hinh ban v2 (PCB 18 x 19,4 x 1,6, parts_h 3,0; TODO do module that); 2 khay
@@ -1036,18 +1081,12 @@ MIC_CLAMP_W = cp(MIC_CLAMP_LOCAL, 'mic_clamp_w'); MIC_CLAMP_W.data.transform(M_m
 
 # --- Mo (beak) thu nho 0,8
 # v3: mo lap tu NGOAI: vanh O17,2 day 1,0 ngoi hoc chim, vom cao 7,5; ong O13,6 rong (r 5,6) xe 3 lay dai 11, moc con 45 do
-BEAK_FING_L = BEAK_HOLE_L + 2.0
+BEAK_FING_L = BEAK_HOLE_L - 0.2      # 2026-11-27 vit giau: ong dac dung cach tam chan 0,2 (vit keo vanh mo ep vao hoc chim)
 bp = [(0, -BEAK_FING_L), (BEAK_HOLE_R - 0.2, -BEAK_FING_L), (BEAK_HOLE_R - 0.2, 0.0), (BEAK_FR, 0.0), (BEAK_FR, BEAK_FL_T)]
 bp += [(BEAK_FR * math.cos(math.radians(a)), BEAK_FL_T + BEAK_H * math.sin(math.radians(a))) for a in range(10, 90, 10)]
 BEAK = lathe('beak', bp + [(0, BEAK_FL_T + BEAK_H)], seg=64)
-diff(BEAK, cyl('bk_core', (0, 0, -BEAK_FING_L - 1), (0, 0, -3.0), 5.6, seg=48))
-diff(BEAK, cyl('bk_corec', (0, 0, -3.01), (0, 0, -3.0 + 5.4), 5.6, 0.2, seg=48))   # mai con 45 do (in lay xuong ban)
-_half = math.degrees(math.asin(2.25 / (BEAK_HOLE_R - 0.2)))
-for k_, a_ in enumerate((90.0, 210.0, 330.0)):
-    b0 = a_ + _half + 0.0; b1 = a_ + 120.0 - _half
-    diff(BEAK, sector('bk_gap', 5.3, BEAK_HOLE_R + 0.1, -BEAK_FING_L - 1, -0.6, b0, b1, 16))
-    union(BEAK, rsector('bk_hook', [(6.0, -BEAK_HOLE_L - 0.3), (BEAK_HOLE_R - 0.2, -BEAK_HOLE_L - 0.3), (BEAK_HOLE_R + 0.45, -BEAK_HOLE_L - 0.95),
-                                    (BEAK_HOLE_R + 0.45, -BEAK_HOLE_L - 1.3), (BEAK_HOLE_R - 0.2, -BEAK_FING_L), (6.0, -BEAK_FING_L)], a_ - _half, a_ + _half, 8))
+# an ren: 12 - 3,0 tam chan - 0,2 khe - 0,3 dau ngoi con = 8,5 -> lo moi sau 10 (toi h 1,2; vom cao 8,5)
+diff(BEAK, cyl('bk_pilot', (0, 0, -BEAK_FING_L - 1), (0, 0, -BEAK_FING_L + 10.0), PILOT_D / 2, seg=20))
 BEAK.data.transform(BEAK_M)
 
 # --- Nut dau (button-cap) giu nguyen
@@ -1204,6 +1243,7 @@ export_obj(A, T_front, OUT / "shell-front.stl")
 export_obj(B, T_back, OUT / "shell-back.stl")
 export_obj(SPLINE, T_front, OUT / "seam-spline.stl")   # in phang: mat cat y -> z (cao 4,0)
 export_obj(BELLY, T_belly, OUT / "belly.stl")
+export_obj(CLAMP, T_front, OUT / "belly-clamp.stl")   # in phang day 3,0
 export_obj(BEAK, T_beak, OUT / "beak.stl")
 export_obj(CAP, T_cap, OUT / "button-cap.stl")
 
@@ -1238,7 +1278,7 @@ for o_ in mx_cutters(MT, 0.0):
 export_obj(BUTTON_BASE, Matrix.Identity(4), OUT / "button-base.stl")   # in dung, mieng o len tren
 
 # ============================================================ LAP RAP (owl-assembled.stl)
-ALL_OBJS = [A, B, SPLINE, PLATE, BELLY, BEAK, CAP, FP_W, BEZEL_W[-1], BEZEL_W[1], SRING_W[-1], SRING_W[1], MIC_CLAMP_W, S3_TRAY, BUTTON_BASE]
+ALL_OBJS = [A, B, SPLINE, CLAMP, PLATE, BELLY, BEAK, CAP, FP_W, BEZEL_W[-1], BEZEL_W[1], SRING_W[-1], SRING_W[1], MIC_CLAMP_W, S3_TRAY, BUTTON_BASE]
 asm = bmesh.new()
 for o in ALL_OBJS:
     asm.from_mesh(o.data)
@@ -1263,6 +1303,7 @@ for sgn, side in ((-1, "L"), (1, "R")):
 export_asm(A, OUT / "asm" / "shell-front.stl")
 export_asm(B, OUT / "asm" / "shell-back.stl")
 export_asm(SPLINE, OUT / "asm" / "seam-spline.stl")
+export_asm(CLAMP, OUT / "asm" / "belly-clamp.stl")
 export_asm(BELLY, OUT / "asm" / "belly.stl")
 export_asm(BEAK, OUT / "asm" / "beak.stl")
 export_asm(CAP, OUT / "asm" / "button-cap.stl")
@@ -1289,7 +1330,12 @@ params = dict(
                       bolts="4 x M3 x 16 tu duoi (TODO chieu dai theo vit co san)"),
             snaps=dict(face_plate=dict(n=len(FP_FINGERS), t=1.2, w=5.0, hook=0.8, win_u=FP_WIN_U), belly=dict(n=4, t=1.2, w=5.0, hook=0.8, len=round(BELLY_CAV_Y + 0.2 - (BELLY_FRONT + BELLY_PLATE_T), 2)),
                        beak=dict(n=3, t=1.2, w=4.5, hook=0.45, hole_d=2 * BEAK_HOLE_R), mic_clamp=dict(n=2, hook=0.8)),
-            driver=[DRIVER_D, DRIVER_L]),
+            driver=[DRIVER_D, DRIVER_L],
+            # 2026-11-27 vit giau mo/bung (tu trong, tua vit theo +y tu mat rap) + vit day vanh loa (tu duoi de, theo -z)
+            hidden_screws=[dict(name='beak', part='beak', head=[0.0, round(BEAK_PLATE_Y0 + HID_PLATE_T, 2), BEAK_Z], axis=[0, 1, 0], length=HID_SCREW_L, pilot_d=PILOT_D),
+                           dict(name='belly', part='belly', head=[0.0, CLAMP_YF + CLAMP_T, BELLY_Z], axis=[0, 1, 0], length=HID_SCREW_L, pilot_d=PILOT_D)]
+                          + [dict(name='bezel-bot-%s' % sd, part='speaker-bezel-' + sd, head=[sg * BZ_BOT_X, Y0, BASE_BOT + BZ_BOT_CB_H], axis=[0, 0, -1], length=HID_SCREW_L, pilot_d=PILOT_D)
+                             for sg, sd in ((-1, 'L'), (1, 'R'))]),
     wall=WALL,
     speaker_pocket_d=SPEAKER_POCKET_D,
     grille_hole_d=GRILLE_HOLE_D,
@@ -1321,7 +1367,7 @@ params = dict(
         gasket_locked=round(GASKET_T - LIP_PRE, 3), gasket_slot_kept=True,
         gasket_note="bang xop 2 mm dan vong mat loa (khong lay PETG)",
         bayonet=dict(n=len(BAY_ANG), twist=BAY_TWIST, pin_w=BPIN_W, pin_h=BPIN_H, pin_t=BPIN_T, sleeve_clr=SLEEVE_CLR,
-                     pin_clr=BPIN_CLR, groove_clr=GROOVE_CLR, lip_pre=LIP_PRE, out_gap=OUT_GAP, sleeve_t=SLEEVE_T)),
+                     pin_clr=BPIN_CLR, groove_clr=GROOVE_CLR, detent_h=DET_H, lip_pre=LIP_PRE, out_gap=OUT_GAP, sleeve_t=SLEEVE_T)),
     mx=dict(hole=MX_HOLE, socket_depth=MX_DEPTH, stem_cross_l=MX_STEM_L, stem_cross_w=MX_STEM_W,
             cross_depth=MX_CROSS_DEPTH, travel_free=MIC_TRAVEL_BVH, travel_floor=round(TRAVEL_SHELL, 2), stop_gap=CAP_STOP_GAP, tube_gap=TUBE_GAP,
             cap_hollow_d=2 * CAP_HOLLOW_R, cap_hollow_depth=CAP_CEIL, tube_od=MX_TUBE_OD, tube_end_above_rim=CAP_TUBE_END,
@@ -1362,6 +1408,7 @@ ITEMS = [
     (SPLINE, 'spline', 'shell', (0, 30, 0)),
     (PLATE, 'plate', 'cream', (0, 0, -45)),
     (BELLY, 'belly', 'cream', (0, -130, 0)),
+    (CLAMP, 'clamp', 'cream', (0, -40, 0)),
     (BEAK, 'beak', 'butter', (0, -135, 30)),
     (CAP, 'cap', 'butter', (0, 0, 55)),
     (FP_W, 'fp', 'cream', (0, -150, 40)),

@@ -1,9 +1,11 @@
 # make_v3_coupons.py - ban thu nho Cu Bong v3 (spec-owl-v3-assembly.md, Gate 4): cat nguyen ven tu STL lap rap out-v3/asm
 # (boolean giao voi hop), dat huong in giong part goc (vo: mat rap / mat sau xuong ban). Xuat vao print/stl-v3-test/.
 # Chay: "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b --factory-startup --python-exit-code 1 -P make_v3_coupons.py
-#  - belly-coupon-a: lo bung + mat moc con 45 do that (lo O30,4 -> lay an 0,6 = "go 0,8 + khe 0,2")
-#  - belly-coupon-b: nhu a nhung lo O30,8 (lay an 0,4 ~ "go 0,6") -> chon co dat, gan bung that vao ca 2
-#  - beak-coupon: lo mo O14 + con moc 45 do; mo that lap vao
+#  2026-11-27 mo + bung doi sang VIT GIAU TU TRONG, vanh loa them VIT DAY qua de, vong ep them NAC KHOA:
+#  - belly-coupon: vach bung dac + chot chong xoay + duong tua vit (mo tu mat ban) -> bung that + 1 vit M2.5 x 12
+#  - beak-coupon: lo mo O14 + tam chan 3,0 + duong tua vit -> mo that + 1 vit M2.5 x 12
+#  - bezel-bot + base-bot: tru day vanh loa R + doan de (hoc dau vit) -> 1 vit M2.5 x 12 tu duoi
+#  - speaker-ring-R (that, chep tu out-v3): thu nac khoa tren vanh loa Tuan DA IN (chot vanh khong doi)
 #  - screw-front / screw-back: 1 vit noi 2 nua (52; 113) M2.5 x 12: tru + lo moi O2,4 / gieng O5,6 day 3,0
 #  - fin-pocket + fin-tab: hoc vay vanh loa R tren vo truoc + doan vay (2 vit M2.5 x 6)
 import bpy, bmesh, sys, math
@@ -75,11 +77,8 @@ T_BACK = Matrix(((1, 0, 0, 0), (0, 0, -1, 0), (0, 1, 0, -Y0), (0, 0, 0, 1)))
 front = imp("shell-front"); back = imp("shell-back")
 
 # --- lo bung (mat duoi coupon = mat sau vach y -44, cung la mat moc lay -> nam tren ban)
-bel_a = cut(front, "belly_a", (-25.0, -70.0, 5.5), (25.0, -38.2, 50.5))
-export(bel_a, T_FRONT, "belly-coupon-a.stl")
-bel_b = cut(front, "belly_b", (-25.0, -70.0, 5.5), (25.0, -38.2, 50.5))
-bel_b = bop(bel_b, cylo((0, -49.5, 28.0), (0, -44.4, 28.0), 15.4), 'DIFFERENCE')
-export(bel_b, T_FRONT, "belly-coupon-b.stl")
+bel = cut(front, "belly_c", (-25.0, -70.0, 5.5), (25.0, -38.2, 50.5))
+export(bel, T_FRONT, "belly-coupon.stl")
 # --- lo mo
 bk = cut(front, "beak_c", (-14.0, -62.0, 47.0), (14.0, -42.0, 70.4))
 export(bk, T_FRONT, "beak-coupon.stl")
@@ -94,4 +93,10 @@ export(fp_, T_FRONT, "fin-pocket.stl")
 bz = imp("speaker-bezel-R")
 ft = cut(bz, "fin_t", (45.0, -10.0, 79.0), (55.5, 0.4, 100.5))
 export(ft, Matrix(((0, -1, 0, 0), (0, 0, 1, 0), (-1, 0, 0, 0), (0, 0, 0, 1))), "fin-tab.stl")   # huong in nhu vanh loa: mat ngoai (x lon) xuong ban
+# --- vit day vanh loa R: doan day vanh (huong in nhu vanh: mat ngoai xuong ban) + doan de (in mat tren xuong ban nhu de that)
+bb = cut(bz, "bz_bot_c", (52.0, -8.0, 4.0), (66.0, 8.0, 14.0))
+export(bb, Matrix(((0, -1, 0, 0), (0, 0, 1, 0), (-1, 0, 0, 0), (0, 0, 0, 1))), "bezel-bot.stl")
+pl = imp("base")
+pb = cut(pl, "base_bot_c", (50.0, -8.0, -3.0), (64.0, 8.0, 4.5))
+export(pb, Matrix(((1, 0, 0, 0), (0, -1, 0, 0), (0, 0, -1, 0), (0, 0, 0, 1))), "base-bot.stl")
 print("COUPONS OK")

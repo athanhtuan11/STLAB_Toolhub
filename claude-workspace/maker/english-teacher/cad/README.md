@@ -2,6 +2,10 @@
 
 ## Bản v3 lắp ráp thật (2026-11-27, gate PASS)
 
+- **2026-11-27 cơ chế giữ chắc** (Tuan: vành loa chỉ vít trên → rơ; mỏ/bụng lẫy khó tháo + mỏ Ø14 dễ hóc): mỏ = vít giấu M2.5 × 12 từ trong
+  qua tấm chặn 3,0; bụng = vấu chữ D chống xoay + **thanh kẹp rời** `belly-clamp` (đầu vát theo côn 45° sau vách – vách đặc sau bụng
+  không in được vì khoang r 38) + vít M2.5 × 12; vành loa thêm vít đáy M2.5 × 12 từ dưới đế; vòng ép thêm nấc khóa 0,20. **Thứ tự lắp mới:
+  vỏ trước → bụng + thanh kẹp + vít → khay S3 → …** (khay chắn đường thanh kẹp). Gate kiểm tua vít Ø8 × 80 + ăn ren cho 4 vít mới.
 - **2026-11-27 gờ rời âm dương** (Tuan: "vỏ trước và sau nên có gờ âm dương, đừng làm trơn"): 2 nửa in úp mặt ráp có ~4900 mm² vách trong +
   giếng vít → gờ liền sẽ cần support → **gờ rời** `seam-spline.stl` (2 cung z 87–151 hai bên, dày 1,0 × cao 4,0, in phẳng ở bàn C) ép vào
   rãnh mép trong vỏ trước (1,2 × sâu 2,2), úp vỏ sau (rãnh giống hệt) lên rồi bắt 6 vít. Đoạn sườn dưới là lỗ vành loa, đỉnh là cột nút → không có thành để chạy gờ.

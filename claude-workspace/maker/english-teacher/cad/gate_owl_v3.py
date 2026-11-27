@@ -343,6 +343,13 @@ for side in ("L", "R"):
     if hit(0.1, 0.0):
         fails.append(f"vong ep {side} cham vanh loa o vi tri khoa")
     tw, press = bay["twist"], min(0.2, bay["groove_clr"] - 0.05)
+    if bay.get("detent_h"):   # 2026-11-27 nac khoa: phai an vong ep (nen xop) qua go; go phai thap hon khe ranh moi qua duoc
+        if bay["detent_h"] >= bay["groove_clr"] - 0.05:
+            fails.append(f"nac khoa {bay['detent_h']} >= khe ranh {bay['groove_clr']} - 0,05: chot khong qua duoc")
+        press = bay["detent_h"] + 0.05
+        lim = min(bay["groove_clr"], bay.get("out_gap", 9)) - 0.03     # an qua out_gap -> vong ep cham day coc vanh
+        if press > lim:
+            fails.append(f"nac khoa {bay['detent_h']}: can an {press:.2f} > gioi han {lim:.2f} (khe ranh / out_gap)")
     ok_dir = None
     for sg in (1, -1):
         entry = all(not hit(-d, sg * tw) for d in (0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0)) and not hit(press, sg * tw)
@@ -489,6 +496,42 @@ for sc6 in s6:
             if not all(ring):
                 fails.append(f"vit {sc6['name']}: lo moi M2.5 khong du vat lieu (sau mat tai {dy:g}: {sum(ring)}/8)")
 print(f"V3 tua vit: {len(s6)} vit M2.5 x 6 kiem O{drv[0]:g} x {drv[1]:g}")
+# 2b. vit giau (2026-11-27): mo/bung tu trong (+y), vit day vanh loa tu duoi (-z). Kiem: (a) tua vit O8 x 80 tu dinh dau vit
+#     nguoc chieu vit khong vuong part da lap tai luc bat; (b) lo moi trong part dich co vat lieu bao quanh (an ren) suot doan an ren.
+hs = v3.get("hidden_screws", [])
+if len(hs) < 4:
+    fails.append(f"v3.hidden_screws can 4 vit (mo, bung, 2 vit day vanh loa): {len(hs)}")
+for h_ in hs:
+    part = h_["part"]
+    if part not in order:
+        fails.append(f"vit {h_['name']}: part {part} khong co trong order"); continue
+    ax = Vector(h_["axis"]).normalized(); hd = Vector(h_["head"])
+    if abs(ax.z) > 0.5:      # tu duoi de: ngoai khong khi, chi kiem an ren
+        pass
+    else:
+        idx = order.index(part)
+        obs = [n for n in order[:idx] if n != part]
+        top = hd.y + 1.9      # dinh dau vit M2.5 (cao ~1,7)
+        dt = BVHTree.FromBMesh(_cyl_y((hd.x, top + drv[1] / 2 + 0.05, hd.z), drv[0], drv[1]))
+        hit = [n for n in obs if MESH.get(n) and dt.overlap(tree_of(MESH[n], -0.1))]
+        if hit:
+            fails.append(f"vit {h_['name']}: tua vit O{drv[0]:g} x {drv[1]:g} vuong {hit}")
+    pt = tree_of(MESH[part]) if MESH.get(part) else None
+    if pt:
+        # doan an ren: tu 1,0 sau mat part toi 1,0 truoc dau vit (dau vit + chieu dai)
+        tip = hd - ax * h_["length"]
+        bad = 0; tot = 0
+        for k in range(1, 6):
+            c_ = tip + ax * (1.0 + k * 1.0)
+            # 2 vecto vuong goc truc
+            u_ = ax.orthogonal().normalized(); v_ = ax.cross(u_)
+            for a in [j * math.pi / 4 for j in range(8)]:
+                tot += 1
+                if not inside(pt, c_ + (u_ * math.cos(a) + v_ * math.sin(a)) * (h_["pilot_d"] / 2 + 0.8)):
+                    bad += 1
+        if bad > 4:
+            fails.append(f"vit {h_['name']}: lo moi trong {part} thieu vat lieu ({tot - bad}/{tot} diem quanh lo)")
+print(f"V3 vit giau: {len(hs)} vit kiem tua vit + an ren")
 # 3. 6 vit noi 2 nua: lo moi vo truoc trong vat lieu (an ren >= 6), gieng vo sau thong ra ngoai, do sau gieng (chon tua vit)
 ss = v3.get("shell_screws", {})
 back_tree = tree_of(MESH["shell-back"]) if MESH.get("shell-back") else None

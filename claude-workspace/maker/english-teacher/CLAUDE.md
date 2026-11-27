@@ -61,8 +61,11 @@ Dự án Tuan mở 2026-11-05 (song song esp32-s3-cam). Kế hoạch: `C:\Users\
 | **Gờ rời âm dương** `seam-spline` ↔ rãnh mép trong 2 nửa vỏ (2026-11-27) | gờ dày 1,0 × cao 4,0 (2,0/nửa) | rãnh rộng 1,2 (+0,3 lấn vào lòng) × sâu 2,2 mỗi nửa | 0,2 (bề dày + đáy) | quy tắc; TODO in thử |
 | Tai vít chi tiết ↔ hốc vỏ trước | dày 3,0 | hốc +0,2 mm/bên | 0,2 | quy tắc |
 | Vít nối 2 nửa M2.5 × 12 | lỗ mồi Ø2,4 / thông Ø2,8 / giếng Ø5,6 đáy 3,0 | – | fit-library Ø2,4 (ngoại lệ) | spec v3 |
-| Lẫy face-plate/bụng | dày 1,2, gờ 0,8 | – | 0,2 | TODO bàn thử v3 |
-| Lỗ mỏ | mỏ Ø13,6 | lỗ Ø14 | 0,2 | spec v3 |
+| Lẫy face-plate | dày 1,2, gờ 0,8 | – | 0,2 | TODO bàn thử v3 |
+| **Mỏ: vít giấu** (2026-11-27, bỏ 3 lẫy) | ống mỏ đặc Ø13,6 dài 8,8 | lỗ Ø14; tấm chặn 3,0 lỗ thông Ø2,8; mồi Ø2,4 sâu 10 | 0,2 (ống ↔ tấm chặn) | M2.5 × 12 từ trong, ăn ren 8,5; TODO in thử |
+| **Bụng: vấu chữ D + thanh kẹp** (2026-11-27, bỏ 4 lẫy) | vấu r 15,0 cạnh phẳng 12,6 | lỗ r 15,2 cạnh phẳng 12,8; trụ Ø7 mồi Ø2,4 | 0,2 | thanh kẹp 3,0 đầu vát theo côn 45°, khe 0,2 pháp tuyến; M2.5 × 12 |
+| **Vành loa: vít đáy** (2026-11-27) | trụ Ø6 đáy vành, mồi Ø2,4 | đế: lỗ Ø2,8 + hốc đầu Ø5,4 sâu 1,8 | – | M2.5 × 12 từ dưới, ăn ren ~7,5; trụ cách vòng ép 1,2 |
+| **Vòng ép: nấc khóa** (2026-11-27) | gờ 0,20 × 1,2 trên mặt rãnh ngang | ấn 0,25 để qua (< khe đáy cốc 0,3, < khe rãnh 0,45) | – | TODO in thử trên vành đã in |
 
 ## Trạng thái
 - 2026-11-27: **Cú Bông v3 lắp ráp thật** (gate PASS): 1 lệnh `python run_v3.py` (~27 s, `--slice` thêm cắt lớp), assembly-check 0 FAIL 0 WARN; 5 bàn `print/plates-v3` PASS không support.

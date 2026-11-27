@@ -1,7 +1,10 @@
 # english-teacher (Cu Bong) v3 - BAN THU NHO (spec-owl-v3-assembly.md, Gate 4) - IN TRUOC bo print-v3.yaml.
-# Mau sinh bang cad/make_v3_coupons.py (cat tu out-v3/asm) + belly.stl/beak.stl that. Can: 1 vit M2.5 x 12 + 2 vit M2.5 x 6.
-# Thu: (1) bung gai vao belly-coupon-a (an 0,6) va -b (an 0,4) -> chon co; (2) mo gai vao beak-coupon; (3) screw-back + screw-front
-# bat 1 vit M2.5 x 12 (ren vao lo moi O2,4, dau vit nam trong gieng); (4) fin-tab dat vao fin-pocket, 2 vit M2.5 x 6.
+# Mau sinh bang cad/make_v3_coupons.py (cat tu out-v3/asm) + belly/beak/speaker-ring-R that. Can: 4 vit M2.5 x 12 + 2 vit M2.5 x 6.
+# 2026-11-27 doi: mo + bung = VIT GIAU TU TRONG, vanh loa them vit day qua de, vong ep co nac khoa. Thu:
+#  (1) bung that (vau chu D) vao belly-coupon, dat belly-clamp vao con phia mat ban, 1 vit M2.5 x 12 xuyen thanh kep vao tru bung
+#  (2) mo that vao beak-coupon, 1 vit M2.5 x 12 tu trong; (3) screw-back + screw-front 1 vit M2.5 x 12 (noi 2 nua)
+#  (4) fin-tab vao fin-pocket, 2 vit M2.5 x 6; (5) base-bot + bezel-bot: 1 vit M2.5 x 12 tu duoi (an ren ~7,5)
+#  (6) speaker-ring-R gai vao vanh loa R DA IN: an nhe + xoay 30 do phai nghe "tach" (nac 0,20), rung khong tu xoay lo
 machine: Bambu Lab A1 0.4 nozzle
 filament: Bambu PETG Basic @BBL A1
 stl: stl-v3-test
@@ -9,4 +12,4 @@ plates_dir: plates-v3-test
 common: {sparse_infill_pattern: grid, curr_bed_type: Textured PEI Plate}
 plates:
   p1-v3-test: {process: 0.20mm Standard @BBL A1, color: "#F6BE9A", overrides: {wall_loops: "3", sparse_infill_density: "20%", brim_type: outer_only, brim_width: "5"},
-               stl: ["belly-coupon-a.stl", "belly-coupon-b.stl", "beak-coupon.stl", "screw-front.stl", "screw-back.stl", "fin-pocket.stl", "fin-tab.stl", "belly.stl", "beak.stl"]}
+               stl: ["belly-coupon.stl", "beak-coupon.stl", "screw-front.stl", "screw-back.stl", "fin-pocket.stl", "fin-tab.stl", "bezel-bot.stl", "base-bot.stl", "belly.stl", "belly-clamp.stl", "beak.stl", "speaker-ring-R.stl"]}
