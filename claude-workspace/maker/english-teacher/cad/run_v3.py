@@ -14,11 +14,39 @@ BL = r"C:\Program Files\Blender Foundation\Blender 5.2\blender.exe"
 PRINT_STL = ["shell-front", "shell-back", "seam-spline", "belly", "beak", "button-cap", "face-plate", "speaker-bezel-L", "speaker-bezel-R",
              "speaker-ring-L", "speaker-ring-R", "mic-clamp", "s3-tray", "button-base", "base", "belly-clamp"]
 T = []
+sys.path.insert(0, str(WS / "tools" / "metrics"))
+from runlog import RunLog  # noqa: E402  (2026-11-27 do luong moi lan chay -> cad/metrics/runs.jsonl, Tuan duyet)
+RL = None
+
+
+def _cache_cad(out):
+    return None if "CAD EXPORT nhanh" in out else ("hit" if "CACHE" in out else "miss")
+
+
+def _cache_slice(out):
+    n = out.count("CACHE (STL"); tot = sum(1 for l in out.splitlines() if l.strip().startswith(("A_", "B_", "C_", "D_", "E_")) and ":" in l)
+    return "hit" if n and "Project gop: CACHE" in out else ("partial" if n else "miss")
+
+
+def _detail_slice(out):
+    import glob
+    peaks = []
+    for f in glob.glob(str(PROJ / "print" / "plates-v3" / "*" / "result.json")):
+        try:
+            peaks.append(json.loads(Path(f).read_text(encoding="utf-8")).get("peak_rss_mb") or 0)
+        except ValueError:
+            pass
+    return {"plates_cache": out.count("CACHE (STL"), "merge_cache": "Project gop: CACHE" in out,
+            "bambu_peak_rss_mb_max": round(max(peaks), 1) if peaks else None}
 
 
 def run(name, cmd, cwd=HERE):
     t0 = time.time()
-    r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    if RL is not None:
+        cf_ = _cache_cad if name.startswith("file CAD") else (_cache_slice if name.startswith("cat lop") else None)
+        r = RL.run(name, cmd, cwd=cwd, cache_fn=cf_, detail_fn=_detail_slice if name.startswith("cat lop") else None)
+    else:
+        r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="replace")
     dt = time.time() - t0
     T.append((name, dt, r.returncode))
     return r
@@ -47,12 +75,17 @@ def printability():
         if cum:
             bad.append(f"{n}: {cum[0]['mm2']} mm2 rong {cum[0]['rong_mm']} z {cum[0]['z_mm']}")
     T.append(("kiem in nhanh", time.time() - t0, 1 if bad else 0))
+    if RL is not None:
+        RL.add("kiem in nhanh", time.time() - t0, 1 if bad else 0, detail={"n_stl": len(PRINT_STL)})
     return bad
 
 
 def main():
+    global RL
     a = sys.argv[1:]
     out = []
+    mode = ("release" if "--release" in a else "fast") + ("+slice" if "--slice" in a else "") + ("+nobuild" if "--no-build" in a else "")
+    RL = RunLog(HERE / "metrics", "english-teacher/owl-v3", mode=mode, cwd=HERE)
     if "--no-build" not in a:
         r = blender("ve (build_owl_v3)", HERE / "build_owl_v3.py", "out-v3")
         if r.returncode:
@@ -97,6 +130,10 @@ def main():
     print("STL doi:", ", ".join(changed) or "khong")
     print("\n".join(out))
     print("thoi gian: " + ", ".join(f"{n} {dt:.0f}s" for n, dt, _ in T) + f" | tong {sum(dt for _, dt, _ in T):.0f}s (song song thuc te it hon)")
+    tri = sum(meshhash.load_tris(HERE / "out-v3" / "asm" / f"{n}.stl").shape[0] for n in PRINT_STL if (HERE / "out-v3" / "asm" / f"{n}.stl").exists())
+    for w in RL.finish({"stl_changed": changed, "tri_total": tri, "gate": "PASS" if any(l.startswith("PASS gate") for l in gl) else "FAIL"}):
+        print(w)
+    print(f"do luong: cad/metrics/runs.jsonl (xem: python ../../../tools/metrics/runlog.py metrics)")
 
 
 if __name__ == "__main__":

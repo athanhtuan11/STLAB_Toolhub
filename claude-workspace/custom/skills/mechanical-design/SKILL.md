@@ -55,6 +55,13 @@ Chỉ có STL hướng in / 3mf là **thiếu** – Tuan cần mở ra đo để
 4. Các file này không commit (gitignore) nhưng **phải có trên máy**; trước khi báo xong kiểm file tồn tại và đưa đường dẫn
    `.sc` trước, `.step`/`.blend` sau, rồi mới tới bàn in `.3mf`.
 
+## Đo lường mỗi lần chạy + sau mỗi lần in (Tuan duyệt 2026-11-27)
+- Lệnh 1-lệnh của dự án (`run_*.py`) ghi `cad/metrics/runs.jsonl` qua `tools/metrics/runlog.py` (thời gian, RAM đỉnh tiến trình con,
+  cache hit/miss/partial, số tam giác, commit, mode) và tự in `CHAM DI:` khi 2 lần liên tiếp vượt trung vị + MAD. Xem: `python tools/metrics/runlog.py <metrics>`.
+- Sau mỗi lần Tuan in/lắp: ghi `python tools/metrics/printlog.py maker/<du-an> --yaml ... --plates ... --result pass|rework|fail --fit <moi-ghep>=tight|ok|loose --cause ...`
+  (`prints.jsonl`, commit được) → `--report`: tỉ lệ đạt, khe vừa/chặt/lỏng theo mối ghép, Pareto nguyên nhân. Dùng để chỉnh bảng khe.
+- Trong Blender: `cProfile` KHÔNG thấy thời gian `bpy.ops`/depsgraph → muốn tách thời gian từng boolean/part phải tự đặt timer.
+
 ## Tách part – LUÔN có mối ghép định vị, KHÔNG BAO GIỜ mặt ráp trơn (QUY TẮC CỨNG, Tuan 2026-11-27)
 Mọi chỗ tách part (vỏ 2 nửa, tách màu hạn chế AMS, tách vì to quá bàn in, nắp/hộp, khay/vách) phải có **mối ghép âm dương
 hoặc dạng gờ phổ biến** để tự định vị trước khi bắt vít/dán. Mặt phẳng trơn + vít = 2 part trượt lệch, khó lắp (Cú Bông v3).

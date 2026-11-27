@@ -121,3 +121,5 @@ credentials*.json
 /docs/plans/logs/
 /maker/**/out*/*.cadhash
 /maker/**/out*/*.3mf
+# 2026-11-27 do luong moi lan chay (tools/metrics/runlog.py) - chi tren may
+/maker/**/metrics/runs.jsonl

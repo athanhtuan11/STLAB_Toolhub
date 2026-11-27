@@ -2,6 +2,9 @@
 
 ## Bản v3 lắp ráp thật (2026-11-27, gate PASS)
 
+- **2026-11-27 đo lường**: `run_v3.py` ghi `cad/metrics/runs.jsonl` (runlog); kết quả in ghi bằng `tools/metrics/printlog.py`. Số đo cho thấy
+  `shell-back` dựng lại lệch nhẹ (mép lỗ nút: cạnh giọt nước cắt côn/vòm gần suy biến) → bàn B cắt lại ~22 s mỗi vòng. Đã thử dời điểm
+  bắt đầu nhát cắt / xoay 0,1° / solver EXACT – không triệt hết, **hoàn tác** (giữ nút đã in đạt). TODO nếu muốn: vẽ lại lỗ nút bằng 1 profile kín.
 - **2026-11-27 kẹp mic → tấm ép + vít** (Tuan: "chi tiết nhỏ rất khó gắn"): bỏ nửa ống + 2 gai xiên 45°; tấm ép 34 mm ở miệng rãnh chữ U
   quanh mic (chỉ phía −T, dây ra phía +T), tì 2 trụ vỏ ở x ±14 → vị trí cố định, vành ép lưng mic giữ đúng w −3,2 như cũ (ron nén 0,2);
   1 vít M2.5 × 6 theo trục mic bên +x (bên −x lỗ mồi dự phòng). Tua vít thẳng theo trục mic, gate kiểm ở bước lắp (sau đế nút + nắp nút).
