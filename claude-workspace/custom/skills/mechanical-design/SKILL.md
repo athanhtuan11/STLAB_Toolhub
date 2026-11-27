@@ -76,6 +76,18 @@ dạng (gờ rời / chốt) hoặc đổi nửa mang gờ. Trần rãnh âm hư
 **Gate:** assembly-check phải có mối ghép mới trong `assembly.json` (đường lắp + được giữ), `kiem-lap-rap-moi-cap-part`;
 render/plot mặt ráp kiểm gờ chạy ở đâu, bỏ mẩu < 20 mm (dễ gãy). Mối ghép chưa có số in thật → ghi `TODO in thử` + đưa vào bàn thử nhỏ.
 
+## Bắt vít phải giữ chắc + lắp được (Tuan 2026-11-27, Cú Bông v3)
+- **Không giữ chi tiết bằng 1 điểm vít** (vành loa chỉ vây trên → rơ ~0,7 mm dọc trục qua khe côn 0,3). Mỗi chi tiết chịu lực/rung:
+  ≥ 2 điểm giữ cách xa nhau (vd. vây trên + vít đáy qua đế) hoặc 1 vít + mặt tựa định vị đối diện.
+- **Ngàm xoay chịu rung (loa)** → thêm nấc khóa: gờ < min(khe rãnh, khe ấn tới đáy) – 0,05 (Cú Bông: gờ 0,20, ấn 0,25 < 0,3).
+- **Chi tiết nhỏ hơn ống thử Ø31,7 (bé < 3 tuổi hóc)** → không giữ chỉ bằng lẫy; dùng **vít giấu từ trong**. Lẫy 1 chiều = tháo là gãy.
+  Giãn nở nhiệt PETG (~0,05 mm trên Ø36, ΔT 20 °C) nhỏ hơn khe 0,2 – vấn đề thật của lẫy là sai số in + chùng dần.
+- **Mọi vít phải có đường tua vít thẳng** (Ø8 × 80) tại đúng bước lắp + lỗ mồi đủ vật liệu → khai báo vào gate
+  (`hidden_screws`/`screws6` trong params, gate_owl_v3 mục 2/2b); chặn đường → **đổi thứ tự lắp** trước khi đổi hình.
+- **Vít giấu cần mặt tì phía trong in được:** vỏ in úp mặt ráp → mặt tì hướng về bàn = trần. Sau khoang rộng KHÔNG đóng vách đặc được
+  (nón đặc đỉnh hướng xuống bàn = lơ lửng, slicer FAIL). Cách in được: hốc sâu kết thúc côn 45° (mỏ), hoặc **thanh kẹp rời** in phẳng,
+  hai đầu vát theo côn 45° sẵn có (bụng Cú Bông `belly-clamp`), chống xoay bằng vấu chữ D (cạnh phẳng chỉ trong bề dày vách, mặt dưới vát 45°).
+
 ## Tra kho thông số lắp ghép – BẮT BUỘC (Tuan 2026-10-30)
 Trước khi chọn bất kỳ đường kính lỗ/chốt/khe nào: `tools/model-study/.venv/Scripts/python.exe
 tools/model-study/fit-library/fit_lib.py recommend <interface>` (vd `rotate-joint-5mm`, `screw-M2.5`). `basis: verified`
