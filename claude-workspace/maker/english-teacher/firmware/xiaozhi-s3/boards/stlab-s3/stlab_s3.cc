@@ -62,6 +62,7 @@ private:
     PowerSaveTimer* power_save_timer_ = nullptr;
     volatile bool sleeping_ = false;
     volatile bool bye_pending_ = false;   // da xin ket thuc, dang cho co chao tam biet
+    int64_t last_press_us_ = 0;           // chong doi phim cho phan ung luc nhan xuong
 
     // Co ngu cua bo + mat Cu Bong (nham mat, den nen xuong 8 %)
     void SetSleeping(bool on) {
@@ -147,8 +148,17 @@ private:
     void InitializeButtons() {
         // Giu hanh vi nut nhu A1S: cham = mo/dong phien; cham luc co noi = ngat loi; giu 3 s = ngu.
         // Ban realtime van ngat loi bang giong (AEC + BargeGate may chu), nut chi la phuong an du phong.
+        // Phan ung luc NHAN XUONG (BUTTON_PRESS_DOWN), khong dung OnClick: SINGLE_CLICK cua iot_button chi ban
+        // sau khi tha tay + cho them CONFIG_BUTTON_SHORT_PRESS_TIME_MS (180 ms) de loai nhap doi -> be thay cham.
+        // Chong doi phim lan 2: bo qua nhan xuong trong 300 ms sau lan truoc (ca 2 nut dung chung moc thoi gian).
         auto on_talk_click = [this]() {
+            const int64_t now_us = esp_timer_get_time();
+            if (now_us - last_press_us_ < 300000) {
+                return;
+            }
+            last_press_us_ = now_us;
             auto& app = Application::GetInstance();
+            ESP_LOGI(TAG, "Nut noi nhan xuong (state=%d)", (int)app.GetDeviceState());
             SetSleeping(false);
             power_save_timer_->WakeUp();
             if (app.GetDeviceState() == kDeviceStateStarting) {
@@ -177,9 +187,9 @@ private:
             xTaskCreate(SleepTask, "stlab_sleep", 4096, this, 3, nullptr);
         };
         // Nut ngoai GPIO1 (switch MX) va nut BOOT GPIO0 (thu tren ban) cung hanh vi
-        talk_button_.OnClick(on_talk_click);
+        talk_button_.OnPressDown(on_talk_click);
         talk_button_.OnLongPress(on_talk_long);
-        boot_button_.OnClick(on_talk_click);
+        boot_button_.OnPressDown(on_talk_click);
         boot_button_.OnLongPress(on_talk_long);
     }
 
