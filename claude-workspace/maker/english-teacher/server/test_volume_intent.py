@@ -11,8 +11,15 @@ TITLES = ["Twinkle Twinkle Little Star"]
 def test_volume():
     assert parse_volume_intent("mở tối đa volume") == ("set", 100)
     assert parse_volume_intent("hết cỡ") == ("set", 100)
-    assert parse_volume_intent("mở to lên") == ("delta", 20)
-    assert parse_volume_intent("nói nhỏ lại") == ("delta", -20)
+    assert parse_volume_intent("mở to lên") == ("delta", 30)
+    assert parse_volume_intent("nói nhỏ lại") == ("delta", -30)
+    for down in ("giảm âm lượng", "giảm âm lượng xuống", "Cô ơi giảm xuống", "to quá", "ồn quá", "nói nhỏ thôi",
+                 "vặn nhỏ lại", "nhỏ một chút", "bớt to đi"):
+        assert parse_volume_intent(down) == ("delta", -30), down
+    for up in ("tăng âm lượng", "nhỏ quá", "khó nghe quá", "vặn to lên"):
+        assert parse_volume_intent(up) == ("delta", 30), up
+    assert parse_volume_intent("good morning cô ơi") is None
+    assert parse_volume_intent("con nghe cô nói") is None
     assert parse_volume_intent("mở nhạc đi") is None
     assert parse_volume_intent("mở") is None
     assert parse_volume_intent("") is None

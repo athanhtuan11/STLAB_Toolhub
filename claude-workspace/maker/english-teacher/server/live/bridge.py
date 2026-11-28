@@ -231,7 +231,7 @@ VOLUME_TOOLS = [
      "parameters": {"type": "OBJECT", "properties": {"level": {"type": "INTEGER", "description": "0-100"}},
                     "required": ["level"]}},
     {"name": "volume_change",
-     "description": "Change the speaker volume by a delta, e.g. +20 louder, -20 softer.",
+     "description": "Change the speaker volume by a delta, e.g. +30 louder, -30 softer (smaller steps are hard to hear).",
      "parameters": {"type": "OBJECT", "properties": {"delta": {"type": "INTEGER", "description": "-50..50"}},
                     "required": ["delta"]}},
 ]
@@ -629,6 +629,8 @@ class Session:
         self.praise_at = 0
         self.prev_user_txt = ""            # loi nguoi luot truoc (cho chan play_music)
         self.vol_local_t = 0.0             # luc VOL-LOCAL gan nhat (chong ap am luong 2 lan)
+        self.vol_gem_t = 0.0               # luc Gemini chinh am luong gan nhat
+        self.vol_last = None               # muc am luong vua dat
         self.vol_local_done = False        # luot nay da xu ly lenh am luong
         self.music_voice_ms = 0.0          # giong lien tuc luc phat nhac (full_duplex)
         self.music_held = []
@@ -905,10 +907,16 @@ class Session:
             ok = await self.screen_call("self.screen.show_letter", {"word": w})
         return {"ok": ok}
 
-    async def do_volume(self, name, a):
-        if time.time() - self.vol_local_t < 4.0:
+    async def do_volume(self, name, a, local=False):
+        # 2026-11-29: ben nao ap truoc thi ben kia bo qua 4 s (truoc chi chan Gemini -> Gemini dat 50, VOL-LOCAL de lai 80)
+        if not local and time.time() - self.vol_local_t < 4.0:
             log("[VOL-LOCAL] Gemini cung goi volume -> bo qua (da ap)")
             return {"ok": True, "note": "already applied"}
+        if local and time.time() - self.vol_gem_t < 4.0:
+            log("[VOL-LOCAL] Gemini vua chinh am luong -> bo qua lenh tai cau noi")
+            return {"ok": True, "note": "gemini applied", "volume": self.vol_last}
+        if local:
+            self.vol_local_t = time.time()   # dat truoc khi goi bo: Gemini goi trong luc cho cung bi chan
         try:
             if name == "set_volume":
                 level = int(a.get("level"))
@@ -923,6 +931,9 @@ class Session:
                 log(f"[LIVE-TOOL] volume {level} loi thiet bi: {str(r['error'])[:80]}")
                 return {"ok": False, "error": "device refused"}
             log(f"[LIVE-TOOL] volume {level}")
+            self.vol_last = level
+            if not local:
+                self.vol_gem_t = time.time()
             return {"ok": True, "volume": level}
         except Exception as e:
             log(f"[LIVE-TOOL] volume loi {type(e).__name__}: {str(e)[:80]}")
@@ -937,9 +948,9 @@ class Session:
             return
         self.vol_local_done = True
         if it[0] == "set":
-            r = await self.do_volume("set_volume", {"level": it[1]})
+            r = await self.do_volume("set_volume", {"level": it[1]}, local=True)
         else:
-            r = await self.do_volume("volume_change", {"delta": it[1]})
+            r = await self.do_volume("volume_change", {"delta": it[1]}, local=True)
         log(f"[VOL-LOCAL] {self.in_buf.strip()[:40]} -> {r.get('volume')}")
         self.vol_local_t = time.time()
         if r.get("ok") and self.live is not None:

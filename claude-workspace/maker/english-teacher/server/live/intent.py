@@ -15,13 +15,19 @@ def _has(t, phrase):
 
 
 _MAX = ("toi da", "het co", "lon nhat", "to nhat", "max", "maximum")
-_UP = ("to len", "lon len", "mo to", "mo lon", "to nua", "lon nua", "tang am luong", "tang volume", "noi to", "noi lon")
-_DOWN = ("nho lai", "nho xuong", "be lai", "giam am luong", "giam volume", "noi nho", "nho nua", "nho di")
-_VOLISH = ("to", "lon", "nho", "am luong", "volume", "toi da", "het co", "max", "maximum", "be")
+# 2026-11-29 Tuan: "giam am luong" khong giam -> them cach noi + buoc 30 (thang am luong binh phuong: 100->70 = -6 dB, 100->80 chi -4 dB)
+_STEP = 30
+_UP = ("to len", "lon len", "mo to", "mo lon", "to nua", "lon nua", "tang am luong", "tang volume", "noi to", "noi lon",
+       "tang len", "van to", "van lon", "nho qua", "be qua", "kho nghe", "khong nghe ro", "to them", "lon them")
+_DOWN = ("nho lai", "nho xuong", "be lai", "giam am luong", "giam volume", "noi nho", "nho nua", "nho di",
+         "giam xuong", "giam bot", "giam di", "giam lai", "giam nho", "van nho", "nho thoi", "nho bot", "nho chut",
+         "nho mot chut", "bot to", "to qua", "on qua", "lon qua", "nho xiu", "be bot", "be xuong")
+_VOLISH = ("to", "lon", "nho", "am luong", "volume", "toi da", "het co", "max", "maximum", "be", "giam", "tang", "on",
+           "nghe")
 
 
 def parse_volume_intent(text):
-    """-> ("set", 100) | ("delta", +20) | ("delta", -20) | None. Chu 'mo' mot minh khong phai lenh."""
+    """-> ("set", 100) | ("delta", +_STEP) | ("delta", -_STEP) | None. Chu 'mo' mot minh khong phai lenh."""
     t = " " + " ".join(norm_words(text)) + " "
     if t.strip() == "":
         return None
@@ -30,9 +36,9 @@ def parse_volume_intent(text):
     if any(_has(t, p) for p in _MAX):
         return ("set", 100)
     if any(_has(t, p) for p in _DOWN):
-        return ("delta", -20)
+        return ("delta", -_STEP)
     if any(_has(t, p) for p in _UP):
-        return ("delta", 20)
+        return ("delta", _STEP)
     return None
 
 
