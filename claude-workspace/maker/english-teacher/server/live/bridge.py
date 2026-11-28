@@ -668,7 +668,9 @@ class Session:
         self.lesson_new = []               # tu moi cua buoi (sticker cuoi buoi)
         self.screen_shown = {}             # tu -> epoch lan cuoi hien tren man
         self.screen_at = 0                 # vi tri trong reply_txt da quet tim tu
-        self.screen_ok = True              # false khi bo khong co man/tool (loi MCP) -> im lang bo qua
+        # false khi bo khong co man/tool (loi MCP) -> im lang bo qua. 2026-11-29: co file server/screen.off -> tat man chu
+        # (firmware 2.5.2.5-2.5.2.8 nghi crash/reset khi ve the chu: bo dut ket noi ngay luc co noi tu cua bai)
+        self.screen_ok = not (SERVER / "screen.off").exists()
         self.stickers_done = False
         self.screen_tasks = set()
 
