@@ -63,10 +63,8 @@ private:
     PowerSaveTimer* power_save_timer_ = nullptr;
     volatile bool sleeping_ = false;
     volatile bool bye_pending_ = false;   // da xin ket thuc, dang cho co chao tam biet
-    int64_t last_press_us_ = 0;           // chong doi phim cho phan ung luc nhan xuong
     volatile bool seen_release_ = false;  // da thay tha nut it nhat 1 lan tu luc bat may
-    volatile bool armed_ = true;          // nut da nha tu lan nhan duoc nhan truoc
-    int64_t last_release_us_ = -1000000;  // canh nha gan nhat (chong nay tiep diem)
+    volatile bool armed_ = false;         // nut da nha tu lan nhan duoc nhan truoc (dat trong constructor)
 
     // Co ngu cua bo + mat Cu Bong (nham mat, den nen xuong 8 %)
     void SetSleeping(bool on) {
@@ -102,30 +100,6 @@ private:
         power_save_timer_->SetEnabled(true);
     }
 
-    // Cham luc dang nghe: cho co noi cau chao tam biet roi dong phien; qua han thi tu dong (khong ket phien)
-    static void ByeTask(void* arg) {
-        auto* self = static_cast<StlabS3Board*>(arg);
-        auto& app = Application::GetInstance();
-        for (int i = 0; i < 60; i++) {
-            vTaskDelay(pdMS_TO_TICKS(100));
-            auto st = app.GetDeviceState();
-            if (st == kDeviceStateIdle) { self->bye_pending_ = false; vTaskDelete(nullptr); return; }
-            if (st == kDeviceStateSpeaking) break;
-        }
-        for (int i = 0; i < 100 && app.GetDeviceState() == kDeviceStateSpeaking; i++) {
-            vTaskDelay(pdMS_TO_TICKS(100));
-        }
-        for (int i = 0; i < 20 && app.GetDeviceState() != kDeviceStateIdle; i++) {
-            vTaskDelay(pdMS_TO_TICKS(100));
-        }
-        if (app.GetDeviceState() == kDeviceStateListening) {
-            ESP_LOGW(TAG, "Cau noi khong dong phien sau tam biet -> tu dong");
-            app.ToggleChatState();
-        }
-        self->bye_pending_ = false;
-        vTaskDelete(nullptr);
-    }
-
     static void SleepTask(void* arg) {
         auto* self = static_cast<StlabS3Board*>(arg);
         auto& app = Application::GetInstance();
@@ -149,75 +123,73 @@ private:
         vTaskDelete(nullptr);
     }
 
+    // Nut noi (2.5.2.8, Tuan 2026-11-28): NHAN 1 lan = bat phien (chi khi Cu dang nghi); GIU 5 s = tat (ngu);
+    // tat roi nhan lai = chay lai. Nhan ngan luc dang nghe/noi KHONG lam gi -> nut can/nay/nhieu khong the tat phien.
+    // Chong nay: canh xuong chi la "ung vien"; 60 ms sau doc lai chan, van dang nhan moi tinh. Nhan xong phai NHA
+    // (armed_) moi nhan lan sau. Ngat loi co: bang giong (AEC + BargeGate may chu), khong bang nut.
+    static constexpr int kPressConfirmMs = 60;
+    esp_timer_handle_t press_timer_ = nullptr;
+
+    bool AnyButtonDown() const {
+        return gpio_get_level(TALK_BUTTON_GPIO) == 0 || gpio_get_level(BOOT_BUTTON_GPIO) == 0;
+    }
+
+    void OnPressConfirmed() {
+        if (!AnyButtonDown()) {
+            return;   // nay tiep diem / nhieu: da nha truoc 60 ms
+        }
+        armed_ = false;
+        auto& app = Application::GetInstance();
+        const DeviceState st = app.GetDeviceState();
+        ESP_LOGI(TAG, "Nut noi nhan (state=%d, ngu=%d)", (int)st, (int)sleeping_);
+        power_save_timer_->WakeUp();
+        if (st != kDeviceStateIdle) {
+            return;   // dang khoi dong / ket noi / nghe / noi: bo qua (giu 5 s moi tat)
+        }
+        SetSleeping(false);
+        app.ToggleChatState();   // Idle -> mo phien
+    }
+
     void InitializeButtons() {
-        // Giu hanh vi nut nhu A1S: cham = mo/dong phien; cham luc co noi = ngat loi; giu 3 s = ngu.
-        // Ban realtime van ngat loi bang giong (AEC + BargeGate may chu), nut chi la phuong an du phong.
-        // Phan ung luc NHAN XUONG (BUTTON_PRESS_DOWN), khong dung OnClick: SINGLE_CLICK cua iot_button chi ban
-        // sau khi tha tay + cho them CONFIG_BUTTON_SHORT_PRESS_TIME_MS (180 ms) de loai nhap doi -> be thay cham.
-        // Chong doi phim lan 2: bo qua nhan xuong trong 300 ms sau lan truoc (ca 2 nut dung chung moc thoi gian).
-        auto on_talk_click = [this]() {
-            // 2.5.2.7: tiep diem nay luc THA tay bi tinh thanh lan nhan moi -> mo phien roi lien "xin ket thuc" (Cu di ngu).
-            // Chi nhan khi: nut da nha (armed_), nha on dinh >= 80 ms, va cach lan nhan duoc nhan truoc >= 800 ms.
-            const int64_t now_us = esp_timer_get_time();
-            if (!armed_ || now_us - last_release_us_ < 80000 || now_us - last_press_us_ < 800000) {
+        esp_timer_create_args_t targs = {};
+        targs.callback = [](void* arg) { static_cast<StlabS3Board*>(arg)->OnPressConfirmed(); };
+        targs.arg = this;
+        targs.name = "stlab_btn";
+        ESP_ERROR_CHECK(esp_timer_create(&targs, &press_timer_));
+
+        auto on_down = [this]() {
+            if (!armed_) {
                 return;
             }
-            armed_ = false;
-            last_press_us_ = now_us;
-            auto& app = Application::GetInstance();
-            ESP_LOGI(TAG, "Nut noi nhan xuong (state=%d, da_tha=%d)", (int)app.GetDeviceState(), (int)seen_release_);
-            // Chan bat nham: chan nut doc "dang nhan" ngay tu luc bat may (dau day/chap) -> chua tung thay tha thi bo qua
-            if (!seen_release_) {
-                return;
-            }
-            SetSleeping(false);
-            power_save_timer_->WakeUp();
-            // Dang khoi dong: cham ngan KHONG vao cai Wi-Fi nua (2.5.2.5 bi phat hotspot khi cham luc bat may);
-            // muon cai Wi-Fi: giu nut 5 s luc dang khoi dong (on_talk_long)
-            if (app.GetDeviceState() == kDeviceStateStarting) {
-                return;
-            }
-            // Dang NGHE ma cham = xin ket thuc: "abort" co reason wake_word_detected (bo nay tat wake word nen khong trung)
-            // -> co chao tam biet -> cau noi dong phien. Du phong 6 s chua dong thi tu dong.
-            if (app.GetDeviceState() == kDeviceStateListening && !bye_pending_) {
-                bye_pending_ = true;
-                app.AbortSpeaking(kAbortReasonWakeWordDetected);
-                xTaskCreate(ByeTask, "stlab_bye", 3072, this, 3, nullptr);
-                return;
-            }
-            // Dang NOI ma cham = ngat loi co + xoa ngay hang doi phat de im lap tuc
-            if (app.GetDeviceState() == kDeviceStateSpeaking) {
-                app.AbortSpeaking(kAbortReasonNone);
-                app.GetAudioService().ResetDecoder();
-                ESP_LOGI(TAG, "Ngat loi co (xoa hang doi phat)");
-                return;
-            }
-            app.ToggleChatState();
+            esp_timer_stop(press_timer_);
+            esp_timer_start_once(press_timer_, kPressConfirmMs * 1000);
         };
-        auto on_talk_long = [this]() {
+        auto on_up = [this]() {
+            seen_release_ = true;
+            armed_ = true;
+        };
+        auto on_long = [this]() {
             if (!seen_release_) {
-                return;   // chan nut bi giu tu luc bat may: khong ngu, khong cai Wi-Fi
+                return;   // chan nut doc "dang nhan" tu luc bat may (chap/dau day): khong ngu, khong cai Wi-Fi
             }
             if (Application::GetInstance().GetDeviceState() == kDeviceStateStarting) {
                 ESP_LOGI(TAG, "Giu nut %d ms luc khoi dong -> che do cai Wi-Fi", STLAB_TALK_LONG_MS);
                 EnterWifiConfigMode();
                 return;
             }
-            ESP_LOGI(TAG, "Nut noi giu %d ms -> ngu", STLAB_TALK_LONG_MS);
+            if (sleeping_) {
+                return;   // da ngu: khong lam lai
+            }
+            ESP_LOGI(TAG, "Giu nut %d ms -> tat (ngu)", STLAB_TALK_LONG_MS);
             xTaskCreate(SleepTask, "stlab_sleep", 4096, this, 3, nullptr);
         };
         // Nut ngoai GPIO1 (switch MX) va nut BOOT GPIO0 (thu tren ban) cung hanh vi
-        auto on_release = [this]() {
-            seen_release_ = true;
-            armed_ = true;
-            last_release_us_ = esp_timer_get_time();   // moi canh nha (ke ca nay) deu dat lai moc -> nay bi loai
-        };
-        talk_button_.OnPressDown(on_talk_click);
-        talk_button_.OnPressUp(on_release);
-        talk_button_.OnLongPress(on_talk_long);
-        boot_button_.OnPressDown(on_talk_click);
-        boot_button_.OnPressUp(on_release);
-        boot_button_.OnLongPress(on_talk_long);
+        talk_button_.OnPressDown(on_down);
+        talk_button_.OnPressUp(on_up);
+        talk_button_.OnLongPress(on_long);
+        boot_button_.OnPressDown(on_down);
+        boot_button_.OnPressUp(on_up);
+        boot_button_.OnLongPress(on_long);
     }
 
     // LCD + XPT2046 chung 1 bus SPI3 (MISO = GPIO13). Khong ESP_ERROR_CHECK: chua cam man van chay binh thuong.
@@ -348,6 +320,7 @@ public:
         InitializeButtons();
         // Nut tich cuc muc thap (pull-up noi do iot_button bat): ca 2 chan muc 1 = dang nha -> nhan lenh ngay lan cham dau
         seen_release_ = gpio_get_level(TALK_BUTTON_GPIO) == 1 && gpio_get_level(BOOT_BUTTON_GPIO) == 1;
+        armed_ = seen_release_;
         ESP_LOGI(TAG, "Nut luc bat may: GPIO1=%d GPIO0=%d -> %s", gpio_get_level(TALK_BUTTON_GPIO),
                  gpio_get_level(BOOT_BUTTON_GPIO), seen_release_ ? "san sang" : "dang bi giu, cho tha");
         InitializePowerSaveTimer();
