@@ -60,10 +60,10 @@
 #define TOUCH_SPI_HZ            2000000    // XPT2046 <= 2 MHz
 
 // Chip man: LCDWiki ghi ILI9341, shop ghi ST7789 -> 0 = ILI9341 (mac dinh), 1 = ST7789. Doi roi build lai.
-#define STLAB_LCD_ST7789        0
+#define STLAB_LCD_ST7789 1
 
 // Hang doc ngang: man goc 240x320, swap_xy = true.
-// TODO thu that: lat/dao mau thi doi o day (DISPLAY_SWAP_XY / MIRROR_X / MIRROR_Y / INVERT_COLOR / RGB_ORDER). CHUA thu hang that.
+// DA THU THAT 2026-11-28: chip la ST7789 (ILI9341 -> man doc + nhieu); SWAP_XY true + MIRROR_X true hien dung ngang (Tuan: "man mat dep roi").
 #define DISPLAY_WIDTH           320
 #define DISPLAY_HEIGHT          240
 #define DISPLAY_SWAP_XY         true
