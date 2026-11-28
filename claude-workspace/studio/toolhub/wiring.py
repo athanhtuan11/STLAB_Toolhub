@@ -135,6 +135,12 @@ def load(path) -> dict:
     }
 
 
+def _pin(name):
+    """Ten chan cho WireViz; ten toan chu so ("1") WireViz hieu la so thu tu -> "#1"."""
+    name = str(name)
+    return "#" + name if name.isdigit() else name
+
+
 def _build_wv_dict(wdata, group=None):
     """Build WireViz input dict from wiring data, optionally filtered by group."""
     parts = wdata["parts"]
@@ -181,8 +187,8 @@ def _build_wv_dict(wdata, group=None):
             continue
         connectors[part_id] = {
             "type": part_info.get("label", part_id),
-            "pins": list(range(1, len(filtered_pins) + 1)),
-            "pinlabels": filtered_pins,
+            # 2026-11-28: chan = TEN chan (khong danh so 1..N theo nhom: "esp:5" bi doc nham thanh GPIO5)
+            "pins": [_pin(p) for p in filtered_pins],
         }
 
     # Build cables and connections
@@ -195,9 +201,9 @@ def _build_wv_dict(wdata, group=None):
             "color": w["color"],
         }
         connections.append([
-            {w["from_part"]: connectors[w["from_part"]]["pinlabels"].index(w["from_pin"]) + 1},
+            {w["from_part"]: _pin(w["from_pin"])},
             {cable_id: 1},
-            {w["to_part"]: connectors[w["to_part"]]["pinlabels"].index(w["to_pin"]) + 1},
+            {w["to_part"]: _pin(w["to_pin"])},
         ])
 
     return {

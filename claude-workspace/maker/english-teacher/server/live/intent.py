@@ -66,3 +66,16 @@ def words_said(text, vocab):
         if k and w not in out and any(f" {k}{suf} " in t for suf in ("", "s", "es")):
             out.append(w)
     return out
+
+
+# Khen (2026-11-28, mat Cu Bong tren man): co noi cau khen -> bridge gui {"type":"llm","emotion":"happy"} -> bo hien mat Khen 2,5 s
+_PRAISE = ("good job", "great job", "well done", "excellent", "awesome", "amazing", "perfect", "wonderful", "fantastic",
+           "bravo", "yay", "hooray", "high five", "you did it", "very good", "so good", "good boy", "good girl",
+           "gioi qua", "gioi lam", "gioi ghe", "gioi thiet", "con gioi", "tuyet voi", "tuyet qua", "hoan ho", "xuat sac",
+           "dung roi", "chinh xac")
+
+
+def praise_said(text):
+    """Doan loi co (transcript) co cau khen khong."""
+    t = " " + " ".join(norm_words(text)) + " "
+    return any(_has(t, p) for p in _PRAISE)

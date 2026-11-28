@@ -57,9 +57,9 @@ wires:
   - {from: tft.RESET, to: esp.GPIO8, level: tin-hieu, color: BN, group: man}
   - {from: tft.DC, to: esp.GPIO9, level: tin-hieu, color: OG, group: man}
   - {from: tft.SDI(MOSI), to: esp.GPIO11, level: tin-hieu, color: BU, group: man}
-  - {from: tft.SCK, to: esp.GPIO12, level: tin-hieu, color: GN, group: man}
+  - {from: tft.SCK, to: esp.GPIO12, level: tin-hieu, color: TQ, group: man}
   - {from: tft.LED, to: esp.GPIO14, level: tin-hieu, color: WH, group: man, note: "đèn nền, PWM"}
-  - {from: tft.T_CLK, to: esp.GPIO12, level: tin-hieu, color: GN, group: man, note: "chung SCK"}
+  - {from: tft.T_CLK, to: esp.GPIO12, level: tin-hieu, color: TQ, group: man, note: "chung SCK"}
   - {from: tft.T_DIN, to: esp.GPIO11, level: tin-hieu, color: BU, group: man, note: "chung MOSI"}
   - {from: tft.T_DO, to: esp.GPIO13, level: tin-hieu, color: VT, group: man}
   - {from: tft.T_CS, to: esp.GPIO17, level: tin-hieu, color: PK, group: man}

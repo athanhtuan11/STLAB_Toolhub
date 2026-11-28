@@ -122,7 +122,7 @@ import voiceid  # noqa: E402
 from duplex import BargeGate  # noqa: E402
 import ota_logic  # noqa: E402
 import music  # noqa: E402
-from intent import parse_volume_intent, music_requested, words_said  # noqa: E402
+from intent import parse_volume_intent, music_requested, words_said, praise_said  # noqa: E402
 from tuning import Tuning, Agc, BOUNDS  # noqa: E402
 import curriculum_web  # noqa: E402
 
@@ -625,6 +625,7 @@ class Session:
         self.last_active = time.time()
         self.t_user_end = None
         self.user_txt, self.reply_txt = "", ""
+        self.praise_at = 0
         self.prev_user_txt = ""            # loi nguoi luot truoc (cho chan play_music)
         self.vol_local_t = 0.0             # luc VOL-LOCAL gan nhat (chong ap am luong 2 lan)
         self.vol_local_done = False        # luot nay da xu ly lenh am luong
@@ -1303,6 +1304,11 @@ class Session:
                     continue
                 if sc.output_transcription and sc.output_transcription.text and not self.aborted:
                     self.reply_txt += sc.output_transcription.text
+                    if len(self.reply_txt) < self.praise_at:      # reply_txt vua duoc reset (metric_line)
+                        self.praise_at = 0
+                    if praise_said(self.reply_txt[self.praise_at:]):   # co khen -> mat Khen tren man (2026-11-28)
+                        self.praise_at = len(self.reply_txt)
+                        await self.send_json({"type": "llm", "emotion": "happy", "session_id": self.sid})
                     if self.tts_on:
                         await self.send_json({"type": "tts", "state": "sentence_start",
                                               "text": self.reply_txt.strip(), "session_id": self.sid})
