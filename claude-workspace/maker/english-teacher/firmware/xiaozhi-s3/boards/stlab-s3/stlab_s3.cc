@@ -65,6 +65,8 @@ private:
     volatile bool bye_pending_ = false;   // da xin ket thuc, dang cho co chao tam biet
     int64_t last_press_us_ = 0;           // chong doi phim cho phan ung luc nhan xuong
     volatile bool seen_release_ = false;  // da thay tha nut it nhat 1 lan tu luc bat may
+    volatile bool armed_ = true;          // nut da nha tu lan nhan duoc nhan truoc
+    int64_t last_release_us_ = -1000000;  // canh nha gan nhat (chong nay tiep diem)
 
     // Co ngu cua bo + mat Cu Bong (nham mat, den nen xuong 8 %)
     void SetSleeping(bool on) {
@@ -154,10 +156,13 @@ private:
         // sau khi tha tay + cho them CONFIG_BUTTON_SHORT_PRESS_TIME_MS (180 ms) de loai nhap doi -> be thay cham.
         // Chong doi phim lan 2: bo qua nhan xuong trong 300 ms sau lan truoc (ca 2 nut dung chung moc thoi gian).
         auto on_talk_click = [this]() {
+            // 2.5.2.7: tiep diem nay luc THA tay bi tinh thanh lan nhan moi -> mo phien roi lien "xin ket thuc" (Cu di ngu).
+            // Chi nhan khi: nut da nha (armed_), nha on dinh >= 80 ms, va cach lan nhan duoc nhan truoc >= 800 ms.
             const int64_t now_us = esp_timer_get_time();
-            if (now_us - last_press_us_ < 300000) {
+            if (!armed_ || now_us - last_release_us_ < 80000 || now_us - last_press_us_ < 800000) {
                 return;
             }
+            armed_ = false;
             last_press_us_ = now_us;
             auto& app = Application::GetInstance();
             ESP_LOGI(TAG, "Nut noi nhan xuong (state=%d, da_tha=%d)", (int)app.GetDeviceState(), (int)seen_release_);
@@ -202,7 +207,11 @@ private:
             xTaskCreate(SleepTask, "stlab_sleep", 4096, this, 3, nullptr);
         };
         // Nut ngoai GPIO1 (switch MX) va nut BOOT GPIO0 (thu tren ban) cung hanh vi
-        auto on_release = [this]() { seen_release_ = true; };
+        auto on_release = [this]() {
+            seen_release_ = true;
+            armed_ = true;
+            last_release_us_ = esp_timer_get_time();   // moi canh nha (ke ca nay) deu dat lai moc -> nay bi loai
+        };
         talk_button_.OnPressDown(on_talk_click);
         talk_button_.OnPressUp(on_release);
         talk_button_.OnLongPress(on_talk_long);
