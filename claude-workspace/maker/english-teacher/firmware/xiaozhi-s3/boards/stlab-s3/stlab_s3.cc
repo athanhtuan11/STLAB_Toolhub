@@ -14,6 +14,7 @@
 #include <esp_log.h>
 #include <esp_timer.h>
 #include <driver/spi_common.h>
+#include <driver/gpio.h>
 #include <esp_lcd_panel_io.h>
 #include <esp_lcd_panel_ops.h>
 #include <esp_lcd_panel_vendor.h>
@@ -63,6 +64,7 @@ private:
     volatile bool sleeping_ = false;
     volatile bool bye_pending_ = false;   // da xin ket thuc, dang cho co chao tam biet
     int64_t last_press_us_ = 0;           // chong doi phim cho phan ung luc nhan xuong
+    volatile bool seen_release_ = false;  // da thay tha nut it nhat 1 lan tu luc bat may
 
     // Co ngu cua bo + mat Cu Bong (nham mat, den nen xuong 8 %)
     void SetSleeping(bool on) {
@@ -158,11 +160,16 @@ private:
             }
             last_press_us_ = now_us;
             auto& app = Application::GetInstance();
-            ESP_LOGI(TAG, "Nut noi nhan xuong (state=%d)", (int)app.GetDeviceState());
+            ESP_LOGI(TAG, "Nut noi nhan xuong (state=%d, da_tha=%d)", (int)app.GetDeviceState(), (int)seen_release_);
+            // Chan bat nham: chan nut doc "dang nhan" ngay tu luc bat may (dau day/chap) -> chua tung thay tha thi bo qua
+            if (!seen_release_) {
+                return;
+            }
             SetSleeping(false);
             power_save_timer_->WakeUp();
+            // Dang khoi dong: cham ngan KHONG vao cai Wi-Fi nua (2.5.2.5 bi phat hotspot khi cham luc bat may);
+            // muon cai Wi-Fi: giu nut 5 s luc dang khoi dong (on_talk_long)
             if (app.GetDeviceState() == kDeviceStateStarting) {
-                EnterWifiConfigMode();
                 return;
             }
             // Dang NGHE ma cham = xin ket thuc: "abort" co reason wake_word_detected (bo nay tat wake word nen khong trung)
@@ -183,13 +190,24 @@ private:
             app.ToggleChatState();
         };
         auto on_talk_long = [this]() {
+            if (!seen_release_) {
+                return;   // chan nut bi giu tu luc bat may: khong ngu, khong cai Wi-Fi
+            }
+            if (Application::GetInstance().GetDeviceState() == kDeviceStateStarting) {
+                ESP_LOGI(TAG, "Giu nut %d ms luc khoi dong -> che do cai Wi-Fi", STLAB_TALK_LONG_MS);
+                EnterWifiConfigMode();
+                return;
+            }
             ESP_LOGI(TAG, "Nut noi giu %d ms -> ngu", STLAB_TALK_LONG_MS);
             xTaskCreate(SleepTask, "stlab_sleep", 4096, this, 3, nullptr);
         };
         // Nut ngoai GPIO1 (switch MX) va nut BOOT GPIO0 (thu tren ban) cung hanh vi
+        auto on_release = [this]() { seen_release_ = true; };
         talk_button_.OnPressDown(on_talk_click);
+        talk_button_.OnPressUp(on_release);
         talk_button_.OnLongPress(on_talk_long);
         boot_button_.OnPressDown(on_talk_click);
+        boot_button_.OnPressUp(on_release);
         boot_button_.OnLongPress(on_talk_long);
     }
 
@@ -319,6 +337,10 @@ public:
           talk_button_(TALK_BUTTON_GPIO, false, STLAB_TALK_LONG_MS),
           boot_button_(BOOT_BUTTON_GPIO, false, STLAB_TALK_LONG_MS) {
         InitializeButtons();
+        // Nut tich cuc muc thap (pull-up noi do iot_button bat): ca 2 chan muc 1 = dang nha -> nhan lenh ngay lan cham dau
+        seen_release_ = gpio_get_level(TALK_BUTTON_GPIO) == 1 && gpio_get_level(BOOT_BUTTON_GPIO) == 1;
+        ESP_LOGI(TAG, "Nut luc bat may: GPIO1=%d GPIO0=%d -> %s", gpio_get_level(TALK_BUTTON_GPIO),
+                 gpio_get_level(BOOT_BUTTON_GPIO), seen_release_ ? "san sang" : "dang bi giu, cho tha");
         InitializePowerSaveTimer();
         InitializeDisplay();
         InitializeLiteracyTools();

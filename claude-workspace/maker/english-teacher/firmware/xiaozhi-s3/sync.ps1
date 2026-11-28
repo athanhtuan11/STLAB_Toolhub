@@ -1,6 +1,7 @@
 # Chep ban ghim xiaozhi-esp32 (chi doc) sang build-src/, them bo stlab-s3, ap patch, ghi sdkconfig.defaults.
 # build-src la JUNCTION ngan -> C:\xzb\s3: Python/CMake giai junction/subst ve duong that, ma duong dan dai
 # (D:\04_Stlab\...\xiaozhi-s3\build-src) lam dong lenh bien dich vuot 32767 ky tu -> thu muc THAT phai ngan.
+param([switch]$Full)   # -Full: xoa C:\xzb\s3 va chep lai tu dau (build lai toan bo)
 $ErrorActionPreference = 'Stop'
 $H = $PSScriptRoot
 $WS = (Resolve-Path (Join-Path $H '..\..\..\..')).Path
@@ -21,6 +22,42 @@ if ([string]::IsNullOrWhiteSpace($ip)) {
     Write-Warning "STLAB_XIAOZHI_SERVER chua dat -> dung IP LAN may nay: $ip"
 }
 $ota = "http://${ip}:8003/xiaozhi/ota/"
+
+# Chep file chi khi noi dung khac (giu mtime cu -> ninja khong bien dich lai file khong doi)
+function Copy-IfChanged($from, $to) {
+    if ((Test-Path $to) -and (Get-FileHash $from).Hash -eq (Get-FileHash $to).Hash) { return }
+    New-Item -ItemType Directory -Path (Split-Path $to) -Force | Out-Null
+    Copy-Item $from $to -Force
+    Write-Host "  doi: $to"
+}
+function Set-ProjectVer($real) {
+    $verFile = Join-Path $H 'VERSION'
+    if (-not (Test-Path $verFile)) { return }
+    $v = (Get-Content $verFile -Raw).Trim()
+    if ($v -notmatch '^\d+(\.\d+){2,3}$') { throw "VERSION sai dang: $v" }
+    $cmk = Join-Path $real 'CMakeLists.txt'
+    $cm = Get-Content $cmk -Raw
+    if ($cm -notmatch 'set\(PROJECT_VER "[^"]*"\)') { throw 'Khong thay PROJECT_VER trong CMakeLists.txt' }
+    $new = $cm -replace 'set\(PROJECT_VER "[^"]*"\)', "set(PROJECT_VER `"$v`")"
+    if ($new -ne $cm) { [IO.File]::WriteAllText($cmk, $new) }
+}
+
+# Dau van tay cau hinh: ban ghim + patches + sdkconfig.stlab + OTA_URL. Trung lan truoc va build/ con -> DUONG TAT:
+# chi chep file bo stlab-s3 / hinh co doi + PROJECT_VER, KHONG xoa build/ (2026-11-28: truoc day moi lan sync xoa sach
+# C:\xzb\s3 -> build lai 2252 buoc du chi sua 1 dong). Ep sync day du: -Full.
+$stampFile = Join-Path $Real '.stlab-sync-stamp'
+$stampSrc = @($head, $ota) + @(Get-ChildItem (Join-Path $H 'patches') -Filter *.patch | Sort-Object Name | ForEach-Object { (Get-FileHash $_.FullName).Hash }) + @((Get-FileHash (Join-Path $H 'sdkconfig.stlab')).Hash)
+$stamp = ($stampSrc -join '|')
+if (-not $Full -and (Test-Path $stampFile) -and ((Get-Content $stampFile -Raw).Trim() -eq $stamp) -and (Test-Path (Join-Path $Real 'build\CMakeCache.txt'))) {
+    python (Join-Path $H 'assets\make_pics.py')
+    if ($LASTEXITCODE -ne 0) { throw 'make_pics.py loi' }
+    Get-ChildItem (Join-Path $H 'assets\pics') -Filter *.bin | ForEach-Object { Copy-IfChanged $_.FullName (Join-Path $Real "stlab-pics\$($_.Name)") }
+    $bsrc = Join-Path $H 'boards\stlab-s3'
+    Get-ChildItem $bsrc -Recurse -File | ForEach-Object { Copy-IfChanged $_.FullName (Join-Path $Real ('main\boards\stlab-s3' + $_.FullName.Substring($bsrc.Length))) }
+    Set-ProjectVer $Real
+    Write-Host "sync NHANH (cau hinh khong doi, giu build/)  OTA_URL=$ota"
+    exit 0
+}
 
 # thu muc that ngan; giu managed_components (tai tu mang, ghim theo manifest) de khong tai lai moi lan
 New-Item -ItemType Directory -Path $Real -Force | Out-Null
@@ -82,4 +119,5 @@ Add-Content -Path (Join-Path $Real 'sdkconfig.defaults') -Value "`n$extra" -Enco
 # sdkconfig.defaults.esp32s3 nap SAU sdkconfig.defaults va ghi de (vd LV_USE_BUILTIN_MALLOC) -> them ca vao do de STLab thang
 Add-Content -Path (Join-Path $Real 'sdkconfig.defaults.esp32s3') -Value "`n$extra" -Encoding ascii
 Remove-Item -Force (Join-Path $Real 'sdkconfig') -ErrorAction SilentlyContinue
+Set-Content -Path $stampFile -Value $stamp -Encoding ascii
 Write-Host "sync OK  ban ghim $($head.Substring(0,7))  OTA_URL=$ota  build-src -> $Real"
