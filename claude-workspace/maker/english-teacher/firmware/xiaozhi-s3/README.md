@@ -29,9 +29,10 @@ Phân vùng `partitions/v2/16m.csv`: `nvs` ở **0x9000**, dài 0x4000 – giố
 | MAX98357A DIN / BCLK / LRC | 7 / 15 / 16 (VIN 5 V hoặc 3,3 V theo module; SD để hở/nối VIN) |
 | Nút nói NGOÀI (switch MX 2 chân: GPIO1 ↔ GND, pull-up nội) | 1 |
 | Nút BOOT (chìm trong vỏ, chỉ để thử trên bàn, cùng hành vi) | 0 |
-| Vol + / Vol − | 40 / 39 |
+| Màn TFT MSP2807 (SPI3): SCK / MOSI / CS / DC / RST / đèn nền PWM | 12 / 11 / 10 / 9 / 8 / 14 |
+| Cảm ứng XPT2046 (chung SCK/MOSI): T_DO / T_CS / T_IRQ | 13 / 17 / 18 |
 | LED trạng thái (WS2812 trên bo, nếu có) | 48 |
-GPIO35–37 bị PSRAM octal (N16R8) chiếm – không dùng. Nút: chạm = mở/đóng phiên, chạm lúc cô nói = ngắt, giữ lâu = ngủ (chạm lúc ngủ = nói ngay); vol+ giữ lâu không làm gì (đã bỏ cấu hình Wi-Fi qua điện thoại). GPIO1 là RTC GPIO nên dùng được làm chân đánh thức deep sleep nếu bật sau này.
+GPIO35–37 bị PSRAM octal (N16R8) chiếm – không dùng. Nút: chạm = mở/đóng phiên, chạm lúc cô nói = ngắt, giữ lâu = ngủ (chạm lúc ngủ = nói ngay); vỏ không có nút âm lượng (GPIO39/40 để trống). GPIO1 là RTC GPIO nên dùng được làm chân đánh thức deep sleep nếu bật sau này.
 
 ## AEC phần mềm (`boards/stlab-s3/stlab_loopback_codec.*`)
 - `Write()`: áp âm lượng, ghi ra MAX98357A **và** chép mẫu (thang 16 bit) vào vòng đệm PSRAM 16384 mẫu.
@@ -49,6 +50,12 @@ Giá trị 100 ms là **ước tính** (hàng đợi DMA phát 6×240 mẫu = 90
 ## Máy chủ (cầu nối Gemini Live)
 `server/live/duplex.py` `BargeGate`: lúc cô nói chỉ coi là bé ngắt lời khi xác suất Silero ≥ `STLAB_BARGE_THRESHOLD` (0,7) liên tục ≥ `STLAB_BARGE_MS` (240 ms);
 trước đó gửi số 0. Log `[BARGE]`. Gate: `server/test_full_duplex.py`. Khởi động lại máy chủ để nạp mã mới (không làm trong phiên này).
+
+## Màn + cảm ứng (spec-display.md, 2026-11-28)
+- `boards/stlab-s3/owl_eyes_display.*`: chỉ hiện đôi mắt Cú Bông (Nghe/Nói/Khen/Ngủ/Chờ/Nghĩ/Lỗi + màn cài Wi-Fi cho người lớn), 320 × 240 ngang, đèn nền PWM GPIO14 (trần 60 %).
+- Cờ chip trong `config.h`: `STLAB_LCD_ST7789 0` = ILI9341 (mặc định, theo LCDWiki), `1` = ST7789 (theo shop) → build lại. Hướng xoay/lật/đảo màu: `DISPLAY_SWAP_XY/MIRROR_X/MIRROR_Y/INVERT_COLOR/RGB_ORDER`.
+- Cảm ứng dùng component `atanisoft/esp_lcd_touch_xpt2046 ^1` (patch `0003`; không có bản `espressif/...` trên registry). Không cắm màn thì bo vẫn chạy (không reset).
+- **Chưa thử hàng thật**: hướng xoay, màu, ngưỡng cảm ứng.
 
 ## Chưa chắc (cần đo trên bo)
 - Trễ tham chiếu tối ưu; INMP441 qua `>>12` của xiaozhi có thể bão hòa khi nói to sát mic (nếu `rms mic` ~ 32000 thì đổi dịch bit).

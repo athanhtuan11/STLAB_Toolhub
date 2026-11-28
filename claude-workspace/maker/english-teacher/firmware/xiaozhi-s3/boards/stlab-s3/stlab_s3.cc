@@ -5,11 +5,18 @@
 #include "config.h"
 #include "led/single_led.h"
 #include "power_save_timer.h"
+#include "backlight.h"
+#include "owl_eyes_display.h"
 #include "assets/lang_config.h"
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <esp_log.h>
 #include <esp_timer.h>
+#include <driver/spi_common.h>
+#include <esp_lcd_panel_io.h>
+#include <esp_lcd_panel_ops.h>
+#include <esp_lcd_panel_vendor.h>
+#include <esp_lcd_ili9341.h>
 
 #include <algorithm>
 #include <cmath>
@@ -46,12 +53,19 @@ class StlabS3Board : public WifiBoard {
 private:
     Button talk_button_;   // GPIO1: switch MX ngoai vo (2 chan GPIO-GND, pull-up noi)
     Button boot_button_;   // GPIO0: nut BOOT tren devkit, chi de thu tren ban
-    Button volume_up_button_;
-    Button volume_down_button_;
     SingleLed* led_ = nullptr;
+    OwlEyesDisplay* display_ = nullptr;   // nullptr neu khong dung duoc man -> NoDisplay, bo van chay
     PowerSaveTimer* power_save_timer_ = nullptr;
     volatile bool sleeping_ = false;
     volatile bool bye_pending_ = false;   // da xin ket thuc, dang cho co chao tam biet
+
+    // Co ngu cua bo + mat Cu Bong (nham mat, den nen xuong 8 %)
+    void SetSleeping(bool on) {
+        sleeping_ = on;
+        if (display_ != nullptr) {
+            display_->SetPowerSaveMode(on);
+        }
+    }
 
     // Tat den + ampli loa (dung chung cho ngu tu dong va ngu do giu nut)
     void SleepOutputs() {
@@ -66,12 +80,12 @@ private:
         power_save_timer_ = new PowerSaveTimer(-1, STLAB_IDLE_SLEEP_S);
         power_save_timer_->OnEnterSleepMode([this]() {
             ESP_LOGI(TAG, "Ngu (khong giao tiep %d s)", STLAB_IDLE_SLEEP_S);
-            sleeping_ = true;
+            SetSleeping(true);
             SleepOutputs();
         });
         power_save_timer_->OnExitSleepMode([this]() {
             ESP_LOGI(TAG, "Thuc day");
-            sleeping_ = false;
+            SetSleeping(false);
             if (led_ != nullptr) {
                 led_->OnStateChanged();
             }
@@ -120,19 +134,10 @@ private:
         self->bye_pending_ = false;
         app.PlaySound(Lang::Sounds::OGG_POPUP);
         vTaskDelay(pdMS_TO_TICKS(600));
-        self->sleeping_ = true;
+        self->SetSleeping(true);
         self->SleepOutputs();
         ESP_LOGI(TAG, "Ngu theo nut giu");
         vTaskDelete(nullptr);
-    }
-
-    void ChangeVolume(int delta) {
-        sleeping_ = false;
-        power_save_timer_->WakeUp();
-        auto codec = GetAudioCodec();
-        int volume = std::max(0, std::min(codec->output_volume() + delta, 100));
-        codec->SetOutputVolume(volume);
-        ESP_LOGI(TAG, "Volume %d", volume);
     }
 
     void InitializeButtons() {
@@ -140,7 +145,7 @@ private:
         // Ban realtime van ngat loi bang giong (AEC + BargeGate may chu), nut chi la phuong an du phong.
         auto on_talk_click = [this]() {
             auto& app = Application::GetInstance();
-            sleeping_ = false;
+            SetSleeping(false);
             power_save_timer_->WakeUp();
             if (app.GetDeviceState() == kDeviceStateStarting) {
                 EnterWifiConfigMode();
@@ -172,21 +177,79 @@ private:
         talk_button_.OnLongPress(on_talk_long);
         boot_button_.OnClick(on_talk_click);
         boot_button_.OnLongPress(on_talk_long);
+    }
 
-        // vol+ / vol-: +/- 10; giu lau khong lam gi (Tuan khong dung cau hinh Wi-Fi qua dien thoai)
-        volume_up_button_.OnClick([this]() { ChangeVolume(STLAB_VOLUME_STEP); });
-        volume_down_button_.OnClick([this]() { ChangeVolume(-STLAB_VOLUME_STEP); });
+    // LCD + XPT2046 chung 1 bus SPI3 (MISO = GPIO13). Khong ESP_ERROR_CHECK: chua cam man van chay binh thuong.
+    void InitializeDisplay() {
+        GetBacklight()->SetBrightness(0);   // tat den nen cho toi khi ve xong khung dau (tranh nhay trang)
+        spi_bus_config_t bus = {};
+        bus.mosi_io_num = DISPLAY_MOSI_PIN;
+        bus.miso_io_num = TOUCH_MISO_PIN;
+        bus.sclk_io_num = DISPLAY_SCK_PIN;
+        bus.quadwp_io_num = GPIO_NUM_NC;
+        bus.quadhd_io_num = GPIO_NUM_NC;
+        bus.max_transfer_sz = DISPLAY_WIDTH * 20 * sizeof(uint16_t);
+        if (spi_bus_initialize(SPI3_HOST, &bus, SPI_DMA_CH_AUTO) != ESP_OK) {
+            ESP_LOGW(TAG, "Khong khoi tao duoc bus SPI man hinh -> chay khong man");
+            return;
+        }
+        esp_lcd_panel_io_handle_t panel_io = nullptr;
+        esp_lcd_panel_io_spi_config_t io_cfg = {};
+        io_cfg.cs_gpio_num = DISPLAY_CS_PIN;
+        io_cfg.dc_gpio_num = DISPLAY_DC_PIN;
+        io_cfg.spi_mode = DISPLAY_SPI_MODE;
+        io_cfg.pclk_hz = DISPLAY_SPI_HZ;
+        io_cfg.trans_queue_depth = 10;
+        io_cfg.lcd_cmd_bits = 8;
+        io_cfg.lcd_param_bits = 8;
+        if (esp_lcd_new_panel_io_spi(SPI3_HOST, &io_cfg, &panel_io) != ESP_OK) {
+            ESP_LOGW(TAG, "Khong tao duoc panel io -> chay khong man");
+            return;
+        }
+        esp_lcd_panel_dev_config_t panel_cfg = {};
+        panel_cfg.reset_gpio_num = DISPLAY_RST_PIN;
+        panel_cfg.rgb_ele_order = DISPLAY_RGB_ORDER;
+        panel_cfg.bits_per_pixel = 16;
+        esp_lcd_panel_handle_t panel = nullptr;
+#if STLAB_LCD_ST7789
+        esp_err_t err = esp_lcd_new_panel_st7789(panel_io, &panel_cfg, &panel);
+#else
+        esp_err_t err = esp_lcd_new_panel_ili9341(panel_io, &panel_cfg, &panel);
+#endif
+        if (err != ESP_OK || panel == nullptr) {
+            ESP_LOGW(TAG, "Khong tao duoc panel LCD (%s) -> chay khong man", esp_err_to_name(err));
+            return;
+        }
+        esp_lcd_panel_reset(panel);
+        esp_lcd_panel_init(panel);
+        esp_lcd_panel_invert_color(panel, DISPLAY_INVERT_COLOR);
+        esp_lcd_panel_swap_xy(panel, DISPLAY_SWAP_XY);
+        esp_lcd_panel_mirror(panel, DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y);
+        display_ = new OwlEyesDisplay(panel_io, panel, DISPLAY_WIDTH, DISPLAY_HEIGHT, DISPLAY_OFFSET_X,
+                                      DISPLAY_OFFSET_Y, DISPLAY_MIRROR_X, DISPLAY_MIRROR_Y, DISPLAY_SWAP_XY);
+        display_->SetBacklightSetter([this](int pct) { GetBacklight()->SetBrightness(static_cast<uint8_t>(pct)); });
+        // Cham man: danh thuc power save timer (chay trong task timer 30 ms cua man)
+        // + bo co ngu cua bo (ngu do giu nut khong qua power save timer); khong goi display_ o day (dang trong task man)
+        display_->EnableTap(SPI3_HOST, [this]() { sleeping_ = false; power_save_timer_->WakeUp(); });
     }
 
 public:
     StlabS3Board()
         : WifiBoard(),
           talk_button_(TALK_BUTTON_GPIO, false, STLAB_TALK_LONG_MS),
-          boot_button_(BOOT_BUTTON_GPIO, false, STLAB_TALK_LONG_MS),
-          volume_up_button_(VOLUME_UP_BUTTON_GPIO),
-          volume_down_button_(VOLUME_DOWN_BUTTON_GPIO) {
+          boot_button_(BOOT_BUTTON_GPIO, false, STLAB_TALK_LONG_MS) {
         InitializeButtons();
         InitializePowerSaveTimer();
+        InitializeDisplay();
+    }
+
+    virtual Display* GetDisplay() override {
+        return display_ != nullptr ? static_cast<Display*>(display_) : WifiBoard::GetDisplay();
+    }
+
+    virtual Backlight* GetBacklight() override {
+        static PwmBacklight backlight(DISPLAY_BACKLIGHT_PIN, DISPLAY_BACKLIGHT_OUTPUT_INVERT);
+        return &backlight;
     }
 
     virtual Led* GetLed() override {

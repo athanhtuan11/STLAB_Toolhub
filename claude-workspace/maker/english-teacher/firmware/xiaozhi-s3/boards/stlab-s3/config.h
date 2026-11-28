@@ -11,7 +11,6 @@
 #define AUDIO_OUTPUT_SAMPLE_RATE    16000
 
 #define AUDIO_DEFAULT_OUTPUT_VOLUME 100  // Tuan 2026-11-12: loa 3 W qua nho, luon de 100
-#define STLAB_VOLUME_STEP           10
 
 // INMP441 (3,3 V): chan L/R noi GND -> kenh trai
 #define AUDIO_I2S_MIC_GPIO_WS   GPIO_NUM_4
@@ -35,15 +34,61 @@
 #define STLAB_MIC_SHIFT 12   // 2026-11-12 Tuan "dua ve goc": bang xiaozhi goc (>>12)
 
 // Nut noi NGOAI = switch MX 2 chan GPIO1 <-> GND (active-low, pull-up noi); nut BOOT GPIO0 chay song song de thu tren ban (BOOT chim trong vo).
-// Deep sleep (neu bat sau nay): GPIO1 la RTC GPIO, dung lam chan danh thuc. Nut: vol+ / vol-; LED WS2812 tren bo (neu devkit khong co thi khong sang, khong sao)
+// Deep sleep (neu bat sau nay): GPIO1 la RTC GPIO, dung lam chan danh thuc. LED WS2812 tren bo (neu devkit khong co thi khong sang, khong sao)
+// Vo khong co nut am luong (wiring-s3.md 5.6): GPIO39/40 de trong.
 #define TALK_BUTTON_GPIO        GPIO_NUM_1
 #define BOOT_BUTTON_GPIO        GPIO_NUM_0
-#define VOLUME_UP_BUTTON_GPIO   GPIO_NUM_40
-#define VOLUME_DOWN_BUTTON_GPIO GPIO_NUM_39
 #define BUILTIN_LED_GPIO        GPIO_NUM_48
 
 // Giu nut noi 3 s = ngu; 60 s khong giao tiep = tu ngu (khong tat Wi-Fi, cham la noi ngay)
 #define STLAB_TALK_LONG_MS      5000
 #define STLAB_IDLE_SLEEP_S      60
+
+// ---- Man TFT 2,8" MSP2807 (240x320 SPI) dat NGANG 320x240 + cam ung XPT2046 (spec-display.md) ----
+// LCD va touch chung 1 bus SPI: SCK=T_CLK, MOSI=T_DIN, MISO=T_DO (GPIO13).
+#define DISPLAY_SCK_PIN         GPIO_NUM_12
+#define DISPLAY_MOSI_PIN        GPIO_NUM_11
+#define DISPLAY_CS_PIN          GPIO_NUM_10
+#define DISPLAY_DC_PIN          GPIO_NUM_9
+#define DISPLAY_RST_PIN         GPIO_NUM_8
+#define DISPLAY_BACKLIGHT_PIN   GPIO_NUM_14
+#define TOUCH_MISO_PIN          GPIO_NUM_13
+#define TOUCH_CS_PIN            GPIO_NUM_17
+#define TOUCH_IRQ_PIN           GPIO_NUM_18
+
+#define DISPLAY_SPI_HZ          20000000   // day <= 10 cm (wiring-s3.md muc 6)
+#define TOUCH_SPI_HZ            2000000    // XPT2046 <= 2 MHz
+
+// Chip man: LCDWiki ghi ILI9341, shop ghi ST7789 -> 0 = ILI9341 (mac dinh), 1 = ST7789. Doi roi build lai.
+#define STLAB_LCD_ST7789        0
+
+// Hang doc ngang: man goc 240x320, swap_xy = true.
+// TODO thu that: lat/dao mau thi doi o day (DISPLAY_SWAP_XY / MIRROR_X / MIRROR_Y / INVERT_COLOR / RGB_ORDER). CHUA thu hang that.
+#define DISPLAY_WIDTH           320
+#define DISPLAY_HEIGHT          240
+#define DISPLAY_SWAP_XY         true
+#define DISPLAY_MIRROR_X        true
+#define DISPLAY_MIRROR_Y        false
+#if STLAB_LCD_ST7789
+#define DISPLAY_INVERT_COLOR    true
+#define DISPLAY_RGB_ORDER       LCD_RGB_ELEMENT_ORDER_RGB
+#else
+#define DISPLAY_INVERT_COLOR    false
+#define DISPLAY_RGB_ORDER       LCD_RGB_ELEMENT_ORDER_BGR
+#endif
+#define DISPLAY_OFFSET_X        0
+#define DISPLAY_OFFSET_Y        0
+#define DISPLAY_SPI_MODE        0
+#define DISPLAY_BACKLIGHT_OUTPUT_INVERT false
+
+// Den nen (% PWM) - mat be: tran 60 %, khong bao gio vuot
+#define STLAB_BL_ACTIVE         40   // nghe / noi / khen / nghi
+#define STLAB_BL_IDLE           25   // cho
+#define STLAB_BL_SLEEP          8    // ngu
+#define STLAB_BL_WIFI           60   // cai Wi-Fi (nguoi lon nhin)
+#define STLAB_BL_MAX            60
+
+// Cham: 1 lan / 400 ms
+#define STLAB_TOUCH_DEBOUNCE_MS 400
 
 #endif // _BOARD_CONFIG_H_

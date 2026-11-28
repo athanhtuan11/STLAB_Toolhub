@@ -188,4 +188,4 @@ Số đo lấy từ `cad/README.md`, mục "Bản có màn + 2 loa".
 - 2 loa đều kêu (nghe từng bên).
 - Bo tự khởi động lại khi loa to (log `brownout`) → cấp 5 V riêng cho ampli qua nguồn ngoài, GND chung.
 - Cô tự ngắt lời khi không ai nói → tiếng vọng lọt: đưa mic xa loa hơn, báo Claude chỉnh `STLAB_AEC_REF_DELAY_MS`.
-- Màn và cảm ứng: firmware CHƯA có driver. Tạm thời chỉ kiểm đèn nền sáng khi GPIO14 lên mức cao. TODO khi có firmware: chip ST7789 hay ILI9341, thử cả 2.
+- Màn và cảm ứng (firmware 2026-11-28): bật lên phải thấy đôi mắt xanh. Màn trắng/đen → thử cờ `STLAB_LCD_ST7789 1`; hình ngược/lệch màu → đổi `DISPLAY_MIRROR_*`/`DISPLAY_INVERT_COLOR`/`DISPLAY_RGB_ORDER` trong `config.h`. Chạm màn khi cô đang nghe → mắt chớp + cười.

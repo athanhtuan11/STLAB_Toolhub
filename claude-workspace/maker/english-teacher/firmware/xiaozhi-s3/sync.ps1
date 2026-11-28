@@ -58,6 +58,7 @@ Copy-Item (Join-Path $H 'boards\stlab-s3\*') $boardDst -Recurse -Force
 # git apply chay trong C:\xzb\s3 (ngoai moi repo) de duong dan patch tinh tu goc thu muc nay
 Push-Location $Real
 try {
+    # ap het patches/*.patch theo ten: 0001 bo + Kconfig/CMake, 0002 AFE hook, 0003 them component XPT2046 (cam ung) vao idf_component.yml
     foreach ($p in (Get-ChildItem (Join-Path $H 'patches') -Filter *.patch | Sort-Object Name)) {
         git apply --ignore-whitespace --whitespace=nowarn $p.FullName
         if ($LASTEXITCODE -ne 0) { throw "git apply loi: $($p.Name)" }

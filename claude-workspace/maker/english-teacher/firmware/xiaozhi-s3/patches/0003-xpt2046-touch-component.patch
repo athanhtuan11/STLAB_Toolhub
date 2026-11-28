@@ -1,0 +1,10 @@
+diff --git a/main/idf_component.yml b/main/idf_component.yml
+index 1111111..2222222 100644
+--- a/main/idf_component.yml
++++ b/main/idf_component.yml
+@@ -10,4 +10,5 @@ dependencies:
+   espressif/esp_lcd_gc9a01: ~2.0.4
+   espressif/esp_lcd_st77916: ^2.0.2
+   espressif/esp_lcd_axs15231b: ^2.1.0
++  atanisoft/esp_lcd_touch_xpt2046: ^1
+

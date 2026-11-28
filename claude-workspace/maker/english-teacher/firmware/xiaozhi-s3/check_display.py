@@ -82,7 +82,7 @@ bin_ = H / "build-src" / "build" / "xiaozhi.bin"
 srcs = [B / "owl_eyes_display.cc", B / "stlab_s3.cc", B / "config.h"]
 need(bin_.exists() and all(s.exists() and bin_.stat().st_mtime > s.stat().st_mtime for s in srcs), "xiaozhi.bin moi hon ma nguon")
 blog = read(H / "build.log")
-need("owl_eyes_display" in blog and "error:" not in blog,"build.log co bien dich owl_eyes_display")
+need(bool(blog) and "error:" not in blog, "build.log khong loi bien dich (build tang dan co the khong bien dich lai owl_eyes_display)")
 
 r = subprocess.run([sys.executable, str(H / "check_s3.py")], capture_output=True, text=True, encoding="utf-8", errors="replace")
 need(r.returncode == 0, "check_s3.py PASS" + ("" if r.returncode == 0 else ": " + " | ".join(l for l in r.stdout.splitlines() if l.startswith("FAIL"))[:400]))
