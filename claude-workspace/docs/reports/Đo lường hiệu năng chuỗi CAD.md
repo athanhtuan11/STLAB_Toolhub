@@ -109,3 +109,16 @@ Thứ tự đề xuất là 1 → 2 → 3 → 4, đủ cho cả ba câu hỏi �
 ## Kết luận
 
 Thứ thay đổi khi nhìn kỹ là **đơn vị cải tiến**. Sau đợt tăng tốc, 30 s mỗi vòng máy tính đã nhỏ so với một vòng in thử vật lý. Vì vậy giá trị lớn nhất của hệ đo không nằm ở việc cắt thêm giây, mà ở việc nối `runs.jsonl` với `prints.jsonl` qua `git_commit`. Chỉ khi nối được hai file, xưởng mới thấy gate nào để lọt lỗi gì, khe nào trên A1 + PETG thật sự cần +0,2 mm hay hơn. Khi đó mỗi lần in hỏng trở thành một kiểm tra mới trong gate hoặc một dòng mới trong fit-library. Với phần hiệu năng, cái bẫy cần tránh là tin công cụ "tự nhiên" như cProfile hay ngưỡng % so với lần trước. Cả hai đều đã được chứng minh là sai ở đây (cProfile mù với bpy) hoặc ở nơi khác (MongoDB). Tỉ lệ cache hit, chứ không phải thời gian thô, là chỉ báo sớm nhất cho việc chuỗi 30 s đang trượt về lại 120 s.
+
+## Kết quả áp dụng (2026-11-27 tối → 2026-11-28)
+
+| # | Việc | Trạng thái |
+|---|---|---|
+| 1 | `tools/metrics/runlog.py` + `run_v3.py` ghi `cad/metrics/runs.jsonl` | XONG (032b74e) |
+| 2 | `slice.py` chép `result.json` vào mục `perf` từng bàn (RAM đỉnh, `sliced_time`, các giai đoạn ms, số tam giác); `run_v3.py` ghi từng bàn (cache, RAM, ms cắt, giờ in, gam, support) vào `runs.jsonl` | XONG 2026-11-28 |
+| 3 | `tools/metrics/printlog.py` → `prints.jsonl` + `--report` | XONG (032b74e) |
+| 4 | Cảnh báo trung vị + MAD, 2 lần liên tiếp | XONG (032b74e) |
+| 5–9 | span Blender, trace SolidCraft, báo cáo tháng, Job Object, py-spy | CHỜ – làm khi cảnh báo chỉ ra bước cần đào sâu / đủ ~1 tháng dữ liệu |
+
+Ghi chú đo [máy]: bàn trúng cache giữ số `perf` của lần cắt thật gần nhất (cờ `cache: true` để không lẫn). Lần chạy đầu sau khi bật máy
+chậm ~2× mọi bước (cắt lớp trúng cache 35 s so với 6 s khi chạy lại ngay) – lý do để cảnh báo cần 2 lần liên tiếp.

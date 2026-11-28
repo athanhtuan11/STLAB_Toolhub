@@ -251,6 +251,12 @@ def doc_ket_qua(thu_muc, ten):
     r["thoi_gian_s"] = round(sp.get("total_predication", 0))
     r["gam"] = round(sum(x.get("total_used_g", 0) for x in sp.get("filaments", [])), 1)
     r["so_chi_tiet"] = len(sp.get("objects", []))
+    # do luong (2026-11-28, bao cao "Do luong hieu nang chuoi CAD" muc 2): thoi gian giai doan (ms) + RAM dinh cua Bambu CLI
+    t_tac, t_ban = j.get("times") or {}, sp.get("times") or {}
+    r["perf"] = {"peak_rss_mb": round(j.get("peak_rss_mb") or 0, 1), "tam_giac": sp.get("triangle_count"),
+                 **{k: t_tac.get(k) for k in ("import_time", "prepare_time", "export_time", "export_3mf_time")},
+                 **{k: t_ban.get(k) for k in ("sliced_time", "sliced_time_with_cache", "slice_layers_time", "make_perimeters_time",
+                                              "infill_time", "generate_support_material_time", "export_gcode_time")}}
     # result.json chi giu 1 canh bao; cli_log co du (vd. ca Housing_Shoulder lan Housing_Elbow)
     fl = thu_muc / "cli_log.txt"
     log = fl.read_text(encoding="utf-8", errors="replace") if fl.exists() else ""

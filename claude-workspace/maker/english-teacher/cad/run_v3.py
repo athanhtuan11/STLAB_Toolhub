@@ -29,15 +29,21 @@ def _cache_slice(out):
 
 
 def _detail_slice(out):
-    import glob
-    peaks = []
-    for f in glob.glob(str(PROJ / "print" / "plates-v3" / "*" / "result.json")):
-        try:
-            peaks.append(json.loads(Path(f).read_text(encoding="utf-8")).get("peak_rss_mb") or 0)
-        except ValueError:
-            pass
-    return {"plates_cache": out.count("CACHE (STL"), "merge_cache": "Project gop: CACHE" in out,
-            "bambu_peak_rss_mb_max": round(max(peaks), 1) if peaks else None}
+    # tung ban tu print-report.json (slice.py muc "perf", 2026-11-28): cache, RAM dinh, ms cat lop, gio in, gam, support
+    cached = {l.split(":")[0].strip() for l in out.splitlines() if "CACHE (STL" in l}
+    plates = []
+    try:
+        bc = json.loads((PROJ / "print" / "plates-v3" / "print-report.json").read_text(encoding="utf-8"))
+        for b in bc.get("ban", []):
+            p = b.get("perf") or {}
+            plates.append({"ban": b.get("ban"), "cache": b.get("ban") in cached, "peak_rss_mb": p.get("peak_rss_mb"),
+                           "sliced_ms": p.get("sliced_time"), "tri": p.get("tam_giac"), "in_s": b.get("thoi_gian_s"),
+                           "gam": b.get("gam"), "support": b.get("support"), "trang_thai": b.get("trang_thai")})
+    except (OSError, ValueError):
+        pass
+    peaks = [p["peak_rss_mb"] for p in plates if p.get("peak_rss_mb")]
+    return {"plates_cache": len(cached), "merge_cache": "Project gop: CACHE" in out,
+            "bambu_peak_rss_mb_max": max(peaks) if peaks else None, "plates": plates}
 
 
 def run(name, cmd, cwd=HERE):
