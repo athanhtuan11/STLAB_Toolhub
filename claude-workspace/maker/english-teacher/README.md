@@ -19,7 +19,7 @@ Máy dạy tiếng Anh cho bé 2–5 tuổi, dùng ESP32-S3 N16R8. Bé nói chuy
 3. **Nguồn:** "sạc máy tính" là cục sạc laptop USB-C (thường cấp 5 V 3 A – đủ) hay cổng USB trên máy tính (chỉ 0,5–0,9 A – KHÔNG đủ)?
 4. **Cú Bông v3 (2026-11-27):** (a) duyệt ảnh `cad/out-v3/owl-preview.png` + `owl-exploded.png` (bệ siêu ellip, ampli đứng 2 bên ray – Claude tự chọn); (b) xác nhận có vít M2.5 × 12 (6 cái nối vỏ + 1 thử) và M3 × 16 (4 cái bệ); (c) loại chân cao su Ø10; (d) cân loa + màn để tính lại góc lật; (e) ~~in bàn thử trước~~ **2026-11-27 Tuan: bỏ bàn thử (đã thử các khớp trước đó), in thẳng bộ đầy đủ `print/plates-v3/print-v3.3mf`** – sau khi in báo lại: báo vít giấu mỏ/bụng, vít đáy vành loa, nấc khóa vòng ép (thử trên vành đã in) có chắc không. Cần **4 vít M2.5 × 12 + 2 M2.5 × 6** cho bàn thử; cả bộ thêm 4 vít M2.5 × 12 (mỏ, bụng, 2 đáy vành).
 
-5. **Màn chữ viết (2026-11-28):** duyệt 6 màn `design/contact-sheet-literacy.png` + 4 câu trong `design/screen-literacy-spec.md` (màn B cho 2–3 tuổi?, OpenMoji hay Twemoji, chữ hoa cho tên riêng?). **Màn mắt:** bản ST7789 trên bo đã hết dọc/cát chưa?
+5. **Màn chữ viết (2026-11-28):** Tuan "bạn tự chọn" → làm đủ 6 màn, B/C chỉ bé > 3 tuổi, Twemoji, chữ thường, Andika. Code bo + cầu nối XONG, gate PASS, **CHƯA thử mạch, CHƯA OTA** (OTA giữ 2.5.2.4). Lần tới: **cắm USB bo** → Claude nạp đủ (app + phân vùng assets có hình, `esptool write-flash @flash_args`), khởi động lại máy chủ, thử chạm (đổi `TOUCH_MIRROR_*` nếu lệch).
 
 Đã trả lời 2026-11-26: vỏ chọn **H0** (loa quay ngang); lỗ màn hàng thật V1.1 **đối xứng**, mép lỗ cách cả 4 cạnh 1,35 → tâm cách 80,0 × 44,0 (bản vẽ V1.0 ghi 76,08); sau này chạy **pin sạc** (chưa thiết kế – cần cell có bảo vệ + mạch sạc/tăng áp 5 V, ngăn pin bắt vít).
 
