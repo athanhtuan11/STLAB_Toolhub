@@ -572,6 +572,27 @@ void OwlEyesDisplay::UpdateStatusBar(bool update_all) {
     (void)update_all;   // khong co thanh trang thai
 }
 
+void OwlEyesDisplay::SetTheme(Theme* theme) {
+    // KHONG goi LcdDisplay::SetTheme: no dat style cho mute/battery/network label + o chat ma lop mat khong tao (EXCVADDR 0x28).
+    // Phai gan lai phong MOI cho o chu Wi-Fi ngay day: LvglDisplay::SetTextFont giai phong phong cu sau khi goi SetTheme,
+    // o chu (ke ca dang an) van duoc LVGL tinh kich thuoc -> con tro phong treo -> Cache error (2026-11-28).
+    // lvgl_port_lock la khoa long nhau -> lay lai khoa o day an toan ca khi SetTextFont dang giu.
+    DisplayLockGuard lock(this);
+    current_theme_ = theme;
+    auto* t = static_cast<LvglTheme*>(theme);
+    if (wifi_label_ != nullptr && t != nullptr && t->text_font() != nullptr && t->text_font()->font() != nullptr) {
+        lv_obj_set_style_text_font(wifi_label_, t->text_font()->font(), 0);
+    }
+}
+
+void OwlEyesDisplay::SetPreviewImage(std::unique_ptr<LvglImage> image) {
+    image.reset();   // khong hien anh xem truoc tren mat
+}
+
+void OwlEyesDisplay::SetHideSubtitle(bool hide) {
+    (void)hide;      // khong co phu de
+}
+
 // ---------------- Cam ung XPT2046 ----------------
 
 void OwlEyesDisplay::EnableTap(spi_host_device_t host, std::function<void()> on_tap) {

@@ -26,6 +26,10 @@ public:
     void ShowNotification(const std::string& notification, int duration_ms = 3000) override;
     void SetPowerSaveMode(bool on) override;
     void UpdateStatusBar(bool update_all = false) override;
+    // 2026-11-28: ban goc dat style cho thanh trang thai/o chat (khong dung o day -> con tro rong, crash luc Assets::Apply)
+    void SetTheme(Theme* theme) override;
+    void SetPreviewImage(std::unique_ptr<LvglImage> image) override;
+    void SetHideSubtitle(bool hide) override;
 
     // Den nen: board noi ham dat do sang (0..100 %). Man chua ve xong khung dau thi den nen van tat.
     void SetBacklightSetter(std::function<void(int)> setter) { backlight_setter_ = std::move(setter); }
