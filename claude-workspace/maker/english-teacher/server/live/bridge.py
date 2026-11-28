@@ -117,7 +117,8 @@ def load_prompt():
     return (parts[1] if len(parts) > 1 else txt).strip()
 
 
-from curriculum import Curriculum, ALLOWED_NICKNAMES, live_tools, find_nickname, _fold, wants_switch  # noqa: E402
+from curriculum import Curriculum, ALLOWED_NICKNAMES, live_tools, screen_tools, find_nickname, _fold, wants_switch  # noqa: E402
+from screen import find_lesson_word, touch_to_prompt, clean_word  # noqa: E402
 import voiceid  # noqa: E402
 from duplex import BargeGate  # noqa: E402
 import ota_logic  # noqa: E402
@@ -297,7 +298,7 @@ def live_config():
         system_instruction=PROMPT,
         input_audio_transcription=in_transcription(),
         output_audio_transcription=types.AudioTranscriptionConfig(),
-        tools=[types.Tool(function_declarations=live_tools() + VOLUME_TOOLS + MUSIC_TOOLS + TECH_TOOLS)],
+        tools=[types.Tool(function_declarations=live_tools() + screen_tools() + VOLUME_TOOLS + MUSIC_TOOLS + TECH_TOOLS)],
         realtime_input_config=types.RealtimeInputConfig(
             automatic_activity_detection=types.AutomaticActivityDetection(
                 start_of_speech_sensitivity=(types.StartSensitivity.START_SENSITIVITY_HIGH if START_SENS == "high"
@@ -663,6 +664,13 @@ class Session:
         self.m_silence = 0                 # so lan nhac be im
         self.ending = False                # be bam KEY4 xin ket thuc (abort luc co khong noi)
         self.music_task = None             # tac vu phat nhac (play_music); None = khong phat
+        self.lesson_words = []             # tu new + review cua buoi (man chu viet)
+        self.lesson_new = []               # tu moi cua buoi (sticker cuoi buoi)
+        self.screen_shown = {}             # tu -> epoch lan cuoi hien tren man
+        self.screen_at = 0                 # vi tri trong reply_txt da quet tim tu
+        self.screen_ok = True              # false khi bo khong co man/tool (loi MCP) -> im lang bo qua
+        self.stickers_done = False
+        self.screen_tasks = set()
 
     async def handle_tool_call(self, tc):
         resps = []
@@ -675,11 +683,15 @@ class Session:
                 elif fc.name == "finish_lesson":
                     res = CUR.finish(self.nick, time.time() - self.t_open, self.child_turns, device=self.device_id or None) if (self.nick or self.dev_mode) else {"next_lesson": None}
                     self.finishing = True
+                    self.screen_stickers()
                     log(f"[LIVE-TOOL] finish_lesson -> {res.get('next_lesson')}")
                 elif fc.name == "change_topic":
                     res = CUR.set_topic(self.nick, device=(self.device_id or None) if self.dev_mode else None,
                                         topic=a.get("topic", ""), words=list(a.get("words") or []))
                     log(f"[LIVE-TOOL] doi chu de '{str(a.get('topic', ''))[:40]}' -> {res.get('words')}")
+                    self.set_lesson_words(new=res.get("words"), review=self.lesson_words)
+                elif fc.name in ("show_pick", "show_letter"):
+                    res = await self.do_screen_tool(fc.name, a)
                 elif fc.name in ("set_volume", "volume_change"):
                     res = await self.do_volume(fc.name, a)
                 elif fc.name == "play_music":
@@ -812,6 +824,84 @@ class Session:
             return await asyncio.wait_for(fut, MCP_TIMEOUT_S)
         finally:
             self.mcp_wait.pop(mid, None)
+
+    # ---- Man chu viet tren bo (2026-11-28): moi loi that bai -> im lang, buoi hoc chay nhu cu ----
+    def set_lesson_words(self, new=None, review=None, extra=None):
+        new = [w for w in (clean_word(x) for x in (new or [])) if w]
+        rest = [w for w in (clean_word(x) for x in list(review or []) + list(extra or [])) if w]
+        self.lesson_new = list(dict.fromkeys(new))
+        self.lesson_words = list(dict.fromkeys(new + rest))
+        self.stickers_done = False
+
+    def screen_older(self):
+        try:
+            return CUR.age_band(self.nick or "") >= 4 if self.nick else False
+        except Exception:
+            return False
+
+    async def screen_call(self, tool, args):
+        if not self.screen_ok:
+            return False
+        try:
+            r = await self.mcp_call("tools/call", {"name": tool, "arguments": args})
+            if isinstance(r, dict) and "error" in r:
+                self.screen_ok = False
+                log(f"[SCREEN] {tool} loi thiet bi (bo khong co man?) -> tat man chu: {str(r['error'])[:60]}")
+                return False
+            return True
+        except Exception as e:
+            self.screen_ok = False
+            log(f"[SCREEN] {tool} loi {type(e).__name__} -> tat man chu")
+            return False
+
+    def screen_bg(self, tool, args):
+        """Goi tool man hinh o tac vu nen, KHONG chan luong am thanh."""
+        if not self.screen_ok:
+            return
+        t = asyncio.create_task(self.screen_call(tool, args))
+        self.screen_tasks.add(t)
+        t.add_done_callback(self.screen_tasks.discard)
+
+    def screen_scan_reply(self):
+        if not (self.screen_ok and self.lesson_words):
+            return
+        if len(self.reply_txt) < self.screen_at:
+            self.screen_at = 0
+        w = find_lesson_word(self.reply_txt[self.screen_at:], self.lesson_words, self.screen_shown)
+        if w:
+            self.screen_at = len(self.reply_txt)
+            self.screen_shown[w] = time.time()
+            self.screen_bg("self.screen.show_word", {"word": w})
+
+    def screen_stickers(self):
+        if self.stickers_done or not self.screen_ok or not self.lesson_new:
+            return
+        self.stickers_done = True
+        self.screen_bg("self.screen.show_stickers", {"words": ",".join(self.lesson_new[:3])})
+
+    async def screen_touch(self, params):
+        try:
+            p = touch_to_prompt(params, self.lesson_words, self.screen_older())
+            if p and self.live is not None and not self.pending_lesson and not self.ending:
+                log(f"[SCREEN] cham {str(params.get('screen'))}:{str(params.get('word'))[:20]}")
+                await self.send_lesson(p)
+        except Exception as e:
+            log(f"[SCREEN] touch loi {type(e).__name__}")
+
+    async def do_screen_tool(self, name, a):
+        if not self.screen_older():
+            return {"ok": False, "error": "not available for this age"}
+        if name == "show_pick":
+            t, o = clean_word(a.get("target")), clean_word(a.get("other"))
+            if not t or not o:
+                return {"ok": False, "error": "bad words"}
+            ok = await self.screen_call("self.screen.show_pick", {"target": t, "other": o})
+        else:
+            w = clean_word(a.get("word"))
+            if not w:
+                return {"ok": False, "error": "bad word"}
+            ok = await self.screen_call("self.screen.show_letter", {"word": w})
+        return {"ok": ok}
 
     async def do_volume(self, name, a):
         if time.time() - self.vol_local_t < 4.0:
@@ -1057,6 +1147,7 @@ class Session:
                 log(f"[LIVE-TOOL] finish_lesson (be xin ket thuc) -> {res.get('next_lesson')}")
             except Exception as e:
                 log(f"finish loi {type(e).__name__}")
+        self.screen_stickers()
         await self.send_lesson("[end] The child wants to stop now. Say one short warm goodbye "
                                "(Vietnamese + 'bye bye'), no questions.")
         await asyncio.sleep(3)
@@ -1203,7 +1294,8 @@ class Session:
             self.nick = res["learner"]
             device_nick_save(self.device_id, self.nick)
             log(f"[LIVE-TOOL] nick {nick} -> {res.get('lesson_id')}")
-            lw = CUR.last_words(self.nick)
+            self.set_lesson_words(res.get("new"), res.get("review"))
+            lw =CUR.last_words(self.nick)
             recall = (f" Last time you learned: {', '.join(lw)}. Start by recalling one of them playfully "
                       "(do not quiz hard), then continue.") if lw else ""
             self.pending_lesson = (f"[lesson] Learner: bạn {nick}. {res['instructions']}{recall} "
@@ -1309,6 +1401,7 @@ class Session:
                     if praise_said(self.reply_txt[self.praise_at:]):   # co khen -> mat Khen tren man (2026-11-28)
                         self.praise_at = len(self.reply_txt)
                         await self.send_json({"type": "llm", "emotion": "happy", "session_id": self.sid})
+                    self.screen_scan_reply()
                     if self.tts_on:
                         await self.send_json({"type": "tts", "state": "sentence_start",
                                               "text": self.reply_txt.strip(), "session_id": self.sid})
@@ -1340,6 +1433,7 @@ class Session:
                             sw = CUR.switch(self.nick, device=self.device_id or None)
                             if sw.get("instructions"):
                                 self.switches += 1
+                                self.set_lesson_words(sw.get("new"), sw.get("review"))
                                 log(f"[LIVE-TOOL] doi bai lan {sw['count']} -> new={sw['new']} review={sw['review']}")
                                 self.pending_lesson = "[switch] The child asked to change. " + sw["instructions"]
                         except Exception as e:
@@ -1351,6 +1445,7 @@ class Session:
                             res = CUR.start(None, device=self.device_id) if self.device_id else {"allowed": None}
                             if res.get("allowed"):
                                 self.dev_mode = True
+                                self.set_lesson_words(res.get("new"), res.get("review"))
                                 log(f"[LIVE-TOOL] khong co biet danh sau 2 luot -> hoc theo may {self.device_id} {res.get('lesson_id')}")
                                 self.pending_lesson = ("[lesson] No nickname was given. Say kindly that today we learn together, "
                                                        f"and start this lesson now. {res['instructions']}")
@@ -1472,6 +1567,9 @@ class Session:
                 fut = self.mcp_wait.get(pl.get("id")) if isinstance(pl, dict) else None
                 if fut is not None and not fut.done():
                     fut.set_result(pl)
+                elif (isinstance(pl, dict) and pl.get("id") is None
+                      and pl.get("method") == "notifications/stlab_touch"):
+                    asyncio.create_task(self.screen_touch(pl.get("params")))
             elif t == "abort":
                 if j.get("reason") == "wake_word_detected":      # be cham KEY4 luc thiet bi nghe -> xin ket thuc
                     asyncio.create_task(self.end_request())

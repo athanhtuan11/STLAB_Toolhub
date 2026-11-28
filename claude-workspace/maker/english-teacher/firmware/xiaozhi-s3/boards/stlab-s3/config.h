@@ -91,4 +91,11 @@
 // Cham: 1 lan / 400 ms
 #define STLAB_TOUCH_DEBOUNCE_MS 400
 
+// hieu chinh: truc cam ung XPT2046 -> pixel man ngang 320x240. Mac dinh theo man (DISPLAY_SWAP_XY / DISPLAY_MIRROR_X / DISPLAY_MIRROR_Y).
+// CHUA THU THAT: neu cham nua trai ra nua phai thi doi TOUCH_MIRROR_X; neu cham tren ra duoi thi doi TOUCH_MIRROR_Y;
+// neu cham ngang thanh doc thi doi TOUCH_SWAP_XY.
+#define TOUCH_SWAP_XY           true
+#define TOUCH_MIRROR_X          true
+#define TOUCH_MIRROR_Y          false
+
 #endif // _BOARD_CONFIG_H_

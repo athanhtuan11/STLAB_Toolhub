@@ -7,6 +7,7 @@
 #include "power_save_timer.h"
 #include "backlight.h"
 #include "owl_eyes_display.h"
+#include "mcp_server.h"
 #include "assets/lang_config.h"
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -20,6 +21,9 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
+#include <string>
+#include <vector>
 
 #define TAG "StlabS3"
 
@@ -233,6 +237,72 @@ private:
         display_->EnableTap(SPI3_HOST, [this]() { sleeping_ = false; power_save_timer_->WakeUp(); });
     }
 
+    // Man the chu viet (spec-literacy.md muc 0): may chu -> bo qua MCP tools/call; bo -> may chu khi be cham the.
+    // Moi tool tra true ngay (khong cho ve xong). Tu khong co hinh -> the chi hien chu.
+    void InitializeLiteracyTools() {
+        if (display_ == nullptr) {
+            return;   // khong co man: cac tool khong duoc khai bao, may chu nhan loi "tool khong ton tai" va bo qua
+        }
+        // Cham the -> notification JSON-RPC (khong co id), CHI khi kenh dang mo (be dang nghe/co dang noi)
+        display_->SetTouchNotifier([](const char* screen, const std::string& word, int correct) {
+            const DeviceState st = Application::GetInstance().GetDeviceState();
+            if (st != kDeviceStateListening && st != kDeviceStateSpeaking) {
+                return;
+            }
+            const char* c = correct < 0 ? "null" : (correct == 0 ? "false" : "true");
+            char buf[256];
+            snprintf(buf, sizeof(buf),
+                     "{\"jsonrpc\":\"2.0\",\"method\":\"notifications/stlab_touch\",\"params\":{\"screen\":\"%s\",\"word\":\"%s\",\"correct\":%s}}",
+                     screen, word.c_str(), c);
+            Application::GetInstance().SendMcpMessage(buf);   // lich chay trong task chinh, an toan da luong
+        });
+        auto& mcp = McpServer::GetInstance();
+        mcp.AddTool("self.screen.show_word",
+                    "Show a word card (picture + lowercase word) on the owl's screen. word: a-z, spaces, hyphen.",
+                    PropertyList({Property("word", kPropertyTypeString)}),
+                    [this](const PropertyList& p) -> ReturnValue {
+                        display_->ShowWordCard(p["word"].value<std::string>());
+                        return true;
+                    });
+        mcp.AddTool("self.screen.show_pick",
+                    "Show two word cards side by side; the child taps the one named. Left/right is randomised on the device.",
+                    PropertyList({Property("target", kPropertyTypeString), Property("other", kPropertyTypeString)}),
+                    [this](const PropertyList& p) -> ReturnValue {
+                        display_->ShowPickCards(p["target"].value<std::string>(), p["other"].value<std::string>());
+                        return true;
+                    });
+        mcp.AddTool("self.screen.show_letter",
+                    "Show the first letter of a word (big) next to a small word card; the child taps the letter.",
+                    PropertyList({Property("word", kPropertyTypeString)}),
+                    [this](const PropertyList& p) -> ReturnValue {
+                        display_->ShowLetterCard(p["word"].value<std::string>());
+                        return true;
+                    });
+        mcp.AddTool("self.screen.show_stickers",
+                    "Show up to 3 sticker cards at the end of a lesson. words: comma separated.",
+                    PropertyList({Property("words", kPropertyTypeString)}),
+                    [this](const PropertyList& p) -> ReturnValue {
+                        std::vector<std::string> ws;
+                        const std::string all = p["words"].value<std::string>();
+                        size_t pos = 0;
+                        while (pos <= all.size() && ws.size() < 3) {
+                            size_t comma = all.find(',', pos);
+                            if (comma == std::string::npos) {
+                                comma = all.size();
+                            }
+                            ws.push_back(all.substr(pos, comma - pos));
+                            pos = comma + 1;
+                        }
+                        display_->ShowStickers(ws);
+                        return true;
+                    });
+        mcp.AddTool("self.screen.clear", "Clear any card and go back to the owl's eyes.", PropertyList(),
+                    [this](const PropertyList&) -> ReturnValue {
+                        display_->ClearCard();
+                        return true;
+                    });
+    }
+
 public:
     StlabS3Board()
         : WifiBoard(),
@@ -241,6 +311,7 @@ public:
         InitializeButtons();
         InitializePowerSaveTimer();
         InitializeDisplay();
+        InitializeLiteracyTools();
     }
 
     virtual Display* GetDisplay() override {

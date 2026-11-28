@@ -51,6 +51,14 @@ if (Test-Path $verFile) {
     [IO.File]::WriteAllText($cmk, ($cm -replace 'set\(PROJECT_VER "[^"]*"\)', "set(PROJECT_VER `"$stlabVer`")"))
 }
 
+# Hinh the chu viet (Twemoji 14.0.2 -> RGB565A8): sinh assets\pics bang make_pics.py roi chep vao stlab-pics
+# (patch 0004: DEFAULT_ASSETS_EXTRA_FILES = stlab-pics -> vao phan vung assets)
+python (Join-Path $H 'assets\make_pics.py')
+if ($LASTEXITCODE -ne 0) { throw 'make_pics.py loi' }
+$picDst = Join-Path $Real 'stlab-pics'
+New-Item -ItemType Directory -Path $picDst -Force | Out-Null
+Copy-Item (Join-Path $H 'assets\pics\*.bin') $picDst -Force
+
 $boardDst = Join-Path $Real 'main\boards\stlab-s3'
 New-Item -ItemType Directory -Path $boardDst -Force | Out-Null
 Copy-Item (Join-Path $H 'boards\stlab-s3\*') $boardDst -Recurse -Force
@@ -58,7 +66,7 @@ Copy-Item (Join-Path $H 'boards\stlab-s3\*') $boardDst -Recurse -Force
 # git apply chay trong C:\xzb\s3 (ngoai moi repo) de duong dan patch tinh tu goc thu muc nay
 Push-Location $Real
 try {
-    # ap het patches/*.patch theo ten: 0001 bo + Kconfig/CMake, 0002 AFE hook, 0003 them component XPT2046 (cam ung) vao idf_component.yml
+    # ap het patches/*.patch theo ten: 0001 bo + Kconfig/CMake, 0002 AFE hook, 0003 them component XPT2046 (cam ung) vao idf_component.yml, 0004 DEFAULT_ASSETS_EXTRA_FILES = stlab-pics
     foreach ($p in (Get-ChildItem (Join-Path $H 'patches') -Filter *.patch | Sort-Object Name)) {
         git apply --ignore-whitespace --whitespace=nowarn $p.FullName
         if ($LASTEXITCODE -ne 0) { throw "git apply loi: $($p.Name)" }

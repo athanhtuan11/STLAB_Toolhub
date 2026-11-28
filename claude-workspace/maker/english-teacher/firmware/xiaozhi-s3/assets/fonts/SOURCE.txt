@@ -1,0 +1,4 @@
+Andika Bold - SIL Open Font License 1.1 (xem OFL.txt)
+Nguon: https://github.com/google/fonts/tree/fffdadf0f0c9cc1ec8b407063424a8bfbee05611/ofl/andika
+Commit google/fonts: fffdadf0f0c9cc1ec8b407063424a8bfbee05611 (2026-03-03)
+Sinh C: npx lv_font_conv@1.5.2 (xem ../gen_fonts.py) -> boards/stlab-s3/andika_bold_{52,34,120}.c

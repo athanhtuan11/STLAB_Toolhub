@@ -52,6 +52,7 @@ OLDER_MODE = ("Age 4-5, session frame about 5 minutes: opening, 2 new words insi
               "Rules: English sentences at most 6 words, at most 2 sentences per turn (+ at most 1 short Vietnamese sentence); "
               "answer what the child said FIRST, teach after; ONE request per turn; after a question STOP and wait; say "
               "'Đến lượt con!' before inviting the child to speak; no drilling (a new word at most 2 times per turn). "
+              "When you ask the child to choose between two words, call show_pick first. "
               + PRONUNCIATION + " If the child wants, you may add one simple mouth tip in Vietnamese "
               "(e.g. 'uốn lưỡi', 'chu môi', 'cắn nhẹ môi dưới' for f/v).")
 
@@ -955,6 +956,24 @@ def live_tools():
         {"name": "finish_lesson",
          "description": "Call at the end of the session to save progress and pick the next lesson.",
          "parameters": {"type": "OBJECT", "properties": {}}},
+    ]
+
+
+def screen_tools():
+    """Tool man hinh chu viet (chi danh cho be > 3 tuoi; bridge tu choi khi be <= 3). Giu live_tools() nguyen."""
+    return [
+        {"name": "show_pick",
+         "description": ("Show two word cards on the device screen so the child taps one. Call it BEFORE asking the child to "
+                         "choose between two words. target = the word you will ask for, other = the distractor."),
+         "parameters": {"type": "OBJECT",
+                        "properties": {"target": {"type": "STRING", "description": "English word to choose"},
+                                       "other": {"type": "STRING", "description": "the other English word"}},
+                        "required": ["target", "other"]}},
+        {"name": "show_letter",
+         "description": "Show the first letter of an English word (with a small card) on the device screen.",
+         "parameters": {"type": "OBJECT",
+                        "properties": {"word": {"type": "STRING", "description": "English word"}},
+                        "required": ["word"]}},
     ]
 
 

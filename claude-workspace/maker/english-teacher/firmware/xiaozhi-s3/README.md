@@ -57,6 +57,13 @@ trước đó gửi số 0. Log `[BARGE]`. Gate: `server/test_full_duplex.py`. K
 - Cảm ứng dùng component `atanisoft/esp_lcd_touch_xpt2046 ^1` (patch `0003`; không có bản `espressif/...` trên registry). Không cắm màn thì bo vẫn chạy (không reset).
 - **Chưa thử hàng thật**: hướng xoay, màu, ngưỡng cảm ứng.
 
+## Màn tương tác chữ viết (spec-literacy.md, 2026-11-28)
+- Thẻ từ (A), chọn 1 trong 2 (B), chữ cái đầu (C), sticker (D) vẽ trong `OwlEyesDisplay`; mắt thu nhỏ ở dải trên. Máy chủ gọi MCP `self.screen.show_word|show_pick|show_letter|show_stickers|clear`; chạm thẻ → bo gửi notification `notifications/stlab_touch` (`screen`, `word`, `correct`), chỉ khi kênh đang mở.
+- Hình: `assets/make_pics.py` đọc từ mới Seed 1–3 (`lessons-seed/ROADMAP.md`) + `assets/pic-map.yaml` (word → mã Twemoji, `null` = không có hình đúng nghĩa → chỉ hiện chữ), tải PNG 72×72 → `assets/pics/*.bin` (RGB565A8, gitignore, sinh lại được). `sync.ps1` chạy script rồi chép vào `stlab-pics`; patch `0004` đưa vào phân vùng assets bằng `DEFAULT_ASSETS_EXTRA_FILES`. Phân vùng assets KHÔNG cập nhật qua OTA: hình mới phải nạp USB một lần (`esptool` ghi `generated_assets.bin` vào phân vùng `assets`).
+- Phông: Andika Bold (SIL OFL, `assets/fonts/OFL.txt`) cỡ 52/34/120 → `boards/stlab-s3/andika_bold_*.c` (sinh bằng `assets/gen_fonts.py`, cần node/npx).
+- Cảm ứng → pixel: `TOUCH_SWAP_XY`, `TOUCH_MIRROR_X`, `TOUCH_MIRROR_Y` trong `config.h` (mặc định theo màn, CHƯA thử thật).
+- Hình: Twemoji © Twitter, Inc và người đóng góp – CC BY 4.0 (https://github.com/twitter/twemoji, bản 14.0.2).
+
 ## Chưa chắc (cần đo trên bo)
 - Trễ tham chiếu tối ưu; INMP441 qua `>>12` của xiaozhi có thể bão hòa khi nói to sát mic (nếu `rms mic` ~ 32000 thì đổi dịch bit).
 - Chân LED 48 là WS2812 trên phần lớn devkit N16R8; không sáng thì bỏ qua.
