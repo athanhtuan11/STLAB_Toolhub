@@ -31,7 +31,7 @@
 // 1 = tu do tre bang tuong quan cheo (log [AEC-LAG]) va chinh delay luc chay (0..300 ms); STLAB_AEC_REF_DELAY_MS chi la gia tri khoi dau.
 #define STLAB_AEC_AUTO_DELAY 1
 // Do loi mic INMP441: du lieu 32 bit >> STLAB_MIC_SHIFT. xiaozhi goc 12; 2026-11-12 do clip ~38 % khi loa gan -> 14 (-12 dB)
-#define STLAB_MIC_SHIFT 12   // 2026-11-12 Tuan "dua ve goc": bang xiaozhi goc (>>12)
+#define STLAB_MIC_SHIFT 13   // 2026-11-29 Tuan dong y -6 dB: >>12 giong p50 -5,5 dBFS, clip 2-5 % mau (voice-tuner do dump). Cu: 12 (2026-11-12)
 
 // Nut noi NGOAI = switch MX 2 chan GPIO1 <-> GND (active-low, pull-up noi); nut BOOT GPIO0 chay song song de thu tren ban (BOOT chim trong vo).
 // Deep sleep (neu bat sau nay): GPIO1 la RTC GPIO, dung lam chan danh thuc. LED WS2812 tren bo (neu devkit khong co thi khong sang, khong sao)
